@@ -105,6 +105,10 @@ SOURCE=.\adplug.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\adtrack.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\amd.cpp
 # End Source File
 # Begin Source File
@@ -255,6 +259,10 @@ SOURCE=.\a2m.h
 # Begin Source File
 
 SOURCE=.\adplug.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\adtrack.h
 # End Source File
 # Begin Source File
 
