@@ -1,9 +1,25 @@
 /*
- * rol.h - ROL Player by OPLx (oplx@yahoo.com)
+ * Adplug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * rol.h - ROL Player by OPLx <oplx@yahoo.com>
  *
  * Visit:  http://tenacity.hispeed.com/aomit/oplx/
  */
-
 #ifndef H_ROLPLAYER
 #define H_ROLPLAYER
 
@@ -17,24 +33,16 @@ class CrolPlayer: public CPlayer
 public:
   static CPlayer *factory(Copl *newopl);
 
-    CrolPlayer(Copl *newopl)
-        : CPlayer         ( newopl )
-          ,rol_header     ( NULL )
-          ,mNextTempoEvent( 0 )
-          ,mCurrTick      ( 0 )
-          ,mTimeOfLastNote( 0 )
-          ,mRefresh       ( 18.2f )
-    {
-    }
+    CrolPlayer(Copl *newopl);
 
     ~CrolPlayer();
 
-    virtual bool  load(istream &f, const char *filename);
-    virtual bool  update();
-    virtual void  rewind(unsigned int subsong);	 // rewinds to specified subsong
-    virtual float getrefresh();			         // returns needed timer refresh rate
+    bool  load      (const std::string &filename, const CFileProvider &fp);
+    bool  update    ();
+    void  rewind    (int subsong);	 // rewinds to specified subsong
+    float getrefresh();			         // returns needed timer refresh rate
 
-    virtual std::string gettype() { return std::string("Adlib Visual Composer"); }
+    std::string gettype() { return std::string("Adlib Visual Composer"); }
 
 private:
     typedef unsigned short    uint16;
@@ -212,26 +220,27 @@ private:
         SRolInstrument instrument;
     } SUsedList;
 
-    void load_tempo_events     ( istream &f );
-    bool load_voice_data       ( istream &f, std::string bnk_filename );
-    void load_note_events      ( istream &f, CVoiceData &voice );
-    void load_instrument_events( istream &f, CVoiceData &voice,
-                                 istream &bnk_file, SBnkHeader const &bnk_header );
-    void load_volume_events    ( istream &f, CVoiceData &voice );
-    void load_pitch_events     ( istream &f, CVoiceData &voice );
+    void load_tempo_events     ( binistream *f );
+    bool load_voice_data       ( binistream *f, std::string const &bnk_filename, const CFileProvider &fp );
+    void load_note_events      ( binistream *f, CVoiceData &voice );
+    void load_instrument_events( binistream *f, CVoiceData &voice,
+                                 binistream *bnk_file, SBnkHeader const &bnk_header );
+    void load_volume_events    ( binistream *f, CVoiceData &voice );
+    void load_pitch_events     ( binistream *f, CVoiceData &voice );
 
-    bool load_bnk_info         ( istream &f, SBnkHeader &header );
-    int  load_rol_instrument   ( istream &f, SBnkHeader const &header, std::string &name );
-    void read_rol_instrument   ( istream &f, SRolInstrument &ins );
-    void read_fm_operator      ( istream &f, SOPL2Op &opl2_op );
+    bool load_bnk_info         ( binistream *f, SBnkHeader &header );
+    int  load_rol_instrument   ( binistream *f, SBnkHeader const &header, std::string &name );
+    void read_rol_instrument   ( binistream *f, SRolInstrument &ins );
+    void read_fm_operator      ( binistream *f, SOPL2Op &opl2_op );
     int  get_ins_index( std::string const &name ) const;
 
     void UpdateVoice( int const voice, CVoiceData &voiceData );
     void SetNote( int const voice, int const note );
     void SetNoteMelodic(  int const voice, int const note  );
     void SetNotePercussive( int const voice, int const note );
-    void SetFreq  ( int const voice, int const note, bool const keyOn=false );
-    void SetVolume( int const voice, int const volume );
+    void SetFreq   ( int const voice, int const note, bool const keyOn=false );
+    void SetVolume ( int const voice, int const volume );
+    void SetRefresh( float const multiplier );
     void send_ins_data_to_chip( int const voice, int const ins_index );
     void send_operator( int const voice, SOPL2Op const &modulator, SOPL2Op const &carrier );
 
@@ -270,10 +279,10 @@ private:
     int                         mCurrTick;
     int                         mTimeOfLastNote;
     float                       mRefresh;
+    char                        bdRegister;
+    char                        bxRegister[9];
+    char                        volumeCache[11];
 
-    static char         bdRegister;
-    static char         bxRegister[9];
-    static char         volumeCache[11];
     static int    const kSizeofDataRecord;
     static int    const kMaxTickBeat;
     static int    const kSilenceNote;
@@ -284,6 +293,7 @@ private:
     static int    const kTomtomChannel;
     static int    const kTomtomFreq;
     static int    const kSnareDrumFreq;
+    static float  const kDefaultUpdateTme;
     static uint16 const kNoteTable[12];
 };
 

@@ -58,7 +58,7 @@
 #include "rat.h"
 #include "lds.h"
 #include "u6m.h"
-//#include "rol.h"
+#include "rol.h"
 
 /***** Defines *****/
 
@@ -99,7 +99,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CxadratPlayer::factory, "rat", ".xad\0"),
   CPlayerDesc(CldsLoader::factory, "Loudness", ".lds\0"),
   CPlayerDesc(Cu6mPlayer::factory, "Ultima 6 Music", ".m\0"),
-  //  CPlayerDesc(CrolPlayer::factory, "Adlib Visual Composer", ".rol\0"),
+  CPlayerDesc(CrolPlayer::factory, "Adlib Visual Composer", ".rol\0"),
   CPlayerDesc()
 };
 
