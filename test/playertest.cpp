@@ -48,9 +48,9 @@ static const char *filelist[] = {
   "mi2_big_tree1.laa",	// LucasArts
   "michaeld.cmf",	// Creative Music Format
   "PLAYMUS1.SNG",	// SNGPlay
-  "rat.xad",		// XAD
+  "rat.xad",		// xad: rat
   "REVELAT.SNG",	// Faust Music Creator
-  "SAILOR.CFF",		// Boomtracker */
+  "SAILOR.CFF",		// Boomtracker
   "samurai.dro",	// DOSBox
   "SCALES.SA2",		// Surprise! Adlib Tracker 2
   "SMKEREM.HSC",	// HSC-Tracker
@@ -59,6 +59,12 @@ static const char *filelist[] = {
   "TU_BLESS.AMD",	// AMUSIC
   "VIB_VOL3.D00",	// EdLib Packed
   "WONDERIN.IMF",	// Apogee
+  "bmf1_2.xad",		// xad: BMF
+  "flash.xad",		// xad. flash
+  "HIP_D.ROL",		// Visual Composer
+  "hybrid.xad", 	// xad: hybrid
+  "hyp.xad",		// xad: hyp
+  "psi1.xad",		// xad: PSI
   NULL
 };
 

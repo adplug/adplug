@@ -94,6 +94,6 @@ void CdroPlayer::rewind(int subsong)
 
 float CdroPlayer::getrefresh()
 {
-	if (delay>500) return (1000.0f/500);
-	else return 1000.0f/(float)delay;
+	if (delay > 500) return 1000 / 500;
+	else return 1000 / (double)delay;
 }

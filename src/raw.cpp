@@ -22,8 +22,6 @@
  * OPL3 register writes are ignored (not possible with AdLib).
  */
 
-#include <assert.h>
-
 #include "raw.h"
 
 /*** public methods *************************************/
@@ -59,6 +57,8 @@ bool CrawPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 bool CrawPlayer::update()
 {
+  bool	setspeed;
+
   if(pos >= length) return false;
 
   if(del) {
@@ -67,12 +67,14 @@ bool CrawPlayer::update()
   }
 
   do {
-    assert(pos < length);
+    setspeed = false;
     switch(data[pos].command) {
     case 0: del = data[pos].param - 1; break;
     case 2:
       if(!data[pos].param) {
-	pos++; speed = data[pos].param + (data[pos].command << 8);
+	pos++;
+	speed = data[pos].param + (data[pos].command << 8);
+	setspeed = true;
       } else
 	opl3 = data[pos].param - 1;
       break;
@@ -88,7 +90,7 @@ bool CrawPlayer::update()
 	opl->write(data[pos].command,data[pos].param);
       break;
     }
-  } while(data[pos++].command);
+  } while(data[pos++].command || setspeed);
 
   return !songend;
 }
@@ -101,5 +103,5 @@ void CrawPlayer::rewind(int subsong)
 
 float CrawPlayer::getrefresh()
 {
-  return 1193180 / (float)(speed ? speed : 0xffff);	// timer oscillator speed / wait register = clock frequency
+  return 1193180.0 / (speed ? speed : 0xffff);	// timer oscillator speed / wait register = clock frequency
 }
