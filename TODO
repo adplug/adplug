@@ -17,4 +17,6 @@ AdPlug To Do List:
 	- MTR: Arkham Master Tracker [riven-mage]
 	- LDS: Loudness
 
-- Make documentation build target on UNIX builds. [dynamite]
+- Make documentation build target (on UNIX, use the 'groff-it' script in the
+  meantime. Doc building is not automatic on other systems for now...).
+  [dynamite]
