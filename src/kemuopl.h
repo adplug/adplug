@@ -16,19 +16,44 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * opl.h - OPL base class declaration, by Simon Peter <dn.tlp@gmx.net>
+ * kemuopl.h - Emulated OPL using Ken Silverman's emulator, by Simon Peter
+ *             <dn.tlp@gmx.net>
  */
 
-#ifndef H_ADPLUG_OPL
-#define H_ADPLUG_OPL
+#ifndef H_ADPLUG_KEMUOPL
+#define H_ADPLUG_KEMUOPL
 
-class Copl
+#include "opl.h"
+extern "C" {
+#include "adlibemu.h"
+}
+
+class CKemuopl: public Copl
 {
 public:
-	virtual void write(int reg, int val) = 0;		// combined register select + data write
-	virtual void init(void) = 0;				// reinitialize OPL chip
+  CKemuopl(int rate, bool bit16, bool usestereo)
+    : use16bit(bit16), stereo(usestereo)
+    {
+      adlibinit(rate, usestereo ? 2 : 1, bit16 ? 2 : 1);
+    };
 
-	virtual void update(short *buf, int samples) {};	// Emulation only: fill buffer
+  void update(short *buf, int samples)
+    {
+      if(use16bit) samples *= 2;
+      if(stereo) samples *= 2;
+      adlibgetsample(buf, samples);
+    }
+
+  // template methods
+  void write(int reg, int val)
+    {
+      adlib0(reg, val);
+    };
+
+  void init() {};
+
+private:
+  bool	use16bit,stereo;
 };
 
 #endif

@@ -4,7 +4,9 @@ Changes for version 1.5:
 	- New format support:
 		- XSM: eXtra Simple Music
 	- Added support for .adlib files to IMF player.
-	- Uses newest fmopl OPL2 emulator version 0.70 from MAME 0.74.
+	- Reverted fmopl OPL2 emulator to old LGPL'd version, so AdPlug
+	  is now completely free (LGPL) again. Please read the README
+	  for details.
 
 Changes for version 1.4:
 	- Documentation changed into Texinfo format.
