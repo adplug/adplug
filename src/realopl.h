@@ -1,6 +1,6 @@
 /*
- * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * realopl.h - Real hardware OPL, by Simon Peter (dn.tlp@gmx.net)
+ * realopl.h - Real hardware OPL, by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include "opl.h"
@@ -26,10 +25,10 @@
 
 class CRealopl: public Copl
 {
-public:
+public:	
 	CRealopl(unsigned short initport = DFL_ADLIBPORT);	// initport = OPL2 hardware baseport
 
-	bool detect();						// returns true if adlib compatible board is found, else false
+	bool detect();					// returns true if adlib compatible board is found, else false
 	void setvolume(int volume);			// set adlib master volume (0 - 63) 0 = loudest, 63 = softest
 	void setquiet(bool quiet = true);	// sets the OPL2 quiet, while still writing to the registers
 	void setport(unsigned short port)	// set new OPL2 hardware baseport
