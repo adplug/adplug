@@ -22,6 +22,8 @@
   NOTE: Panning is ignored.
 */
 
+#include <string.h>
+
 #include "dmo.h"
 
 #define LOWORD(l) ((l) & 0xffff)
@@ -43,8 +45,10 @@ bool CdmoLoader::load(istream &f, const char *filename)
 
 	// check header
 	dmo_unpacker *unpacker = new dmo_unpacker;
-	
 	unsigned char chkhdr[16];
+
+	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".dmo"))
+	  return false;
 
 	f.read(chkhdr,16);
 

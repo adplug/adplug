@@ -9,6 +9,10 @@ cff.cpp dtm.cpp dmo.cpp
 
 libadplug_la_LDFLAGS = -release @VERSION@
 
+# This is a hack. Throughout AdPlug, stricmp() is used to do caseless string
+# comparations. UNIX libc's don't support stricmp(), but do support the BSD
+# strcasecmp(), so we have to replace every occurance of stricmp() into
+# strcasecmp(). stricmp() seems to be Windows, but maybe also POSIX...
 AM_CPPFLAGS = -Dstricmp=strcasecmp
 
 pkginclude_HEADERS = adplug.h emuopl.h fmopl.h silentopl.h opl.h diskopl.h \
