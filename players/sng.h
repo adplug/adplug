@@ -26,7 +26,7 @@ class CsngPlayer: public CPlayer
 {
 public:
 	CsngPlayer(Copl *newopl)
-		: CPlayer(newopl)
+		: CPlayer(newopl), data(0)
 	{ };
 	~CsngPlayer()
 	{ if(data) delete [] data; };
