@@ -19,7 +19,7 @@ platforms and compilers:
 Hardware                Operating System        Compiler
 --------                ----------------        --------
 IBM-PC - x86            Windows XP              MS Visual C++ 6.0
-                        MS-DOS 7.0              OpenWatcom 1.1
+                        MS-DOS 7.0              OpenWatcom 1.2
                         Linux 2.6.5             GCC 3.3.3
                         FreeBSD 4.7-STABLE      GCC 2.95.4
                         QNX 6.2.x               GCC 2.95.3

@@ -73,7 +73,7 @@ class CldsPlayer: public CPlayer
 
   static const unsigned short	frequency[];
   static const unsigned char	vibtab[], tremtab[];
-  static const unsigned short	maxsound = 0x3f, maxpos = 0xff;
+  static const unsigned short	maxsound, maxpos;
 
   SoundBank		*soundbank;
   Channel		channel[9];

@@ -1,12 +1,12 @@
 # AdPlug Makefile for Watcom and OpenWatcom
-# Copyright (c) 2002, 2003 Simon Peter <dn.tlp@gmx.net>
+# Copyright (c) 2002 - 2004 Simon Peter <dn.tlp@gmx.net>
 
-SUBDIRS = src adplugdb
+SUBDIRS = src adplugdb test
 
 AUX = README AUTHORS NEWS COPYING TODO BUGS ChangeLog INSTALL README.dos
 DIST = src\*.c src\*.cpp src\*.h src\Makefile.bt adplugdb\*.cpp adplugdb\*.c &
-adplugdb\*.h adplugdb\Makefile.bt $(AUX)
-BINARYDIST = src\*.h src\adplug.lib adplugdb\adplugdb.exe $(AUX)
+adplugdb\*.h adplugdb\Makefile.bt test\*.* $(AUX)
+BINARYDIST = src\*.h src\adplug.lib adplugdb\adplugdb.exe test\*.* $(AUX)
 
 distfile = adplg15s.zip
 binarydistfile = adplug15.zip

@@ -457,10 +457,10 @@ void Cd00Player::setvolume(unsigned char chan)
 	unsigned char	op = op_table[chan];
 	unsigned short	insnr = channel[chan].inst;
 
-	opl->write(0x43 + op,(int)(63-((63-(inst[insnr].data[2] & 63))/63.0f)*(63-channel[chan].vol)) +
+	opl->write(0x43 + op,(int)(63-((63-(inst[insnr].data[2] & 63))/63.0)*(63-channel[chan].vol)) +
 		(inst[insnr].data[2] & 192));
 	if(inst[insnr].data[10] & 1)
-		opl->write(0x40 + op,(int)(63-((63-channel[chan].modvol)/63.0f)*(63-channel[chan].vol)) +
+		opl->write(0x40 + op,(int)(63-((63-channel[chan].modvol)/63.0)*(63-channel[chan].vol)) +
 			(inst[insnr].data[7] & 192));
 	else
 		opl->write(0x40 + op,channel[chan].modvol + (inst[insnr].data[7] & 192));

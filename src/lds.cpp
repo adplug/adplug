@@ -65,6 +65,10 @@ const unsigned char CldsPlayer::tremtab[] = {
   25, 21, 18, 15, 12, 10, 7, 5, 4, 2, 1, 1, 0
 };
 
+// 'maxsound' is maximum number of patches (instruments)
+// 'maxpos' is maximum number of entries in position list (orderlist)
+const unsigned short CldsPlayer::maxsound = 0x3f, CldsPlayer::maxpos = 0xff;
+
 /*** public methods *************************************/
 
 CldsPlayer::CldsPlayer(Copl *newopl)

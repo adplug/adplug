@@ -263,6 +263,13 @@ SOURCE=.\rol.cpp
 # Begin Source File
 
 SOURCE=.\s3m.cpp
+
+!IF  "$(CFG)" == "adplug - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "adplug - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 

@@ -93,10 +93,6 @@ LDFLAGS += debug all
 
 .obj.exe:
         $(LD) $(LDFLAGS) N $@ F {$<} LIB {$(LIBRARIES)} SYS $(SYSTEM)
-!ifeq SYSTEM pmodew
-        pmwlite /C4 $@
-        pmwsetup /Q /B0 $@
-!endif
 
 all: all.recursive $(OUTPUT) .symbolic
 
