@@ -26,7 +26,46 @@
 #include "../src/adplug.h"
 #include "../src/diskopl.h"
 
-unsigned long filesize(FILE *f)
+/***** Local variables *****/
+
+// List of all filenames to test
+static const char *filelist[] = {
+  "SONG1.sng",		// Adlib Tracker
+  "2001.MKJ",		// MK-Jamz
+  "ADAGIO.DFM",		// Digital-FM
+  "adlibsp.s3m",	// Scream Tracker 3
+  "ALLOYRUN.RAD",	// Reality AdLib Tracker
+  "ARAB.BAM",		// Bob's AdLib Music
+  "BEGIN.KSM",		// Ken Silverman
+  "BOOTUP.M",		// Ultima 6
+  "CHILD1.XSM",		// eXtra Simple Music
+  "DTM-TRK1.DTM",	// DeFy Adlib Tracker
+  "fdance03.dmo",	// TwinTrack
+  "ice_think.sci",	// Sierra
+  "inc.raw",		// RAW
+  //  "loudness.lds",	// Loudness
+  "MARIO.A2M",		// AdLib Tracker 2
+  "mi2_big_tree1.laa",	// LucasArts
+  "michaeld.cmf",	// Creative Music Format
+  "PLAYMUS1.SNG",	// SNGPlay
+  "rat.xad",		// XAD
+  "REVELAT.SNG",	// Faust Music Creator
+  "SAILOR.CFF",		// Boomtracker
+  "samurai.dro",	// DOSBox
+  "SCALES.SA2",		// Surprise! Adlib Tracker 2
+  "SMKEREM.HSC",	// HSC-Tracker
+  "TOCCATA.MAD",	// Mlat Adlib Tracker
+  "TUBES.SAT",		// Surprise! Adlib Tracker
+  "TU_BLESS.AMD",	// AMUSIC
+  "VIB_VOL3.D00",	// EdLib Packed
+  "WONDERIN.IMF",	// Apogee
+  NULL
+};
+
+/***** Local functions *****/
+
+static unsigned long filesize(FILE *f)
+  /* Returns the file size of file f. */
 {
   long	fpos = ftell(f), fsize;
   fseek(f, 0, SEEK_END);
@@ -35,7 +74,11 @@ unsigned long filesize(FILE *f)
   return fsize;
 }
 
-long read_file(char **mem, const std::string filename)
+static long read_file(char **mem, const std::string filename)
+  /*
+   * Reads file 'filename' into memory area 'mem', which will be allocated and
+   * must be freed later, and returns its size.
+   */
 {
   FILE	*f = fopen(filename.c_str(), "rb");
   if(!f) return -1;
@@ -48,7 +91,11 @@ long read_file(char **mem, const std::string filename)
   return fsize;
 }
 
-bool testplayer(const std::string filename)
+static bool testplayer(const std::string filename)
+  /*
+   * Tests playback of file 'filename' by comparing its RAW output with a
+   * prerecorded original and returns true if they match, false otherwise.
+   */
 {
   std::string	fn = std::string(getenv("srcdir")) + "/" + filename;
   CDiskopl	*opl = new CDiskopl(filename + ".test.raw");
@@ -83,42 +130,25 @@ bool testplayer(const std::string filename)
 
   if(fsize1 != -1) free(f1);
   if(fsize2 != -1) free(f2);
-  remove(std::string(filename + ".test.raw").c_str());
-  if(retval) std::cout << "OK\n"; else std::cout << "FAIL\n";
+  if(retval) {
+    std::cout << "OK\n";
+    remove(std::string(filename + ".test.raw").c_str());
+  } else
+    std::cout << "FAIL\n";
   return retval;
 }
 
+/***** Main program *****/
+
 int main(int argc, char *argv[])
 {
-  if(!testplayer("SONG1.sng")) return EXIT_FAILURE;	// Adlib Tracker
-  if(!testplayer("2001.MKJ")) return EXIT_FAILURE;	// MK-Jamz
-  if(!testplayer("ADAGIO.DFM")) return EXIT_FAILURE;	// Digital-FM
-  if(!testplayer("adlibsp.s3m")) return EXIT_FAILURE;	// Scream Tracker 3
-  if(!testplayer("ALLOYRUN.RAD")) return EXIT_FAILURE;	// Reality AdLib Tracker
-  if(!testplayer("ARAB.BAM")) return EXIT_FAILURE;	// Bob's AdLib Music
-  if(!testplayer("BEGIN.KSM")) return EXIT_FAILURE;	// Ken Silverman
-  if(!testplayer("BOOTUP.M")) return EXIT_FAILURE;	// Ultima 6
-  if(!testplayer("CHILD1.XSM")) return EXIT_FAILURE;	// eXtra Simple Music
-  if(!testplayer("DTM-TRK1.DTM")) return EXIT_FAILURE;	// DeFy Adlib Tracker
-  if(!testplayer("fdance03.dmo")) return EXIT_FAILURE;	// TwinTrack
-  if(!testplayer("ice_think.sci")) return EXIT_FAILURE;	// Sierra
-  if(!testplayer("inc.raw")) return EXIT_FAILURE;	// RAW
-  //  if(!testplayer("loudness.lds")) return EXIT_FAILURE;	// Loudness
-  if(!testplayer("MARIO.A2M")) return EXIT_FAILURE;	// AdLib Tracker 2
-  if(!testplayer("mi2_big_tree1.laa")) return EXIT_FAILURE;	// LucasArts
-  if(!testplayer("michaeld.cmf")) return EXIT_FAILURE;	// Creative Music Format
-  if(!testplayer("PLAYMUS1.SNG")) return EXIT_FAILURE;	// SNGPlay
-  if(!testplayer("rat.xad")) return EXIT_FAILURE;	// XAD
-  if(!testplayer("REVELAT.SNG")) return EXIT_FAILURE;	// Faust Music Creator
-  if(!testplayer("SAILOR.CFF")) return EXIT_FAILURE;	// Boomtracker
-  if(!testplayer("samurai.dro")) return EXIT_FAILURE;	// DOSBox
-  if(!testplayer("SCALES.SA2")) return EXIT_FAILURE;	// Surprise! Adlib Tracker 2
-  if(!testplayer("SMKEREM.HSC")) return EXIT_FAILURE;	// HSC-Tracker
-  if(!testplayer("TOCCATA.MAD")) return EXIT_FAILURE;	// Mlat Adlib Tracker
-  if(!testplayer("TUBES.SAT")) return EXIT_FAILURE;	// Surprise! Adlib Tracker
-  if(!testplayer("TU_BLESS.AMD")) return EXIT_FAILURE;	// AMUSIC
-  if(!testplayer("VIB_VOL3.D00")) return EXIT_FAILURE;	// EdLib Packed
-  if(!testplayer("WONDERIN.IMF")) return EXIT_FAILURE;	// Apogee
+  unsigned int	i;
+  bool		retval = true;
 
-  return EXIT_SUCCESS;
+  // Try all files one by one
+  for(i = 0; filelist[i] != NULL; i++)
+    if(!testplayer(filelist[i]))
+      retval = false;
+
+  return retval ? EXIT_SUCCESS : EXIT_FAILURE;
 }

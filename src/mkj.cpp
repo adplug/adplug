@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,8 @@
  *
  * mkj.cpp - MKJamz Player, by Simon Peter <dn.tlp@gmx.net>
  */
+
+#include <assert.h>
 
 #include "mkj.h"
 #include "debug.h"
@@ -85,6 +87,7 @@ bool CmkjPlayer::update()
 
     opl->write(0xb0 + c, 0);	// key off
     do {
+      assert(channel[c].songptr < (maxchannel + 1) * maxnotes);
       note = songbuf[channel[c].songptr];
       if(channel[c].songptr - c > maxchannel)
 	if(note && note < 250)
@@ -129,10 +132,10 @@ bool CmkjPlayer::update()
 	return false;
       }
 
-      //      if(channel[c].songptr - c < maxnote)
+      if(channel[c].songptr - c < maxnotes)
 	channel[c].songptr += maxchannel;
-	/*      else
-		channel[c].songptr = c; */
+      else
+	channel[c].songptr = c;
     } while(!channel[c].pstat);
   }
 
