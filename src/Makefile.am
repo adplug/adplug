@@ -6,7 +6,7 @@ lds.cpp mid.cpp mkj.cpp mtk.cpp protrack.cpp rad.cpp raw.cpp s3m.cpp sa2.cpp \
 sng.cpp u6m.cpp fmc.cpp mad.cpp xad.cpp bmf.cpp flash.cpp hyp.cpp psi.cpp \
 rat.cpp hybrid.cpp rol.cpp debug.c debug.h mididata.h imfcrc.h adtrack.cpp
 
-libadplug_la_LDFLAGS = -version-info 1:2
+libadplug_la_LDFLAGS = -version-info 1:3
 
 AM_CPPFLAGS = -Dstricmp=strcasecmp
 AM_CFLAGS = -Wall

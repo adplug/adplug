@@ -54,10 +54,10 @@ CVS and UNIX:
 -------------
 If you checked out from CVS and use UNIX, first run:
 
-./autogen.sh
+autoreconf --install
 
 to generate the build cruft and get the configure script. Oh, and did i
-mention you need recent versions of autoconf, automake and libtool?
+mention you need recent versions of autoconf, automake and libtool? ;)
 
 Debugging AdPlug:
 -----------------

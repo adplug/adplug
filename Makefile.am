@@ -1,8 +1,7 @@
-SUBDIRS = src
+SUBDIRS = src doc
 
 EXTRA_DIST = INSTALL.unix INSTALL.win32 INSTALL.dos Makefile.wat \
-	Makefile.bt doc/Hacking.ms doc/Player-Development.ms \
-	doc/Protracker.ms
+	Makefile.bt
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
