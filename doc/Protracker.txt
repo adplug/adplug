@@ -1,0 +1,22 @@
+Protracker derivative Player development HOWTO
+Copyright (C) 2002 Simon Peter <dn.tlp@gmx.net>
+$Id$
+
+Introduction
+------------
+
+Deconstruction
+--------------
+Be careful when specifying your own deconstructors! These will generally
+override CmodPlayer's deconstructor, because it is defined virtual. Since
+CmodPlayer's own deconstructor normally handles all deconstruction work
+automatically, you have to do this manually now. It is best to refer to the
+actual deconstructors source to see what you probably have to do.
+
+Here are some hints on what ~CmodPlayer normally does:
+
+
+Special Arpeggio
+----------------
+To use the special arpeggio facility, you have to initalize it first. Use
+the init_special_arp() method for this purpose.
