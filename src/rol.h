@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,15 +39,19 @@ public:
 
     bool  load      (const std::string &filename, const CFileProvider &fp);
     bool  update    ();
-    void  rewind    (int subsong);	 // rewinds to specified subsong
-    float getrefresh();			         // returns needed timer refresh rate
+    void  rewind    (int subsong);	// rewinds to specified subsong
+    float getrefresh();			// returns needed timer refresh rate
 
     std::string gettype() { return std::string("Adlib Visual Composer"); }
 
 private:
     typedef unsigned short    uint16;
     typedef signed   short    int16;
-    typedef signed   long int int32;  
+#ifdef __x86_64__
+    typedef signed   int      int32;
+#else
+    typedef signed long int   int32;
+#endif
     typedef float             real32;
 
     typedef struct
@@ -239,6 +243,7 @@ private:
     void SetNoteMelodic(  int const voice, int const note  );
     void SetNotePercussive( int const voice, int const note );
     void SetFreq   ( int const voice, int const note, bool const keyOn=false );
+    void SetPitch  ( int const voice, real32 const variation );
     void SetVolume ( int const voice, int const volume );
     void SetRefresh( float const multiplier );
     void send_ins_data_to_chip( int const voice, int const ins_index );
@@ -282,6 +287,8 @@ private:
     char                        bdRegister;
     char                        bxRegister[9];
     char                        volumeCache[11];
+    uint16			freqCache[11];
+    real32                      pitchCache[11];
 
     static int    const kSizeofDataRecord;
     static int    const kMaxTickBeat;
@@ -294,6 +301,7 @@ private:
     static int    const kTomtomFreq;
     static int    const kSnareDrumFreq;
     static float  const kDefaultUpdateTme;
+    static float  const kPitchFactor;
     static uint16 const kNoteTable[12];
 };
 

@@ -36,6 +36,7 @@ int   const CrolPlayer::kTomtomChannel       =  8;
 int   const CrolPlayer::kTomtomFreq          =  2;//4;
 int   const CrolPlayer::kSnareDrumFreq       =  2;//kTomtomFreq + 7;
 float const CrolPlayer::kDefaultUpdateTme    = 18.2f;
+float const CrolPlayer::kPitchFactor         = 400.0f;
 
 static const unsigned char drum_table[4] = {0x14, 0x12, 0x15, 0x11};
 
@@ -71,8 +72,14 @@ CrolPlayer::CrolPlayer(Copl *newopl)
   ,mRefresh        ( kDefaultUpdateTme )
   ,bdRegister      ( 0 )
 {
+    int n;
+
     memset(bxRegister,  0, sizeof(bxRegister) );
     memset(volumeCache, 0, sizeof(volumeCache) );
+    memset(freqCache,   0, sizeof(freqCache) );
+
+    for(n=0; n<11; n++)
+      pitchCache[n]=1.0f;    
 }
 //---------------------------------------------------------
 CrolPlayer::~CrolPlayer()
@@ -80,6 +87,7 @@ CrolPlayer::~CrolPlayer()
     if( rol_header != NULL )
     {
         delete rol_header;
+        rol_header=NULL;
     }
 }
 //---------------------------------------------------------
@@ -281,19 +289,6 @@ void CrolPlayer::UpdateVoice( int const voice, CVoiceData &voiceData )
         }        
     }
 
-    if( !(voiceData.mEventStatus & CVoiceData::kES_PitchEnd ) &&
-        pEvents[voiceData.next_pitch_event].time == mCurrTick )
-    {
-        if( voiceData.next_pitch_event < pEvents.size() )
-        {
-            ++voiceData.next_pitch_event;
-        }
-        else
-        {
-            voiceData.mEventStatus |= CVoiceData::kES_PitchEnd;
-        }
-    }
-
     if( voiceData.mForceNote || voiceData.current_note_duration > voiceData.mNoteDuration-1 )
     {
         if( mCurrTick != 0 )
@@ -317,6 +312,21 @@ void CrolPlayer::UpdateVoice( int const voice, CVoiceData &voiceData )
             return;
         }
     }
+
+    if( !(voiceData.mEventStatus & CVoiceData::kES_PitchEnd ) &&
+        pEvents[voiceData.next_pitch_event].time == mCurrTick )
+    {
+        if( voiceData.next_pitch_event < pEvents.size() )
+        {
+            SetPitch(voice,pEvents[voiceData.next_pitch_event].variation);
+            ++voiceData.next_pitch_event;
+        }
+        else
+        {
+            voiceData.mEventStatus |= CVoiceData::kES_PitchEnd;
+        }
+    }
+
     ++voiceData.current_note_duration;
 }
 //---------------------------------------------------------
@@ -365,9 +375,20 @@ void CrolPlayer::SetNoteMelodic( int const voice, int const note )
     }
 }
 //---------------------------------------------------------
+void CrolPlayer::SetPitch(int const voice, real32 const variation)
+{
+  pitchCache[voice] = variation;
+  freqCache[voice] += (uint16)((((float)freqCache[voice])*(variation-1.0f)) / kPitchFactor);
+
+  opl->write(0xa0+voice,freqCache[voice] & 0xff);
+}
+//---------------------------------------------------------
 void CrolPlayer::SetFreq( int const voice, int const note, bool const keyOn )
 {
-    uint16 const freq = kNoteTable[note%12] + ((note/12) << 10);
+    uint16 freq = kNoteTable[note%12] + ((note/12) << 10);
+    freq += (uint16)((((float)freq)*(pitchCache[voice]-1.0f))/kPitchFactor);
+
+    freqCache[voice] = freq;
     bxRegister[voice] = ((freq >> 8) & 0x1f);
 
     opl->write( 0xa0+voice, freq & 0xff );
