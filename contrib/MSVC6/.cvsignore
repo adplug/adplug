@@ -1,7 +1,8 @@
 config.bat
-adplug.dsw
-adplug.ncb
-adplug.opt
-adplug.plg
+*.dsw
+*.ncb
+*.opt
+*.plg
 Debug
 Release
+*.test
