@@ -13,6 +13,29 @@
 	#define OUTP	outp
 #endif
 
+/* 
+ * chris: TODO: This isn't quite right.  According to Jeff Lee's doc:
+ *
+ *    "After writing to the register port, you must wait twelve cycles before
+ *   sending the data; after writing the data, eighty-four cycles must elapse
+ *   before any other sound card operation may be performed.
+ *
+ * | The AdLib manual gives the wait times in microseconds: three point three
+ * | (3.3) microseconds for the address, and twenty-three (23) microseconds
+ * | for the data.
+ * |
+ * | The most accurate method of producing the delay is to read the register
+ * | port six times after writing to the register port, and read the register
+ * | port thirty-five times after writing to the data port."
+ *
+ *
+ * In other words, the delay constants represented by {SHORT|LONG}DELAY below 
+ * aren't given in microseconds, but rather direct reads (INB) from the Adlib 
+ * I/O ports.
+ *
+ * Translation: SHORTDELAY should be 6, and LONGDELAY is just fine.  :-)
+ */
+
 #define SHORTDELAY		8					// short delay in microseconds after OPL hardware output
 #define LONGDELAY		35					// long delay in microseconds after OPL hardware output
 
