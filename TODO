@@ -13,7 +13,3 @@ AdPlug To Do List:
 - Add new Protracker loaders:
 	- MTR: Arkham Master Tracker [riven-mage]
 	- LDS: Loudness
-
-- Add option to specify keys on commandline with adplugdb. [dynamite]
-
-- Write adplugdb manpage. [dynamite]

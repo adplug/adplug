@@ -89,13 +89,13 @@ static struct {
   char				*db_file;
   CAdPlugDatabase::CRecord::RecordType	rtype;
   int					message_level;
-  bool					usedefaultdb, usercomment;
+  bool					usedefaultdb, usercomment, cmdkeys;
   const char				*homedir;
 } cfg = {
   ADPLUGDB_PATH,
   CAdPlugDatabase::CRecord::Plain,
   MSG_NOTE,
-  false, false,
+  false, false, false,
   NULL
 };
 
@@ -119,14 +119,21 @@ static void message(int level, const char *fmt, ...)
 
 static CAdPlugDatabase::CKey file2key(const char *filename)
 {
-  binifstream f(filename);
+  if(cfg.cmdkeys) {	// We got a key spec
+    CAdPlugDatabase::CKey key;
 
-  if(f.error()) {
-    message(MSG_ERROR, "can't open specified file -- %s", filename);
-    exit(EXIT_FAILURE);
+    sscanf(filename, "%x:%x", &key.crc16, &key.crc32);
+    return key;
+  } else {		// We got a real filename
+    binifstream f(filename);
+
+    if(f.error()) {
+      message(MSG_ERROR, "can't open specified file -- %s", filename);
+      exit(EXIT_FAILURE);
+    }
+
+    return CAdPlugDatabase::CKey(f);
   }
-
-  return CAdPlugDatabase::CKey(f);
 }
 
 static void usage()
@@ -145,6 +152,7 @@ static void usage()
 #endif
 	 "  -t <type>        Add as different record type (plain, songinfo, clockspeed)\n"
 	 "  -c               Prompt for record comment\n"
+	 "  -k               Specify keys instead of files on commandline\n"
 	 "\n"
 	 "Generic options:\n"
 	 "  -q               Be more quiet\n"
@@ -176,8 +184,14 @@ static void db_add(const char *filename)
 {
   CAdPlugDatabase::CRecord *record = CAdPlugDatabase::CRecord::factory(cfg.rtype);
 
+  if(cfg.cmdkeys) {
+    message(MSG_ERROR, "adding records is only possible while specifying"
+	    "filenames");
+    exit(EXIT_FAILURE);
+  }
+
   if(!record) {
-    message(MSG_ERROR, "internal error (not enough memory?)");
+    message(MSG_PANIC, "internal error (not enough memory?)");
     exit(EXIT_FAILURE);
   }
 
@@ -287,7 +301,7 @@ int main(int argc, char *argv[])
   atexit(shutdown);
 
   // Parse options
-  while((opt = getopt(argc, argv, "d:t:qvhVsc")) != -1)
+  while((opt = getopt(argc, argv, "d:t:qvhVsck")) != -1)
     switch(opt) {
     case 'd': cfg.db_file = optarg; break;		// Set database file
     case 't': // Different record type
@@ -314,6 +328,7 @@ int main(int argc, char *argv[])
 #endif
       break;
     case 'c': cfg.usercomment = true; break;		// Prompt for comments
+    case 'k': cfg.cmdkeys = true; break;		// Keys on commandline
     case '?': exit(EXIT_FAILURE);
     }
 
