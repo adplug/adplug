@@ -63,8 +63,9 @@ CmodPlayer::~CmodPlayer()
 bool CmodPlayer::update()
 {
 	unsigned char pattbreak=0,donote;		// remember vars
-	unsigned char pattnr,chan,row,info1,info2,info;	// cache vars
+	unsigned char pattnr,chan,info1,info2,info;	// cache vars
 	unsigned short track;
+	unsigned long row;
 
 	if(!speed)		// song full stop
 		return !songend;
@@ -185,20 +186,25 @@ bool CmodPlayer::update()
 	}
 	pattnr = order[ord];
 
-	LogWrite("CmodPlayer::update(): %d/%d/%d: ",ord,pattnr,rw);
+	if(!rw) LogWrite("CmodPlayer::update(): Pattern: %d, Order: %d\n", pattnr, ord);
+	LogWrite("CmodPlayer::update():%3d|", rw);
 
 	// play row
 	row = rw;
 	for(chan=0;chan<nchans;chan++) {
-		if(!(activechan >> (15 - chan)) & 1)	// channel active?
-			continue;
-		LogWrite("|%d",chan);
-		if(!(track = trackord[pattnr][chan]))	// resolve track
-			continue;
-		else
+		if(!(activechan >> (15 - chan)) & 1) {	// channel active?
+		  LogWrite("............|");
+		  continue;
+		}
+		if(!(track = trackord[pattnr][chan])) {	// resolve track
+		  LogWrite("------------|");
+		  continue;
+		} else
 			track--;
 
-		LogWrite("(%d)",track);
+		LogWrite("%3d%3d%2X%2X%2X|", tracks[track][row].note,
+			 tracks[track][row].inst, tracks[track][row].command,
+			 tracks[track][row].param2, tracks[track][row].param1);
 
 		donote = 0;
 		if(tracks[track][row].inst) {
@@ -377,7 +383,7 @@ bool CmodPlayer::update()
 		songend = 1;
 	}
 
-	LogWrite("          \r");
+	LogWrite("\n");
 	return !songend;
 }
 

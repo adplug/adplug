@@ -91,9 +91,9 @@ private:
 	  signed char trigger;
 	} *channel;
 
-	unsigned char rw, speed, del, songend, regbd;
+	unsigned char speed, del, songend, regbd;
 	unsigned short rows, notetable[12];
-	unsigned long ord, nrows, npats, nchans;
+	unsigned long rw, ord, nrows, npats, nchans;
 
 	void setvolume(unsigned char chan);
 	void setvolume_alt(unsigned char chan);
