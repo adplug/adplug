@@ -28,9 +28,9 @@ public:
 
 	CmkjPlayer(Copl *newopl)
 		: CPlayer(newopl), songbuf(0)
-	{ };
+	{ }
 	~CmkjPlayer()
-	{ if(songbuf) delete [] songbuf; };
+	{ if(songbuf) delete [] songbuf; }
 
 	bool load(const std::string &filename, const CFileProvider &fp);
 	bool update();
@@ -38,14 +38,13 @@ public:
 	float getrefresh();
 
 	std::string gettype()
-	{ return std::string("MKJamz Audio File"); };
+	{ return std::string("MKJamz Audio File"); }
 
 private:
 	short maxchannel,maxnotes,*songbuf;
 	bool songend;
 
 	struct {
-		short defined,songptr,octave,waveform,pstat,speed;
-		bool isplaying,flag,isdone;
+		short defined,songptr,octave,waveform,pstat,speed,delay;
 	} channel[9];
 };

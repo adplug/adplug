@@ -1,7 +1,8 @@
 This is a brief overview of user-visible changes in AdPlug.
 
 Changes for version 1.5:
-	- None yet.
+	- New format support:
+		- XSM: eXtra Simple Music
 
 Changes for version 1.4:
 	- Documentation changed into Texinfo format.

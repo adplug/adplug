@@ -112,6 +112,7 @@ bool CrolPlayer::load(const std::string &filename, const CFileProvider &fp)
       AdPlug_LogWrite("Unsupported file version %d.%d or not a ROL file!\n",
 	       rol_header->version_major, rol_header->version_minor);
       AdPlug_LogWrite("--- CrolPlayer::load ---\n");
+      fp.close(f);
       return false;
     }
 

@@ -162,6 +162,7 @@ loaded file, while @var{songname} is the song's filename without
 @end itemize
 @item @file{XAD}: eXotic ADlib Format by Riven the Mage
 @item @file{XMS}: XMS-Tracker by MaDoKaN/E.S.G
+@item @file{XSM}: eXtra Simple Music by Davey W Taylor
 @end itemize
 
 Whenever a player requires more files to be present in a given

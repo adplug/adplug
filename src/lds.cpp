@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * lds.cpp - Loudness Loader by Simon Peter (dn.tlp@gmx.net)
+ * lds.cpp - Loudness Loader by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include <string.h>
@@ -25,67 +25,62 @@
 
 /*** public methods *************************************/
 
-CPlayer *CldsLoader::factory(Copl *newopl)
-{
-  return new CldsLoader(newopl);
-}
-
 bool CldsLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-	int		i,j,k,l,dnum[9][2];
-	unsigned char	ldsinst[46],*ldspat,*ldsm;
-	unsigned short	mlen;					// length of music data
-	const char	ixlt[11] = {1,4,2,5,9,6,10,7,3,8,0};	// instrument translation map
-	binistream	*f;
+  int			i,j,k,l,dnum[9][2];
+  unsigned char		ldsinst[46],*ldspat,*ldsm;
+  unsigned short	mlen;		// length of music data
+  const char		ixlt[11] = {1,4,2,5,9,6,10,7,3,8,0};	// instrument translation map
+  binistream		*f;
 
-	// file validation section (actually just an extension check)
-	if(!fp.extension(filename, ".lds")) return false;
-	f = fp.open(filename); if(!f) return false;
+  // file validation section (actually just an extension check)
+  if(!fp.extension(filename, ".lds")) return false;
+  f = fp.open(filename); if(!f) return false;
 
-	f->ignore(15);			// ignore header
-	insts = f->readInt(1);		// get number of instruments
-	for(i=0;i<insts;i++) {	// load instruments
-		f->readString((char *)ldsinst, 46);
-		for(j=0;j<11;j++)	// convert instrument
-			inst[i].data[j] = ldsinst[ixlt[j]+1];
+  f->ignore(15);		// ignore unknown header
+  insts = f->readInt(1);	// get number of instruments
+  for(i = 0; i < insts; i++) {	// load instruments
+    f->readString((char *)ldsinst, 46);
+    for(j = 0; j < 11; j++)	// convert instrument
+      inst[i].data[j] = ldsinst[ixlt[j]+1];
+  }
+  nop = f->readInt(1); f->ignore(1);
+  ldspat = new unsigned char [nop * 9 * 3];
+  f->readString((char *)ldspat,nop * 9 * 3);
+  mlen = f->readInt(2);
+  ldsm = new unsigned char [mlen];
+  f->readString((char *)ldsm, mlen);
+  fp.close(f);
+
+  // initialize CmodPlayer
+  length = nop; restartpos = 0; initspeed = 6; bpm = 18; flags = Standard;
+  realloc_order(nop);
+  init_trackord();
+  for(i = 0; i < nop; i++) order[i] = i;
+
+  // convert patterns
+  for(i = 0; i < nop; i++)
+    for(j = 0; j < 24; j++)
+      for(k = 0; k < 9; k++) {
+	l = ((ldspat[i*9*3+k*3+1]+j*4) << 8) + (ldspat[i*9*3+k*3]+j*4);
+	if(dnum[k][0] < 24) {
+	  dnum[k][1] = 1;
+	  if(ldsm[l+2])
+	    dnum[k][0] += dnum[k][1];
+	  if(dnum[k][0] >= 0 && dnum[k][0] < 24) {
+	    tracks[i*9+k][dnum[j][0]].note = ldsm[l+1];
+	    tracks[i*9+k][dnum[j][0]].inst = ldsm[l];
+	    tracks[i*9+k][dnum[j][0]].param1 = ldsm[l+3];
+	    tracks[i*9+k][dnum[j][0]].command = 17;
+	  }
 	}
-	nop = f->readInt(2);
-	ldspat = new unsigned char [nop*9*3];
-	f->readString((char *)ldspat,nop*9*3);
-	mlen = f->readInt(2);
-	ldsm = new unsigned char [mlen];
-	f->readString((char *)ldsm,mlen);
-	fp.close(f);
+      }
 
-	for(i=0;i<nop;i++)
-		order[i] = i;
-	length = nop; restartpos = 0;
-	initspeed = 6; bpm = 18; flags = Standard;
-	init_trackord();		// patterns
-	for(i=0;i<9;i++) {
-		dnum[i][0] = -1;
-		dnum[i][1] = 1;
-	}
-	for(i=0;i<nop;i++)
-		for(j=0;j<24;j++)
-			for(k=0;k<9;k++) {
-				l = ((ldspat[i*9*3+k*3+1]+j*4) << 8) + (ldspat[i*9*3+k*3]+j*4);
-				if(dnum[k][0] < 24) {
-					dnum[k][1] = 1;
-					if(ldsm[l+2])
-						dnum[k][0] += dnum[k][1];
-					if(dnum[k][0] >= 0 && dnum[k][0] < 24) {
-						tracks[i*9+k][dnum[j][0]].note = ldsm[l+1];
-						tracks[i*9+k][dnum[j][0]].inst = ldsm[l];
-						tracks[i*9+k][dnum[j][0]].param1 = ldsm[l+3];
-						tracks[i*9+k][dnum[j][0]].command = 17;
-					}
-				}
-			}
-
-	delete [] ldspat;
-	delete [] ldsm;
-	return true;
+  // success
+  delete [] ldspat;
+  delete [] ldsm;
+  rewind(0);
+  return true;
 }
 
 /*** private methods *************************************/

@@ -24,21 +24,17 @@
 class CldsLoader: public CmodPlayer
 {
 public:
-  static CPlayer *factory(Copl *newopl);
+  static CPlayer *factory(Copl *newopl) { return new CldsLoader(newopl); }
 
-	CldsLoader(Copl *newopl)
-		: CmodPlayer(newopl)
-	{ };
+  CldsLoader(Copl *newopl): CmodPlayer(newopl) {}
+  virtual ~CldsLoader() {}
 
-	bool load(const std::string &filename, const CFileProvider &fp);
-	float getrefresh()
-	{ return 18.2f; };
+  bool load(const std::string &filename, const CFileProvider &fp);
+  float getrefresh() { return 18.2f; }
 
-	std::string gettype()
-	{ return std::string("Loudness"); };
-	unsigned int getinstruments()
-	{ return insts; };
+  std::string gettype() { return std::string("Loudness"); }
+  unsigned int getinstruments() { return insts; }
 
 private:
-	unsigned char insts;
+  unsigned char insts;
 };
