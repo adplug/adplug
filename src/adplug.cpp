@@ -62,12 +62,8 @@
 #include "cff.h"
 #include "dtm.h"
 #include "dmo.h"
-
-// These players use the C++ STL, which isn't supported by WATCOM C++
-#ifndef __WATCOMC__
 #include "u6m.h"
 #include "rol.h"
-#endif
 
 /***** Defines *****/
 
@@ -85,10 +81,7 @@ const unsigned char CPlayer::op_table[9] = {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 
 // above other players.
 // The list is terminated with an all-NULL element.
 const CAdPlug::Players CAdPlug::allplayers[] = {
-  {CmidPlayer::factory}, {CksmPlayer::factory},
-#ifndef __WATCOMC__
-  {CrolPlayer::factory},
-#endif
+  {CmidPlayer::factory}, {CksmPlayer::factory}, {CrolPlayer::factory},
   {CsngPlayer::factory}, {Ca2mLoader::factory}, {CradLoader::factory},
   {CamdLoader::factory}, {Csa2Loader::factory}, {CrawPlayer::factory},
   {Cs3mPlayer::factory}, {CmtkLoader::factory}, {CmkjPlayer::factory},
@@ -96,12 +89,9 @@ const CAdPlug::Players CAdPlug::allplayers[] = {
   {CxadflashPlayer::factory}, {CxadhypPlayer::factory}, {CxadpsiPlayer::factory},
   {CxadratPlayer::factory}, {CxadhybridPlayer::factory}, {CfmcLoader::factory},
   {CmadLoader::factory}, {CcffLoader::factory}, {CdtmLoader::factory},
-  {CdmoLoader::factory},
-#ifndef __WATCOMC__
-  {Cu6mPlayer::factory},
-#endif
-  {Cd00Player::factory}, {ChspLoader::factory}, {ChscPlayer::factory},
-  {CimfPlayer::factory}, {CldsLoader::factory}, {CadtrackLoader::factory},
+  {CdmoLoader::factory}, {Cu6mPlayer::factory}, {Cd00Player::factory},
+  {ChspLoader::factory}, {ChscPlayer::factory}, {CimfPlayer::factory},
+  {CldsLoader::factory}, {CadtrackLoader::factory},
   {0}
 };
 

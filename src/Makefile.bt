@@ -1,26 +1,20 @@
 # AdPlug Makefile for WATCOM C/C++ 11.x
 # Copyright (c) 2001, 2002 Simon Peter <dn.tlp@gmx.net>
 
-# This is a trick. WATCOM doesn't support the ANSI 'std::string' class yet.
-# However, it does have it's own 'String' class, which is very similar to the
-# standard and fully compatible with what AdPlug needs. The following defines
-# will convert any occurance of 'std::string' in the code to 'String' and
-# thus make the code use WATCOM's 'String' class instead.
-CPPFLAGS = -dstd= -dstring=String
-
 OUTPUT = adplug.lib
 
 OBJS = protrack.obj a2m.obj amd.obj d00.obj dfm.obj hsc.obj hsp.obj imf.obj &
 ksm.obj mid.obj mkj.obj mtk.obj rad.obj raw.obj s3m.obj sa2.obj sng.obj &
 bam.obj xad.obj mad.obj fmc.obj bmf.obj debug.obj flash.obj hybrid.obj &
 hyp.obj psi.obj rat.obj adplug.obj emuopl.obj fmopl.obj realopl.obj &
-analopl.obj diskopl.obj lds.obj adtrack.obj cff.obj dtm.obj dmo.obj
+analopl.obj diskopl.obj lds.obj adtrack.obj cff.obj dtm.obj dmo.obj u6m.obj &
+rol.obj
 
 include_INST = protrack.h a2m.h amd.h d00.h dfm.h hsc.h hsp.h imf.h ksm.h &
 mid.h mkj.h mtk.h rad.h raw.h s3m.h sa2.h sng.h bam.h xad.h mad.h fmc.h &
 bmf.h flash.h hybrid.h hyp.h psi.h rat.h adplug.h emuopl.h fmopl.h realopl.h &
 analopl.h diskopl.h player.h opl.h silentopl.h lds.h adtrack.h cff.h dtm.h &
-dmo.h
+dmo.h u6m.h rol.h
 
 lib_INST = adplug.lib
 
