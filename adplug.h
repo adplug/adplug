@@ -19,7 +19,6 @@ public:
 	void seek(CPlayer *p, unsigned long ms);
 
 private:
-	char	*upstr(char *str);							// converts a string to all uppercase letters
 	CPlayer	*load_sci(istream &f, char *fn, Copl *opl);	// special loader for Sierra SCI file format
 	CPlayer	*load_ksm(istream &f, char *fn, Copl *opl);	// special loader for Ken Silverman's music format
 };

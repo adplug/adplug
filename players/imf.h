@@ -25,8 +25,8 @@ public:
 protected:
 	unsigned long pos,size;
 	unsigned short del;
-	bool songend;
-	float timer;
+	bool songend, dn2;
+	float rate,timer;
 
 	struct Sdata {
 		unsigned char reg,val;

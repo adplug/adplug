@@ -25,7 +25,7 @@ bool CradLoader::load(istream &f)
 	radflags = f.get();
 	if(radflags & 128) {	// description
 		memset(desc,0,80*22);
-		while(buf = f.get())
+		while((buf = f.get()))
 			if(buf == 1)
 				strcat(desc,"\n");
 			else
@@ -37,7 +37,7 @@ bool CradLoader::load(istream &f)
 					strcat(desc,bufstr);
 				}
 	}
-	while(buf = f.get()) {	// instruments
+	while((buf = f.get())) {	// instruments
 		buf--;
 		inst[buf].data[2] = f.get(); inst[buf].data[1] = f.get();
 		inst[buf].data[10] = f.get(); inst[buf].data[9] = f.get();

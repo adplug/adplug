@@ -13,24 +13,30 @@ public:
 	CKemuopl(int rate, bool bit16, bool usestereo)
 		: use16bit(bit16), stereo(usestereo)
 	{
-		adlibinit(rate,usestereo ? 2 : 1,bit16 ? 2 : 1);
+		adlib=adlibinit(rate,usestereo ? 2 : 1,bit16 ? 2 : 1);
+	};
+
+	~CKemuopl()
+	{
+		adlibshutdown(adlib);
 	};
 
 	void update(short *buf, int samples)
 	{
-		if(use16bit) samples *= 2;
-		if(stereo) samples *= 2;
-		adlibgetsample(buf,samples);
-	}
+		adlibgetsample(adlib,buf,samples);
+	};
 
 	// template methods
 	void write(int reg, int val)
 	{
-		adlib0(reg,val);
+		adlibwrite(adlib,reg,val);
 	};
 	void init()
-	{ };
+	{
+		adlibreset(adlib);
+	};
 
 private:
 	bool use16bit,stereo;
+	ADLIB_STATE *adlib;
 };

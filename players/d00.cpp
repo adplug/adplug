@@ -471,9 +471,6 @@ void Cd00Player::setinst(unsigned char chan)
 
 void Cd00Player::playnote(unsigned char chan)
 {
-	unsigned char	op = op_table[chan];
-	unsigned short	insnr = channel[chan].inst;
-
 	// set misc vars & play
 	opl->write(0xb0 + chan, 0);	// stop old note
 	setinst(chan);

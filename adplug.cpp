@@ -30,16 +30,6 @@
 #include "mkj.h"
 #include "dfm.h"
 
-char *CAdPlug::upstr(char *str)
-{
-	unsigned int i;
-
-	for(i=0;i<strlen(str);i++)
-		str[i] = toupper(str[i]);
-
-	return str;
-}
-
 CPlayer *CAdPlug::load_sci(istream &f, char *fn, Copl *opl)
 {
 	CmidPlayer *mp = new CmidPlayer(opl);
@@ -94,33 +84,33 @@ CPlayer *CAdPlug::factory(char *fn, Copl *opl)
 	ifstream	f(fn, ios::in | ios::nocreate | ios::binary);
 
 	if(f.is_open()) {
-		if(!strcmp(upstr(strrchr(fn,'.')+1),"SCI"))
+		if(!stricmp(strrchr(fn,'.')+1,"SCI"))
 			return load_sci(f,fn,opl);
 
-		if(!strcmp(upstr(strrchr(fn,'.')+1),"KSM"))
+		if(!stricmp(strrchr(fn,'.')+1,"KSM"))
 			return load_ksm(f,fn,opl);
 
-		if(p = factory(f,opl))
+		if((p = factory(f,opl)))
 			return p;
 
 #ifndef ADPLAY
-		if(!strcmp(upstr(strrchr(fn,'.')+1),"M")) {
+		if(!stricmp(strrchr(fn,'.')+1,"M")) {
 			p = new Cu6mPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
 #endif
-		if(!strcmp(upstr(strrchr(fn,'.')+1),"D00")) {
+		if(!stricmp(strrchr(fn,'.')+1,"D00")) {
 			p = new Cd00Player(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
-		if(!strcmp(upstr(strrchr(fn,'.')+1),"HSP")) {
+		if(!stricmp(strrchr(fn,'.')+1,"HSP")) {
 			p = new ChspLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
-		if(!strcmp(upstr(strrchr(fn,'.')+1),"HSC")) {
+		if(!stricmp(strrchr(fn,'.')+1,"HSC")) {
 			p = new ChscPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
-		if(!strcmp(upstr(strrchr(fn,'.')+1),"IMF") || !strcmp(upstr(strrchr(fn,'.')+1),"WLF")) {
+		if(!stricmp(strrchr(fn,'.')+1,"IMF") || !stricmp(strrchr(fn,'.')+1,"WLF")) {
 			p = new CimfPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
-		if(!strcmp(upstr(strrchr(fn,'.')+1),"KSM")) {
+		if(!stricmp(strrchr(fn,'.')+1,"KSM")) {
 			p = new CksmPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
 	};

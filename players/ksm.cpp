@@ -69,8 +69,8 @@ bool CksmPlayer::load(istream &f)
 
 bool CksmPlayer::update()
 {
-	int i,j,quanter,bufnum,chan,drumnum,freq;
-	int track,volevel,volval;
+	int quanter,chan,drumnum,freq,track,volevel,volval;
+	unsigned int i,j,bufnum;
 	unsigned long temp,templong;
 
 	count++;
@@ -198,7 +198,7 @@ bool CksmPlayer::update()
 
 void CksmPlayer::rewind(unsigned int subsong)
 {
-	int i,j,k;
+	unsigned int i,j,k;
 	unsigned char instbuf[11];
 	unsigned long templong;
 

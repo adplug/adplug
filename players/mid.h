@@ -8,7 +8,7 @@ class CmidPlayer: public CPlayer
 {
 public:
 	CmidPlayer(Copl *newopl)
-		: CPlayer(newopl), data(0), flen(0), emptystr('\0'), author(&emptystr), title(&emptystr), remarks(&emptystr), insfile(0)
+		: CPlayer(newopl), author(&emptystr), title(&emptystr), remarks(&emptystr), emptystr('\0'), insfile(0), flen(0), data(0)
 	{ };
 	~CmidPlayer()
 	{ if(data) delete [] data; if(insfile) delete [] insfile; };

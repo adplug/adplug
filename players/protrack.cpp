@@ -64,15 +64,15 @@
 
 #include "protrack.h"
 
-static const unsigned short notetable[12] =	// SAdT2 adlib note table
+static const unsigned short notetable[12] =		// SAdT2 adlib note table
 			{340,363,385,408,432,458,485,514,544,577,611,647};
 
-static const vibratotab[32] =				// vibrato rate table
+static const unsigned char vibratotab[32] =		// vibrato rate table
 			{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
 
 /*** public methods *************************************/
 
-CmodPlayer::CmodPlayer(Copl *newopl): CPlayer(newopl), flags(0), initspeed(6)
+CmodPlayer::CmodPlayer(Copl *newopl): CPlayer(newopl), initspeed(6), flags(0)
 {
 	memset(inst,0,sizeof(inst));
 	memset(trackord,0,64*9*2);

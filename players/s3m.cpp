@@ -10,10 +10,10 @@
 const char chnresolv[] =	// S3M -> adlib channel conversion
 	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,-1,-1,-1,-1,-1,-1,-1};
 
-static const unsigned short notetable[12] =	// S3M adlib note table
+static const unsigned short notetable[12] =		// S3M adlib note table
 			{340,363,385,408,432,458,485,514,544,577,611,647};
 
-static const vibratotab[32] =				// vibrato rate table
+static const unsigned char vibratotab[32] =		// vibrato rate table
 			{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
 
 /*** public methods *************************************/
@@ -35,11 +35,12 @@ Cs3mPlayer::Cs3mPlayer(Copl *newopl): CPlayer(newopl)
 
 bool Cs3mPlayer::load(istream &f)
 {
-	unsigned short insptr[99],pattptr[99];
-	int i,row;
-	unsigned char bufval,bufval2;
-	unsigned short ppatlen;
-	s3mheader *checkhead;
+	unsigned short	insptr[99],pattptr[99];
+	int				i,row;
+	unsigned char	bufval,bufval2;
+	unsigned short	ppatlen;
+	s3mheader		*checkhead;
+	bool			adlibins=false;
 
 	// file validation section
 	checkhead = new s3mheader;
@@ -54,11 +55,14 @@ bool Cs3mPlayer::load(istream &f)
 			f.read((char *)insptr,checkhead->insnum*2);
 			for(i=0;i<checkhead->insnum;i++) {
 				f.seekg(insptr[i]*16);
-				if(f.get() == 1) {
-					delete checkhead; return false;
+				if(f.get() >= 2) {
+					adlibins = true;
+					break;
 				}
 			}
 			delete checkhead;
+			if(!adlibins)
+				return false;
 		}
 
 	// load section

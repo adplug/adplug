@@ -945,7 +945,7 @@ void CmidPlayer::rewind(unsigned int subsong)
                     subsongs++;
                     }
 
-                if (subsong < 0 || subsong >= (int)subsongs) subsong=0;
+                if (subsong < 0 || subsong >= (unsigned int)subsongs) subsong=0;
 
                 sierra_pos=o_sierra_pos;
                 sierra_next_section();

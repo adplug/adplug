@@ -76,7 +76,7 @@ protected:
 	unsigned short *seqptr;
 	d00header *header;
 	d00header1 *header1;
-	void *filedata;
+	char *filedata;
 
 #if defined(_MSC_VER) || defined(__WATCOMC__)
 #pragma pack()		// revert to old alignment

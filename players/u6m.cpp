@@ -250,8 +250,9 @@ bool Cu6mPlayer::lzw_decompress(Cu6mPlayer::data_block source, Cu6mPlayer::data_
                     // if it doesn't, something is wrong with the lzw-compressed data.
                     if (cW != next_free_codeword)
                     {
-                        printf("cW != next_free_codeword!\n");
-                        exit(-1);
+/*                        printf("cW != next_free_codeword!\n");
+                        exit(-1); */
+						return false;
                     }
                     // add pW+C to the dictionary
                     dictionary.add(C,pW);

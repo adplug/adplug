@@ -20,6 +20,8 @@ public:
 	CPlayer(Copl *newopl)											// newopl = OPL chip to use
 		: opl(newopl)
 	{ };
+	virtual ~CPlayer()
+	{ };
 
 	virtual bool load(istream &f) = 0;								// loads file
 	virtual bool update() = 0;										// executes replay code for 1 tick

@@ -4,21 +4,21 @@
 /*
 This file is a digital Adlib emulator for OPL2 and possibly OPL3
 
-Features that could be added in a future version:
+I intend to support these features in the future:
 	- Amplitude and Frequency Vibrato Bits (not hard, but a big speed hit)
 	- Global Keyboard Split Number Bit (need to research this one some more)
 	- 2nd Adlib chip for OPL3 (simply need to make my cell array bigger)
 	- Advanced connection modes of OPL3 (Just need to add more "docell" cases)
 	- L/R Stereo bits of OPL3 (Need adlibgetsample to return stereo)
 
-Features that aren't worth supporting:
+I don't intend to support these since these parts of the adlib chip are useless
 	- Anything related to adlib timers&interrupts (Sorry - I always used IRQ0)
 	- Composite sine wave mode (CSM) (Supported only on ancient cards)
 
 I'm not sure about a few things in my code:
 	- Attack curve.  What function is this anyway?  I chose to use an order-3
 		  polynomial to approximate but this doesn't seem right.
-	- Attack/Decay/Release constants - my constants may not be exact
+	- Attack/Decay/Release constants - my constants may not exact
 	- What should ADJUSTSPEED be?
 	- Haven't verified that Global Keyboard Split Number Bit works yet
 	- Some of the drums don't always sound right.  It's pretty hard to guess
@@ -30,7 +30,12 @@ I'm not sure about a few things in my code:
 		  code.
 */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
+
+#include "adlibemu.h"
 
 #if !defined(max) && !defined(__cplusplus)
 #define max(a,b)  (((a) > (b)) ? (a) : (b))
@@ -39,11 +44,17 @@ I'm not sure about a few things in my code:
 #define min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
 
+#ifndef PI
+#ifdef M_PI
+#define PI M_PI
+#else
 #define PI 3.141592653589793
-#define MAXCELLS 18
+#endif
+#endif
+
 #define WAVPREC 2048
 
-#define AMPSCALE (8192.0)
+#define AMPSCALE 8192.0
 #define FRQSCALE (49716/512.0)
 
 	//Constants for Ken's Awe32, on a PII-266 (Ken says: Use these for KSM's!)
@@ -56,39 +67,14 @@ I'm not sure about a few things in my code:
 //#define MFBFACTOR 0.5    //How much feedback goes back into modulator
 //#define ADJUSTSPEED 0.85 //0<=x<=1  Simulate finite rate of change of state
 
-typedef struct
-{
-	float val, t, tinc, vol, sustain, amp, mfb;
-	float a0, a1, a2, a3, decaymul, releasemul;
-	short *waveform;
-	long wavemask;
-	void (*cellfunc)(void *, float);
-	unsigned char flags, dum0, dum1, dum2;
-} celltype;
-
-static long numspeakers, bytespersample;
-static float recipsamp;
-static celltype cell[MAXCELLS];
-static signed short wavtable[WAVPREC*3];
+static float frqmul[16] = {.5,1,2,3,4,5,6,7,8,9,10,10,12,12,15,15};
 static float kslmul[4] = {0.0,0.5,0.25,1.0};
-static float frqmul[16] = {.5,1,2,3,4,5,6,7,8,9,10,10,12,12,15,15}, nfrqmul[16];
-static unsigned char adlibreg[256], ksl[8][16];
 static unsigned char modulatorbase[9] = {0,1,2,8,9,10,16,17,18};
-static unsigned char odrumstat = 0;
 static unsigned char base2cell[22] = {0,1,2,0,1,2,0,0,3,4,5,3,4,5,0,0,6,7,8,6,7,8};
+static unsigned char ksl[8][16];
 
-float lvol[9] = {1,1,1,1,1,1,1,1,1};  //Volume multiplier on left speaker
-float rvol[9] = {1,1,1,1,1,1,1,1,1};  //Volume multiplier on right speaker
-long lplc[9] = {0,0,0,0,0,0,0,0,0};   //Samples to delay on left speaker
-long rplc[9] = {0,0,0,0,0,0,0,0,0};   //Samples to delay on right speaker
-
-long nlvol[9], nrvol[9];
-long nlplc[9], nrplc[9];
-long rend = 0;
-#define FIFOSIZ 256
-static float *rptr[9], *nrptr[9];
-static float rbuf[9][FIFOSIZ*2];
-static float snd[FIFOSIZ*2];
+static signed short *wavtable = 0;
+static unsigned long adlib_count = 0;
 
 static _inline void ftol (float f, long *a)
 {
@@ -171,81 +157,89 @@ static long wavemask[8] = {WAVPREC-1,WAVPREC-1,(WAVPREC>>1)-1,(WAVPREC>>1)-1,WAV
 static long wavestart[8] = {0,WAVPREC>>1,0,WAVPREC>>2,0,0,0,WAVPREC>>3};
 static float attackconst[4] = {1/2.82624,1/2.25280,1/1.88416,1/1.59744};
 static float decrelconst[4] = {1/39.28064,1/31.41608,1/26.17344,1/22.44608};
-void cellon (long i, long j, celltype *c, unsigned char iscarrier)
+void cellon(ADLIB_STATE *adlib, long i, long j, celltype *c, unsigned char iscarrier)
 {
-	long frn, oct, toff, t;
+	long frn, oct, toff;
 	float f;
 
-	frn = ((((long)adlibreg[i+0xb0])&3)<<8) + (long)adlibreg[i+0xa0];
-	oct = ((((long)adlibreg[i+0xb0])>>2)&7);
-	toff = (oct<<1) + ((frn>>9)&((frn>>8)|((adlibreg[8]>>6)&1^1)));
-	if (!(adlibreg[j+0x20]&16)) toff >>= 2;
+	frn = ((((long)adlib->reg[i+0xb0])&3)<<8) + (long)adlib->reg[i+0xa0];
+	oct = ((((long)adlib->reg[i+0xb0])>>2)&7);
+	toff = (oct<<1) + ((frn>>9)&((frn>>8)|((adlib->reg[8]>>6)&1^1)));
+	if (!(adlib->reg[j+0x20]&16)) toff >>= 2;
 
-	f = pow(2.0,(adlibreg[j+0x60]>>4)+(toff>>2)-1)*attackconst[toff&3]*recipsamp;
+	f = pow(2.0,(adlib->reg[j+0x60]>>4)+(toff>>2)-1)*attackconst[toff&3]*adlib->recipsamp;
 	c->a0 = .0377*f; c->a1 = 10.73*f+1; c->a2 = -17.57*f; c->a3 = 7.42*f;
-	f = -7.4493*decrelconst[toff&3]*recipsamp;
-	c->decaymul = pow(2.0,f*pow(2.0,(adlibreg[j+0x60]&15)+(toff>>2)));
-	c->releasemul = pow(2.0,f*pow(2.0,(adlibreg[j+0x80]&15)+(toff>>2)));
-	c->wavemask = wavemask[adlibreg[j+0xe0]&7];
-	c->waveform = &wavtable[waveform[adlibreg[j+0xe0]&7]];
-	if (!(adlibreg[1]&0x20)) c->waveform = &wavtable[WAVPREC];
-	c->t = wavestart[adlibreg[j+0xe0]&7];
-	c->flags = adlibreg[j+0x20];
+	f = -7.4493*decrelconst[toff&3]*adlib->recipsamp;
+	c->decaymul = pow(2.0,f*pow(2.0,(adlib->reg[j+0x60]&15)+(toff>>2)));
+	c->releasemul = pow(2.0,f*pow(2.0,(adlib->reg[j+0x80]&15)+(toff>>2)));
+	c->wavemask = wavemask[adlib->reg[j+0xe0]&7];
+	if (!(adlib->reg[1]&0x20)) c->waveform = &wavtable[WAVPREC];
+	else c->waveform = &wavtable[waveform[adlib->reg[j+0xe0]&7]];
+	c->t = wavestart[adlib->reg[j+0xe0]&7];
+	c->flags = adlib->reg[j+0x20];
 	c->cellfunc = docell0;
-	c->tinc = (float)(frn<<oct)*nfrqmul[adlibreg[j+0x20]&15];
-	c->vol = pow(2.0,((float)(adlibreg[j+0x40]&63) +
-				(float)kslmul[adlibreg[j+0x40]>>6]*ksl[oct][frn>>6]) * -.125 - 14);
-	c->sustain = pow(2.0,(float)(adlibreg[j+0x80]>>4) * -.5);
+	c->tinc = (float)(frn<<oct)*adlib->nfrqmul[adlib->reg[j+0x20]&15];
+	c->vol = pow(2.0,((float)(adlib->reg[j+0x40]&63) +
+				(float)kslmul[adlib->reg[j+0x40]>>6]*ksl[oct][frn>>6]) * -.125 - 14);
+	c->sustain = pow(2.0,(float)(adlib->reg[j+0x80]>>4) * -.5);
 	if (!iscarrier) c->amp = 0;
-	c->mfb = pow(2.0,((adlibreg[i+0xc0]>>1)&7)+5)*(WAVPREC/2048.0)*MFBFACTOR;
-	if (!(adlibreg[i+0xc0]&14)) c->mfb = 0;
+	c->mfb = pow(2.0,((adlib->reg[i+0xc0]>>1)&7)+5)*(WAVPREC/2048.0)*MFBFACTOR;
+	if (!(adlib->reg[i+0xc0]&14)) c->mfb = 0;
 	c->val = 0;
 }
 
 	//This function (and bug fix) written by Chris Moeller
-void cellfreq (signed long i, signed long j, celltype *c)
+void cellfreq(ADLIB_STATE *adlib, long i, long j, celltype *c)
 {
-	long frn, oct;
+	signed long frn, oct, toff;
+	float f;
+	frn = ((((signed long)adlib->reg[i+0xb0])&3)<<8) + ((signed long)adlib->reg[i+0xa0]&255);
+	oct = ((((signed long)adlib->reg[i+0xb0])>>2)&7);
+	toff = (oct<<1) + ((frn>>9)&((frn>>8)|((adlib->reg[8]>>6)&1^1)));
+	if (!(adlib->reg[j+0x20]&16)) toff >>= 2;
 
-	frn = ((((long)adlibreg[i+0xb0])&3)<<8) + (long)adlibreg[i+0xa0];
-	oct = ((((long)adlibreg[i+0xb0])>>2)&7);
+	c->tinc = (float)(frn<<oct)*adlib->nfrqmul[adlib->reg[j+0x20]&15];
+	c->vol = pow(2.0,((float)(adlib->reg[j+0x40]&63) +
+				(float)kslmul[adlib->reg[j+0x40]>>6]*ksl[oct][frn>>6]) * -.125 - 14);
 
-	c->tinc = (float)(frn<<oct)*nfrqmul[adlibreg[j+0x20]&15];
-	c->vol = pow(2.0,((float)(adlibreg[j+0x40]&63) +
-				(float)kslmul[adlibreg[j+0x40]>>6]*ksl[oct][frn>>6]) * -.125 - 14);
 }
 
-static long initfirstime = 0;
-void adlibinit (long dasamplerate, long danumspeakers, long dabytespersample)
+ADLIB_STATE *adlibinit(long dasamplerate, long danumspeakers, long dabytespersample)
 {
-	long i, j, frn, oct;
-	float f;
+	signed long i, j, frn, oct;
 
-	memset((void *)adlibreg,0,sizeof(adlibreg));
-	memset((void *)cell,0,sizeof(celltype)*MAXCELLS);
-	memset((void *)rbuf,0,sizeof(rbuf));
-	rend = 0; odrumstat = 0;
+	ADLIB_STATE *adlib;
+
+	adlib = malloc(sizeof(ADLIB_STATE));
+
+	if (!adlib) return 0;
+
+	memset((void *)adlib, 0, sizeof(ADLIB_STATE)); // is this really necessary?
+
+	adlib->numspeakers = danumspeakers;
+	adlib->bytespersample = dabytespersample;
+
+	adlib->recipsamp = 1.0 / (float)dasamplerate;
+
+	for(i=15;i>=0;i--) adlib->nfrqmul[i] = frqmul[i]*adlib->recipsamp*FRQSCALE*(WAVPREC/2048.0);
+
+	for (i=0;i<9;i++)
+	{
+		adlib->lvol[i]=adlib->rvol[i]=1.0;
+		adlib->lplc[i]=adlib->rplc[i]=0;
+	}
 
 	for(i=0;i<MAXCELLS;i++)
 	{
-		cell[i].cellfunc = docell4;
-		cell[i].amp = 0;
-		cell[i].vol = 0;
-		cell[i].t = 0;
-		cell[i].tinc = 0;
-		cell[i].wavemask = 0;
-		cell[i].waveform = &wavtable[WAVPREC];
+		adlib->cell[i].cellfunc = docell4;
+		adlib->cell[i].waveform = &wavtable[WAVPREC];
 	}
 
-	numspeakers = danumspeakers;
-	bytespersample = dabytespersample;
+	adlib_count++;
 
-	recipsamp = 1.0 / (float)dasamplerate;
-	for(i=15;i>=0;i--) nfrqmul[i] = frqmul[i]*recipsamp*FRQSCALE*(WAVPREC/2048.0);
-
-	if (!initfirstime)
+	if (!wavtable)
 	{
-		initfirstime = 1;
+		wavtable = (signed short *)malloc(sizeof(signed short)*WAVPREC*3);
 
 		for(i=0;i<(WAVPREC>>1);i++)
 		{
@@ -270,89 +264,100 @@ void adlibinit (long dasamplerate, long danumspeakers, long dabytespersample)
 				ksl[j][i] = (unsigned char)oct;
 			}
 	}
-	else
-	{
-		for(i=0;i<9;i++)
-		{
-			frn = ((((long)adlibreg[i+0xb0])&3)<<8) + (long)adlibreg[i+0xa0];
-			oct = ((((long)adlibreg[i+0xb0])>>2)&7);
-			cell[i].tinc = (float)(frn<<oct)*nfrqmul[adlibreg[modulatorbase[i]+0x20]&15];
-		}
-	}
+
+	return adlib;
 }
 
-void adlib0 (long i, long v)
+void adlibwrite (ADLIB_STATE *adlib, long i, long v)
 {
-	unsigned char tmp = adlibreg[i];
-	adlibreg[i] = v;
+	unsigned char tmp = adlib->reg[i];
+	adlib->reg[i] = (unsigned char)v;
+
+	if (adlib->UpdateHandler) adlib->UpdateHandler(adlib->UpdateParam, 0);
 
 	if (i == 0xbd)
 	{
-		if ((v&16) > (odrumstat&16)) //BassDrum
+		if ((v&16) > (tmp&16)) //BassDrum
 		{
-			cellon(6,16,&cell[6],0);
-			cellon(6,19,&cell[15],1);
-			cell[15].vol *= 2;
+			cellon(adlib,6,16,&adlib->cell[6],0);
+			cellon(adlib,6,19,&adlib->cell[15],1);
+			adlib->cell[15].vol *= 2;
 		}
-		if ((v&8) > (odrumstat&8)) //Snare
-		{
-			cellon(16,20,&cell[16],0);
-			cell[16].tinc *= 2*(nfrqmul[adlibreg[17+0x20]&15] / nfrqmul[adlibreg[20+0x20]&15]);
-			if (((adlibreg[20+0xe0]&7) >= 3) && ((adlibreg[20+0xe0]&7) <= 5)) cell[16].vol = 0;
-			cell[16].vol *= 2;
-		}
-		if ((v&4) > (odrumstat&4)) //TomTom
-		{
-			cellon(8,18,&cell[8],0);
-			cell[8].vol *= 2;
-		}
-		if ((v&2) > (odrumstat&2)) //Cymbal
-		{
-			cellon(17,21,&cell[17],0);
+		else if ((v&16) < (tmp&16))
+			adlib->cell[6].cellfunc = adlib->cell[15].cellfunc = docell2;
 
-			cell[17].wavemask = wavemask[5];
-			cell[17].waveform = &wavtable[waveform[5]];
-			cell[17].tinc *= 16; cell[17].vol *= 2;
-
-			//cell[17].waveform = &wavtable[WAVPREC]; cell[17].wavemask = 0;
-			//if (((adlibreg[21+0xe0]&7) == 0) || ((adlibreg[21+0xe0]&7) == 6))
-			//   cell[17].waveform = &wavtable[(WAVPREC*7)>>2];
-			//if (((adlibreg[21+0xe0]&7) == 2) || ((adlibreg[21+0xe0]&7) == 3))
-			//   cell[17].waveform = &wavtable[(WAVPREC*5)>>2];
-		}
-		if ((v&1) > (odrumstat&1)) //Hihat
+		if ((v&8) > (tmp&8)) //Snare
 		{
-			cellon(7,17,&cell[7],0);
-			if (((adlibreg[17+0xe0]&7) == 1) || ((adlibreg[17+0xe0]&7) == 4) ||
-				 ((adlibreg[17+0xe0]&7) == 5) || ((adlibreg[17+0xe0]&7) == 7)) cell[7].vol = 0;
-			if ((adlibreg[17+0xe0]&7) == 6) { cell[7].wavemask = 0; cell[7].waveform = &wavtable[(WAVPREC*7)>>2]; }
+			cellon(adlib,16,20,&adlib->cell[16],0);
+			adlib->cell[16].tinc *= 2*(adlib->nfrqmul[adlib->reg[17+0x20]&15] / adlib->nfrqmul[adlib->reg[20+0x20]&15]);
+			if (((adlib->reg[20+0xe0]&7) >= 3) && ((adlib->reg[20+0xe0]&7) <= 5)) adlib->cell[16].vol = 0;
+			adlib->cell[16].vol *= 2;
 		}
+		else if ((v&8) < (tmp&8))
+			adlib->cell[16].cellfunc = docell2;
 
-		odrumstat = v;
+		if ((v&4) > (tmp&4)) //TomTom
+		{
+			cellon(adlib,8,18,&adlib->cell[8],0);
+			adlib->cell[8].vol *= 2;
+		}
+		else if ((v&4) < (tmp&4))
+			adlib->cell[8].cellfunc = docell2;
+
+		if ((v&2) > (tmp&2)) //Cymbal
+		{
+			cellon(adlib,17,21,&adlib->cell[17],0);
+
+			adlib->cell[17].wavemask = wavemask[5];
+			adlib->cell[17].waveform = &wavtable[waveform[5]];
+			adlib->cell[17].tinc *= 16; adlib->cell[17].vol *= 2;
+
+			//adlib->cell[17].waveform = &wavtable[WAVPREC]; adlib->cell[17].wavemask = 0;
+			//if (((adlib->reg[21+0xe0]&7) == 0) || ((adlib->reg[21+0xe0]&7) == 6))
+			//   adlib->cell[17].waveform = &wavtable[(WAVPREC*7)>>2];
+			//if (((adlib->reg[21+0xe0]&7) == 2) || ((adlib->reg[21+0xe0]&7) == 3))
+			//   adlib->cell[17].waveform = &wavtable[(WAVPREC*5)>>2];
+		}
+		else if ((v&2) < (tmp&2))
+			adlib->cell[17].cellfunc = docell2;
+
+		if ((v&1) > (tmp&1)) //Hihat
+		{
+			cellon(adlib,7,17,&adlib->cell[7],0);
+			if (((adlib->reg[17+0xe0]&7) == 1) || ((adlib->reg[17+0xe0]&7) == 4) ||
+				 ((adlib->reg[17+0xe0]&7) == 5) || ((adlib->reg[17+0xe0]&7) == 7)) adlib->cell[7].vol = 0;
+			if ((adlib->reg[17+0xe0]&7) == 6) { adlib->cell[7].wavemask = 0; adlib->cell[7].waveform = &wavtable[(WAVPREC*7)>>2]; }
+		}
+		else if ((v&1) < (tmp&1))
+			adlib->cell[7].cellfunc = docell2;
+
 	}
-    else if (((unsigned)(i-0x40) < (unsigned)22) && ((i&7) < 6))
-    {
-       if ((i&7) < 3) // Modulator
-          cellfreq(base2cell[i-0x40],i-0x40,&cell[base2cell[i-0x40]]);
-       else          // Carrier
-          cellfreq(base2cell[i-0x40],i-0x40,&cell[base2cell[i-0x40]+9]);
-    }
+	else if (((unsigned)(i-0x40) < (unsigned)22) && ((i&7) < 6))
+	{
+		if ((i&7) < 3) //Modulator
+			cellfreq(adlib,base2cell[i-0x40],i-0x40,&adlib->cell[base2cell[i-0x40]]);
+		else           //Carrier
+			cellfreq(adlib,base2cell[i-0x40],i-0x40,&adlib->cell[base2cell[i-0x40]+9]);
+	}
 	else if ((unsigned)(i-0xa0) < (unsigned)9)
 	{
-		cellfreq(i-0xa0,modulatorbase[i-0xa0],&cell[i-0xa0]);
-		cellfreq(i-0xa0,modulatorbase[i-0xa0]+3,&cell[i-0xa0+9]);
+		cellfreq(adlib,i-0xa0,modulatorbase[i-0xa0],&adlib->cell[i-0xa0]);
+		cellfreq(adlib,i-0xa0,modulatorbase[i-0xa0]+3,&adlib->cell[i-0xa0+9]);
 	}
 	else if ((unsigned)(i-0xb0) < (unsigned)9)
 	{
 		if ((v&32) > (tmp&32))
 		{
-			cellon(i-0xb0,modulatorbase[i-0xb0],&cell[i-0xb0],0);
-			cellon(i-0xb0,modulatorbase[i-0xb0]+3,&cell[i-0xb0+9],1);
+			cellon(adlib,i-0xb0,modulatorbase[i-0xb0],&adlib->cell[i-0xb0],0);
+			cellon(adlib,i-0xb0,modulatorbase[i-0xb0]+3,&adlib->cell[i-0xb0+9],1);
 		}
 		else if ((v&32) < (tmp&32))
-			cell[i-0xb0].cellfunc = cell[i-0xb0+9].cellfunc = docell2;
-		cellfreq(i-0xb0,modulatorbase[i-0xb0],&cell[i-0xb0]);
-		cellfreq(i-0xb0,modulatorbase[i-0xb0]+3,&cell[i-0xb0+9]);
+			adlib->cell[i-0xb0].cellfunc = adlib->cell[i-0xb0+9].cellfunc = docell2;
+		else
+		{
+			cellfreq(adlib,i-0xb0,modulatorbase[i-0xb0],&adlib->cell[i-0xb0]);
+			cellfreq(adlib,i-0xb0,modulatorbase[i-0xb0]+3,&adlib->cell[i-0xb0+9]);
+		}
 	}
 
 	//outdata(i,v);
@@ -393,19 +398,18 @@ skipit2: fstp st
 	}
 }
 
-void adlibgetsample (void *sndptr, long numbytes)
+void adlibgetsample(ADLIB_STATE *adlib, void *sndptr, long numsamples)
 {
-	long i, j, k, ns, endsamples, rptrs, numsamples;
+	long i, j, k = 0, ns, endsamples, rptrs;
 	celltype *cptr;
 	float f;
 
-	numsamples = (numbytes>>(numspeakers+bytespersample-2));
+	if (adlib->bytespersample == 1) f = AMPSCALE/256.0; else f = AMPSCALE;
 
-	if (bytespersample == 1) f = AMPSCALE/256.0; else f = AMPSCALE;
-	if (numspeakers == 1)
+	if (adlib->numspeakers == 1)
 	{
-		nlvol[0] = lvol[0]*f;
-		for(i=0;i<9;i++) rptr[i] = &rbuf[0][0];
+		adlib->nlvol[0] = adlib->lvol[0]*f;
+		for(i=0;i<9;i++) adlib->rptr[i] = &adlib->rbuf[0][0];
 		rptrs = 1;
 	}
 	else
@@ -413,16 +417,16 @@ void adlibgetsample (void *sndptr, long numbytes)
 		rptrs = 0;
 		for(i=0;i<9;i++)
 		{
-			if ((!i) || (lvol[i] != lvol[i-1]) || (rvol[i] != rvol[i-1]) ||
-							(lplc[i] != lplc[i-1]) || (rplc[i] != rplc[i-1]))
+			if ((!i) || (adlib->lvol[i] != adlib->lvol[i-1]) || (adlib->rvol[i] != adlib->rvol[i-1]) ||
+							(adlib->lplc[i] != adlib->lplc[i-1]) || (adlib->rplc[i] != adlib->rplc[i-1]))
 			{
-				nlvol[rptrs] = lvol[i]*f;
-				nrvol[rptrs] = rvol[i]*f;
-				nlplc[rptrs] = rend-min(max(lplc[i],0),FIFOSIZ);
-				nrplc[rptrs] = rend-min(max(rplc[i],0),FIFOSIZ);
+				adlib->nlvol[rptrs] = adlib->lvol[i]*f;
+				adlib->nrvol[rptrs] = adlib->rvol[i]*f;
+				adlib->nlplc[rptrs] = adlib->rend-min(max(adlib->lplc[i],0),FIFOSIZ);
+				adlib->nrplc[rptrs] = adlib->rend-min(max(adlib->rplc[i],0),FIFOSIZ);
 				rptrs++;
 			}
-			rptr[i] = &rbuf[rptrs-1][0];
+			adlib->rptr[i] = &adlib->rbuf[rptrs-1][0];
 		}
 	}
 
@@ -432,66 +436,67 @@ void adlibgetsample (void *sndptr, long numbytes)
 
 	for(ns=0;ns<numsamples;ns+=endsamples)
 	{
-		endsamples = min(FIFOSIZ*2-rend,FIFOSIZ);
+		endsamples = min(FIFOSIZ*2-adlib->rend,FIFOSIZ);
 		endsamples = min(endsamples,numsamples-ns);
 
 		for(i=0;i<9;i++)
-			nrptr[i] = &rptr[i][rend];
+			adlib->nrptr[i] = &adlib->rptr[i][adlib->rend];
 		for(i=0;i<rptrs;i++)
-			memset((void *)&rbuf[i][rend],0,endsamples*sizeof(float));
+			memset((void *)&adlib->rbuf[i][adlib->rend],0,endsamples*sizeof(float));
 
-		if (adlibreg[0xbd]&0x20)
+		if (adlib->reg[0xbd]&0x20)
 		{
 				//BassDrum (j=6)
-			if (cell[15].cellfunc != docell4)
+			if (adlib->cell[15].cellfunc != docell4)
 			{
-				if (adlibreg[0xc6]&1)
+				if (adlib->reg[0xc6]&1)
 				{
 					for(i=0;i<endsamples;i++)
 					{
-						(cell[15].cellfunc)((void *)&cell[15],0.0);
-						nrptr[6][i] += cell[15].val;
+						(adlib->cell[15].cellfunc)((void *)&adlib->cell[15],0.0);
+						adlib->nrptr[6][i] += adlib->cell[15].val;
 					}
 				}
 				else
 				{
 					for(i=0;i<endsamples;i++)
 					{
-						(cell[6].cellfunc)((void *)&cell[6],cell[6].val*cell[6].mfb);
-						(cell[15].cellfunc)((void *)&cell[15],cell[6].val*WAVPREC*MODFACTOR);
-						nrptr[6][i] += cell[15].val;
+						(adlib->cell[6].cellfunc)((void *)&adlib->cell[6],adlib->cell[6].val*adlib->cell[6].mfb);
+						(adlib->cell[15].cellfunc)((void *)&adlib->cell[15],adlib->cell[6].val*WAVPREC*MODFACTOR);
+						adlib->nrptr[6][i] += adlib->cell[15].val;
 					}
 				}
 			}
 
 				//Snare/Hihat (j=7), Cymbal/TomTom (j=8)
-			if ((cell[7].cellfunc != docell4) || (cell[8].cellfunc != docell4) || (cell[16].cellfunc != docell4) || (cell[17].cellfunc != docell4))
+			if ((adlib->cell[7].cellfunc != docell4) || (adlib->cell[8].cellfunc != docell4) || (adlib->cell[16].cellfunc != docell4) || (adlib->cell[17].cellfunc != docell4))
 			{
 				for(i=0;i<endsamples;i++)
 				{
 					k = k*1664525+1013904223;
-					(cell[16].cellfunc)((void *)&cell[16],k&((WAVPREC>>1)-1)); //Snare
-					(cell[7].cellfunc)((void *)&cell[7],k&(WAVPREC-1));       //Hihat
-					(cell[17].cellfunc)((void *)&cell[17],k&((WAVPREC>>3)-1)); //Cymbal
-					(cell[8].cellfunc)((void *)&cell[8],0.0);                 //TomTom
-					nrptr[7][i] += cell[7].val + cell[16].val;
-					nrptr[8][i] += cell[8].val + cell[17].val;
+					(adlib->cell[16].cellfunc)((void *)&adlib->cell[16],k&((WAVPREC>>1)-1)); //Snare
+					(adlib->cell[7].cellfunc)((void *)&adlib->cell[7],k&(WAVPREC-1));       //Hihat
+					(adlib->cell[17].cellfunc)((void *)&adlib->cell[17],k&((WAVPREC>>3)-1)); //Cymbal
+					(adlib->cell[8].cellfunc)((void *)&adlib->cell[8],0.0);                 //TomTom
+					adlib->nrptr[7][i] += adlib->cell[7].val + adlib->cell[16].val;
+					adlib->nrptr[8][i] += adlib->cell[8].val + adlib->cell[17].val;
 				}
 			}
+			j=6-1;
 		}
-		for(j=9-1;j>=0;j--)
-		{
-			if ((adlibreg[0xbd]&0x20) && (j >= 6) && (j < 9)) continue;
+		else j=9-1;
 
-			cptr = &cell[j]; k = j;
-			if (adlibreg[0xc0+k]&1)
+		for(;j>=0;j--)
+		{
+			cptr = &adlib->cell[j]; k = j;
+			if (adlib->reg[0xc0+k]&1)
 			{
 				if ((cptr[9].cellfunc == docell4) && (cptr->cellfunc == docell4)) continue;
 				for(i=0;i<endsamples;i++)
 				{
 					(cptr->cellfunc)((void *)cptr,cptr->val*cptr->mfb);
 					(cptr->cellfunc)((void *)&cptr[9],0);
-					nrptr[j][i] += cptr[9].val + cptr->val;
+					adlib->nrptr[j][i] += cptr[9].val + cptr->val;
 				}
 			}
 			else
@@ -501,51 +506,88 @@ void adlibgetsample (void *sndptr, long numbytes)
 				{
 					(cptr->cellfunc)((void *)cptr,cptr->val*cptr->mfb);
 					(cptr[9].cellfunc)((void *)&cptr[9],cptr->val*WAVPREC*MODFACTOR);
-					nrptr[j][i] += cptr[9].val;
+					adlib->nrptr[j][i] += cptr[9].val;
 				}
 			}
 		}
 
-		if (numspeakers == 1)
+		if (adlib->numspeakers == 1)
 		{
-			if (bytespersample == 1)
+			if (adlib->bytespersample == 1)
 			{
 				for(i=endsamples-1;i>=0;i--)
-					clipit8(nrptr[0][i]*nlvol[0],i+(long)sndptr);
+					clipit8(adlib->nrptr[0][i]*adlib->nlvol[0],i+(long)sndptr);
 			}
 			else
 			{
 				for(i=endsamples-1;i>=0;i--)
-					clipit16(nrptr[0][i]*nlvol[0],i+i+(long)sndptr);
+					clipit16(adlib->nrptr[0][i]*adlib->nlvol[0],i+i+(long)sndptr);
 			}
 		}
 		else
 		{
-			memset((void *)snd,0,endsamples*sizeof(float)*2);
+			memset((void *)adlib->snd,0,endsamples*sizeof(float)*2);
 			for(j=0;j<rptrs;j++)
 			{
 				for(i=0;i<endsamples;i++)
 				{
-					snd[(i<<1)  ] += rbuf[j][(nlplc[j]+i)&(FIFOSIZ*2-1)]*nlvol[j];
-					snd[(i<<1)+1] += rbuf[j][(nrplc[j]+i)&(FIFOSIZ*2-1)]*nrvol[j];
+					adlib->snd[(i<<1)  ] += adlib->rbuf[j][(adlib->nlplc[j]+i)&(FIFOSIZ*2-1)]*adlib->nlvol[j];
+					adlib->snd[(i<<1)+1] += adlib->rbuf[j][(adlib->nrplc[j]+i)&(FIFOSIZ*2-1)]*adlib->nrvol[j];
 				}
-				nlplc[j] += endsamples;
-				nrplc[j] += endsamples;
+				adlib->nlplc[j] += endsamples;
+				adlib->nrplc[j] += endsamples;
 			}
 
-			if (bytespersample == 1)
+			if (adlib->bytespersample == 1)
 			{
 				for(i=(endsamples<<1)-1;i>=0;i--)
-					clipit8(snd[i],i+((long)sndptr));
+					clipit8(adlib->snd[i],i+((long)sndptr));
 			}
 			else
 			{
 				for(i=(endsamples<<1)-1;i>=0;i--)
-					clipit16(snd[i],i+i+((long)sndptr));
+					clipit16(adlib->snd[i],i+i+((long)sndptr));
 			}
 		}
 
-		sndptr = (void *)(((long)sndptr)+(numspeakers*bytespersample*endsamples));
-		rend = ((rend+endsamples)&(FIFOSIZ*2-1));
+		sndptr = (void *)(((long)sndptr)+(adlib->numspeakers*adlib->bytespersample*endsamples));
+		adlib->rend = ((adlib->rend+endsamples)&(FIFOSIZ*2-1));
 	}
+}
+
+void adlibreset(ADLIB_STATE *adlib)
+{
+	int i;
+
+	memset((void *)adlib->reg,0,sizeof(adlib->reg));
+	memset((void *)adlib->cell,0,sizeof(celltype)*MAXCELLS);
+	memset((void *)adlib->rbuf,0,sizeof(adlib->rbuf));
+	adlib->rend = 0;
+
+	for(i=0;i<MAXCELLS;i++)
+	{
+		adlib->cell[i].cellfunc = docell4;
+		adlib->cell[i].waveform = &wavtable[WAVPREC];
+	}
+}
+
+void adlibshutdown(ADLIB_STATE *adlib)
+{
+	if (!adlib || !adlib_count) return;
+
+	adlib_count--;
+
+	if (wavtable && !adlib_count)
+	{
+		free(wavtable);
+		wavtable = 0;
+	}
+
+	free(adlib);
+}
+
+void adlibsetupdatehandler(ADLIB_STATE *adlib, ADLIB_UPDATEHANDLER UpdateHandler, int param)
+{
+	adlib->UpdateHandler = UpdateHandler;
+	adlib->UpdateParam = param;
 }
