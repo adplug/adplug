@@ -15,3 +15,12 @@ initialization method inside the players' interface.
 - Protracker player:
 	- Portamento: If target note is key-off, slide to last real note
 	instead.
+
+- Add new loaders: 
+	- DTM: DeFy Adlib Tracker
+	- MTR: Arkham Master Tracker
+	? DMO: TwinTeam packed S3M
+
+- Add new playes:
+	- CFF: CUD BoomTracker
+	? XAD: Custom player from Burial Grounds BBStro
