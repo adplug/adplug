@@ -141,8 +141,6 @@ SOURCE=.\players\lds.cpp
 
 !IF  "$(CFG)" == "adplug - Win32 Release"
 
-# PROP Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "adplug - Win32 Debug"
 
 !ENDIF 
@@ -175,6 +173,10 @@ SOURCE=.\players\raw.cpp
 # Begin Source File
 
 SOURCE=.\realopl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\players\rol.cpp
 # End Source File
 # Begin Source File
 
@@ -304,6 +306,10 @@ SOURCE=.\players\raw.h
 # Begin Source File
 
 SOURCE=.\realopl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\players\rol.h
 # End Source File
 # Begin Source File
 

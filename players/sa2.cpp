@@ -18,8 +18,7 @@
  *
  *
  * sa2.cpp - SAdT2 Loader by Simon Peter (dn.tlp@gmx.net)
- *           SAdT Loader by Mamiya(mamiya@users.sourceforge.net)
- *
+ *           SAdT Loader by Mamiya (mamiya@users.sourceforge.net)
  */
 
 #include <stdio.h>

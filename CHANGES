@@ -1,6 +1,11 @@
 This is just a brief overview of changes in AdPlug. For a complete list of
 changes, look into the file ChangeLog.
 
+Changes for version 1.2:
+	Added SAT and ROL players.
+	Reincluded Ken Silverman's emulator again and made it portable.
+	SA2 player now handles version 7 files.
+
 Changes for version 1.1:
 	Added MKJ, DFM and BAM players.
 	Removed Ken Silverman's YM3812 emulator due to portability issues.

@@ -1,5 +1,7 @@
 AdPlug is copyright (C) 1999, 2000, 2001 Simon Peter <dn.tlp@gmx.net>, et al.
 
+All library code is written by Simon Peter, except the parts listed below.
+
 Additional Credits:
 -------------------
 Phil Hassey <philhassey@hotmail.com>:
@@ -16,5 +18,4 @@ Death Adder <death-adder@juno.com>:
 	- moral support ;)
 
 Mamiya <mamiya@users.sourceforge.net>:
-	- support for .SAT (early Surprise! Adlib 
-	  Tracker) files
+	- support for .SAT (early Surprise! Adlib Tracker) files
