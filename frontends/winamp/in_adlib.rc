@@ -1,0 +1,236 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Deutsch (Deutschland) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 267, 93
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "About AdPlug"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,118,72,50,14
+    RTEXT           "AdPlug vx.xx, (c)'99-2001 Simon Peter (dn.tlp@gmx.net) et al.",
+                    IDC_ABOUT,57,16,197,8,SS_CENTERIMAGE
+    LTEXT           "Look into the README file for additional author information.\n--\nAdPlug official website: http://dfg.theunderdogs.org/adlib/adplug\nGet modules at: http://www.chiptune.de",
+                    IDC_STATIC,12,35,242,33
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,6,7,254,22
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,6,32,254,38
+END
+
+IDD_PROPGENERAL DIALOG DISCARDABLE  0, 0, 207, 151
+STYLE WS_POPUP | WS_CAPTION
+CAPTION "General"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "8-bit",IDC_QUALITY8,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,162,15,29,10
+    CONTROL         "16-bit",IDC_QUALITY16,"Button",BS_AUTORADIOBUTTON,162,
+                    25,33,12
+    GROUPBOX        "Resolution",IDC_STATIC,160,5,45,34
+    CONTROL         "11025",IDC_RATE1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,
+                    162,50,36,10
+    CONTROL         "22050",IDC_RATE2,"Button",BS_AUTORADIOBUTTON,162,60,36,
+                    10
+    CONTROL         "44100",IDC_RATE3,"Button",BS_AUTORADIOBUTTON,162,70,36,
+                    10
+    CONTROL         "48000",IDC_RATE4,"Button",BS_AUTORADIOBUTTON,162,80,36,
+                    10
+    CONTROL         "",IDC_RATE5,"Button",BS_AUTORADIOBUTTON,162,92,9,8
+    GROUPBOX        "Frequency",IDC_STATIC,160,40,45,65
+    EDITTEXT        IDC_CUSTOMRATE,172,90,25,12,ES_NUMBER
+    GROUPBOX        "Hardware",IDC_STATIC,5,5,150,45
+    CONTROL         "Tatsuyuki Satoh's emulator",IDC_HARDWAREEMU,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,10,15,101,10
+    CONTROL         "Ken Silverman's emulator",IDC_HARDWAREEMU2,"Button",
+                    BS_AUTORADIOBUTTON,10,25,95,10
+    CONTROL         "Real OPL2",IDC_HARDWAREOPL2,"Button",BS_AUTORADIOBUTTON,
+                    10,35,51,10
+    EDITTEXT        IDC_ADLIBPORT,122,34,21,12,ES_UPPERCASE
+    GROUPBOX        "OPL2 Port",IDC_STATIC,112,23,43,27
+    GROUPBOX        "Options",IDC_STATIC,5,55,150,45
+    CONTROL         "Autodetect Songend",IDC_AUTOEND,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,65,112,10
+    CONTROL         "Fast Seeks",IDC_FASTSEEK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,75,112,10
+    CONTROL         "Bypass all Hardware Tests",IDC_NOTEST,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,85,115,10
+    GROUPBOX        "Channels",IDC_STATIC,160,110,45,35
+    CONTROL         "Mono",IDC_MONO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,
+                    165,121,34,10
+    CONTROL         "Stereo",IDC_STEREO,"Button",BS_AUTORADIOBUTTON,165,130,
+                    37,10
+    GROUPBOX        "Thread priority",IDC_STATIC,5,105,150,40
+    CONTROL         "Slider1",IDC_PRIORITY,"msctls_trackbar32",TBS_AUTOTICKS | 
+                    WS_TABSTOP,10,115,140,10
+    LTEXT           "Idle",IDC_STATIC,10,130,12,8
+    LTEXT           "Normal",IDC_STATIC,70,130,23,8
+    RTEXT           "Realtime",IDC_STATIC,120,130,28,8
+END
+
+IDD_FILEINFO DIALOGEX 0, 0, 271, 250
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "AdPlug Info"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Close",IDOK,215,230,50,14
+    GROUPBOX        "Instrument Names",IDC_STATIC,5,40,165,75
+    GROUPBOX        "Subsong selection",IDC_STATIC,5,201,170,43
+    CONTROL         "Slider1",IDC_SUBSONGSLIDER,"msctls_trackbar32",
+                    TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,10,221,158,20
+    LTEXT           "1",IDC_SUBSONGMIN,17,212,18,8
+    RTEXT           "10",IDC_SUBSONGMAX,144,212,17,8
+    CTEXT           "5",IDC_SUBSONGPOS,79,210,18,10,WS_BORDER
+    EDITTEXT        IDC_INSTNAMES,11,50,154,60,ES_MULTILINE | ES_READONLY | 
+                    ES_WANTRETURN | NOT WS_BORDER | WS_VSCROLL
+    LTEXT           "Title",IDC_STATIC,10,10,14,8
+    EDITTEXT        IDC_TITLE,29,10,235,12,ES_READONLY
+    LTEXT           "Author",IDC_STATIC,5,25,22,8
+    EDITTEXT        IDC_AUTHOR,29,25,125,12,ES_READONLY
+    LTEXT           "Type",IDC_STATIC,160,25,17,8
+    EDITTEXT        IDC_TYPE,179,25,85,12,ES_READONLY
+    GROUPBOX        "Song Info",IDC_STATIC,175,40,89,75
+    LTEXT           "Position",IDC_STATIC,180,50,26,8
+    LTEXT           "0 / 0",IDC_POSITION,220,50,39,8
+    LTEXT           "Pattern",IDC_STATIC,180,60,24,8
+    LTEXT           "0 / 0",IDC_PATTERN,220,60,39,8
+    LTEXT           "Row",IDC_STATIC,180,69,16,8
+    LTEXT           "0",IDC_ROW,220,70,39,8
+    LTEXT           "Speed",IDC_STATIC,180,79,22,8
+    LTEXT           "0",IDC_SPEED,220,80,39,8
+    LTEXT           "Timer",IDC_STATIC,180,89,18,8
+    LTEXT           "0 Hz",IDC_TIMER,220,90,39,8
+    GROUPBOX        "Song Description",IDC_STATIC,5,120,260,75
+    LTEXT           "Instruments",IDC_STATIC,180,99,37,8
+    LTEXT           "0",IDC_INSTS,220,100,39,8
+    EDITTEXT        IDC_SONGINFO,10,130,250,60,ES_MULTILINE | ES_READONLY | 
+                    ES_WANTRETURN | NOT WS_BORDER | WS_VSCROLL
+END
+
+IDD_PROPFMT DIALOG DISCARDABLE  0, 0, 196, 156
+STYLE WS_POPUP | WS_CAPTION
+CAPTION "Formats"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Select the file formats that AdPlug should accept to replay. Deselected items will be ignored by AdPlug to make room for other plugins to play these files.\n\nSometimes, Winamp has to be restarted for the changes to take effect.",
+                    IDC_STATIC,7,7,90,143
+    LISTBOX         IDC_FORMATLIST,105,7,46,143,LBS_MULTIPLESEL | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Select all",IDC_FTSELALL,156,7,33,33,BS_MULTILINE
+    PUSHBUTTON      "Select none",IDC_FTSELNONE,156,45,33,33,BS_MULTILINE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 260
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 86
+    END
+
+    IDD_PROPGENERAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 200
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 144
+    END
+
+    IDD_FILEINFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 264
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 243
+    END
+
+    IDD_PROPFMT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 189
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 149
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_LOGO                BITMAP  DISCARDABLE     "adplug.bmp"
+#endif    // Deutsch (Deutschland) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
