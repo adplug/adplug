@@ -3,8 +3,8 @@
 
 SUBDIRS = src adplugdb
 
-AUX = doc\*.ms README AUTHORS NEWS COPYING TODO ChangeLog
-DIST = src\*.c src\*.cpp src\*.h src\Makefile.bt $(AUX) INSTALL
+AUX = README AUTHORS NEWS COPYING TODO BUGS ChangeLog INSTALL README.dos
+DIST = src\*.c src\*.cpp src\*.h src\Makefile.bt $(AUX)
 BINARYDIST = src\*.h src\adplug.lib $(AUX)
 
 distfile = adplg14s.zip
