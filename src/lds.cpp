@@ -271,7 +271,6 @@ bool CldsPlayer::update()
 	      unsigned short	high;
 
 	      if(positions[posplay * 9 +chan].transpose & 128) {
-		AdPlug_LogWrite("instrument transpose!\n");
 		sound = (comlo + (positions[posplay * 9 + chan].transpose & 127)) & maxsound;
 		high = comhi << 4;
 	      } else {
@@ -329,7 +328,6 @@ bool CldsPlayer::update()
     else {
       arpreg = c->arp_tab[c->arp_pos] << 4;
       if(arpreg == 0xf800) {
-	AdPlug_LogWrite("check!\n");
 	if(c->arp_pos > 0) c->arp_tab[0] = c->arp_tab[c->arp_pos - 1];
 	c->arp_size = 1; c->arp_pos = 0;
 	arpreg = c->arp_tab[0] << 4;
@@ -364,64 +362,56 @@ bool CldsPlayer::update()
 
       freq = frequency[arpreg % (12 * 16)];
       octave = arpreg / (12 * 16) - 1;
-      if(octave > 10) {
-	AdPlug_LogWrite("update(): error! arpreg = %d\n", arpreg);
-	AdPlug_LogWrite("update(): chan = %d, freq = %d, octave = %d\n", chan, freq, octave);
-      }
       setregs(0xa0 + chan, freq & 0xff);
       setregs_adv(0xb0 + chan, 0x20, ((octave << 2) + (freq >> 8)) & 0xdf);
     } else {
       // vibrato
-//       if(!c->vibwait) {
-// 	if(c->vibrate > 0) {
-// 	  wibc = vibtab[c->vibcount & 0x3f] * c->vibrate;
-// 	  if((c->vibcount & 0x40) == 0)
-// 	    tune = c->lasttune + (wibc >> 8);
-// 	  else
-// 	    tune = c->lasttune - (wibc >> 8);
+      if(!c->vibwait) {
+	if(c->vibrate > 0) {
+	  wibc = vibtab[c->vibcount & 0x3f] * c->vibrate;
 
-// 	  /*
-// 	  if(arpreg >= 0x800)
-// 	    tune = tune - (arpreg ^ 0xff0) - 16;
-// 	  else
-// 	  */
-// 	    tune += arpreg;
+	  if((c->vibcount & 0x40) == 0)
+	    tune = c->lasttune + (wibc >> 8);
+	  else
+	    tune = c->lasttune - (wibc >> 8);
 
-// 	  freq = frequency[tune & (12 * 16)];
-// 	  octave = tune / (12 * 16) - 1;
-// 	  setregs(0xa0 + chan, freq & 0xff);
-// 	  setregs_adv(0xb0 + chan, 0x20, ((octave << 2) + (freq >> 8)) & 0xdf);
-// 	  c->vibcount += c->vibspeed;
-// 	} else
-// 	  if(c->arp_size != 0) {
-// 	    /*
-// 	    if(arpreg >= 0x800)
-// 	      tune = c->lasttune - (arpreg ^ 0xff0) - 16;
-// 	    else
-// 	    */
-// 	      tune = c->lasttune + arpreg;
+	  if(arpreg >= 0x800)
+	    tune = tune - (arpreg ^ 0xff0) - 16;
+	  else
+	    tune += arpreg;
 
-// 	    freq = frequency[tune % (12 * 16)];
-// 	    octave = tune / (12 * 16) - 1;
-// 	    setregs(0xa0 + chan, freq & 0xff);
-// 	    setregs_adv(0xb0 + chan, 0x20, ((octave << 2) + (freq >> 8)) & 0xdf);
-// 	  }
-//       } else {	// no vibrato, just arpeggio
-// 	c->vibwait--;
+	  freq = frequency[tune % (12 * 16)];
+	  octave = tune / (12 * 16) - 1;
+	  setregs(0xa0 + chan, freq & 0xff);
+	  setregs_adv(0xb0 + chan, 0x20, ((octave << 2) + (freq >> 8)) & 0xdf);
+	  c->vibcount += c->vibspeed;
+	} else
+	  if(c->arp_size != 0) {
+	    if(arpreg >= 0x800)
+	      tune = c->lasttune - (arpreg ^ 0xff0) - 16;
+	    else
+	      tune = c->lasttune + arpreg;
 
-// 	if(c->arp_size != 0) {
+	    freq = frequency[tune % (12 * 16)];
+	    octave = tune / (12 * 16) - 1;
+	    setregs(0xa0 + chan, freq & 0xff);
+	    setregs_adv(0xb0 + chan, 0x20, ((octave << 2) + (freq >> 8)) & 0xdf);
+	  }
+      } else {	// no vibrato, just arpeggio
+	c->vibwait--;
 
-// 	  if(arpreg >= 0x800)
-// 	    tune = c->lasttune - (arpreg ^ 0xff0) - 16;
-// 	  else
-// 	    tune = c->lasttune + arpreg;
+	if(c->arp_size != 0) {
+	  if(arpreg >= 0x800)
+	    tune = c->lasttune - (arpreg ^ 0xff0) - 16;
+	  else
+	    tune = c->lasttune + arpreg;
 
-// 	  freq = frequency[tune % (12 * 16)];
-// 	  octave = tune / (12 * 16) - 1;
-// 	  setregs(0xa0 + chan, freq & 0xff);
-// 	  setregs_adv(0xb0 + chan, 0x20, ((octave << 2) + (freq >> 8)) & 0xdf);
-// 	}
-//    }
+	  freq = frequency[tune % (12 * 16)];
+	  octave = tune / (12 * 16) - 1;
+	  setregs(0xa0 + chan, freq & 0xff);
+	  setregs_adv(0xb0 + chan, 0x20, ((octave << 2) + (freq >> 8)) & 0xdf);
+	}
+      }
     }
 
     // tremolo (modulator)
@@ -552,12 +542,12 @@ void CldsPlayer::playsound(int inst_number, int channel_number, int tunehigh)
     c->volmod = (volcalc & 0xc0) | (((volcalc & 0x3f) * c->nextvol >> 6));
 
   if((i->feedback & 1) == 1 && allvolume)
-    setregs(0x40 + regnum, (c->volmod & 0xc0) | ((c->volmod & 0x3f) * allvolume /*>> 8*/) ^ 0x3f);
+    setregs(0x40 + regnum, (c->volmod & 0xc0) | ((c->volmod & 0x3f) * (allvolume >> 8)) ^ 0x3f);
   else
     setregs(0x40 + regnum, c->volmod ^ 0x3f);
   setregs(0x60 + regnum, i->mod_ad);
   setregs(0x80 + regnum, i->mod_sr);
-  setregs(0xe0 + regnum, i->mod_wave);
+  opl->write(0xe0 + regnum, i->mod_wave);
 
   // Set carrier registers
   setregs(0x23 + regnum, i->car_misc);
@@ -568,12 +558,12 @@ void CldsPlayer::playsound(int inst_number, int channel_number, int tunehigh)
     c->volcar = (volcalc & 0xc0) | ((((volcalc & 0x3f) * c->nextvol) >> 6));
 
   if(allvolume)
-    setregs(0x43 + regnum, (c->volcar & 0xc0) | ((c->volcar & 0x3f) * allvolume /*>> 8*/) ^ 0x3f);
+    setregs(0x43 + regnum, (c->volcar & 0xc0) | ((c->volcar & 0x3f) * (allvolume >> 8)) ^ 0x3f);
   else
     setregs(0x43 + regnum, c->volcar ^ 0x3f);
   setregs(0x63 + regnum, i->car_ad);
   setregs(0x83 + regnum, i->car_sr);
-  setregs(0xe3 + regnum, i->car_wave);
+  opl->write(0xe3 + regnum, i->car_wave);
   setregs(0xc0 + channel_number, i->feedback);
   setregs_adv(0xb0 + channel_number, 0xdf, 0);		// key off
 

@@ -4,6 +4,7 @@ Changes for version 1.5:
 	- New format support:
 		- XSM: eXtra Simple Music
 		- DRO: DOSBox Raw OPL
+		- LDS: LOUDNESS Sound System
 	- Added support for .adlib files to IMF player.
 	- Reverted fmopl OPL2 emulator to old LGPL'd version, so AdPlug
 	  is now completely free (LGPL) again. Please read the README
