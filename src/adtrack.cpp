@@ -22,6 +22,11 @@
  * The original Adlib Tracker 1.0 is behaving a little different from the
  * official spec: The 'octave' integer from the instrument file is stored
  * "minus 1" from the actual value, underflowing from 0 to 0xffff.
+ *
+ * I also noticed that my player is playing everything transposed a few tones
+ * higher than the original tracker. As far as i can see, my player perfectly
+ * follows the official spec, so it "must" be the tracker that does something
+ * wrong here...
  */
 
 #include <stdlib.h>
@@ -30,11 +35,6 @@
 
 #include "adtrack.h"
 #include "debug.h"
-
-/*** Constants ***/
-
-const unsigned short CadtrackLoader::my_notetable[12] =
-  {0x16b,0x181,0x198,0x1b0,0x1ca,0x1e5,0x202,0x220,0x241,0x263,0x287,0x2ae};
 
 /*** Public methods ***/
 
@@ -69,7 +69,7 @@ bool CadtrackLoader::load(istream &f, const char *filename)
 
   // give CmodPlayer a hint on what we're up to
   realloc_patterns(1,1000,9); realloc_instruments(9); realloc_order(1);
-  init_trackord(); flags = NoKeyOn; // init_notetable(my_notetable);
+  init_trackord(); flags = NoKeyOn;
   (*order) = 0; length = 1; restartpos = 0; bpm = 120; initspeed = 3;
 
   // load instruments from instruments file

@@ -40,7 +40,6 @@ public:
 
 private:
         enum Operators {Carrier = 1, Modulator = 0};
-	static const unsigned short my_notetable[12];
 
 	typedef struct {
 	  struct {

@@ -14,8 +14,6 @@ AdPlug To Do List:
 
 - Add rhythm mode support to CMF player (inside mid.cpp)
 
-- Add DEBUG define to DOS build [dynamite]
-
 - Add new Protracker loaders:
 	- DTM: DeFy Adlib Tracker [riven-mage]
 	- MTR: Arkham Master Tracker [riven-mage]
@@ -27,3 +25,6 @@ AdPlug To Do List:
 
 - Convert the documentation in the 'doc' subdir to a better format.
   [dynamite]
+
+- Make UNIX builds get VERSION define from adplug.cpp, instead of
+  configure.in. [dynamite]

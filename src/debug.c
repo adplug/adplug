@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-static FILE *log = stderr;
+static FILE *log = NULL;
 
 void LogFile(const char *filename)
 {
@@ -42,8 +42,11 @@ void LogWrite(const char *fmt, ...)
   vsprintf(logbuffer, fmt, argptr);
   va_end(argptr);
 
-  fprintf(log,logbuffer);
-  fflush(log);
+  if(log) {
+    fprintf(log,logbuffer);
+    fflush(log);
+  } else
+    fprintf(stderr,logbuffer);
 }
 
 #else
