@@ -1,6 +1,3 @@
-//
-// alpha version. do not compile.
-//
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
   Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
@@ -21,8 +18,16 @@
 
   dmo.cpp - TwinTeam loader by Riven the Mage <riven@ok.ru>
 */
+/*
+  NOTE: Panning is ignored. Drum channels are ignored.
+*/
 
 #include "dmo.h"
+
+#define LOWORD(l) ((l) & 0xffff)
+#define HIWORD(l) ((l) >> 16)
+#define LOBYTE(w) ((w) & 0xff)
+#define HIBYTE(w) ((w) >> 8)
 
 /* -------- Public Methods -------------------------------- */
 
@@ -34,10 +39,155 @@ CPlayer *CdmoLoader::factory(Copl *newopl)
 
 bool CdmoLoader::load(istream &f, const char *filename)
 {
+	int i,j;
+
+	// check header
+	dmo_unpacker *unpacker = new dmo_unpacker;
+	
+	unsigned char chkhdr[16];
+
+	f.read(chkhdr,16);
+
+	if (!unpacker->decrypt(chkhdr,16))
+	{
+		delete unpacker;
+		return false;
+	}
+
+	// get file size
+	f.seekg(0,ios::end);
+	long packed_length = f.tellg();
+	f.seekg(0);
+
+	unsigned char *packed_module = new unsigned char [packed_length];
+
+	// load file
+	f.read((char *)packed_module,packed_length);
+
+	// decrypt()
+	unpacker->decrypt(packed_module,packed_length);
+
+	unsigned char *module = new unsigned char [0x2000 * (*(unsigned short *)&packed_module[12])];
+
+	// unpack()
+	if (!unpacker->unpack(packed_module+12,module))
+	{
+		delete unpacker;
+		delete packed_module;
+		delete module;
+		return false;
+	}
+
+	delete unpacker;
+	delete packed_module;
+
+	// "TwinTeam" - signed ?
+	if (memcmp(module,"TwinTeam Module File""\x0D\x0A",22))
+	{
+		delete module;
+		return false;
+	}
+
+	unsigned char *ibuf = module;
+
+	// load header
+	dmo_header *my_hdr = (dmo_header *)ibuf;
+
+	memset(&header,0,sizeof(s3mheader));
+
+	memcpy(header.name,my_hdr->title,28);
+
+	header.ordnum  = my_hdr->numord;
+	header.insnum  = my_hdr->numinst;
+	header.patnum  = my_hdr->numpat;
+	header.is      = my_hdr->speed;
+	header.it      = my_hdr->tempo;
+
+	memset(header.chanset,0xFF,32);
+
+	for (i=0;i<9;i++)
+		header.chanset[i] = 0x10 + i;
+
+	ibuf += sizeof(dmo_header);
+
+	// load order
+	memcpy(orders,ibuf,256);
+
+	ibuf += 256;
+
+	// load instruments
+	for (i=0;i<my_hdr->numinst;i++)
+	{
+		dmo_instrument *my_ins = (dmo_instrument *)ibuf;
+
+		memset(&inst[i],0,sizeof(s3minst));
+
+		inst[i].type   = my_ins->type;
+		inst[i].d00    = my_ins->data[0];
+		inst[i].d01    = my_ins->data[1];
+		inst[i].d02    = my_ins->data[2];
+		inst[i].d03    = my_ins->data[3];
+		inst[i].d04    = my_ins->data[4];
+		inst[i].d05    = my_ins->data[5];
+		inst[i].d06    = my_ins->data[6];
+		inst[i].d07    = my_ins->data[7];
+		inst[i].d08    = my_ins->data[8];
+		inst[i].d09    = my_ins->data[9];
+		inst[i].d0a    = my_ins->data[10];
+		inst[i].volume = my_ins->vol;
+		inst[i].dsk    = my_ins->dsk;
+		inst[i].c2spd  = my_ins->c2spd;
+
+		memcpy(inst[i].name,my_ins->name,28);
+
+		ibuf += sizeof(dmo_instrument);
+	}
+
+	// load patterns
+	for (i=0;i<my_hdr->numpat;i++)
+	{
+		for (j=0;j<64;j++)
+		{
+			while (1)
+			{
+				unsigned char token = *ibuf++;
+
+				if (!token)
+					break;
+
+				unsigned char chan = token & 31;
+
+				// note + instrument ?
+				if (token & 32)
+				{
+					unsigned char bufbyte = *ibuf++;
+
+					pattern[i][j][chan].note = bufbyte & 15;
+					pattern[i][j][chan].oct = bufbyte >> 4;
+					pattern[i][j][chan].instrument = *ibuf++;
+				}
+
+				// volume ?
+				if (token & 64)
+				{
+					pattern[i][j][chan].volume = *ibuf++;
+				}
+
+				// command ?
+				if (token & 128)
+				{
+					pattern[i][j][chan].command = *ibuf++;
+					pattern[i][j][chan].info = *ibuf++;
+				}
+			}
+		}
+	}
+
+	delete module;
 
 	rewind(0);
 
-	return true;	
+	return true;
 }
 
 std::string CdmoLoader::gettype()
@@ -47,9 +197,9 @@ std::string CdmoLoader::gettype()
 
 /* -------- Private Methods ------------------------------- */
 
-WORD CdmoLoader::dmo_unpacker::brand(WORD range)
+unsigned short CdmoLoader::dmo_unpacker::brand(unsigned short range)
 {
-	WORD ax,bx,cx,dx;
+	unsigned short ax,bx,cx,dx;
 
 	ax = LOWORD(bseed);
 	bx = HIWORD(bseed);
@@ -73,37 +223,37 @@ WORD CdmoLoader::dmo_unpacker::brand(WORD range)
 	return HIWORD(HIWORD(LOWORD(bseed) * range) + HIWORD(bseed) * range);
 }
 
-bool CdmoLoader::dmo_unpacker::decrypt(char *buf, long len)
+bool CdmoLoader::dmo_unpacker::decrypt(unsigned char *buf, long len)
 {
-	DWORD seed = 0;
+	unsigned long seed = 0;
 
-	bseed = *(DWORD *)&buf[0];
+	bseed = *(unsigned long *)&buf[0];
 
-	for (int i=0;i<(*(WORD *)&buf[4]+1);i++)
+	for (int i=0;i<(*(unsigned short *)&buf[4]+1);i++)
 		seed += brand(0xffff);
 
-	bseed = seed ^ *(DWORD *)&buf[6];
+	bseed = seed ^ *(unsigned long *)&buf[6];
 
-	if ((*(WORD *)&buf[10]) != brand(0xffff))
+	if ((*(unsigned short *)&buf[10]) != brand(0xffff))
 		return false;
 
 	for (i=0;i<(len-12);i++)
 		buf[12+i] ^= brand(0x100);
 
-	*(WORD *)&buf[len-2] = 0;
+	*(unsigned short *)&buf[len-2] = 0;
 
 	return true;
 }
 
-WORD CdmoLoader::dmo_unpacker::unpack_block(char *ibuf, long ilen, char *obuf)
+short CdmoLoader::dmo_unpacker::unpack_block(unsigned char *ibuf, long ilen, unsigned char *obuf)
 {
-	BYTE code,par1,par2;
-	WORD ax,bx,cx;
+	unsigned char code,par1,par2;
+	unsigned short ax,bx,cx;
 
-	char *ipos = ibuf;
-	char *opos = obuf;
+	unsigned char *ipos = ibuf;
+	unsigned char *opos = obuf;
 
-	// LZSS-derived
+	// LZ77 child
 	while (ipos - ibuf < ilen)
 	{
 		code = *ipos++;
@@ -174,26 +324,21 @@ WORD CdmoLoader::dmo_unpacker::unpack_block(char *ibuf, long ilen, char *obuf)
 	return opos - obuf;
 }
 
-long CdmoLoader::dmo_unpacker::unpack(char *ibuf, long ilen, char *obuf)
+long CdmoLoader::dmo_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
 {
 	long olen = 0;
 
-	if (!decrypt(ibuf,ilen))
-		return 0;
-
-	ibuf += 12;
-
-	WORD block_count = *(WORD *)ibuf;
+	unsigned short block_count = *(unsigned short *)ibuf;
 
 	ibuf += 2;
 
-	WORD *block_length = (WORD *)ibuf;
+	unsigned short *block_length = (unsigned short *)ibuf;
 
 	ibuf += 2*block_count;
 
 	for (int i=0;i<block_count;i++)
 	{
-		WORD bul = *(WORD *)ibuf;
+		unsigned short bul = *(unsigned short *)ibuf;
 
 		if (unpack_block(ibuf + 2,block_length[i] - 2,obuf) != bul)
 			return 0;

@@ -1,6 +1,3 @@
-//
-// alpha version. do not compile.
-//
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
   Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
@@ -27,7 +24,13 @@
 class CdmoLoader: public Cs3mPlayer
 {
 	public:
+		static CPlayer *factory(Copl *newopl);
 
+		CdmoLoader(Copl *newopl) : Cs3mPlayer(newopl) { };
+
+		bool			load(istream &f, const char *filename);
+
+		std::string		gettype();
 
 	private:
 
@@ -35,16 +38,40 @@ class CdmoLoader: public Cs3mPlayer
 		{
 			public:
 
-				long unpack(char *ibuf, long ilen, char *obuf);
+				bool decrypt(unsigned char *buf, long len);
+
+				long unpack(unsigned char *ibuf, unsigned char *obuf);
 
 			private:
 
-				WORD brand(WORD range);
+				unsigned short brand(unsigned short range);
 
-				bool decrypt(char *buf, long len);
+				short unpack_block(unsigned char *ibuf, long ilen, unsigned char *obuf);
 
-				WORD unpack_block(char *ibuf, long ilen, char *obuf);
-
-				DWORD bseed;
+				unsigned long bseed;
 		};
+
+		struct dmo_header
+		{
+			char			id[22];
+			char			title[28];
+			unsigned short	_unk_1;
+			unsigned short	numord;
+			unsigned short	numinst;
+			unsigned short	numpat;
+			unsigned short	_unk_2;
+			unsigned short	speed;
+			unsigned short	tempo;
+			unsigned char	panning[32];
+		} my_hdr;
+
+		struct dmo_instrument
+		{
+			char			name[28];
+			unsigned char	vol;
+			unsigned char	dsk;
+			unsigned long	c2spd;
+			unsigned char	type;
+			unsigned char	data[11];
+		} my_ins;
 };
