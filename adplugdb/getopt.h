@@ -17,6 +17,10 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/* This copy is modified for use with Microsoft Visual C++, Watcom C/C++ and
+ * OpenWatcom compilers, 2003 by Simon Peter <dn.tlp@gmx.net>.
+ */
+
 #ifndef _GETOPT_H
 
 #ifndef __need_getopt
@@ -149,7 +153,9 @@ extern int _getopt_internal (int __argc, char *const *__argv,
 		             const struct option *__longopts, int *__longind,
 			     int __long_only);
 # endif
-#elif defined(_MSC_VER) && _MSC_VER /* using MS Visual C++ */
+#elif (defined(_MSC_VER) && _MSC_VER) || \
+        (defined(__WATCOMC__) && __WATCOMC__)
+/* using Microsoft Visual C++, Watcom or OpenWatcom. */
 extern int getopt (int, char **, const char *);
 
 # ifndef __need_getopt

@@ -1,7 +1,7 @@
-# AdPlug Makefile for WATCOM C/C++ 11.x
-# Copyright (c) 2002 Simon Peter <dn.tlp@gmx.net>
+# AdPlug Makefile for Watcom and OpenWatcom
+# Copyright (c) 2002, 2003 Simon Peter <dn.tlp@gmx.net>
 
-SUBDIRS = src
+SUBDIRS = src adplugdb
 
 AUX = doc\*.ms README AUTHORS NEWS COPYING TODO ChangeLog
 DIST = src\*.c src\*.cpp src\*.h src\Makefile.bt $(AUX) INSTALL

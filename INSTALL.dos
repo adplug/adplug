@@ -1,63 +1,64 @@
 Note
 ----
-This build system is tested and proven to work only with WATCOM C/C++ 11.x!
-It may compile with other (older) versions, but i can't guarantee it.
+These are generic installation instructions.
+
+These instructions assume that Watcom is the default compiler of this software
+package. If this software supports additional compilers, aside from Watcom, it
+is very likely that this build system is not the default. In this case, it may
+well be possible that some files have different names than assumed in these
+instructions. Please consult the software ditribution's documentation for more
+information on this topic.
 
 Configuration
 -------------
 Before you can compile anything, create a file called CONFIG.MIF in the
-distribution's base directory. It's best to copy the template below out of
+distribution's base directory. It is best to copy the template below out of
 this file and modify it to fit your setup.
 
 In most cases, you just want to change the installation target directories
 "bindir", "includedir" and "libdir" to your standard binary, header and
-library directories. If you want to install the library manually, you can just
-leave the file blank, if you don't want to set any other options.
+library directories. If you want to install the software manually and don't
+want to set any other options, you can just leave the whole file blank.
 
 There are numerous possibilities to configure other aspects of the
 distribution using the CONFIG.MIF file. You can redefine any variable of the
-distributed Makefile, like any standard Makefile variable (CFLAGS, LDFLAGS and
-the like), system type using the SYSTEM variable, or change the whole build
-dependency tree.
-
-Building
---------
-After configuration, run "wmake" to build the program/library.
+distribution's original Makefile, any standard wmake variable (CFLAGS, LDFLAGS
+and the like) or specify another system type using the SYSTEM variable.
 
 Installation
 ------------
-If you like to automatically install the program/library, run "wmake install".
+After configuration, run "wmake" to build the software.
 
-For manual installation, you have to examine the distribution's Makefile or
-consult its documentation on what to install where.
+If you like to automatically install the software, run "wmake install".
 
-Cleaning up
------------
-You can run "wmake clean" after the build (and maybe installation) process to
-delete any files created during compilation.
+For manual installation, you have to consult the software distribution's
+documentation for information.
 
-If you like, you can even run "wmake distclean" to clean up any additionally
-created files and bring back your source directory into the state, it was
+After the installation, you can run "wmake clean" to delete any files created
+during compilation.
+
+If you must, you can even run "wmake distclean" to clean up any additionally
+created files and bring back your source directory into the same state it was
 after unpacking the distribution archive.
 
 Uninstallation
 --------------
 You can automatically delete all installed files by running "wmake uninstall".
-Note that any files created after installation are being left on the target.
+Note that any files created after installation are being left on the device.
 
 Debugging
 ---------
-To enable debugging with the WATCOM debugger, add the following line to your
+To enable debugging using the Watcom debugger, add the following line to your
 CONFIG.MIF file:
 
 debug = yes
 
-This remakes all source files with source-level debugging enabled and
+This will recompile all source files with source-level debugging enabled and
 instructs the linker to include debugging information. Be careful with the
 SYSTEM setting in your CONFIG.MIF file, though. Only some extenders are
-supported by the WATCOM debugger. Some distributions may have defined a
+supported by the Watcom debugger. Some distributions may have defined a
 non-compatible extender by default, which you must override by specifying
-your own!
+your own.
 
 CONFIG.MIF Template
 -------------------
@@ -74,15 +75,15 @@ CONFIG.MIF Template
 
 # "bindir" is the target directory for binary (.exe) files.
 # Default: current directory
-bindir = c:\exe
+#bindir = c:\bin
 
 # "includedir" is the target directory for header (.h) files.
 # Default: current directory
-includedir = c:\include
+#includedir = c:\include
 
 # "libdir" is the target directory for library (.lib) files.
 # Default: current directory
-libdir = c:\lib
+#libdir = c:\lib
 
 # SYSTEM defines the target system.
 # Default: (distribution specified)

@@ -1,5 +1,5 @@
-# AdPlug Makefile for WATCOM C/C++ 11.x
-# Copyright (c) 2001, 2002 Simon Peter <dn.tlp@gmx.net>
+# AdPlug Makefile for Watcom and OpenWatcom
+# Copyright (c) 2001 - 2003 Simon Peter <dn.tlp@gmx.net>
 
 # This flag is set to work around a bug in the Watcom 11.0c compiler in
 # conjunction with the STLport library. Without it, the compiler will crash
@@ -10,7 +10,10 @@ OUTPUT = adplug.lib
 
 OBJS = debug.obj adplug.obj emuopl.obj fmopl.obj realopl.obj analopl.obj &
 diskopl.obj database.obj player.obj players.obj fprovide.obj protrack.obj &
-a2m.obj hsc.obj imf.obj sng.obj
+a2m.obj hsc.obj imf.obj sng.obj amd.obj d00.obj dfm.obj hsp.obj ksm.obj &
+mid.obj mkj.obj mtk.obj rad.obj raw.obj s3m.obj sa2.obj bam.obj xad.obj &
+mad.obj fmc.obj bmf.obj flash.obj hybrid.obj hyp.obj psi.obj rat.obj lds.obj &
+adtrack.obj cff.obj dtm.obj dmo.obj u6m.obj
 
 include_INST = protrack.h a2m.h amd.h d00.h dfm.h hsc.h hsp.h imf.h ksm.h &
 mid.h mkj.h mtk.h rad.h raw.h s3m.h sa2.h sng.h bam.h xad.h mad.h fmc.h &

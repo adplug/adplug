@@ -1,0 +1,11 @@
+# AdPlug Makefile for Watcom and OpenWatcom
+# Copyright (c) 2003 Simon Peter <dn.tlp@gmx.net>
+
+CPPFLAGS = -dHAVE_STRING_H
+
+OUTPUT = adplugdb.exe
+
+LIBRARIES = adplug.lib binio.lib
+OBJS = adplugdb.obj getopt.obj
+
+bin_INST = adplugdb.exe
