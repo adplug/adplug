@@ -1,6 +1,6 @@
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+  Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -28,9 +28,9 @@ class CdtmLoader: public CmodPlayer
 
 		CdtmLoader(Copl *newopl) : CmodPlayer(newopl) { };
 
-		bool			load(istream &f, const char *filename);
-		void			rewind(unsigned int subsong);
-		float			getrefresh();
+		bool	load(const std::string &filename, const CFileProvider &fp);
+		void	rewind(int subsong);
+		float	getrefresh();
 
 		std::string     gettype();
 		std::string     gettitle();

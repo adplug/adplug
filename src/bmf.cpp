@@ -1,6 +1,23 @@
 /*
-  [xad] BMF player, by Riven the Mage <riven@ok.ru>
-*/
+ * Adplug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * [xad] BMF player, by Riven the Mage <riven@ok.ru>
+ */
 
 /*
     - discovery -
@@ -26,7 +43,7 @@
 #include "bmf.h"
 #include "debug.h"
 
-static const unsigned char bmf_adlib_registers[117] =
+const unsigned char CxadbmfPlayer::bmf_adlib_registers[117] =
 {
   0x20, 0x23, 0x40, 0x43, 0x60, 0x63, 0x80, 0x83, 0xA0, 0xB0, 0xC0, 0xE0, 0xE3,
   0x21, 0x24, 0x41, 0x44, 0x61, 0x64, 0x81, 0x84, 0xA1, 0xB1, 0xC1, 0xE1, 0xE4,
@@ -39,29 +56,28 @@ static const unsigned char bmf_adlib_registers[117] =
   0x32, 0x35, 0x52, 0x55, 0x72, 0x75, 0x92, 0x95, 0xA8, 0xB8, 0xC8, 0xF2, 0xF5
 };
 
-static const unsigned short bmf_notes[12] =
+const unsigned short CxadbmfPlayer::bmf_notes[12] =
 {
   0x157, 0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287
 };
 
-
 /* for 1.1 */
-static const unsigned short bmf_notes_2[12] =
+const unsigned short CxadbmfPlayer::bmf_notes_2[12] =
 {
   0x159, 0x16D, 0x183, 0x19A, 0x1B2, 0x1CC, 0x1E8, 0x205, 0x223, 0x244, 0x267, 0x28B
 };
-static const unsigned char bmf_default_instrument[13] =
+
+const unsigned char CxadbmfPlayer::bmf_default_instrument[13] =
 {
   0x01, 0x01, 0x3F, 0x3F, 0x00, 0x00, 0xF0, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
 CPlayer *CxadbmfPlayer::factory(Copl *newopl)
 {
-  CxadbmfPlayer *p = new CxadbmfPlayer(newopl);
-  return p;
+  return new CxadbmfPlayer(newopl);
 }
 
-bool CxadbmfPlayer::xadplayer_load(istream &f)
+bool CxadbmfPlayer::xadplayer_load()
 {
   unsigned short ptr = 0;
   int i;
@@ -176,7 +192,7 @@ bool CxadbmfPlayer::xadplayer_load(istream &f)
   return true;
 }
 
-void CxadbmfPlayer::xadplayer_rewind(unsigned int subsong)
+void CxadbmfPlayer::xadplayer_rewind(int subsong)
 {
   int i,j;
 

@@ -56,11 +56,11 @@ bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
   unsigned int i;
 
   // file validation section (actually just an extension check)
-  if(!extension(filename, ".imf")) { fp.close(f); return false; }
+  if(!fp.extension(filename, ".imf")) { fp.close(f); return false; }
 
   // load section
   fsize = f->readInt(2);	// try to load music data size
-  flsize = filesize(f);
+  flsize = fp.filesize(f);
   if(!fsize) {		// footerless file (raw music data)
     f->seek(0);
     size = flsize / 4;

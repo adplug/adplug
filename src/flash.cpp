@@ -1,6 +1,23 @@
 /*
-  [xad] FLASH player, by Riven the Mage <riven@ok.ru>
-*/
+ * Adplug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * [xad] FLASH player, by Riven the Mage <riven@ok.ru>
+ */
 
 /*
     - discovery -
@@ -14,7 +31,7 @@
 #include "flash.h"
 #include "debug.h"
 
-static const unsigned char flash_adlib_registers[99] =
+const unsigned char CxadflashPlayer::flash_adlib_registers[99] =
 {
   0x23, 0x20, 0x43, 0x40, 0x63, 0x60, 0x83, 0x80, 0xC0, 0xE3, 0xE0,
   0x24, 0x21, 0x44, 0x41, 0x64, 0x61, 0x84, 0x81, 0xC1, 0xE4, 0xE1,
@@ -27,7 +44,7 @@ static const unsigned char flash_adlib_registers[99] =
   0x35, 0x32, 0x55, 0x52, 0x75, 0x72, 0x95, 0x92, 0xC8, 0xF5, 0xF2
 };
 
-static const unsigned short flash_notes_encoded[268] =
+const unsigned short CxadflashPlayer::flash_notes_encoded[268] =
 {
   0x000,
   0x100, 0x200, 0x300, 0x400, 0x500, 0x600, 0x700, 0x800, 0x900, 0xA00, 0xB00, 0xC00,
@@ -54,23 +71,22 @@ static const unsigned short flash_notes_encoded[268] =
   0x115, 0x215, 0x315
 };
 
-static const unsigned short flash_notes[12] =
+const unsigned short CxadflashPlayer::flash_notes[12] =
 {
   0x157, 0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287
 };
 
-static const unsigned char flash_default_instrument[8] =
+const unsigned char CxadflashPlayer::flash_default_instrument[8] =
 {
   0x00, 0x00, 0x3F, 0x3F, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
 CPlayer *CxadflashPlayer::factory(Copl *newopl)
 {
-  CxadflashPlayer *p = new CxadflashPlayer(newopl);
-  return p;
+  return new CxadflashPlayer(newopl);
 }
 
-void CxadflashPlayer::xadplayer_rewind(unsigned int subsong)
+void CxadflashPlayer::xadplayer_rewind(int subsong)
 {
   int i;
 

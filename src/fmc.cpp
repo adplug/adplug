@@ -1,6 +1,6 @@
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
+  Copyright (C) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -25,41 +25,75 @@
 
 CPlayer *CfmcLoader::factory(Copl *newopl)
 {
-  CfmcLoader *p = new CfmcLoader(newopl);
-  return p;
+  return new CfmcLoader(newopl);
 }
 
-bool CfmcLoader::load(istream &f, const char *filename)
+bool CfmcLoader::load(const std::string &filename, const CFileProvider &fp)
 {
+        binistream *f = fp.open(filename); if(!f) return false;
 	const unsigned char conv_fx[16] = {0,1,2,3,4,8,255,255,255,255,26,11,12,13,14,15};
 
 	int i,j,k,t=0;
 
+	// read header
+	f->readString(header.id, 4);
+	f->readString(header.title, 21);
+	header.numchan = f->readInt(1);
+
 	// 'FMC!' - signed ?
-	f.read((char *)&header,sizeof(fmc_header));
-	if (strncmp(header.id,"FMC!",4))
-		return false;
+	if (strncmp(header.id,"FMC!",4)) { fp.close(f); return false; }
 
 	// init CmodPlayer
 	realloc_instruments(32);
 	realloc_order(256);
 	realloc_patterns(64,64,header.numchan);
-
 	init_trackord();
 
 	// load order
-	f.read((char *)order,256);
+	for(i = 0; i < 256; i++) order[i] = f->readInt(1);
 
-	f.ignore(2);
+	f->ignore(2);
 
 	// load instruments
-	f.read((char *)instruments,32*sizeof(fmc_instrument));
+	for(i = 0; i < 32; i++) {
+	  instruments[i].synthesis = f->readInt(1);
+	  instruments[i].feedback = f->readInt(1);
+
+	  instruments[i].mod_attack = f->readInt(1);
+	  instruments[i].mod_decay = f->readInt(1);
+	  instruments[i].mod_sustain = f->readInt(1);
+	  instruments[i].mod_release = f->readInt(1);
+	  instruments[i].mod_volume = f->readInt(1);
+	  instruments[i].mod_ksl = f->readInt(1);
+	  instruments[i].mod_freq_multi = f->readInt(1);
+	  instruments[i].mod_waveform = f->readInt(1);
+	  instruments[i].mod_sustain_sound = f->readInt(1);
+	  instruments[i].mod_ksr = f->readInt(1);
+	  instruments[i].mod_vibrato = f->readInt(1);
+	  instruments[i].mod_tremolo = f->readInt(1);
+
+	  instruments[i].car_attack = f->readInt(1);
+	  instruments[i].car_decay = f->readInt(1);
+	  instruments[i].car_sustain = f->readInt(1);
+	  instruments[i].car_release = f->readInt(1);
+	  instruments[i].car_volume = f->readInt(1);
+	  instruments[i].car_ksl = f->readInt(1);
+	  instruments[i].car_freq_multi = f->readInt(1);
+	  instruments[i].car_waveform = f->readInt(1);
+	  instruments[i].car_sustain_sound = f->readInt(1);
+	  instruments[i].car_ksr = f->readInt(1);
+	  instruments[i].car_vibrato = f->readInt(1);
+	  instruments[i].car_tremolo = f->readInt(1);
+
+	  instruments[i].pitch_shift = f->readInt(1);
+
+	  f->readString(instruments[i].name, 21);
+	}
 
 	// load tracks
 	for (i=0;i<64;i++)
 	{
-		if (f.peek() == EOF)
-			break;
+	        if(f->ateof()) break;
 
 		for (j=0;j<header.numchan;j++)
 		{
@@ -68,7 +102,9 @@ bool CfmcLoader::load(istream &f, const char *filename)
 				fmc_event event;
 
 				// read event
-				f.read((char *)&event,sizeof(fmc_event));
+				event.byte0 = f->readInt(1);
+				event.byte1 = f->readInt(1);
+				event.byte2 = f->readInt(1);
 
 				// convert event
 				tracks[t][k].note = event.byte0 & 0x7F;
@@ -96,6 +132,7 @@ bool CfmcLoader::load(istream &f, const char *filename)
 			t++;
 		}
 	}
+	fp.close(f);
 
 	// convert instruments
 	for (i=0;i<31;i++)

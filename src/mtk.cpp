@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
  * mtk.cpp - MPU-401 Trakker Loader by Simon Peter (dn.tlp@gmx.net)
  */
 
@@ -26,12 +25,12 @@
 
 CPlayer *CmtkLoader::factory(Copl *newopl)
 {
-  CmtkLoader *p = new CmtkLoader(newopl);
-  return p;
+  return new CmtkLoader(newopl);
 }
 
-bool CmtkLoader::load(istream &f, const char *filename)
+bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
 {
+        binistream *f = fp.open(filename); if(!f) return false;
 	struct {
 		char id[18];
 		unsigned short crc,size;
@@ -40,27 +39,31 @@ bool CmtkLoader::load(istream &f, const char *filename)
 		char songname[34],composername[34],instname[0x80][34];
 		unsigned char insts[0x80][12],order[0x80],dummy,patterns[0x32][0x40][9];
 	} *data;
-	unsigned char *cmp,*org,i;
+	unsigned char *cmp,*org;
+	unsigned int i;
 	unsigned long cmpsize,cmpptr=0,orgptr=0;
 	unsigned short ctrlbits=0,ctrlmask=0,cmd,cnt,offs;
 
+	// read header
+	f->readString(header.id, 18);
+	header.crc = f->readInt(2);
+	header.size = f->readInt(2);
+
 	// file validation section
-	f.read((char *)&header,sizeof(header));
 	if(strncmp(header.id,"mpu401tr\x92kk\xeer@data",18))
-		return false;
+	  { fp.close(f); return false; }
 
 	// load section
-	f.seekg(0,ios::end);
-	cmpsize = f.tellg(); cmpsize -= sizeof(header);
-	f.seekg(sizeof(header));
+	cmpsize = fp.filesize(f) - 22;
 	cmp = new unsigned char[cmpsize];
 	org = new unsigned char[header.size];
-	f.read((char *)cmp,cmpsize);
+	for(i = 0; i < cmpsize; i++) cmp[i] = f->readInt(1);
+	fp.close(f);
 
 	while(cmpptr < cmpsize) {	// decompress
 		ctrlmask >>= 1;
 		if(!ctrlmask) {
-			ctrlbits = *(unsigned short *) &cmp[cmpptr];
+		        ctrlbits = cmp[cmpptr] + (cmp[cmpptr + 1] << 8);
 			cmpptr += 2;
 			ctrlmask = 0x8000;
 		}

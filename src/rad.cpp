@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,29 +26,29 @@
 
 CPlayer *CradLoader::factory(Copl *newopl)
 {
-  CradLoader *p = new CradLoader(newopl);
-  return p;
+  return new CradLoader(newopl);
 }
 
-bool CradLoader::load(istream &f, const char *filename)
+bool CradLoader::load(const std::string &filename, const CFileProvider &fp)
 {
+        binistream *f = fp.open(filename); if(!f) return false;
 	char id[16];
 	unsigned char buf,ch,c,b,inp;
 	char bufstr[2] = "\0";
-	int i,j;
+	unsigned int i,j;
 	unsigned short patofs[32];
 	const unsigned char convfx[16] = {255,1,2,3,255,5,255,255,255,255,20,255,17,0xd,255,19};
 
 	// file validation section
-	f.read(id,16); version = f.get();
+	f->readString(id, 16); version = f->readInt(1);
 	if(strncmp(id,"RAD by REALiTY!!",16) || version != 0x10)
-		return false;
+	  { fp.close(f); return false; }
 
 	// load section
-	radflags = f.get();
+	radflags = f->readInt(1);
 	if(radflags & 128) {	// description
 		memset(desc,0,80*22);
-		while((buf = f.get()))
+		while((buf = f->readInt(1)))
 			if(buf == 1)
 				strcat(desc,"\n");
 			else
@@ -60,34 +60,34 @@ bool CradLoader::load(istream &f, const char *filename)
 					strcat(desc,bufstr);
 				}
 	}
-	while((buf = f.get())) {	// instruments
+	while((buf = f->readInt(1))) {	// instruments
 		buf--;
-		inst[buf].data[2] = f.get(); inst[buf].data[1] = f.get();
-		inst[buf].data[10] = f.get(); inst[buf].data[9] = f.get();
-		inst[buf].data[4] = f.get(); inst[buf].data[3] = f.get();
-		inst[buf].data[6] = f.get(); inst[buf].data[5] = f.get();
-		inst[buf].data[0] = f.get();
-		inst[buf].data[8] = f.get(); inst[buf].data[7] = f.get();
+		inst[buf].data[2] = f->readInt(1); inst[buf].data[1] = f->readInt(1);
+		inst[buf].data[10] = f->readInt(1); inst[buf].data[9] = f->readInt(1);
+		inst[buf].data[4] = f->readInt(1); inst[buf].data[3] = f->readInt(1);
+		inst[buf].data[6] = f->readInt(1); inst[buf].data[5] = f->readInt(1);
+		inst[buf].data[0] = f->readInt(1);
+		inst[buf].data[8] = f->readInt(1); inst[buf].data[7] = f->readInt(1);
 	}
-	length = f.get();
-	f.read((char *)order,length);	// orderlist
-	f.read((char *)patofs,32*2);	// pattern offset table
+	length = f->readInt(1);
+	for(i = 0; i < length; i++) order[i] = f->readInt(1);	// orderlist
+	for(i = 0; i < 32; i++) patofs[i] = f->readInt(2);	// pattern offset table
 	init_trackord();		// patterns
 	for(i=0;i<32;i++)
 		if(patofs[i]) {
-			f.seekg(patofs[i]);
+			f->seek(patofs[i]);
 			do {
-				buf = f.get(); b = buf & 127;
+				buf = f->readInt(1); b = buf & 127;
 				do {
-					ch = f.get(); c = ch & 127;
-					inp = f.get();
+					ch = f->readInt(1); c = ch & 127;
+					inp = f->readInt(1);
 					tracks[i*9+c][b].note = inp & 127;
 					tracks[i*9+c][b].inst = (inp & 128) >> 3;
-					inp = f.get();
+					inp = f->readInt(1);
 					tracks[i*9+c][b].inst += inp >> 4;
 					tracks[i*9+c][b].command = inp & 15;
 					if(inp & 15) {
-						inp = f.get();
+						inp = f->readInt(1);
 						tracks[i*9+c][b].param1 = inp / 10;
 						tracks[i*9+c][b].param2 = inp % 10;
 					}
@@ -95,6 +95,7 @@ bool CradLoader::load(istream &f, const char *filename)
 			} while(!(buf & 128));
 		} else
 			memset(trackord[i],0,9*2);
+	fp.close(f);
 
 	// convert replay data
 	for(i=0;i<32*9;i++)	// convert patterns

@@ -1,6 +1,6 @@
 /*
   AdPlug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
+  Copyright (C) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -19,8 +19,8 @@
   xad.h - XAD shell player by Riven the Mage <riven@ok.ru>
 */
 
-#ifndef H_XAD
-#define H_XAD
+#ifndef H_ADPLUG_XAD
+#define H_ADPLUG_XAD
 
 #include "player.h"
 
@@ -32,10 +32,10 @@ public:
         CxadPlayer(Copl * newopl);
         ~CxadPlayer();
 
-        bool            load(std::string filename, const CFileProvider &fp);
-        bool            update();
-        void            rewind(int subsong);
-        float           getrefresh();
+        bool	load(const std::string &filename, const CFileProvider &fp);
+        bool	update();
+        void	rewind(int subsong);
+        float	getrefresh();
 
         std::string     gettype();
         std::string     gettitle();
@@ -44,8 +44,8 @@ public:
         unsigned int    getinstruments();
 
 protected:
-	virtual void xadplayer_rewind(unsigned int subsong) = 0;
-	virtual bool xadplayer_load(istream &f) = 0;
+	virtual void xadplayer_rewind(int subsong) = 0;
+	virtual bool xadplayer_load() = 0;
 	virtual void xadplayer_update() = 0;
 	virtual float xadplayer_getrefresh() = 0;
 	virtual std::string xadplayer_gettype() = 0;
@@ -70,7 +70,7 @@ protected:
 
         struct xad_header
         {
-            char            id[4];
+	    unsigned long   id;
             char            title[36];
             char            author[36];
             unsigned short  fmt;

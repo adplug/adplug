@@ -1,6 +1,6 @@
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+  Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -35,38 +35,39 @@
 
 CPlayer *CdmoLoader::factory(Copl *newopl)
 {
-  CdmoLoader *p = new CdmoLoader(newopl);
-  return p;
+  return new CdmoLoader(newopl);
 }
 
-bool CdmoLoader::load(istream &f, const char *filename)
+bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
 {
 	int i,j;
+	binistream *f;
 
 	// check header
 	dmo_unpacker *unpacker = new dmo_unpacker;
 	unsigned char chkhdr[16];
 
-      	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".dmo"))
-	  return false;
+	if(!fp.extension(filename, ".dmo")) return false;
+        f = fp.open(filename); if(!f) return false;
 
-	f.read(chkhdr,16);
+	f->readString((char *)chkhdr, 16);
 
 	if (!unpacker->decrypt(chkhdr,16))
 	{
 		delete unpacker;
+		fp.close(f);
 		return false;
 	}
 
 	// get file size
-	f.seekg(0,ios::end);
-	long packed_length = f.tellg();
-	f.seekg(0);
+	long packed_length = fp.filesize(f);
+	f->seek(0);
 
 	unsigned char *packed_module = new unsigned char [packed_length];
 
 	// load file
-	f.read((char *)packed_module,packed_length);
+	f->readString((char *)packed_module, packed_length);
+	fp.close(f);
 
 	// decrypt
 	unpacker->decrypt(packed_module,packed_length);

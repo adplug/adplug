@@ -19,8 +19,6 @@
  * player.cpp - Replayer base class, by Simon Peter <dn.tlp@gmx.net>
  */
 
-#include <string.h>
-
 #include "player.h"
 #include "adplug.h"
 
@@ -39,28 +37,6 @@ CPlayer::CPlayer(Copl *newopl)
 
 CPlayer::~CPlayer()
 {
-}
-
-bool CPlayer::extension(const std::string &filename, const std::string &extension)
-{
-  const char *fname = filename.c_str(), *ext = extension.c_str();
-
-  if(strlen(fname) < strlen(ext) ||
-     stricmp(fname + strlen(fname) - 4, ext))
-    return false;
-  else
-    return true;
-}
-
-unsigned long CPlayer::filesize(binistream *f)
-{
-  unsigned long oldpos = f->pos(), size;
-
-  f->seek(0, binio::End);
-  size = f->pos();
-  f->seek(oldpos, binio::Set);
-
-  return size;
 }
 
 unsigned long CPlayer::songlength(int subsong)

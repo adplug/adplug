@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * s3m.c - S3M Player by Simon Peter (dn.tlp@gmx.net)
+ * s3m.c - S3M Player by Simon Peter <dn.tlp@gmx.net>
  *
  * BUGS:
  * Extra Fine Slides (EEx, FEx) & Fine Vibrato (Uxy) are inaccurate
@@ -25,21 +24,20 @@
 
 #include "s3m.h"
 
-const char chnresolv[] =	// S3M -> adlib channel conversion
+const char Cs3mPlayer::chnresolv[] =	// S3M -> adlib channel conversion
 	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,-1,-1,-1,-1,-1,-1,-1};
 
-static const unsigned short notetable[12] =		// S3M adlib note table
+const unsigned short Cs3mPlayer::notetable[12] =		// S3M adlib note table
 			{340,363,385,408,432,458,485,514,544,577,611,647};
 
-static const unsigned char vibratotab[32] =		// vibrato rate table
+const unsigned char Cs3mPlayer::vibratotab[32] =		// vibrato rate table
 			{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
 
 /*** public methods *************************************/
 
 CPlayer *Cs3mPlayer::factory(Copl *newopl)
 {
-  Cs3mPlayer *p = new Cs3mPlayer(newopl);
-  return p;
+  return new Cs3mPlayer(newopl);
 }
 
 Cs3mPlayer::Cs3mPlayer(Copl *newopl): CPlayer(newopl)
@@ -57,72 +55,87 @@ Cs3mPlayer::Cs3mPlayer(Copl *newopl): CPlayer(newopl)
 			}
 }
 
-bool Cs3mPlayer::load(istream &f, const char *filename)
+bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
+        binistream *f = fp.open(filename); if(!f) return false;
 	unsigned short	insptr[99],pattptr[99];
-	int				i,row;
+	int		i,row;
 	unsigned char	bufval,bufval2;
 	unsigned short	ppatlen;
-	s3mheader		*checkhead;
-	bool			adlibins=false;
+	s3mheader	*checkhead;
+	bool		adlibins=false;
 
 	// file validation section
 	checkhead = new s3mheader;
-	f.read((char *)checkhead,sizeof(s3mheader));
+	load_header(f, checkhead);
 	if((checkhead->kennung != 0x1a) || (checkhead->typ != 16)) {
-		delete checkhead; return false;
+		delete checkhead; fp.close(f); return false;
 	} else
 		if(strncmp(checkhead->scrm,"SCRM",4)) {
-			delete checkhead; return false;
+			delete checkhead; fp.close(f); return false;
 		} else {	// is an adlib module?
-			f.seekg(checkhead->ordnum,ios::cur);
-			f.read((char *)insptr,checkhead->insnum*2);
+             	        f->seek(checkhead->ordnum, binio::Add);
+			for(i = 0; i < checkhead->insnum; i++)
+			  insptr[i] = f->readInt(2);
 			for(i=0;i<checkhead->insnum;i++) {
-				f.seekg(insptr[i]*16);
-				if(f.get() >= 2) {
+				f->seek(insptr[i]*16);
+				if(f->readInt(1) >= 2) {
 					adlibins = true;
 					break;
 				}
 			}
 			delete checkhead;
-			if(!adlibins)
-				return false;
+			if(!adlibins) { fp.close(f); return false; }
 		}
 
 	// load section
-	f.seekg(0);	// rewind for load
-	f.read((char *)&header,sizeof(header));		// read header
-	f.read((char *)orders,header.ordnum);		// read orders
-	f.read((char *)insptr,header.insnum*2);		// instrument parapointers
-	f.read((char *)pattptr,header.patnum*2);	// pattern parapointers
+	f->seek(0);	// rewind for load
+	load_header(f, &header);			// read header
+	for(i = 0; i < header.ordnum; i++) orders[i] = f->readInt(1);	// read orders
+	for(i = 0; i < header.insnum; i++) insptr[i] = f->readInt(2);	// instrument parapointers
+	for(i = 0; i < header.patnum; i++) pattptr[i] = f->readInt(2);	// pattern parapointers
 
 	for(i=0;i<header.insnum;i++) {	// load instruments
-		f.seekg(insptr[i]*16);
-		f.read((char *)&inst[i],sizeof(inst[i]));
+		f->seek(insptr[i]*16);
+		inst[i].type = f->readInt(1);
+		f->readString(inst[i].filename, 15);
+		inst[i].d00 = f->readInt(1); inst[i].d01 = f->readInt(1);
+		inst[i].d02 = f->readInt(1); inst[i].d03 = f->readInt(1);
+		inst[i].d04 = f->readInt(1); inst[i].d05 = f->readInt(1);
+		inst[i].d06 = f->readInt(1); inst[i].d07 = f->readInt(1);
+		inst[i].d08 = f->readInt(1); inst[i].d09 = f->readInt(1);
+		inst[i].d0a = f->readInt(1); inst[i].d0b = f->readInt(1);
+		inst[i].volume = f->readInt(1); inst[i].dsk = f->readInt(1);
+		f->ignore(2);
+		inst[i].c2spd = f->readInt(4);
+		f->ignore(12);
+		f->readString(inst[i].name, 28);
+		f->readString(inst[i].scri, 4);
 	}
 
 	for(i=0;i<header.patnum;i++) {	// depack patterns
-		f.seekg(pattptr[i]*16);
-		f.read((char *)&ppatlen,sizeof(ppatlen));
-		unsigned long pattpos = f.tellg();
+		f->seek(pattptr[i]*16);
+		ppatlen = f->readInt(2);
+		unsigned long pattpos = f->pos();
 		for(row=0;(row<64) && (pattpos-pattptr[i]*16<=ppatlen);row++)
 			do {
-				f.read((char *)&bufval,1);
+            		        bufval = f->readInt(1);
 				if(bufval & 32) {
-					f.read((char *)&bufval2,1);
+				        bufval2 = f->readInt(1);
 					pattern[i][row][bufval & 31].note = bufval2 & 15;
 					pattern[i][row][bufval & 31].oct = (bufval2 & 240) >> 4;
-					f.read((char *)&pattern[i][row][bufval & 31].instrument,1);
+					pattern[i][row][bufval & 31].instrument = f->readInt(1);
 				}
 				if(bufval & 64)
-					f.read((char *)&pattern[i][row][bufval & 31].volume,1);
+				        pattern[i][row][bufval & 31].volume = f->readInt(1);
 				if(bufval & 128) {
-					f.read((char *)&pattern[i][row][bufval & 31].command,1);
-					f.read((char *)&pattern[i][row][bufval & 31].info,1);
+				        pattern[i][row][bufval & 31].command = f->readInt(1);
+					pattern[i][row][bufval & 31].info = f->readInt(1);
 				}
 			} while(bufval);
 	}
 
+	fp.close(f);
 	rewind(0);
 	return true;		// done
 }
@@ -353,7 +366,7 @@ bool Cs3mPlayer::update()
 	return !songend;		// still playing
 }
 
-void Cs3mPlayer::rewind(unsigned int subsong)
+void Cs3mPlayer::rewind(int subsong)
 {
 	// set basic variables
 	songend = 0; ord = 0; crow = 0; tempo = header.it;
@@ -386,6 +399,24 @@ float Cs3mPlayer::getrefresh()
 }
 
 /*** private methods *************************************/
+
+void Cs3mPlayer::load_header(binistream *f, s3mheader *h)
+{
+  int i;
+
+  f->readString(h->name, 28);
+  h->kennung = f->readInt(1); h->typ = f->readInt(1);
+  f->ignore(2);
+  h->ordnum = f->readInt(2); h->insnum = f->readInt(2);
+  h->patnum = f->readInt(2); h->flags = f->readInt(2);
+  h->cwtv = f->readInt(2); h->ffi = f->readInt(2);
+  f->readString(h->scrm, 4);
+  h->gv = f->readInt(1); h->is = f->readInt(1); h->it = f->readInt(1);
+  h->mv = f->readInt(1); h->uc = f->readInt(1); h->dp = f->readInt(1);
+  f->ignore(8);
+  h->special = f->readInt(2);
+  for(i = 0; i < 32; i++) h->chanset[i] = f->readInt(1);
+}
 
 void Cs3mPlayer::setvolume(unsigned char chan)
 {

@@ -1,6 +1,23 @@
 /*
-  [xad] HYBRID player, by Riven the Mage <riven@ok.ru>
-*/
+ * Adplug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * [xad] HYBRID player, by Riven the Mage <riven@ok.ru>
+ */
 
 /*
     - discovery -
@@ -14,7 +31,7 @@
 #include "hybrid.h"
 #include "debug.h"
 
-unsigned char hyb_adlib_registers[99] = 
+const unsigned char CxadhybridPlayer::hyb_adlib_registers[99] = 
 {
   0xE0, 0x60, 0x80, 0x20, 0x40, 0xE3, 0x63, 0x83, 0x23, 0x43, 0xC0,
   0xE1, 0x61, 0x81, 0x21, 0x41, 0xE4, 0x64, 0x84, 0x24, 0x44, 0xC1,
@@ -27,7 +44,7 @@ unsigned char hyb_adlib_registers[99] =
   0xF2, 0x72, 0x92, 0x32, 0x52, 0xF5, 0x75, 0x95, 0x35, 0x55, 0xC8
 };
 
-unsigned short hyb_notes[98] =
+const unsigned short CxadhybridPlayer::hyb_notes[98] =
 {
   0x0000, 0x0000,
   0x016B, 0x0181, 0x0198, 0x01B0, 0x01CA, 0x01E5, 0x0202, 0x0220, 0x0241, 0x0263, 0x0287, 0x02AE,
@@ -40,18 +57,17 @@ unsigned short hyb_notes[98] =
   0x1D6B, 0x1D81, 0x1D98, 0x1DB0, 0x1DCA, 0x1DE5, 0x1E02, 0x1E20, 0x1E41, 0x1E63, 0x1E87, 0x1EAE
 };
 
-unsigned char hyb_default_instrument[11] = 
+const unsigned char CxadhybridPlayer::hyb_default_instrument[11] = 
 {
   0x00, 0xFF, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0x00
 };
 
 CPlayer *CxadhybridPlayer::factory(Copl *newopl)
 {
-  CxadhybridPlayer *p = new CxadhybridPlayer(newopl);
-  return p;
+  return new CxadhybridPlayer(newopl);
 }
 
-bool CxadhybridPlayer::xadplayer_load(istream &f)
+bool CxadhybridPlayer::xadplayer_load()
 {
   if(xad.fmt != HYBRID)
     return false;
@@ -65,7 +81,7 @@ bool CxadhybridPlayer::xadplayer_load(istream &f)
   return true;
 }
 
-void CxadhybridPlayer::xadplayer_rewind(unsigned int subsong)
+void CxadhybridPlayer::xadplayer_rewind(int subsong)
 {
   int i;
 

@@ -37,7 +37,7 @@ bool ChscPlayer::load(const std::string &filename, const CFileProvider &fp)
   int i;
 
   // file validation section
-  if(!f || !extension(filename, ".hsc") || filesize(f) > 59187) {
+  if(!f || !fp.extension(filename, ".hsc") || fp.filesize(f) > 59187) {
     AdPlug_LogWrite("ChscPlayer::load(\"%s\"): Not a HSC file!\n", filename.c_str());
     fp.close(f);
     return false;

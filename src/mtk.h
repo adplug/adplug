@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * mtk.h - MPU-401 Trakker Loader by Simon Peter (dn.tlp@gmx.net)
+ * mtk.h - MPU-401 Trakker Loader by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include "hsc.h"
@@ -33,7 +32,7 @@ public:
 		mtkmode = 1;
 	};
 
-	bool load(istream &f, const char *filename);
+	bool load(const std::string &filename, const CFileProvider &fp);
 
 	std::string gettype()
 	{ return std::string("MPU-401 Trakker"); };

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * mid.h - LAA & MID & CMF Player by Philip Hassey (philhassey@hotmail.com)
+ * mid.h - LAA, SCI, MID & CMF Player by Philip Hassey <philhassey@hotmail.com>
  */
 
 #include "player.h"
@@ -29,14 +28,14 @@ public:
 
 	CmidPlayer(Copl *newopl)
 		: CPlayer(newopl), author(&emptystr), title(&emptystr),
-	  remarks(&emptystr), emptystr('\0'), fname(0), flen(0), data(0)
+	  remarks(&emptystr), emptystr('\0'), flen(0), data(0)
 	{ };
 	~CmidPlayer()
-	{ if(data) delete [] data; if(fname) free(fname); };
+	{ if(data) delete [] data; };
 
-	bool load(istream &f, const char *filename);
+	bool load(const std::string &filename, const CFileProvider &fp);
 	bool update();
-	void rewind(unsigned int subsong);
+	void rewind(int subsong);
 	float getrefresh();
 
 	std::string gettype();
@@ -69,17 +68,17 @@ protected:
 		unsigned char pv;
 	};
 
-    char *author,*title,*remarks,emptystr,*fname;
+    char *author,*title,*remarks,emptystr;
     long flen;
     unsigned long pos;
     unsigned long sierra_pos; //sierras gotta be special.. :>
-    unsigned int subsongs;
+    int subsongs;
     unsigned char *data;
 
     unsigned char adlib_data[256];
     int adlib_style;
     int adlib_mode;
-    unsigned char myinsbank[128][16];
+    unsigned char myinsbank[128][16], smyinsbank[128][16];
     midi_channel ch[16];
     int chp[9][3];
 
@@ -93,17 +92,16 @@ protected:
     unsigned long iwait;
     int doing;
 
-    int type,tins;
+    int type,tins,stins;
 
 private:
-	bool load_sierra_ins();
+	bool load_sierra_ins(const std::string &fname, const CFileProvider &fp);
 	void midiprintf(char *format, ...);
 	unsigned char datalook(long pos);
 	unsigned long getnexti(unsigned long num);
 	unsigned long getnext(unsigned long num);
 	unsigned long getval();
 	void sierra_next_section();
-	unsigned long filelength(istream &f);
 	void midi_write_adlib(unsigned int r, unsigned char v);
 	void midi_fm_instrument(int voice, unsigned char *inst);
 	void midi_fm_volume(int voice, int volume);

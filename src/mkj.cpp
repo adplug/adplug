@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,36 +16,35 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * mkj.cpp - MKJamz Player, by Simon Peter (dn.tlp@gmx.net)
+ * mkj.cpp - MKJamz Player, by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include "mkj.h"
 
 CPlayer *CmkjPlayer::factory(Copl *newopl)
 {
-  CmkjPlayer *p = new CmkjPlayer(newopl);
-  return p;
+  return new CmkjPlayer(newopl);
 }
 
-bool CmkjPlayer::load(istream &f, const char *filename)
+bool CmkjPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
+        binistream *f = fp.open(filename); if(!f) return false;
 	char	id[6];
 	float	ver;
-	int		i;
+	int	i, j;
 	short	inst[8];
 
 	// file validation
-	f.read(id,6);
-	if(strncmp(id,"MKJamz",6)) return false;
-	f.read((char *)&ver,sizeof(ver));
-	if(ver > 1.12) return false;
+	f->readString(id, 6);
+	if(strncmp(id,"MKJamz",6)) { fp.close(f); return false; }
+	ver = f->readFloat(binio::Single);
+	if(ver > 1.12) { fp.close(f); return false; }
 
 	// load
-	f.read((char *)&maxchannel,2);
-	opl->init(); opl->write(1,32);
-	for(i=0;i<maxchannel;i++) {
-		f.read((char *)inst,8*2);
+	maxchannel = f->readInt(2);
+	opl->init(); opl->write(1, 32);
+	for(i = 0; i < maxchannel; i++) {
+	        for(j = 0; j < 8; j++) inst[j] = f->readInt(2);
 		opl->write(0x20+op_table[i],inst[4]);
 		opl->write(0x23+op_table[i],inst[0]);
 		opl->write(0x40+op_table[i],inst[5]);
@@ -55,12 +54,13 @@ bool CmkjPlayer::load(istream &f, const char *filename)
 		opl->write(0x80+op_table[i],inst[7]);
 		opl->write(0x83+op_table[i],inst[3]);
 	}
-	f.read((char *)&maxnotes,2);
+	maxnotes = f->readInt(2);
 	songbuf = new short [(maxchannel+1)*maxnotes];
-	for(i=0;i<maxchannel;i++)
-		f.read((char *)&channel[i].defined,2);
-	f.read((char *)songbuf,(maxchannel+1)*maxnotes*2);
+	for(i = 0; i < maxchannel; i++) channel[i].defined = f->readInt(2);
+	for(i = 0; i < (maxchannel + 1) * maxnotes; i++)
+	  songbuf[i] = f->readInt(2);
 
+	fp.close(f);
 	rewind(0);
 	return true;
 }
@@ -157,7 +157,7 @@ bool CmkjPlayer::update()
 	return !songend;
 }
 
-void CmkjPlayer::rewind(unsigned int subsong)
+void CmkjPlayer::rewind(int subsong)
 {
 	int i;
 

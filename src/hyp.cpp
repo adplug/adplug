@@ -1,6 +1,23 @@
 /*
-  [xad] HYP player, by Riven the Mage <riven@ok.ru>
-*/
+ * Adplug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * [xad] HYP player, by Riven the Mage <riven@ok.ru>
+ */
 
 /*
     - discovery -
@@ -14,7 +31,7 @@
 #include "hyp.h"
 #include "debug.h"
 
-static const unsigned char hyp_adlib_registers[99] =
+const unsigned char CxadhypPlayer::hyp_adlib_registers[99] =
 {
   0x20, 0x23, 0x40, 0x43, 0x60, 0x63, 0x80, 0x83, 0xA0, 0xB0, 0xC0,
   0x21, 0x24, 0x41, 0x44, 0x61, 0x64, 0x81, 0x84, 0xA1, 0xB1, 0xC1,
@@ -27,7 +44,7 @@ static const unsigned char hyp_adlib_registers[99] =
   0x32, 0x35, 0x52, 0x55, 0x72, 0x75, 0x92, 0x95, 0xA8, 0xB8, 0xC8
 };
 
-static const unsigned short hyp_notes[73] =
+const unsigned short CxadhypPlayer::hyp_notes[73] =
 {
   0x0000, // by riven
   0x0956, 0x096B, 0x0980, 0x0998, 0x09B1, 0x09C9, 0x09E5, 0x0A03, 0x0A21,
@@ -42,11 +59,10 @@ static const unsigned short hyp_notes[73] =
 
 CPlayer *CxadhypPlayer::factory(Copl *newopl)
 {
-  CxadhypPlayer *p = new CxadhypPlayer(newopl);
-  return p;
+  return new CxadhypPlayer(newopl);
 }
 
-void CxadhypPlayer::xadplayer_rewind(unsigned int subsong)
+void CxadhypPlayer::xadplayer_rewind(int subsong)
 {
   int i;
 

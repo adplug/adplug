@@ -1,6 +1,6 @@
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+  Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -25,84 +25,73 @@
 
 CPlayer *CmadLoader::factory(Copl *newopl)
 {
-  CmadLoader *p = new CmadLoader(newopl);
-  return p;
+  return new CmadLoader(newopl);
 }
 
-bool CmadLoader::load(istream &f, const char *filename)
+bool CmadLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-	const unsigned char conv_inst[10] = { 2,1,10,9,4,3,6,5,8,7 };
+  binistream *f = fp.open(filename); if(!f) return false;
+  const unsigned char conv_inst[10] = { 2,1,10,9,4,3,6,5,8,7 };
+  unsigned int i, j, k, t = 0;
 
-	unsigned int i,j,k,t=0;
+  // 'MAD+' - signed ?
+  char id[4]; f->readString(id, 4);
+  if (strncmp(id,"MAD+",4)) { fp.close(f); return false; }
 
-	// 'MAD+' - signed ?
-	char id[4];
-	f.read(id,4);
-	if (strncmp(id,"MAD+",4))
-		return false;
+  // load instruments
+  for(i = 0; i < 9; i++) {
+    f->readString(instruments[i].name, 8);
+    for(j = 0; j < 12; j++) instruments[i].data[j] = f->readInt(1);
+  }
 
-	// load instruments
-	f.read((char *)instruments,9*sizeof(mad_instrument));
+  f->ignore(1);
 
-	f.ignore(1);
+  // data for Protracker
+  length = f->readInt(1); nop = f->readInt(1); timer = f->readInt(1);
 
-	// data for Protracker
-	length = f.get();
-	nop = f.get();
-	timer = f.get();
+  // init CmodPlayer
+  realloc_instruments(9);
+  realloc_order(length);
+  realloc_patterns(nop,32,9);
+  init_trackord();
 
-	// init CmodPlayer
-	realloc_instruments(9);
-	realloc_order(length);
-	realloc_patterns(nop,32,9);
+  // load tracks
+  for(i = 0; i < nop; i++)
+    for(k = 0; k < 32; k++)
+      for(j = 0; j < 9; j++) {
+	t = i * 9 + j;
 
-	init_trackord();
+	// read event
+	unsigned char event = f->readInt(1);
 
-	// load tracks
-	for (i=0;i<nop;i++)
-	{
-		for (k=0;k<32;k++)
-		{
-			for (j=0;j<9;j++)
-			{
-				t = i*9+j;
+	// convert event
+	if (event < 0x61)
+	  tracks[t][k].note = event;
+	if (event == 0xFF) // 0xFF: Release note
+	  tracks[t][k].command = 8;
+	if (event == 0xFE) // 0xFE: Pattern Break
+	  tracks[t][k].command = 13;
+      }
 
-				// read event
-				unsigned char event = f.get();
+  // load order
+  for(i = 0; i < length; i++) order[i] = f->readInt(1) - 1;
 
-				// convert event
-				if (event < 0x61)
-					tracks[t][k].note = event;
-				if (event == 0xFF) // 0xFF: Release note
-					tracks[t][k].command = 8;
-				if (event == 0xFE) // 0xFE: Pattern Break
-					tracks[t][k].command = 13;
-			}
-		}
-	}
+  fp.close(f);
 
-	// load order
-	f.read((char *)order,length);
+  // convert instruments
+  for(i = 0; i < 9; i++)
+    for(j = 0; j < 10; j++)
+      inst[i].data[conv_inst[j]] = instruments[i].data[j];
 
-	// convert instruments
-	for (i=0;i<9;i++)
-		for (j=0;j<10;j++)
-			inst[i].data[conv_inst[j]] = instruments[i].data[j];
+  // data for Protracker
+  restartpos = 0;
+  initspeed = 1;
 
-	// convert order
-	for(i=0;i<length;i++)
-		order[i]--;
-
-	// data for Protracker
-	restartpos = 0;
-	initspeed = 1;
-
-	rewind(0);
-
-	return true;
+  rewind(0);
+  return true;
 }
 
-void CmadLoader::rewind(unsigned int subsong)
+void CmadLoader::rewind(int subsong)
 {
 	CmodPlayer::rewind(subsong);
 

@@ -1,6 +1,6 @@
 /*
  * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,9 +35,9 @@ public:
 	~Cd00Player()
 	{ if(filedata) delete [] filedata; };
 
-	bool load(istream &f, const char *filename);
+	bool load(const std::string &filename, const CFileProvider &fp);
 	bool update();
-	void rewind(unsigned int subsong);
+	void rewind(int subsong);
 	float getrefresh();
 
 	std::string gettype();

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,12 +16,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * bam.cpp - Bob's Adlib Music Player, by Simon Peter (dn.tlp@gmx.net)
+ * bam.cpp - Bob's Adlib Music Player, by Simon Peter <dn.tlp@gmx.net>
  *
  * NOTES:
- * The loop counter is stored with the label. This can be dangerous for some
- * situations (see below), but there shouldn't be any BAM files containing it.
+ * In my player, the loop counter is stored with the label. This can be
+ * dangerous for some situations (see below), but there shouldn't be any BAM
+ * files triggering this situation.
  *
  * From SourceForge Bug #476088:
  * -----------------------------
@@ -50,7 +50,7 @@
 #include <string.h>
 #include "bam.h"
 
-static const unsigned short freq[] = {172,182,193,205,217,230,243,258,274,
+const unsigned short CbamPlayer::freq[] = {172,182,193,205,217,230,243,258,274,
 290,307,326,345,365,387,410,435,460,489,517,547,580,614,651,1369,1389,1411,
 1434,1459,1484,1513,1541,1571,1604,1638,1675,2393,2413,2435,2458,2483,2508,
 2537,2565,2595,2628,2662,2699,3417,3437,3459,3482,3507,3532,3561,3589,3619,
@@ -62,20 +62,23 @@ static const unsigned short freq[] = {172,182,193,205,217,230,243,258,274,
 
 CPlayer *CbamPlayer::factory(Copl *newopl)
 {
-  CbamPlayer *p = new CbamPlayer(newopl);
-  return p;
+  return new CbamPlayer(newopl);
 }
 
-bool CbamPlayer::load(istream &f, const char *filename)
+bool CbamPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
-	char			id[4];
+        binistream *f = fp.open(filename); if(!f) return false;
+	char id[4];
+	unsigned int i;
 
-	f.seekg(0,ios::end); size = f.tellg(); size -= 4; f.seekg(0);
-	f.read(id,4);
-	if(strncmp(id,"CBMF",4))
-		return false;
+	size = fp.filesize(f) - 4;	// filesize minus header
+	f->readString(id, 4);
+	if(strncmp(id,"CBMF",4)) { fp.close(f); return false; }
+
 	song = new unsigned char [size];
-	f.read((char *)song,size);
+	for(i = 0; i < size; i++) song[i] = f->readInt(1);
+
+	fp.close(f);
 	rewind(0);
 	return true;
 }
@@ -189,10 +192,12 @@ bool CbamPlayer::update()
 	return !songend;
 }
 
-void CbamPlayer::rewind(unsigned int subsong)
+void CbamPlayer::rewind(int subsong)
 {
+        int i;
+
 	pos = 0; songend = false; del = 0; gosub = 0; chorus = false;
-	memset(label,0,sizeof(label)); label[0].defined = true;
-	for(int i=0;i<16;i++) label[i].count = 255;		// 255 = undefined
+	memset(label, 0, sizeof(label)); label[0].defined = true;
+	for(i = 0; i < 16; i++) label[i].count = 255;	// 255 = undefined
 	opl->init(); opl->write(1,32);
 }

@@ -32,21 +32,23 @@
 
 CPlayer *CcffLoader::factory(Copl *newopl)
 {
-  CcffLoader *p = new CcffLoader(newopl);
-  return p;
+  return new CcffLoader(newopl);
 }
 
-bool CcffLoader::load(istream &f, const char *filename)
+bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
 {
+        binistream *f = fp.open(filename); if(!f) return false;
 	const unsigned char conv_inst[11] = { 2,1,10,9,4,3,6,5,0,8,7 };
 	const unsigned short conv_note[12] = { 0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287, 0x2AE };
 
 	int i,j,k,t=0;
 
 	// '<CUD-FM-File>' - signed ?
-	f.read((char *)&header,sizeof(cff_header));
+	f->readString(header.id, 16);
+	header.version = f->readInt(1); header.size = f->readInt(2);
+	header.packed = f->readInt(1); f->readString((char *)header.reserved, 12);
 	if (memcmp(header.id,"<CUD-FM-File>""\x1A\xDE\xE0",16))
-		return false;
+	  { fp.close(f); return false; }
 
 	unsigned char *module = new unsigned char [0x10000];
 
@@ -59,7 +61,8 @@ bool CcffLoader::load(istream &f, const char *filename)
 
 		memset(packed_module,0,header.size + 4);
 
-		f.read((char *)packed_module,header.size);
+		f->readString((char *)packed_module, header.size);
+		fp.close(f);
 
 		if (!unpacker->unpack(packed_module,module))
 		{
@@ -80,14 +83,14 @@ bool CcffLoader::load(istream &f, const char *filename)
 	}
 	else
 	{
-		f.read((char *)module,header.size);
+		f->readString((char *)module, header.size);
+		fp.close(f);
 	}
 
 	// init CmodPlayer
 	realloc_instruments(47);
 	realloc_order(64);
 	realloc_patterns(36,64,9);
-
 	init_notetable(conv_note);
 	init_trackord();
 
@@ -256,7 +259,7 @@ bool CcffLoader::load(istream &f, const char *filename)
 	return true;	
 }
 
-void CcffLoader::rewind(unsigned int subsong)
+void CcffLoader::rewind(int subsong)
 {
 	CmodPlayer::rewind(subsong);
 

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,7 +71,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <fstream.h>
 #include "mid.h"
 #include "mididata.h"
 
@@ -86,8 +85,7 @@ void CmidPlayer::midiprintf(char *format, ...)
 
 CPlayer *CmidPlayer::factory(Copl *newopl)
 {
-  CmidPlayer *p = new CmidPlayer(newopl);
-  return p;
+  return new CmidPlayer(newopl);
 }
 
 unsigned char CmidPlayer::datalook(long pos)
@@ -141,17 +139,18 @@ unsigned long CmidPlayer::getval()
 #define MIDI_STYLE    4
 #define SIERRA_STYLE  8
 
-#define ADLIB_MELODIC 0
+#define ADLIB_MELODIC	0
 #define ADLIB_RYTHM	1
 
-bool CmidPlayer::load_sierra_ins()
+bool CmidPlayer::load_sierra_ins(const std::string &fname, const CFileProvider &fp)
 {
     long i,j,k,l;
     unsigned char ins[28];
     char *pfilename;
+    binistream *f;
 
-	pfilename = (char *)malloc(strlen(fname)+9);
-    strcpy(pfilename,fname);
+    pfilename = (char *)malloc(fname.length()+9);
+    strcpy(pfilename,fname.c_str());
     j=0;
     for(i=strlen(pfilename)-1; i >= 0; i--)
       if(pfilename[i] == '/' || pfilename[i] == '\\') {
@@ -160,12 +159,12 @@ bool CmidPlayer::load_sierra_ins()
       }
     sprintf(pfilename+j+3,"patch.003");
 
-    ifstream f(pfilename, ios::in | ios::binary);
-	free(pfilename);
-    if(!f.is_open()) return false;
+    f = fp.open(pfilename);
+    free(pfilename);
+    if(!f) return false;
 
-    f.ignore(2);
-    tins = 0;
+    f->ignore(2);
+    stins = 0;
     for (i=0; i<2; i++)
         {
         for (k=0; k<48; k++)
@@ -173,7 +172,7 @@ bool CmidPlayer::load_sierra_ins()
             l=i*48+k;
             midiprintf ("\n%2d: ",l);
             for (j=0; j<28; j++)
-                ins[j]=f.get();
+                ins[j] = f->readInt(1);
 
             myinsbank[l][0]=
                 (ins[9]*0x80) + (ins[10]*0x40) +
@@ -200,11 +199,14 @@ bool CmidPlayer::load_sierra_ins()
 
             for (j=0; j<11; j++)
                 midiprintf ("%02X ",myinsbank[l][j]);
-			tins++;
+			stins++;
             }
-		f.ignore(2);
+		f->ignore(2);
         }
-	return true;
+
+    fp.close(f);
+    memcpy(smyinsbank, myinsbank, 128 * 16);
+    return true;
 }
 
 void CmidPlayer::sierra_next_section()
@@ -250,25 +252,13 @@ void CmidPlayer::sierra_next_section()
 #define FILE_ADVSIERRA  5
 #define FILE_OLDLUCAS   6
 
-unsigned long CmidPlayer::filelength(istream &f)
+bool CmidPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
-	unsigned long buf,size;
-
-	buf = f.tellg();
-	f.seekg(0,ios::end);
-	size = f.tellg();
-	f.seekg(buf,ios::beg);
-	return size;
-}
-
-bool CmidPlayer::load(istream &f, const char *filename)
-{
+    binistream *f = fp.open(filename); if(!f) return false;
     int good;
     unsigned char s[6];
 
-    fname = (char *)malloc(strlen(filename)+1);
-    strcpy(fname,filename);
-    f.read((char *)s,6);
+    f->readString((char *)s, 6);
     good=0;
     subsongs=0;
     switch(s[0])
@@ -283,7 +273,7 @@ bool CmidPlayer::load(istream &f, const char *filename)
             if (s[1]=='T' && s[2]=='M' && s[3]=='F') good=FILE_CMF;
             break;
         case 0x84:
-            if (s[1]==0x00 && load_sierra_ins())
+            if (s[1]==0x00 && load_sierra_ins(filename, fp))
                 if (s[2]==0xf0)
                     good=FILE_ADVSIERRA;
                     else
@@ -296,16 +286,19 @@ bool CmidPlayer::load(istream &f, const char *filename)
 
     if (good!=0)
 		subsongs=1;
-	else
-		return false;
+    else {
+      fp.close(f);
+      return false;
+    }
 
     type=good;
-	f.seekg(0);
-    flen=filelength(f);
-	data = new unsigned char [flen];
-    f.read((char *)data,flen);
-    rewind(0);
+    f->seek(0);
+    flen = fp.filesize(f);
+    data = new unsigned char [flen];
+    f->readString((char *)data, flen);
 
+    fp.close(f);
+    rewind(0);
     return true;
 }
 
@@ -806,7 +799,7 @@ float CmidPlayer::getrefresh()
     return (fwait > 0.01f ? fwait : 0.01f);
 }
 
-void CmidPlayer::rewind(unsigned int subsong)
+void CmidPlayer::rewind(int subsong)
 {
     long i,j,n,m,l;
     long o_sierra_pos;
@@ -970,7 +963,8 @@ void CmidPlayer::rewind(unsigned int subsong)
                 track[curtrack].spos=0x98;  //jump to midi music
                 break;
             case FILE_ADVSIERRA:
-				load_sierra_ins();
+	      memcpy(myinsbank, smyinsbank, 128 * 16);
+	      tins = stins;
                 deltas=0x20;
                 getnext(11); //worthless empty space and "stuff" :)
 
@@ -982,12 +976,12 @@ void CmidPlayer::rewind(unsigned int subsong)
                     subsongs++;
                     }
 
-                if (subsong < 0 || subsong >= (unsigned int)subsongs) subsong=0;
+                if (subsong < 0 || subsong >= subsongs) subsong=0;
 
                 sierra_pos=o_sierra_pos;
                 sierra_next_section();
                 i=0;
-                while ((unsigned long)i!=subsong)
+                while (i != subsong)
                     {
                     sierra_next_section();
                     i++;
@@ -996,7 +990,8 @@ void CmidPlayer::rewind(unsigned int subsong)
                 adlib_style=SIERRA_STYLE|MIDI_STYLE;  //advanced sierra tunes use volume
                 break;
             case FILE_SIERRA:
-				load_sierra_ins();
+	      memcpy(myinsbank, smyinsbank, 128 * 16);
+	      tins = stins;
                 getnext(2);
                 deltas=0x20;
 

@@ -1,6 +1,23 @@
 /*
-  [xad] PSI player, by Riven the Mage <riven@ok.ru>
-*/
+ * Adplug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * [xad] PSI player, by Riven the Mage <riven@ok.ru>
+ */
 
 /*
     - discovery -
@@ -21,7 +38,7 @@
 #include "psi.h"
 #include "debug.h"
 
-static const unsigned char psi_adlib_registers[99] =
+const unsigned char CxadpsiPlayer::psi_adlib_registers[99] =
 {
   0x20, 0x23, 0x40, 0x43, 0x60, 0x63, 0x80, 0x83, 0xE0, 0xE3, 0xC0,
   0x21, 0x24, 0x41, 0x44, 0x61, 0x64, 0x81, 0x84, 0xE1, 0xE4, 0xC1,
@@ -34,7 +51,7 @@ static const unsigned char psi_adlib_registers[99] =
   0x32, 0x35, 0x52, 0x55, 0x72, 0x75, 0x92, 0x95, 0xF2, 0xF5, 0xC8
 };
 
-static const unsigned short psi_notes[16] =
+const unsigned short CxadpsiPlayer::psi_notes[16] =
 {
   0x216B, 0x2181, 0x2198, 0x21B0, 0x21CA, 0x21E5, 0x2202, 0x2220,
   0x2241, 0x2263, 0x2287, 0x2364,
@@ -43,11 +60,10 @@ static const unsigned short psi_notes[16] =
 
 CPlayer *CxadpsiPlayer::factory(Copl *newopl)
 {
-  CxadpsiPlayer *p = new CxadpsiPlayer(newopl);
-  return p;
+  return new CxadpsiPlayer(newopl);
 }
 
-void CxadpsiPlayer::xadplayer_rewind(unsigned int subsong)
+void CxadpsiPlayer::xadplayer_rewind(int subsong)
 {
   opl_write(0x01, 0x20);
   opl_write(0x08, 0x00);

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * ksm.h - KSM Player for AdPlug by Simon Peter (dn.tlp@gmx.net)
+ * ksm.h - KSM Player for AdPlug by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include "player.h"
@@ -33,9 +32,9 @@ public:
 	~CksmPlayer()
 	{ if(note) delete [] note; };
 
-	bool load(istream &f, const char *filename);
+	bool load(const std::string &filename, const CFileProvider &fp);
 	bool update();
-	void rewind(unsigned int subsong);
+	void rewind(int subsong);
 	float getrefresh()
 	{ return 240.0f; };
 
@@ -45,9 +44,9 @@ public:
 	{ return 16; };
 	std::string getinstrument(unsigned int n);
 
-	void loadinsts(istream &f);
-
 private:
+	static const unsigned int adlibfreq[63];
+
 	unsigned long count,countstop,chanage[18],*note;
 	unsigned short numnotes;
 	unsigned int nownote,numchans,drumstat;
@@ -56,6 +55,7 @@ private:
 
 	bool songend;
 
+	void loadinsts(binistream *f);
 	void setinst(int chan,unsigned char v0,unsigned char v1,unsigned char v2,unsigned char v3,
 				 unsigned char v4,unsigned char v5,unsigned char v6,unsigned char v7,
 				 unsigned char v8,unsigned char v9,unsigned char v10);

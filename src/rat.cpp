@@ -1,6 +1,23 @@
 /*
-  [xad] RAT player, by Riven the Mage <riven@ok.ru>
-*/
+ * Adplug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * [xad] RAT player, by Riven the Mage <riven@ok.ru>
+ */
 
 /*
     - discovery -
@@ -15,13 +32,13 @@
 #include "rat.h"
 #include "debug.h"
 
-static const unsigned char rat_adlib_bases[18] =
+const unsigned char CxadratPlayer::rat_adlib_bases[18] =
 {
   0x00, 0x01, 0x02, 0x08, 0x09, 0x0A, 0x10, 0x11, 0x12,
   0x03, 0x04, 0x05, 0x0B, 0x0C, 0x0D, 0x13, 0x14, 0x15
 };
 
-static const unsigned short rat_notes[16] =
+const unsigned short CxadratPlayer::rat_notes[16] =
 {
   0x157, 0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287,
   0x000, 0x000, 0x000, 0x000 // by riven
@@ -29,11 +46,10 @@ static const unsigned short rat_notes[16] =
 
 CPlayer *CxadratPlayer::factory(Copl *newopl)
 {
-  CxadratPlayer *p = new CxadratPlayer(newopl);
-  return p;
+  return new CxadratPlayer(newopl);
 }
 
-bool CxadratPlayer::xadplayer_load(istream &f)
+bool CxadratPlayer::xadplayer_load()
 {
   if(xad.fmt != RAT)
     return false;
@@ -70,7 +86,7 @@ bool CxadratPlayer::xadplayer_load(istream &f)
   return true;
 }
 
-void CxadratPlayer::xadplayer_rewind(unsigned int subsong)
+void CxadratPlayer::xadplayer_rewind(int subsong)
 {
   int i;
 

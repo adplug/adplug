@@ -1,6 +1,6 @@
 /*
   AdPlug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
+  Copyright (C) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -28,8 +28,8 @@ class CcffLoader: public CmodPlayer
 
 		CcffLoader(Copl *newopl) : CmodPlayer(newopl) { };
 
-		bool			load(istream &f, const char *filename);
-		void			rewind(unsigned int subsong);
+		bool	load(const std::string &filename, const CFileProvider &fp);
+		void	rewind(int subsong);
 
 		std::string		gettype();
 		std::string		gettitle();
@@ -76,16 +76,14 @@ class CcffLoader: public CmodPlayer
 				unsigned char the_string[256];
 		};
 
-#pragma pack(1)
 		struct cff_header
 		{
-			unsigned char	id[16];
+			char	id[16];
 			unsigned char	version;
 			unsigned short	size;
 			unsigned char	packed;
 			unsigned char	reserved[12];
 		} header;
-#pragma pack()
 
 		struct cff_instrument
 		{

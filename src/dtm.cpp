@@ -1,6 +1,6 @@
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+  Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -28,25 +28,26 @@
 
 CPlayer *CdtmLoader::factory(Copl *newopl)
 {
-  CdtmLoader *p = new CdtmLoader(newopl);
-  return p;
+  return new CdtmLoader(newopl);
 }
 
-bool CdtmLoader::load(istream &f, const char *filename)
+bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 {
+        binistream *f = fp.open(filename); if(!f) return false;
 	const unsigned char conv_inst[11] = { 2,1,10,9,4,3,6,5,0,8,7 };
 	const unsigned short conv_note[12] = { 0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287, 0x2AE };
 
 	int i,j,k,t=0;
 
-	// signature exists ?
-	f.read((char *)&header,sizeof(dtm_header));
-	if (memcmp(header.id,"DeFy DTM ",9))
-		return false;
+	// read header
+	f->readString(header.id, 12);
+	header.version = f->readInt(1);
+	f->readString(header.title, 20); f->readString(header.author, 20);
+	header.numpat = f->readInt(1); header.numinst = f->readInt(1);
 
-	// good version ?
-	if (header.version != 0x10)
-		return false;
+	// signature exists ? good version ?
+	if(memcmp(header.id,"DeFy DTM ",9) || header.version != 0x10)
+	  { fp.close (f); return false; }
 
 	header.numinst++;
 
@@ -58,12 +59,12 @@ bool CdtmLoader::load(istream &f, const char *filename)
 	for (i=0;i<16;i++)
 	{
 		// get line length
-		unsigned char bufstr_length = f.get();
+		unsigned char bufstr_length = f->readInt(1);
 
 		// read line
 		if (bufstr_length)
 		{
-			f.read(bufstr,bufstr_length);
+			f->readString(bufstr,bufstr_length);
 
 			for (j=0;j<bufstr_length;j++)
 				if (!bufstr[j])
@@ -81,28 +82,28 @@ bool CdtmLoader::load(istream &f, const char *filename)
 	realloc_instruments(header.numinst);
 	realloc_order(100);
 	realloc_patterns(header.numpat,64,9);
-
 	init_notetable(conv_note);
 	init_trackord();
 
 	// load instruments
 	for (i=0;i<header.numinst;i++)
 	{
-		unsigned char name_length = f.get();
+		unsigned char name_length = f->readInt(1);
 
 		if (name_length)
-			f.read(instruments[i].name, name_length);
+			f->readString(instruments[i].name, name_length);
 
 		instruments[i].name[name_length] = 0;
 
-		f.read(instruments[i].data,12);
+		for(j = 0; j < 12; j++)
+		  instruments[i].data[j] = f->readInt(1);
 
 		for (j=0;j<11;j++)
 			inst[i].data[conv_inst[j]] = instruments[i].data[j];
 	}
 
 	// load order
-	f.read(order,100);
+	for(i = 0; i < 100; i++) order[i] = f->readInt(1);
 
 	nop = header.numpat;
 
@@ -113,11 +114,12 @@ bool CdtmLoader::load(istream &f, const char *filename)
 	{
 		unsigned short packed_length;
 
-		f.read((char *)&packed_length,2);
+		packed_length = f->readInt(2);
 
 		unsigned char *packed_pattern = new unsigned char [packed_length];
 
-		f.read((char *)packed_pattern,packed_length);
+		for(j = 0; j < packed_length; j++)
+		  packed_pattern[j] = f->readInt(1);
 
 		long unpacked_length = unpack_pattern(packed_pattern,packed_length,pattern,0x480);
 
@@ -126,6 +128,7 @@ bool CdtmLoader::load(istream &f, const char *filename)
 		if (!unpacked_length)
 		{
 			delete pattern;
+			fp.close(f);
 			return false;
 		}
 
@@ -198,6 +201,7 @@ bool CdtmLoader::load(istream &f, const char *filename)
 	}
 
 	delete pattern;
+	fp.close(f);
 
 	// order length
 	for (i=0;i<100;i++)
@@ -223,7 +227,7 @@ bool CdtmLoader::load(istream &f, const char *filename)
 	return true;
 }
 
-void CdtmLoader::rewind(unsigned int subsong)
+void CdtmLoader::rewind(int subsong)
 {
 	CmodPlayer::rewind(subsong);
 

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,12 +16,11 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * s3m.h - AdLib S3M Player by Simon Peter (dn.tlp@gmx.net)
+ * s3m.h - AdLib S3M Player by Simon Peter <dn.tlp@gmx.net>
  */
 
-#ifndef H_S3M
-#define H_S3M
+#ifndef H_ADPLUG_S3M
+#define H_ADPLUG_S3M
 
 #include "player.h"
 
@@ -32,9 +31,9 @@ public:
 
 	Cs3mPlayer(Copl *newopl);
 
-	bool load(istream &f, const char *filename);
+	bool load(const std::string &filename, const CFileProvider &fp);
 	bool update();
-	void rewind(unsigned int subsong);
+	void rewind(int subsong);
 	float getrefresh();
 
 	std::string gettype();
@@ -74,7 +73,7 @@ protected:
 		char filename[15];
 		unsigned char d00,d01,d02,d03,d04,d05,d06,d07,d08,d09,d0a,d0b,volume,dsk,dummy[2];
 		unsigned long c2spd;
-		char dummy2[12],name[28],scri[4];
+		char dummy2[12], name[28],scri[4];
 	} inst[99];
 
 	struct {
@@ -91,6 +90,11 @@ protected:
 	unsigned char crow,ord,speed,tempo,del,songend,loopstart,loopcnt;
 
 private:
+	static const char chnresolv[];
+	static const unsigned short notetable[12];
+	static const unsigned char vibratotab[32];
+
+	void load_header(binistream *f, s3mheader *h);
 	void setvolume(unsigned char chan);
 	void setfreq(unsigned char chan);
 	void playnote(unsigned char chan);

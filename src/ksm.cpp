@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,21 +16,15 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * ksm.cpp - KSM Player for AdPlug by Simon Peter (dn.tlp@gmx.net)
- *
- * NOTES:
- * This is a nearly direct adaption of the original playksm
- * by Ken Silverman.
+ * ksm.cpp - KSM Player for AdPlug by Simon Peter <dn.tlp@gmx.net>
  */
 
-#include <fstream.h>
 #include <string.h>
 
 #include "ksm.h"
 #include "debug.h"
 
-static const unsigned int adlibfreq[63] = {
+const unsigned int CksmPlayer::adlibfreq[63] = {
 	0,
 	2390,2411,2434,2456,2480,2506,2533,2562,2592,2625,2659,2695,
 	3414,3435,3458,3480,3504,3530,3557,3586,3616,3649,3683,3719,
@@ -43,78 +37,83 @@ static const unsigned int adlibfreq[63] = {
 
 CPlayer *CksmPlayer::factory(Copl *newopl)
 {
-  CksmPlayer *p = new CksmPlayer(newopl);
-  return p;
+  return new CksmPlayer(newopl);
 }
 
-bool CksmPlayer::load(istream &f, const char *filename)
+bool CksmPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
-	int i;
-	char instbuf[11];
-	char *fn = new char[strlen(filename)+9];
+  binistream	*f;
+  int		i;
+  char		instbuf[11];
+  char		*fn = new char[filename.length() + 9];
 
-	// file validation section
-	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".ksm")) {
-          AdPlug_LogWrite("CksmPlayer::load(,\"%s\"): File doesn't have '.ksm' extension! Rejected!\n",filename);
-	  return false;
-	}
+  // file validation section
+  if(!fp.extension(filename, ".ksm")) {
+    AdPlug_LogWrite("CksmPlayer::load(,\"%s\"): File doesn't have '.ksm' "
+		    "extension! Rejected!\n", filename.c_str());
+    return false;
+  }
+  AdPlug_LogWrite("*** CksmPlayer::load(,\"%s\") ***\n", filename.c_str());
 
-        AdPlug_LogWrite("*** CksmPlayer::load(,\"%s\") ***\n",filename);
-	strcpy(fn,filename);
-	for (i=strlen(fn)-1; i>=0; i--)
-	  if (fn[i] == '/' || fn[i] == '\\')
-	    break;
-	strcpy(fn+i+1,"insts.dat");
-        AdPlug_LogWrite("Instruments file: \"%s\"\n",fn);
-	ifstream insf(fn, ios::in | ios::binary);
-	delete [] fn;
-	if(!insf.is_open()) {
-          AdPlug_LogWrite("Couldn't open instruments file! Aborting!\n");
-          AdPlug_LogWrite("--- CksmPlayer::load ---\n");
-	  return false;
-	}
-	loadinsts(insf);
+  // Load instruments from 'insts.dat'
+  strcpy(fn, filename.c_str());
+  for(i = strlen(fn) - 1; i >= 0; i--)
+    if(fn[i] == '/' || fn[i] == '\\')
+      break;
+  strcpy(fn + i + 1, "insts.dat");
+  AdPlug_LogWrite("Instruments file: \"%s\"\n", fn);
+  f = fp.open(fn);
+  delete [] fn;
+  if(!f) {
+    AdPlug_LogWrite("Couldn't open instruments file! Aborting!\n");
+    AdPlug_LogWrite("--- CksmPlayer::load ---\n");
+    return false;
+  }
+  loadinsts(f);
+  fp.close(f);
 
-	f.read((char *)trinst,16);
-	f.read((char *)trquant,16);
-	f.read((char *)trchan,16);
-	f.ignore(16);
-	f.read((char *)trvol,16);
-	f.read((char *)&numnotes,2);
-	note = new unsigned long [numnotes];
-	f.read((char *)note,numnotes << 2);
+  f = fp.open(filename); if(!f) return false;
+  for(i = 0; i < 16; i++) trinst[i] = f->readInt(1);
+  for(i = 0; i < 16; i++) trquant[i] = f->readInt(1);
+  for(i = 0; i < 16; i++) trchan[i] = f->readInt(1);
+  f->ignore(16);
+  for(i = 0; i < 16; i++) trvol[i] = f->readInt(1);
+  numnotes = f->readInt(2);
+  note = new unsigned long [numnotes];
+  for(i = 0; i < numnotes; i++) note[i] = f->readInt(4);
+  fp.close(f);
 
-	if (!trchan[11]) {
-		drumstat = 0;
-		numchans = 9;
-	}
-	if (trchan[11] == 1)
-	{
-		for(i=0;i<11;i++)
-			instbuf[i] = inst[trinst[11]][i];
-		instbuf[1] = ((instbuf[1]&192)|(trvol[11])^63);
-		setinst(6,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
-		for(i=0;i<5;i++)
-			instbuf[i] = inst[trinst[12]][i];
-		for(i=5;i<11;i++)
-			instbuf[i] = inst[trinst[15]][i];
-		instbuf[1] = ((instbuf[1]&192)|(trvol[12])^63);
-		instbuf[6] = ((instbuf[6]&192)|(trvol[15])^63);
-		setinst(7,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
-		for(i=0;i<5;i++)
-			instbuf[i] = inst[trinst[14]][i];
-		for(i=5;i<11;i++)
-			instbuf[i] = inst[trinst[13]][i];
-		instbuf[1] = ((instbuf[1]&192)|(trvol[14])^63);
-		instbuf[6] = ((instbuf[6]&192)|(trvol[13])^63);
-		setinst(8,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
-		drumstat = 32;
-		numchans = 6;
-	}
+  if (!trchan[11]) {
+    drumstat = 0;
+    numchans = 9;
+  }
+  if (trchan[11] == 1)
+    {
+      for(i=0;i<11;i++)
+	instbuf[i] = inst[trinst[11]][i];
+      instbuf[1] = ((instbuf[1]&192)|(trvol[11])^63);
+      setinst(6,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
+      for(i=0;i<5;i++)
+	instbuf[i] = inst[trinst[12]][i];
+      for(i=5;i<11;i++)
+	instbuf[i] = inst[trinst[15]][i];
+      instbuf[1] = ((instbuf[1]&192)|(trvol[12])^63);
+      instbuf[6] = ((instbuf[6]&192)|(trvol[15])^63);
+      setinst(7,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
+      for(i=0;i<5;i++)
+	instbuf[i] = inst[trinst[14]][i];
+      for(i=5;i<11;i++)
+	instbuf[i] = inst[trinst[13]][i];
+      instbuf[1] = ((instbuf[1]&192)|(trvol[14])^63);
+      instbuf[6] = ((instbuf[6]&192)|(trvol[13])^63);
+      setinst(8,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
+      drumstat = 32;
+      numchans = 6;
+    }
 
-	rewind(0);
-        AdPlug_LogWrite("--- CksmPlayer::load ---\n");
-	return true;
+  rewind(0);
+  AdPlug_LogWrite("--- CksmPlayer::load ---\n");
+  return true;
 }
 
 bool CksmPlayer::update()
@@ -246,7 +245,7 @@ bool CksmPlayer::update()
 	return !songend;
 }
 
-void CksmPlayer::rewind(unsigned int subsong)
+void CksmPlayer::rewind(int subsong)
 {
 	unsigned int i,j,k;
 	unsigned char instbuf[11];
@@ -295,24 +294,24 @@ std::string CksmPlayer::getinstrument(unsigned int n)
 		return std::string();
 }
 
-void CksmPlayer::loadinsts(istream &f)
-{
-	int i;
-
-	for(i=0;i<256;i++) {
-		f.read(instname[i],20);
-		f.read((char *)inst[i],11);
-		f.ignore(2);
-	}
-}
-
 /*** private methods *************************************/
 
+void CksmPlayer::loadinsts(binistream *f)
+{
+  int i, j;
+
+  for(i = 0; i < 256; i++) {
+    f->readString(instname[i], 20);
+    for(j = 0; j < 11; j++) inst[i][j] = f->readInt(1);
+    f->ignore(2);
+  }
+}
+
 void CksmPlayer::setinst(int chan,
-						 unsigned char v0,unsigned char v1,unsigned char v2,
-						 unsigned char v3,unsigned char v4,unsigned char v5,
-						 unsigned char v6,unsigned char v7,unsigned char v8,
-						 unsigned char v9,unsigned char v10)
+			 unsigned char v0,unsigned char v1,unsigned char v2,
+			 unsigned char v3,unsigned char v4,unsigned char v5,
+			 unsigned char v6,unsigned char v7,unsigned char v8,
+			 unsigned char v9,unsigned char v10)
 {
 	int offs;
 

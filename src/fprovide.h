@@ -30,6 +30,10 @@ class CFileProvider
 public:
   virtual binistream *open(std::string) const = 0;
   virtual void close(binistream *) const = 0;
+
+  static bool extension(const std::string &filename,
+			const std::string &extension);
+  static unsigned long filesize(binistream *f);
 };
 
 class CProvider_Filesystem: public CFileProvider

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * d00.c - D00 Player by Simon Peter (dn.tlp@gmx.net)
+ * d00.c - D00 Player by Simon Peter <dn.tlp@gmx.net>
  *
  * NOTES:
  * Sorry for the goto's, but the code looks so much nicer now.
@@ -47,43 +46,42 @@ CPlayer *Cd00Player::factory(Copl *newopl)
   return new Cd00Player(newopl);
 }
 
-bool Cd00Player::load(istream &f, const char *filename)
+bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
 {
-	d00header		*checkhead;
-	d00header1		*ch;
+        binistream	*f = fp.open(filename); if(!f) return false;
+	d00header	*checkhead;
+	d00header1	*ch;
 	unsigned long	filesize;
-	int				i,ver1=0;
-	char			*str;
+	int		i,ver1=0;
+	char		*str;
 
 	// file validation section
 	checkhead = new d00header;
-	f.read((char *)checkhead,sizeof(d00header));
+	f->readString((char *)checkhead, sizeof(d00header));
 
 	// Check for version 2-4 header
 	if(strncmp(checkhead->id,"JCH\x26\x02\x66",6) || checkhead->type ||
 	   !checkhead->subsongs || checkhead->soundcard) {
 	  // Check for version 0 or 1 header (and .d00 file extension)
 		delete checkhead;
-		if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".d00"))
-		  return false;
+		if(!fp.extension(filename, ".d00")) { fp.close(f); return false; }
 		ch = new d00header1;
-		f.seekg(0); f.read((char *)ch,sizeof(d00header1));
-		if(ch->version > 1 || !ch->subsongs) {
-			delete ch;
-			return false;
-		}
+		f->seek(0); f->readString((char *)ch, sizeof(d00header1));
+		if(ch->version > 1 || !ch->subsongs)
+		  { delete ch; fp.close(f); return false; }
 		delete ch;
 		ver1 = 1;
 	} else
 		delete checkhead;
 
 	AdPlug_LogWrite("Cd00Player::load(f,\"%s\"): %s format D00 file detected!\n",
-			filename, ver1 ? "Old" : "New");
+			filename.c_str(), ver1 ? "Old" : "New");
 
 	// load section
-	f.seekg(0,ios::end); filesize = f.tellg(); f.seekg(0);
+	filesize = fp.filesize(f); f->seek(0);
 	filedata = new char [filesize + 1];			// 1 byte is needed for old-style DataInfo block
-	f.read((char *)filedata,filesize);
+	f->readString((char *)filedata, filesize);
+	fp.close(f);
 	if(!ver1) {	// version 2 and above
 		header = (struct d00header *)filedata;
 		version = header->version;
@@ -391,7 +389,7 @@ readseq:	// process sequence (pattern)
 	return !songend;
 }
 
-void Cd00Player::rewind(unsigned int subsong)
+void Cd00Player::rewind(int subsong)
 {
 	struct Stpoin {
 		unsigned short ptr[9];

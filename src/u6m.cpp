@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,9 +16,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
  * u6m.cpp - Ultima 6 Music Player by Marc Winterrowd.
- * This code extends the Adlib Winamp plug-in by Simon Peter (dn.tlp@gmx.net)
+ * This code extends the Adlib Winamp plug-in by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include "u6m.h"
@@ -28,32 +27,34 @@ CPlayer *Cu6mPlayer::factory(Copl *newopl)
   return new Cu6mPlayer(newopl);
 }
 
-bool Cu6mPlayer::load(istream &f, const char *filename)
+bool Cu6mPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
     // file validation section
     // this section only checks a few *necessary* conditions
-    unsigned long filesize,fpos,decompressed_filesize;
-    fpos = f.tellg(); f.seekg(0,ios::end); filesize = f.tellg(); f.seekg(fpos); // get filesize
+    unsigned long filesize, decompressed_filesize;
+    binistream *f;
+
+    f = fp.open(filename); if(!f) return false;
+    filesize = fp.filesize(f);
 
     if (filesize >= 6)
     {
         // check if the file has a valid pseudo-header
         unsigned char pseudo_header[6];
-        fpos = f.tellg();
-        f.seekg(0);
-        f.read((char *)pseudo_header,sizeof(pseudo_header));
-        f.seekg(fpos);
+        f->readString((char *)pseudo_header, 6);
         decompressed_filesize = pseudo_header[0] + (pseudo_header[1] << 8);
 
         if (!( (pseudo_header[2]==0) && (pseudo_header[3]==0) &&
                (pseudo_header[4] + ((pseudo_header[5] & 0x1)<<8) == 0x100) &&
                (decompressed_filesize > (filesize-4)) ))
         {
+	    fp.close(f);
             return(false);
         }
     }
     else
     {
+        fp.close(f);
         return(false);
     }
 
@@ -61,10 +62,9 @@ bool Cu6mPlayer::load(istream &f, const char *filename)
     song_data = new unsigned char[decompressed_filesize];
     unsigned char* compressed_song_data = new unsigned char[filesize-4];
 
-    fpos = f.tellg();
-    f.seekg(4);
-    f.read((char *)compressed_song_data,filesize-4);
-    f.seekg(fpos);
+    f->seek(4);
+    f->readString((char *)compressed_song_data, filesize - 4);
+    fp.close(f);
 
     // attempt to decompress the song data
     // if unsuccessful, deallocate song_data[] on the spot, and return(false)
@@ -139,7 +139,7 @@ bool Cu6mPlayer::update()
 }
 
 
-void Cu6mPlayer::rewind(unsigned int subsong)
+void Cu6mPlayer::rewind(int subsong)
 {
 	played_ticks = 0;
 	songend = false;

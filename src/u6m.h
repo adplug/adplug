@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,11 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * u6m.h - Ultima 6 Music Player by Marc Winterrowd.
- * This code extends the Adlib Winamp plug-in by Simon Peter (dn.tlp@gmx.net)
+ * This code extends the Adlib Winamp plug-in by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include <stack>
-#include <fstream.h>
 
 #include "player.h"
 
@@ -33,7 +32,7 @@ class Cu6mPlayer: public CPlayer
     public:
   static CPlayer *factory(Copl *newopl);
 
-	Cu6mPlayer(Copl *newopl) : CPlayer(newopl), song_data(0)
+        Cu6mPlayer(Copl *newopl) : CPlayer(newopl), song_data(0)
     {
     };
 
@@ -43,9 +42,9 @@ class Cu6mPlayer: public CPlayer
         if(song_data) delete[] song_data;
     };
 
-	bool load(istream &f, const char *filename);
+	bool load(const std::string &filename, const CFileProvider &fp);
 	bool update();
-	void rewind(unsigned int subsong);
+	void rewind(int subsong);
 	float getrefresh();
 
 	std::string gettype()

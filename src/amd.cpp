@@ -40,7 +40,7 @@ bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
 	const unsigned char convfx[10] = {0,1,2,9,17,11,13,18,3,14};
 
 	// file validation section
-	if(filesize(f) < 1072) { fp.close(f); return false; }
+	if(fp.filesize(f) < 1072) { fp.close(f); return false; }
 	f->seek(1062); f->readString(header.id, 9);
 	header.version = f->readInt(1);
 	if(strncmp(header.id, "<o\xefQU\xeeRoR", 9) &&

@@ -19,9 +19,36 @@
  * fprovide.cpp - File provider class framework, by Simon Peter <dn.tlp@gmx.net>
  */
 
+#include <string.h>
+#include <binio.h>
 #include <binfile.h>
 
 #include "fprovide.h"
+
+/***** CFileProvider *****/
+
+bool CFileProvider::extension(const std::string &filename,
+			      const std::string &extension)
+{
+  const char *fname = filename.c_str(), *ext = extension.c_str();
+
+  if(strlen(fname) < strlen(ext) ||
+     stricmp(fname + strlen(fname) - 4, ext))
+    return false;
+  else
+    return true;
+}
+
+unsigned long CFileProvider::filesize(binistream *f)
+{
+  unsigned long oldpos = f->pos(), size;
+
+  f->seek(0, binio::End);
+  size = f->pos();
+  f->seek(oldpos, binio::Set);
+
+  return size;
+}
 
 /***** CProvider_Filesystem *****/
 

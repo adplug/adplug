@@ -78,10 +78,6 @@ protected:
 
 	static const unsigned short note_table[12];	// standard adlib note table
 	static const unsigned char op_table[9];		// the 9 operators as expected by the OPL2
-
-	bool extension(const std::string &filename,	// checks for matching file extension
-		       const std::string &extension);
-	unsigned long filesize(binistream *f);		// returns filesize of stream
 };
 
 #endif

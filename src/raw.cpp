@@ -29,27 +29,29 @@
 
 CPlayer *CrawPlayer::factory(Copl *newopl)
 {
-  CrawPlayer *p = new CrawPlayer(newopl);
-  return p;
+  return new CrawPlayer(newopl);
 }
 
-bool CrawPlayer::load(istream &f, const char *filename)
+bool CrawPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
+        binistream *f = fp.open(filename); if(!f) return false;
 	char id[8];
-	unsigned long filesize,fpos;
+	unsigned long i;
 
 	// file validation section
-	f.read(id,8);
-	if(strncmp(id,"RAWADATA",8))
-		return false;
+	f->readString(id, 8);
+	if(strncmp(id,"RAWADATA",8)) { fp.close (f); return false; }
 
 	// load section
-	fpos = f.tellg(); f.seekg(0,ios::end); filesize = f.tellg(); f.seekg(fpos);	// get filesize
-	f.read((char *)&clock,sizeof(clock));	// clock speed
-	data = (Tdata *) new char [filesize-10];
-	f.read((char *)data,filesize-10);
+	clock = f->readInt(2);	// clock speed
+	length = (fp.filesize(f) - 10) / 2;
+	data = new Tdata [length];
+	for(i = 0; i < length; i++) {
+	  data[i].param = f->readInt(1);
+	  data[i].command = f->readInt(1);
+	}
 
-	length = (filesize-10) / 2;
+	fp.close(f);
 	rewind(0);
 	return true;
 }
@@ -67,9 +69,9 @@ bool CrawPlayer::update()
 		switch(data[pos].command) {
 		case 0: del = data[pos].param - 1; break;
 		case 2:
-		  if(!data[pos].param)
-		    speed = *(unsigned short *)&data[++pos];
-		  else
+		  if(!data[pos].param) {
+		    pos++; speed = data[pos].param + (data[pos].command << 8);
+		  } else
 		    opl3 = data[pos].param - 1;
 		  break;
 		case 0xff:
@@ -91,7 +93,7 @@ bool CrawPlayer::update()
 	return !songend;
 }
 
-void CrawPlayer::rewind(unsigned int subsong)
+void CrawPlayer::rewind(int subsong)
 {
 	pos = del = opl3 = 0; speed = clock; songend = false;
 	opl->init(); opl->write(1,32);	// go to OPL2 mode

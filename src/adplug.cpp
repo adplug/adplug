@@ -33,47 +33,73 @@
 #include "imf.h"
 #include "sng.h"
 #include "adtrack.h"
-/*#include "mtk.h"
-#include "hsp.h"
-#include "s3m.h"
-#include "raw.h"
-#include "d00.h"
-#include "sa2.h"
-#include "rad.h"
-#include "mid.h"
-#include "ksm.h"
-#include "mkj.h"
-#include "dfm.h"
-#include "lds.h"
 #include "bam.h"
+#include "d00.h"
+#include "dfm.h"
+#include "hsp.h"
+#include "ksm.h"
+#include "mad.h"
+#include "mid.h"
+#include "mkj.h"
+#include "cff.h"
+#include "dmo.h"
+#include "s3m.h"
+#include "dtm.h"
 #include "fmc.h"
+#include "mtk.h"
+#include "rad.h"
+#include "raw.h"
+#include "sa2.h"
 #include "bmf.h"
 #include "flash.h"
+#include "hybrid.h"
 #include "hyp.h"
 #include "psi.h"
 #include "rat.h"
-#include "hybrid.h"
-#include "mad.h"
-#include "cff.h"
-#include "dtm.h"
-#include "dmo.h"
+#include "lds.h"
 #include "u6m.h"
-#include "rol.h" */
+//#include "rol.h"
 
 /***** Defines *****/
 
 #define VERSION		"1.4"		// AdPlug library version string
 
-/***** Static stuff *****/
+/***** Static variables and methods *****/
 
 // List of all players that come with the standard AdPlug distribution
 static const CPlayerDesc allplayers[] = {
-  CPlayerDesc(ChscPlayer::factory, "HSC-Tracker", ".hsc"),
-  CPlayerDesc(CsngPlayer::factory, "SNGPlay", ".sng"),
-  CPlayerDesc(CimfPlayer::factory, "IMF", ".imf"),
-  CPlayerDesc(Ca2mLoader::factory, "Adlib Tracker 2", ".a2m"),
-  CPlayerDesc(CadtrackLoader::factory, "Adlib Tracker 1.0", ".sng"),
-  CPlayerDesc(CamdLoader::factory, "AMUSIC AdLib Tracker", ".amd"),
+  CPlayerDesc(ChscPlayer::factory, "HSC-Tracker", ".hsc\0"),
+  CPlayerDesc(CsngPlayer::factory, "SNGPlay", ".sng\0"),
+  CPlayerDesc(CimfPlayer::factory, "Apogee IMF", ".imf\0"),
+  CPlayerDesc(Ca2mLoader::factory, "Adlib Tracker 2", ".a2m\0"),
+  CPlayerDesc(CadtrackLoader::factory, "Adlib Tracker", ".sng\0"),
+  CPlayerDesc(CamdLoader::factory, "AMUSIC", ".amd\0"),
+  CPlayerDesc(CbamPlayer::factory, "Bob's Adlib Music", ".bam\0"),
+  CPlayerDesc(Cd00Player::factory, "Packed EdLib", ".d00\0"),
+  CPlayerDesc(CdfmLoader::factory, "Digital-FM", ".dfm\0"),
+  CPlayerDesc(ChspLoader::factory, "HSC Packed", ".hsp\0"),
+  CPlayerDesc(CksmPlayer::factory, "Ken Silverman Music", ".ksm\0"),
+  CPlayerDesc(CmadLoader::factory, "Mlat Adlib Tracker", ".mad\0"),
+  CPlayerDesc(CmidPlayer::factory, "MIDI", ".mid\0.cmf\0.sci\0.laa\0"),
+  CPlayerDesc(CmkjPlayer::factory, "MKJamz", ".mkj\0"),
+  CPlayerDesc(CcffLoader::factory, "Boomtracker", ".cff\0"),
+  CPlayerDesc(CdmoLoader::factory, "TwinTeam", ".dmo\0"),
+  CPlayerDesc(Cs3mPlayer::factory, "Scream Tracker 3", ".s3m\0"),
+  CPlayerDesc(CdtmLoader::factory, "DeFy Adlib Tracker", ".dtm\0"),
+  CPlayerDesc(CfmcLoader::factory, "Faust Music Creator", ".fmc\0"),
+  CPlayerDesc(CmtkLoader::factory, "MPU-401 Trakker", ".mtk\0"),
+  CPlayerDesc(CradLoader::factory, "Reality Adlib Tracker", ".rad\0"),
+  CPlayerDesc(CrawPlayer::factory, "RdosPlay RAW", ".raw\0"),
+  CPlayerDesc(Csa2Loader::factory, "Surprise! Adlib Tracker", ".sat\0.sa2\0"),
+  CPlayerDesc(CxadbmfPlayer::factory, "BMF Adlib Tracker", ".xad\0"),
+  CPlayerDesc(CxadflashPlayer::factory, "Flash", ".xad\0"),
+  CPlayerDesc(CxadhybridPlayer::factory, "Hybrid", ".xad\0"),
+  CPlayerDesc(CxadhypPlayer::factory, "Hypnosis", ".xad\0"),
+  CPlayerDesc(CxadpsiPlayer::factory, "PSI", ".xad\0"),
+  CPlayerDesc(CxadratPlayer::factory, "rat", ".xad\0"),
+  CPlayerDesc(CldsLoader::factory, "Loudness", ".lds\0"),
+  CPlayerDesc(Cu6mPlayer::factory, "Ultima 6 Music", ".u6m\0"),
+  //  CPlayerDesc(CrolPlayer::factory, "Adlib Visual Composer", ".rol\0"),
   CPlayerDesc()
 };
 
