@@ -27,7 +27,7 @@
  * FF1 - FF9, FAx - FEx
  *
  * version 5-8 files:
- * Instrument panning is ignored. Flags byte is ingnored.
+ * Instrument panning is ignored. Flags byte is ignored.
  * Following commands are ignored:
  * Gxy, Hxy, Kxy - &xy
  */
