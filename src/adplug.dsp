@@ -276,6 +276,10 @@ SOURCE=.\u6m.cpp
 
 SOURCE=.\xad.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\xsm.cpp
+# End Source File
 # End Group
 # Begin Group "Header-Dateien"
 
@@ -475,6 +479,10 @@ SOURCE=.\u6m.h
 # Begin Source File
 
 SOURCE=.\xad.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\xsm.h
 # End Source File
 # End Group
 # End Target
