@@ -1,0 +1,19 @@
+This is a brief overview of user-visible changes in AdPlug.
+
+Changes for version 1.2:
+	- Added a whole bunch of new players:
+		- SAT, ROL, SNG, XAD, XMS, MAD
+	- Reincluded Ken Silverman's emulator again, made it portable and
+	  added assembler optimizations on some platforms.
+	- SA2 player now handles version 7 files.
+	- GCC 3.x compatibility.
+	- Compiles on FreeBSD (and maybe many more flavors).
+	- Now using GNU autotools for UNIX builds.
+	- New OPL disk writer that creates RdosPlay RAW files.
+
+Changes for version 1.1:
+	- Added MKJ, DFM and BAM players.
+	- Removed Ken Silverman's YM3812 emulator due to portability issues.
+	- Fixed memory leak in SNG player.
+	- Made AdPlug a real library.
+	- Added lots of documentation.

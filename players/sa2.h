@@ -18,6 +18,7 @@
  *
  *
  * sa2.h - SAdT2 Loader by Simon Peter (dn.tlp@gmx.net)
+ *         SAdT Loader by Mamiya (mamiya@users.sourceforge.net)
  */
 
 #include "protrack.h"
@@ -27,16 +28,21 @@ class Csa2Loader: public CmodPlayer
 public:
 	Csa2Loader(Copl *newopl)
 		: CmodPlayer(newopl)
-	{ };
+	{ }
 
 	bool load(istream &f);
 
 	std::string gettype();
 	std::string gettitle();
 	unsigned int getinstruments()
-	{ return 29; };
+	{ return 31; }
 	std::string getinstrument(unsigned int n)
-	{ return std::string(instname[n],1,16); };
+	{
+	  if(n < 29)
+	    return std::string(instname[n],1,16);
+	  else
+	    return std::string("-broken-");
+	}
 
 private:
 	struct sa2header {

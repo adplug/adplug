@@ -25,7 +25,7 @@
 
 #include <iostream.h>
 #include <string>
-#include "../opl.h"
+#include "opl.h"
 
 class CPlayer
 {

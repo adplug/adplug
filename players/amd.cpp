@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * amd.cpp - AMD Player by Simon Peter (dn.tlp@gmx.net)
+ * amd.cpp - AMD Loader by Simon Peter (dn.tlp@gmx.net)
  */
 
 #include "amd.h"
@@ -38,7 +38,7 @@ bool CamdLoader::load(istream &f)
 		return false;
 	f.seekg(1062);
 	f.read((char *)&header,sizeof(header));
-	if(strncmp(header.id,"<o\xefQU\xeeRoR",9))
+	if(strncmp(header.id,"<o\xefQU\xeeRoR",9) && strncmp(header.id,"MaDoKaN96",9))
 		return false;
 
 	// load section

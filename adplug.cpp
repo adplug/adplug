@@ -46,6 +46,9 @@
 #include "dfm.h"
 #include "lds.h"
 #include "bam.h"
+#include "fmc.h"
+//#include "xad.h"
+#include "mad.h"
 #ifndef __WATCOMC__
 	#include "u6m.h"
 //	#include "rol.h"
@@ -166,6 +169,9 @@ CPlayer *CAdPlug::factory(istream &f, Copl *opl)
 	p = new CmkjPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 	p = new CdfmLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 	p = new CbamPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
+//	p = new CxadPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
+	p = new CfmcLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
+	p = new CmadLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 
 	return 0;
 }

@@ -232,12 +232,14 @@ bool CmodPlayer::update()
 			track--;
 
 		donote = 0;
-		if(tracks[track][row].inst) {
-			channel[chan].inst = tracks[track][row].inst - 1;
-			channel[chan].vol1 = 63 - (inst[channel[chan].inst].data[10] & 63);
-			channel[chan].vol2 = 63 - (inst[channel[chan].inst].data[9] & 63);
-			setvolume(chan);
-		}
+        if(tracks[track][row].inst) {
+            channel[chan].inst = tracks[track][row].inst - 1;
+            if (!(flags & MOD_FLAGS_FAUST)) {
+                channel[chan].vol1 = 63 - (inst[channel[chan].inst].data[10] & 63);
+                channel[chan].vol2 = 63 - (inst[channel[chan].inst].data[9] & 63);
+                setvolume(chan);
+            }
+        }
 		if(tracks[track][row].note && tracks[track][row].command != 3) {	// no tone portamento
 			channel[chan].note = tracks[track][row].note;
 			setnote(chan,tracks[track][row].note);
@@ -431,6 +433,15 @@ void CmodPlayer::setvolume(unsigned char chan)
 	opl->write(0x43 + op_table[chan], 63-channel[chan].vol1 + (inst[channel[chan].inst].data[10] & 192));
 }
 
+void CmodPlayer::setvolume_alt(unsigned char chan)
+{
+    unsigned char ivol2 = inst[channel[chan].inst].data[9] & 63;
+    unsigned char ivol1 = inst[channel[chan].inst].data[10] & 63;
+
+    opl->write(0x40 + op_table[chan], (((63 - channel[chan].vol2 & 63) + ivol2) >> 1) + (inst[channel[chan].inst].data[9] & 192));
+    opl->write(0x43 + op_table[chan], (((63 - channel[chan].vol1 & 63) + ivol1) >> 1) + (inst[channel[chan].inst].data[10] & 192));
+}
+
 void CmodPlayer::setfreq(unsigned char chan)
 {
 	opl->write(0xa0 + chan, channel[chan].freq & 255);
@@ -461,7 +472,13 @@ void CmodPlayer::playnote(unsigned char chan)
 	// set frequency, volume & play
 	channel[chan].key = 1;
 	setfreq(chan);
-	setvolume(chan);
+
+    if (flags & MOD_FLAGS_FAUST) {
+        channel[chan].vol2 = 63;
+        channel[chan].vol1 = 63;
+        setvolume_alt(chan);
+    } else
+        setvolume(chan);
 }
 
 void CmodPlayer::setnote(unsigned char chan, int note)

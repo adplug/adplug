@@ -27,6 +27,7 @@
 
 #define MOD_FLAGS_STANDARD	0
 #define MOD_FLAGS_DECIMAL	1
+#define MOD_FLAGS_FAUST		2
 
 class CmodPlayer: public CPlayer
 {
@@ -71,6 +72,7 @@ protected:
 
 private:
 	void setvolume(unsigned char chan);
+	void setvolume_alt(unsigned char chan);
 	void setfreq(unsigned char chan);
 	void playnote(unsigned char chan);
 	void setnote(unsigned char chan, int note);
