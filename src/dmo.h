@@ -23,58 +23,50 @@
 
 class CdmoLoader: public Cs3mPlayer
 {
-	public:
-		static CPlayer *factory(Copl *newopl);
+ public:
+  static CPlayer *factory(Copl *newopl);
 
-		CdmoLoader(Copl *newopl) : Cs3mPlayer(newopl) { };
+  CdmoLoader(Copl *newopl) : Cs3mPlayer(newopl) { };
 
-		bool	load(const std::string &filename, const CFileProvider &fp);
+  bool	load(const std::string &filename, const CFileProvider &fp);
 
-		std::string		gettype();
-		std::string		getauthor();
+  std::string	gettype();
+  std::string	getauthor();
 
-	private:
+ private:
 
-		class dmo_unpacker
-		{
-			public:
+  class dmo_unpacker {
+  public:
+    bool decrypt(unsigned char *buf, long len);
+    long unpack(unsigned char *ibuf, unsigned char *obuf);
 
-				bool decrypt(unsigned char *buf, long len);
-
-				long unpack(unsigned char *ibuf, unsigned char *obuf);
-
-			private:
-
-				unsigned short brand(unsigned short range);
-
-				short unpack_block(unsigned char *ibuf, long ilen, unsigned char *obuf);
-
-				unsigned long bseed;
-		};
+  private:
+    unsigned short brand(unsigned short range);
+    short unpack_block(unsigned char *ibuf, long ilen, unsigned char *obuf);
+    unsigned long bseed;
+  };
 
 #pragma pack(1)
-		struct dmo_header
-		{
-			char			id[22];
-			char			title[28];
-			unsigned short	_unk_1;
-			unsigned short	numord;
-			unsigned short	numinst;
-			unsigned short	numpat;
-			unsigned short	_unk_2;
-			unsigned short	speed;
-			unsigned short	tempo;
-			unsigned char	panning[32];
-		};
+  struct dmo_header {
+    char		id[22];
+    char		title[28];
+    unsigned short	_unk_1;
+    unsigned short	numord;
+    unsigned short	numinst;
+    unsigned short	numpat;
+    unsigned short	_unk_2;
+    unsigned short	speed;
+    unsigned short	tempo;
+    unsigned char	panning[32];
+  };
 
-		struct dmo_instrument
-		{
-			char			name[28];
-			unsigned char	vol;
-			unsigned char	dsk;
-			unsigned long	c2spd;
-			unsigned char	type;
-			unsigned char	data[12];
-		};
+  struct dmo_instrument {
+    char		name[28];
+    unsigned char	vol;
+    unsigned char	dsk;
+    unsigned long	c2spd;
+    unsigned char	type;
+    unsigned char	data[12];
+  };
 #pragma pack()
 };

@@ -1,6 +1,6 @@
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+  Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -19,17 +19,27 @@
   dmo.cpp - TwinTeam loader by Riven the Mage <riven@ok.ru>
 */
 /*
-  NOTE: Panning is ignored.
+  NOTES:
+  Panning is ignored.
+
+  A WORD ist 16 bits, a DWORD is 32 bits and a BYTE is 8 bits in this context.
 */
 
 #include <string.h>
 
 #include "dmo.h"
+#include "debug.h"
 
 #define LOWORD(l) ((l) & 0xffff)
 #define HIWORD(l) ((l) >> 16)
 #define LOBYTE(w) ((w) & 0xff)
 #define HIBYTE(w) ((w) >> 8)
+
+#define ARRAY_AS_DWORD(a, i) \
+((a[i + 3] << 24) + (a[i + 2] << 16) + (a[i + 1] << 8) + a[i])
+#define ARRAY_AS_WORD(a, i)	((a[i + 1] << 8) + a[i])
+
+#define CHARP_AS_WORD(p)	(((*(p + 1)) << 8) + (*p))
 
 /* -------- Public Methods -------------------------------- */
 
@@ -72,14 +82,14 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
 	// decrypt
 	unpacker->decrypt(packed_module,packed_length);
 
-	unsigned char *module = new unsigned char [0x2000 * (*(unsigned short *)&packed_module[12])];
+	unsigned char *module = new unsigned char [0x2000 * ARRAY_AS_WORD(packed_module, 12)];
 
 	// unpack
 	if (!unpacker->unpack(packed_module+12,module))
 	{
 		delete unpacker;
-		delete packed_module;
-		delete module;
+		delete [] packed_module;
+		delete [] module;
 		return false;
 	}
 
@@ -123,7 +133,7 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
 	ibuf += 256;
 
 	// load pattern lengths
-	unsigned short *my_patlen = (unsigned short *)ibuf;
+	unsigned char *my_patlen = ibuf;
 
 	ibuf += 200;
 
@@ -197,7 +207,8 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
 			}
 		}
 
-		ibuf += my_patlen[i];
+		ibuf += CHARP_AS_WORD(my_patlen);
+		my_patlen += 2;
 	}
 
 	delete [] module;
@@ -255,20 +266,20 @@ bool CdmoLoader::dmo_unpacker::decrypt(unsigned char *buf, long len)
 	unsigned long seed = 0;
 	int i;
 
-	bseed = *(unsigned long *)&buf[0];
+	bseed = ARRAY_AS_DWORD(buf, 0);
 
-	for (i=0;i<(*(unsigned short *)&buf[4]+1);i++)
+	for (i=0; i < ARRAY_AS_WORD(buf, 4) + 1; i++)
 		seed += brand(0xffff);
 
-	bseed = seed ^ *(unsigned long *)&buf[6];
+	bseed = seed ^ ARRAY_AS_DWORD(buf, 6);
 
-	if ((*(unsigned short *)&buf[10]) != brand(0xffff))
+	if (ARRAY_AS_WORD(buf, 10) != brand(0xffff))
 		return false;
 
 	for (i=0;i<(len-12);i++)
 		buf[12+i] ^= brand(0x100);
 
-	*(unsigned short *)&buf[len-2] = 0;
+	buf[len - 2] = buf[len - 1] = 0;
 
 	return true;
 }
@@ -360,25 +371,26 @@ long CdmoLoader::dmo_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
 {
 	long olen = 0;
 
-	unsigned short block_count = *(unsigned short *)ibuf;
+	unsigned short block_count = CHARP_AS_WORD(ibuf);
 
 	ibuf += 2;
 
-	unsigned short *block_length = (unsigned short *)ibuf;
+	unsigned char *block_length = ibuf;
 
-	ibuf += 2*block_count;
+	ibuf += 2 * block_count;
 
 	for (int i=0;i<block_count;i++)
 	{
-		unsigned short bul = *(unsigned short *)ibuf;
+		unsigned short bul = CHARP_AS_WORD(ibuf);
 
-		if (unpack_block(ibuf + 2,block_length[i] - 2,obuf) != bul)
+		if (unpack_block(ibuf + 2,CHARP_AS_WORD(block_length) - 2,obuf) != bul)
 			return 0;
 
 		obuf += bul;
 		olen += bul;
 
-		ibuf += block_length[i];
+		ibuf += CHARP_AS_WORD(block_length);
+		block_length += 2;
 	}
 
 	return olen;

@@ -82,7 +82,7 @@ CldsPlayer::~CldsPlayer()
 bool CldsPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
   binistream	*f;
-  unsigned int	i, j, numpatch, numposi, patterns_size;
+  unsigned int	i, j;
   SoundBank	*sb;
 
   // file validation section (actually just an extension check)

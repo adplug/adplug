@@ -35,6 +35,11 @@ class CldsPlayer: public CPlayer
   float getrefresh() { return 70.0f; }
 
   std::string gettype() { return std::string("LOUDNESS Sound System"); }
+  unsigned int getorders() { return numposi; }
+  unsigned int getorder() { return posplay; }
+  unsigned int getrow() { return pattplay; }
+  unsigned int getspeed() { return speed; }
+  unsigned int getinstruments() { return numpatch; }
 
  private:
   typedef struct {
@@ -77,6 +82,7 @@ class CldsPlayer: public CPlayer
     tempo_now, pattplay, tempo, regbd, chandelay[9], mode, pattlen;
   unsigned short	posplay, jumppos, *patterns, speed;
   bool			playing, songlooped;
+  unsigned int		numpatch, numposi, patterns_size;
 
   void		playsound(int inst_number, int channel_number, int tunehigh);
   inline void	setregs(unsigned char reg, unsigned char val);

@@ -68,6 +68,9 @@ static const char *filelist[] = {
   NULL
 };
 
+// String holding the relative path to the source directory
+static char *srcdir;
+
 /***** Testopl *****/
 
 class Testopl: public Copl
@@ -94,7 +97,7 @@ public:
   {
     if(reg > 255 || val > 255)
       std::cerr << "Warning: The player is writing data out of range! (reg = "
-		<< reg << ", val = " << val << ")\n";
+		<< std::hex << reg << ", val = " << val << ")\n";
     if(!f) return;
     fprintf(f, "%u <- %u\n", reg, val);
   }
@@ -150,7 +153,7 @@ static bool testplayer(const std::string filename)
    * prerecorded original and returns true if they match, false otherwise.
    */
 {
-  std::string	fn = std::string(getenv("srcdir")) + "/" + filename;
+  std::string	fn = std::string(srcdir) + "/" + filename;
   Testopl	*opl = new Testopl(filename + ".test");
   CPlayer	*p = CAdPlug::factory(fn, opl);
 
@@ -185,6 +188,10 @@ int main(int argc, char *argv[])
 {
   unsigned int	i;
   bool		retval = true;
+
+  // Set path to source directory
+  srcdir = getenv("srcdir");
+  if(!srcdir) srcdir = ".";
 
   // Try all files one by one
   if(argc > 1) {
