@@ -36,8 +36,8 @@
  * Translation: SHORTDELAY should be 6, and LONGDELAY is just fine.  :-)
  */
 
-#define SHORTDELAY		8					// short delay in microseconds after OPL hardware output
-#define LONGDELAY		35					// long delay in microseconds after OPL hardware output
+#define SHORTDELAY		6					// short delay in I/O port-reads after OPL hardware output
+#define LONGDELAY		35					// long delay in I/O port-reads after OPL hardware output
 
 // the 9 operators as expected by the OPL2
 static const unsigned char op_table[9] = {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 0x10, 0x11, 0x12};
