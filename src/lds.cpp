@@ -43,7 +43,7 @@ bool CldsLoader::load(istream &f, const char *filename)
 		return false;
 
 	f.ignore(15);			// ignore header
-	f.get((char)insts);		// get number of instruments
+	insts = f.get();		// get number of instruments
 	for(i=0;i<insts;i++) {	// load instruments
 		f.read((char *)ldsinst,46);
 		for(j=0;j<11;j++)	// convert instrument

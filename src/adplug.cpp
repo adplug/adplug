@@ -65,6 +65,9 @@
 #include "rol.h"
 #endif
 
+/***** Defines *****/
+#define VERSION		"1.3"		// AdPlug library version string
+
 /***** Static variables initializers *****/
 const unsigned short CPlayer::note_table[12] = {363,385,408,432,458,485,514,544,577,611,647,686};
 const unsigned char CPlayer::op_table[9] = {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 0x10, 0x11, 0x12};

@@ -4,3 +4,8 @@ Makefile
 Makefile.in
 *.lo
 *.la
+*.opt
+*.ncb
+*.dsw
+Debug
+Release

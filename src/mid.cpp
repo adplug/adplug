@@ -148,8 +148,9 @@ bool CmidPlayer::load_sierra_ins()
 {
     long i,j,k,l;
     unsigned char ins[28];
-    char pfilename[strlen(fname)+9];
+    char *pfilename;
 
+	pfilename = (char *)malloc(strlen(fname)+9);
     strcpy(pfilename,fname);
     j=0;
     for(i=strlen(pfilename)-1; i >= 0; i--)
@@ -160,6 +161,7 @@ bool CmidPlayer::load_sierra_ins()
     sprintf(pfilename+j+3,"patch.003");
 
     ifstream f(pfilename, ios::in | ios::binary);
+	free(pfilename);
     if(!f.is_open()) return false;
 
     f.ignore(2);

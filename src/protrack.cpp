@@ -484,10 +484,10 @@ bool CmodPlayer::realloc_patterns(unsigned long pats, unsigned long rows, unsign
   npats = pats; nrows = rows; nchans = chans;
 
   // alloc new patterns
-  tracks = new (Tracks *)[pats * chans];
+  tracks = new Tracks *[pats * chans];
   for(i=0;i<pats*chans;i++) tracks[i] = new Tracks[rows];
-  trackord = new (unsigned short *)[pats];
-  for(i=0;i<pats;i++) trackord[i] = new (unsigned short)[chans];
+  trackord = new unsigned short *[pats];
+  for(i=0;i<pats;i++) trackord[i] = new unsigned short[chans];
   channel = new Channel[chans];
 
   // initialize new patterns
