@@ -409,7 +409,7 @@ unsigned long CcffLoader::cff_unpacker::get_code()
 {
 	unsigned long code;
 
-	while (bits_left <= 24)
+	while (bits_left < code_length)
 	{
 		bits_buffer |= ((*input++) << bits_left);
 		bits_left += 8;
