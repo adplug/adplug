@@ -32,11 +32,11 @@ class CcffLoader: public CmodPlayer
 
 		bool            load(istream &f, const char *filename);
 
-        std::string     gettype();
-        std::string 	gettitle();
+		std::string     gettype();
+		std::string 	gettitle();
 		std::string 	getauthor();
-        std::string     getinstrument(unsigned int n);
-        unsigned int    getinstruments();
+		std::string     getinstrument(unsigned int n);
+		unsigned int    getinstruments();
 
 	private:
 
@@ -89,7 +89,7 @@ class CcffLoader: public CmodPlayer
 		struct cff_instrument
 		{
 			unsigned char	data[12];
-			char			name[21];
+			char            name[21];
 		} instruments[47];
 
 		char    song_title[20];

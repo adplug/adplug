@@ -232,7 +232,7 @@ bool CcffLoader::load(istream &f, const char *filename)
 			tracks[i][0].inst = i + 1;
 	}
 
-	// order loop point
+	// order loop
 	restartpos = 0;
 
 	// order length
@@ -255,11 +255,7 @@ bool CcffLoader::load(istream &f, const char *filename)
 
 std::string CcffLoader::gettype()
 {
-#ifdef SHORT_INFO
 	std::string xstr = "BoomTracker 4";
-#else
-	std::string xstr = "BoomTracker 4.0+ (version 1)";
-#endif
 
 	if (header.packed)
 		xstr += ", packed";
