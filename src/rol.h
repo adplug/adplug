@@ -3,6 +3,7 @@
  *
  * Visit:  http://tenacity.hispeed.com/aomit/oplx/
  */
+
 #ifndef H_ROLPLAYER
 #define H_ROLPLAYER
 

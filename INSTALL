@@ -4,20 +4,7 @@ Refer to the appropriate INSTALL files for your build system:
 
 INSTALL.unix    All UNIX builds, including cygwin
 INSTALL.win32   Microsoft Visual C++ builds
-INSTALL.dos     WATCOM C/C++ builds
-
-Appendix to 'INSTALL.dos':
---------------------------
-The build instructions of the WATCOM build are generic and generated
-automatically. They assume that the main Makefile would be called 'Makefile'.
-This isn't the case for AdPlug's WATCOM build! AdPlug's WATCOM Makefile is
-called 'Makefile.wat'. Thus, you have to give the commandline option
-'/f Makefile.wat' every time you run a 'wmake' command. For example, to
-install AdPlug, call wmake like this:
-
-wmake /f Makefile.wat install
-
-Do this similary with any other 'wmake' target.
+INSTALL.dos     Watcom C/C++ builds
 
 Some notes about the build system(s):
 -------------------------------------

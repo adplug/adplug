@@ -16,14 +16,14 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
  * u6m.h - Ultima 6 Music Player by Marc Winterrowd.
  * This code extends the Adlib Winamp plug-in by Simon Peter (dn.tlp@gmx.net)
  */
 
-#include "player.h"
 #include <stack>
 #include <fstream.h>
+
+#include "player.h"
 
 #define default_dict_size 4096     // because maximum codeword size == 12 bits
 #define max_codeword_length 12     // maximum codeword length in bits

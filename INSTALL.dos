@@ -90,13 +90,11 @@ libdir = c:\lib
 
 # CFLAGS defines any parameters that should be passed to the C compiler.
 # Default: (distribution specified)
-# This example sets full Pentium optimizations.
-#CFLAGS += -oneatx -oh -ei -zp8 -5 -fpi87 -fp5 -zq
+#CFLAGS +=
 
 # CXXFLAGS defines any parameters that should be passed to the C++ compiler.
 # Default: (distribution specified)
-# This example sets full Pentium optimizations.
-#CXXFLAGS += -oneatx -oh -oi+ -ei -zp8 -5 -fpi87 -fp5 -zq
+#CXXFLAGS +=
 
 # CPPFLAGS defines preprocessing directives passed to the C/C++ compilers.
 # Default: (distribution specified)

@@ -1,6 +1,11 @@
 # AdPlug Makefile for WATCOM C/C++ 11.x
 # Copyright (c) 2001, 2002 Simon Peter <dn.tlp@gmx.net>
 
+# This flag is set to work around a bug in the Watcom 11.0c compiler in
+# conjunction with the STLport library. Without it, the compiler will crash
+# during compilation of some files and create very fragile code for others.
+CXXFLAGS = -oi+
+
 OUTPUT = adplug.lib
 
 OBJS = protrack.obj a2m.obj amd.obj d00.obj dfm.obj hsc.obj hsp.obj imf.obj &

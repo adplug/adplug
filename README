@@ -20,7 +20,7 @@ Hardware		Platform		Compiler
 --------		--------		--------
 IBM-PC			Win32			MS Visual C++ 6.0
 						cygwin
-			MS-DOS			Watcom C/C++ 11.x
+                        MS-DOS                  Watcom C/C++ 11.0c
 			Linux 2.2		GCC 2.x
 			Linux 2.4		GCC 2.x
 						GCC 3.x
