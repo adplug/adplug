@@ -8,6 +8,7 @@ Makefile.in
 *.ncb
 *.dsw
 *.lib
+*.err
 Debug
 Release
 config.bat
