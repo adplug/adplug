@@ -69,7 +69,7 @@ bool CadtrackLoader::load(istream &f, const char *filename)
 
   // give CmodPlayer a hint on what we're up to
   realloc_patterns(1,1000,9); realloc_instruments(9); realloc_order(1);
-  init_trackord(); init_notetable(my_notetable);
+  init_trackord(); // init_notetable(my_notetable);
   (*order) = 0; length = 1; restartpos = 0; bpm = 120; initspeed = 3;
 
   // load instruments from instruments file
@@ -83,15 +83,15 @@ bool CadtrackLoader::load(istream &f, const char *filename)
     for(chp=0;chp<9;chp++) {
       f.read(note,2); octave = f.get(); f.ignore();	// read next record
       switch(*note) {
-      case 'C': if(note[1] == '#') pnote = 1; else pnote = 12; break;
-      case 'D': if(note[1] == '#') pnote = 3; else pnote = 2; break;
-      case 'E': pnote = 4; break;
-      case 'F': if(note[1] == '#') pnote = 6; else pnote = 5; break;
-      case 'G': if(note[1] == '#') pnote = 8; else pnote = 7; break;
-      case 'A': if(note[1] == '#') pnote = 10; else pnote = 9; break;
-      case 'B': pnote = 11; break;
+      case 'C': if(note[1] == '#') pnote = 2; else pnote = 1; break;
+      case 'D': if(note[1] == '#') pnote = 4; else pnote = 3; break;
+      case 'E': pnote = 5; break;
+      case 'F': if(note[1] == '#') pnote = 7; else pnote = 6; break;
+      case 'G': if(note[1] == '#') pnote = 9; else pnote = 8; break;
+      case 'A': if(note[1] == '#') pnote = 11; else pnote = 10; break;
+      case 'B': pnote = 12; break;
       case '\0':
-	if(note[1] == '\0') tracks[chp][rwp].note = 0; else return false;
+	if(note[1] == '\0') tracks[chp][rwp].note = 127; else return false;
 	break;
       default: return false;
       }
