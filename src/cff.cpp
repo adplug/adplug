@@ -463,6 +463,9 @@ void CcffLoader::cff_unpacker::startup()
 
 void CcffLoader::cff_unpacker::expand_dictionary(unsigned char *string)
 {
+	if (string[0] >= 0xF0)
+		return;
+
 	memcpy(&heap[heap_length],string,string[0] + 1);
 
 	dictionary[dictionary_length] = &heap[heap_length];
