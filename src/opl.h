@@ -29,8 +29,6 @@ public:
 	virtual void init(void) = 0;				// reinitialize OPL chip
 
 	virtual void update(short *buf, int samples) {};	// Emulation only: fill buffer
-
-	virtual void foo()
 };
 
 //a newer interface for OPL renderers--
