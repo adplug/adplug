@@ -112,8 +112,8 @@ bool Csa2Loader::load(istream &f, const char *filename)
 		inst[i].misc = 0;
 		inst[i].slide = 0;
 	}
-	f.read((char *)instname,29*17);				// instrument names
-	f.ignore(3);						// dummy bytes
+	f.read((char *)instname,29*17);			// instrument names
+	f.ignore(3);							// dummy bytes
 	f.read((char *)order,128);				// pattern orders
 	if (sat_type & HAS_UNKNOWN127) f.ignore(127);
 
@@ -129,7 +129,7 @@ bool Csa2Loader::load(istream &f, const char *filename)
 	if(sat_type & HAS_ARPEGIOLIST) {
 	  init_specialarp();
 	  f.read((char *)arplist,sizeof(arplist));	// arpeggio list
-	  f.read((char *)arpcmd,sizeof(arpcmd));		// arpeggio commands
+	  f.read((char *)arpcmd,sizeof(arpcmd));	// arpeggio commands
 	}
 
 	for(i=0;i<64;i++) {				// track orders

@@ -9,3 +9,4 @@ Makefile.in
 *.dsw
 Debug
 Release
+config.bat
