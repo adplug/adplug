@@ -68,7 +68,7 @@ class CldsPlayer: public CPlayer
 
   typedef struct {
     unsigned short	patnum;
-    signed char		transpose;
+    unsigned char	transpose;
   } Position;
 
   static const unsigned short	frequency[];
