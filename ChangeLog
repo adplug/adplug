@@ -1,0 +1,614 @@
+2002-11-16 18:57  dynamite
+
+	* src/: Makefile.bt, adplug.cpp: Enabled STL using code under
+	Watcom.
+
+2002-11-15 13:42  dynamite
+
+	* src/raw.cpp: Made RAW player loop itself.
+
+2002-11-15 13:05  dynamite
+
+	* src/imf.cpp: Fixed IMF player to correctly load files with a
+	null-length footer.
+
+2002-11-15 11:52  dynamite
+
+	* Makefile.bt, NEWS, configure.in, src/adplug.cpp: Bumped version
+	number. Added dependency to libstdc++ under UNIX.
+
+2002-11-07 19:32  dynamite
+
+	* .cvsignore: Release Candidate #1.
+
+2002-11-07 19:31  dynamite
+
+	* Makefile.bt: AdPlug Release Candidate #1.
+
+2002-11-07 18:03  dynamite
+
+	* TODO, src/dmo.cpp: TODO list updates.
+
+2002-11-02 14:10  dynamite
+
+	* src/: .cvsignore, adplug.dsp, dmo.h: Fixed struct element
+	alignment in dmo player.
+
+2002-10-31 15:08  dynamite
+
+	* src/: Makefile.am, d00.h, dmo.cpp: Added file extension check to
+	dmo player.
+
+2002-10-27 16:49  dynamite
+
+	* src/: adplug.dsp, cff.h: Some fixes.
+
+2002-10-27 16:19  dynamite
+
+	* src/adplug.dsp: Some fixes.
+
+2002-10-24 23:10  dynamite
+
+	* README, TODO, configure.in, doc/Protracker.ms, src/Makefile.am,
+	src/adplug.cpp, src/adplug.h, src/amd.cpp, src/cff.cpp,
+	src/d00.cpp, src/debug.c, src/dmo.cpp, src/emuopl.cpp,
+	src/emuopl.h, src/mad.cpp: AdPlug 1.3 Release Candidate #1.
+
+2002-10-21 16:04  riven-mage
+
+	* src/dmo.cpp, src/s3m.cpp, AUTHORS, README: nothing chaged :)
+
+2002-10-20 18:05  riven-mage
+
+	* src/dmo.cpp: dmo release
+
+2002-10-20 18:04  riven-mage
+
+	* README: no message
+
+2002-10-20 13:46  riven-mage
+
+	* src/Makefile.am, src/Makefile.bt, src/adplug.cpp, src/dmo.cpp,
+	src/dmo.h, AUTHORS, NEWS, README: dmo release
+
+2002-10-20 09:05  riven-mage
+
+	* src/: dmo.cpp, dmo.h: latest alpha
+
+2002-10-20 09:04  riven-mage
+
+	* src/s3m.h: instrument structure named 's3minst'
+
+2002-10-20 09:03  riven-mage
+
+	* src/cff.cpp: signature check after unpack moved from unpack() to
+	load()
+
+2002-10-19 09:59  riven-mage
+
+	* src/protrack.h: Channel placement fixed :)
+
+2002-10-18 22:56  riven-mage
+
+	* src/protrack.cpp: fmc fix
+
+2002-10-18 22:51  riven-mage
+
+	* doc/Protracker.ms: fmc & dtm additions
+
+2002-10-18 21:58  riven-mage
+
+	* AUTHORS, NEWS, README, TODO: dtm released
+
+2002-10-18 21:57  riven-mage
+
+	* src/: cff.cpp, cff.h: some changes
+
+2002-10-18 21:53  riven-mage
+
+	* src/: d00.h, s3m.h: pragma #once
+
+2002-10-18 21:50  riven-mage
+
+	* src/: adplug.cpp, Makefile.am, Makefile.bt, adplug.dsp, dtm.cpp,
+	dtm.h: dtm released
+
+2002-10-16 09:32  riven-mage
+
+	* src/cff.cpp: input underflow fix
+
+2002-10-15 22:37  riven-mage
+
+	* src/cff.cpp: no message
+
+2002-10-15 16:36  riven-mage
+
+	* src/protrack.cpp: 'DTM frequency slide' effect added
+
+2002-10-15 16:35  riven-mage
+
+	* src/protrack.h: moved Channels from private to protected
+
+2002-10-15 16:32  riven-mage
+
+	* src/: amd.cpp, rad.cpp: 'MOD_FLAGS_DECIMAL' changed to 'Decimal'
+
+2002-10-15 16:30  riven-mage
+
+	* src/: cff.cpp, cff.h: default instruments fix
+
+2002-10-15 16:29  riven-mage
+
+	* src/: mad.cpp, mad.h, fmc.cpp, fmc.h: update to latest Protracker
+
+2002-10-14 18:15  dynamite
+
+	* TODO, src/Makefile.am, src/xad.h: Added pseudo #once pragma.
+
+2002-10-12 14:41  riven-mage
+
+	* src/cff.cpp: comment changes
+
+2002-10-12 13:12  riven-mage
+
+	* src/: xad.cpp, xad.h, fmc.h, dmo.cpp, dmo.h: no message
+
+2002-10-10 17:19  riven-mage
+
+	* src/: hybrid.cpp, hybrid.cpp: nothing important :)
+
+2002-10-09 22:31  dynamite
+
+	* TODO, configure.in, src/emuopl.h: UNIX build fixes.
+
+2002-10-06 22:42  dynamite
+
+	* src/realopl.h: nothing changed. ;)
+
+2002-10-05 20:23  dynamite
+
+	* src/adplug.dsp: Added cff.[cpp,h] to adplug.dsp.
+
+2002-10-04 15:19  dynamite
+
+	* Makefile.am, TODO, configure.in: UNIX build system fixes.
+
+2002-10-04 00:07  dynamite
+
+	* TODO, src/Makefile.am, src/fmopl.c: Fixed copyright notice in
+	fmopl.c.
+
+2002-10-03 22:34  dynamite
+
+	* INSTALL.dos, Makefile.wat: Updated DOS build system. Can now
+	create debug info.
+
+2002-10-03 22:32  dynamite
+
+	* src/: Makefile.bt, adplug.cpp, adtrack.cpp, bmf.cpp, cff.cpp,
+	cff.h, debug.c, debug.h, dtm.cpp, flash.cpp, hsc.cpp, hybrid.cpp,
+	ksm.cpp, protrack.cpp, psi.cpp, rat.cpp, rol.cpp, sa2.cpp, xad.cpp:
+	Prefixed C debug functions with AdPlug_*. Updated DOS makefile.
+
+2002-10-02 22:33  dynamite
+
+	* doc/.cvsignore: Added cvsignore file.
+
+2002-10-02 22:31  dynamite
+
+	* INSTALL, Makefile.am, autogen.sh, configure.in, doc/Makefile.am,
+	doc/groff-it, src/Makefile.am: automake based documentation
+	building on UNIX.
+
+2002-10-01 13:17  riven-mage
+
+	* src/: dtm.cpp, dtm.h: alpha 2
+
+2002-10-01 13:16  riven-mage
+
+	* src/: cff.cpp, cff.h: final version
+
+2002-09-29 22:16  riven-mage
+
+	* AUTHORS: no message
+
+2002-09-29 22:08  riven-mage
+
+	* src/cff.cpp: final version
+
+2002-09-29 19:31  dynamite
+
+	* TODO, doc/Hacking.ms, doc/Hacking.txt, doc/Player-Development.ms,
+	doc/Player-Development.txt, doc/Protracker.ms, doc/Protracker.txt,
+	doc/groff-it: Added troff documentation.
+
+2002-09-29 19:15  dynamite
+
+	* AUTHORS, Makefile.am, NEWS, README, TODO: Some more updates...
+
+2002-09-29 14:02  riven-mage
+
+	* src/adplug.dsp: struct member alignment set to 1 byte (for
+	Release)
+
+2002-09-29 13:45  riven-mage
+
+	* src/cff.cpp, TODO: no message
+
+2002-09-29 10:20  riven-mage
+
+	* NEWS, TODO, AUTHORS: no message
+
+2002-09-29 10:19  riven-mage
+
+	* src/: cff.cpp, cff.h: pre-final version
+
+2002-09-29 10:18  riven-mage
+
+	* src/adplug.cpp: CFF loader support
+
+2002-09-29 10:17  riven-mage
+
+	* src/protrack.cpp: fixed memset(channel,0,sizeof(channel))
+
+2002-09-26 14:11  riven-mage
+
+	* TODO, doc/Protracker.txt, src/cff.cpp, src/cff.h,
+	src/protrack.cpp, src/xad.cpp: CFF updated to beta
+
+2002-09-22 12:17  riven-mage
+
+	* TODO, src/cff.cpp, src/cff.h, src/dmo.cpp, src/dmo.h,
+	src/dtm.cpp, src/dtm.h: added cff,dmo,dtm alphas
+
+2002-08-19 22:57  dynamite
+
+	* doc/: Player-Development.txt, Protracker.txt: Updated docs.
+
+2002-08-18 11:12  riven-mage
+
+	* src/: debug.c, debug.h: no message
+
+2002-08-15 20:49  dynamite
+
+	* TODO, src/adtrack.cpp, src/adtrack.h, src/debug.c: Finished
+	CadtrackLoader. Fixed debugging. Updated TODO list.
+
+2002-08-15 19:54  dynamite
+
+	* src/: adtrack.cpp, adtrack.h, debug.c: Fixed CadtrackLoader.
+	Fixed debug logging.
+
+2002-08-15 19:07  dynamite
+
+	* src/.cvsignore: Added *.err.
+
+2002-08-15 19:06  dynamite
+
+	* src/: adtrack.cpp, protrack.cpp, protrack.h: Added NoKeyOn flag
+	to CmodPlayer. Fixed CadtrackLoader.
+
+2002-08-15 18:37  dynamite
+
+	* src/adtrack.cpp: Changed all 0-notes to keyoffs instead. And
+	don't use own note table.
+
+2002-08-15 17:39  dynamite
+
+	* INSTALL: Corrected DOS debug documentation.
+
+2002-08-15 17:24  dynamite
+
+	* NEWS, README, TODO, doc/Protracker.txt, src/imf.cpp, src/imf.h,
+	src/protrack.cpp, src/protrack.h, src/sa2.cpp: Fixed SA2 loader.
+	Added descriptions to IMF player. Updated docs.
+
+2002-08-13 21:57  dynamite
+
+	* INSTALL: Revised DOS build instructions.
+
+2002-08-13 21:56  dynamite
+
+	* INSTALL, Makefile.wat, src/.cvsignore, src/Makefile.bt,
+	src/adplug.cpp: Added adtrack.cpp & lds.cpp to DOS build and
+	revised cvsignore files.
+
+2002-08-13 21:20  dynamite
+
+	* src/adplug.dsp: Added adtrack.cpp build information.
+
+2002-08-13 16:47  dynamite
+
+	* TODO, src/adtrack.cpp, src/protrack.cpp, src/protrack.h: Fixed
+	CadtrackLoader.
+
+2002-08-13 13:55  dynamite
+
+	* NEWS, src/Makefile.am, src/adplug.cpp, src/adtrack.cpp,
+	src/adtrack.h, src/fmc.cpp, src/mad.cpp, src/protrack.cpp,
+	src/protrack.h: Flexible notetable in CmodPlayer, implemented
+	CadtrackLoader.
+
+2002-08-11 20:36  dynamite
+
+	* src/: adtrack.cpp, imfcrc.h: Added "Duke Nukem 2" IMF CRC values.
+
+2002-08-09 18:46  dynamite
+
+	* NEWS, TODO, doc/Hacking.txt, doc/Protracker.txt, src/adtrack.cpp,
+	src/adtrack.h, src/fmopl.c, src/fmopl.h, src/protrack.cpp,
+	src/protrack.h: checked in adtrack.* and updated protracker docs.
+
+2002-08-09 16:11  dynamite
+
+	* src/: .cvsignore, adplug.dsp, sa2.cpp: Windows fixes.
+
+2002-08-09 12:22  dynamite
+
+	* src/: .cvsignore, adplug.cpp, debug.c, lds.cpp, mid.cpp,
+	protrack.cpp: Fixes from the Windows build.
+
+2002-08-09 00:34  dynamite
+
+	* TODO, src/dfm.cpp, src/lds.cpp, src/protrack.cpp, src/rad.cpp,
+	src/sa2.cpp: made CmodPlayer more flexible.
+
+2002-08-08 22:06  dynamite
+
+	* TODO, doc/Protracker.txt, src/a2m.cpp, src/adplug.cpp,
+	src/protrack.cpp, src/protrack.h, src/sa2.cpp: Implemented
+	preliminary extendable CmodPlayer class.
+
+2002-08-08 15:20  dynamite
+
+	* doc/Protracker.txt: Added preliminary Protracker player devel
+	HOWTO.
+
+2002-08-08 14:22  dynamite
+
+	* doc/Player-Development.txt: Updated Player devel HOWTO
+
+2002-08-08 14:11  dynamite
+
+	* TODO, src/protrack.cpp: no message
+
+2002-08-08 10:27  riven-mage
+
+	* TODO: no message
+
+2002-08-07 21:01  dynamite
+
+	* TODO: todo list update.
+
+2002-08-07 20:59  dynamite
+
+	* .cvsignore, INSTALL, README, TODO, autogen.sh, configure.in,
+	doc/Hacking.txt, doc/Player-Development-mini-HOWTO.txt,
+	doc/Player-Development.txt, src/.cvsignore, src/a2m.cpp, src/a2m.h,
+	src/adplug.cpp, src/adplug.h, src/amd.cpp, src/amd.h, src/bam.cpp,
+	src/bam.h, src/bmf.cpp, src/bmf.h, src/d00.cpp, src/d00.h,
+	src/debug.c, src/debug.h, src/dfm.cpp, src/dfm.h, src/flash.cpp,
+	src/flash.h, src/fmc.cpp, src/fmc.h, src/hsc.cpp, src/hsc.h,
+	src/hsp.cpp, src/hsp.h, src/hybrid.cpp, src/hybrid.h, src/hyp.cpp,
+	src/hyp.h, src/imf.cpp, src/imf.h, src/ksm.cpp, src/ksm.h,
+	src/lds.cpp, src/lds.h, src/mad.cpp, src/mad.h, src/mid.cpp,
+	src/mid.h, src/mkj.cpp, src/mkj.h, src/mtk.cpp, src/mtk.h,
+	src/player.h, src/protrack.cpp, src/protrack.h, src/psi.cpp,
+	src/psi.h, src/rad.cpp, src/rad.h, src/rat.cpp, src/rat.h,
+	src/raw.cpp, src/raw.h, src/rol.cpp, src/rol.h, src/s3m.cpp,
+	src/s3m.h, src/sa2.cpp, src/sa2.h, src/sng.cpp, src/sng.h,
+	src/u6m.cpp, src/u6m.h, src/xad.cpp, src/xad.h: too many changes to
+	list here.
+
+2002-08-06 12:18  riven-mage
+
+	* TODO: no message
+
+2002-08-04 12:25  riven-mage
+
+	* TODO: no message
+
+2002-08-04 12:15  riven-mage
+
+	* TODO: no message
+
+2002-08-01 17:04  dynamite
+
+	* .cvsignore, src/.cvsignore: added .cvsignore file. cleaned up.
+
+2002-07-24 19:18  dynamite
+
+	* INSTALL.win32, TODO, src/Makefile.am, src/imfcrc.h: no message
+
+2002-07-19 14:24  dynamite
+
+	* INSTALL, INSTALL.dos, INSTALL.unix, INSTALL.win32, Makefile.bt,
+	Makefile.wat, TODO, src/Makefile.bt, src/Makefile.wat,
+	src/adplug.dsp, src/vc6inst.bat, src/xad.cpp: no message
+
+2002-06-20 22:52  dynamite
+
+	* COPYING, AUTHORS, Makefile.am, NEWS, README, src/Makefile.am,
+	src/fmopl.c, src/protrack.h: no message
+
+2002-05-10 22:11  dynamite
+
+	* NEWS, README, src/Makefile.wat, src/debug.h, src/diskopl.cpp,
+	src/diskopl.h, src/fmopl.c, src/fmopl.h: n
+
+2002-04-26 14:53  dynamite
+
+	* AUTHORS: no message
+
+2002-04-16 13:02  dynamite
+
+	* src/: Makefile.wat, adplug.cpp, xad.cpp: no message
+
+2002-03-28 17:26  dynamite
+
+	* NEWS: no message
+
+2002-03-28 13:53  dynamite
+
+	* NEWS, configure.in, src/adplug.cpp, src/adplug.dsp, src/adplug.h,
+	src/bmf.cpp, src/debug.c, src/flash.cpp, src/hybrid.cpp,
+	src/hyp.cpp, src/psi.cpp, src/rat.cpp, src/debug.h: no message
+
+2002-03-25 17:10  dynamite
+
+	* Makefile.am, README, doc/PLAYER_SDK,
+	doc/Player-Development-mini-HOWTO.txt: m
+
+2002-03-25 15:07  dynamite
+
+	* src/Makefile.am, src/Makefile.wat, src/a2m.cpp, src/a2m.h,
+	src/adplug.cpp, src/adplug.dsp, src/adplug.h, src/amd.cpp,
+	src/amd.h, src/analopl.cpp, src/analopl.h, src/bam.cpp, src/bam.h,
+	src/bmf.cpp, src/bmf.h, src/d00.cpp, src/d00.h, src/debug.c,
+	src/dfm.cpp, src/dfm.h, src/diskopl.cpp, src/diskopl.h,
+	src/emuopl.cpp, src/emuopl.h, src/flash.cpp, src/flash.h,
+	src/fmc.cpp, src/fmc.h, src/fmopl.c, src/fmopl.h, src/hsc.cpp,
+	src/hsc.h, src/hsp.cpp, src/hsp.h, src/hybrid.cpp, src/hybrid.h,
+	src/hyp.cpp, src/hyp.h, src/imf.cpp, src/imf.h, src/imfcrc.h,
+	src/ksm.cpp, src/ksm.h, src/lds.cpp, src/lds.h, src/mad.cpp,
+	src/mad.h, src/mid.cpp, src/mid.h, src/mididata.h, src/mkj.cpp,
+	src/mkj.h, src/mtk.cpp, src/mtk.h, src/opl.h, src/player.h,
+	src/protrack.cpp, src/protrack.h, src/psi.cpp, src/psi.h,
+	src/rad.cpp, src/rad.h, src/rat.cpp, src/rat.h, src/raw.cpp,
+	src/raw.h, src/realopl.cpp, src/realopl.h, src/rol.cpp, src/rol.h,
+	src/s3m.cpp, src/s3m.h, src/sa2.cpp, src/sa2.h, src/silentopl.h,
+	src/sng.cpp, src/sng.h, src/u6m.cpp, src/u6m.h, src/xad.cpp,
+	src/xad.h, doc/PLAYER_SDK: no message
+
+2002-03-25 15:00  dynamite
+
+	* AUTHORS, Makefile.am, Makefile.wat, NEWS, PLAYER_SDK, README,
+	adplug.cpp, adplug.dsp, adplug.h, analopl.cpp, analopl.h,
+	configure.in, diskopl.cpp, diskopl.h, emuopl.cpp, emuopl.h,
+	fmopl.c, fmopl.h, opl.h, realopl.cpp, realopl.h, silentopl.h,
+	COPYING: no message
+
+2002-03-18 15:55  dynamite
+
+	* CHANGES, COPYING, CREDITS, INSTALL, adplug.cpp, adplug.h, fm.h,
+	makefile, makefile.wat, AUTHORS, ChangeLog, Makefile.am,
+	Makefile.wat, NEWS, autogen.sh, configure.in, diskopl.cpp,
+	diskopl.h: no message
+
+2002-03-02 18:35  dynamite
+
+	* adplug.cpp, makefile: G
+
+2002-03-02 15:01  dynamite
+
+	* CHANGES, CREDITS, INSTALL, PLAYER_SDK, README, adplug.cpp,
+	adplug.dsp, emuopl.h, fmopl.c, makefile, makefile.wat, opl.h: G
+
+2002-01-13 11:27  dynamite
+
+	* adplug.cpp, adplug.dsp, adplug.h: made CAdPlug a static class.
+
+2001-12-26 14:27  dynamite
+
+	* CHANGES, CREDITS, README, adplug.cpp, adplug.dsp: documentation
+	updates.
+
+2001-11-27 20:36  dynamite
+
+	* fm.h, fmopl.c, fmopl.h: updated emulator to upstream (MAME)
+	version.
+
+2001-11-09 05:03  cdc_
+
+	* README: added .SAT (and preliminary .LDS note) to documentation
+
+2001-11-09 05:02  cdc_
+
+	* CREDITS: .SAT support added to sa2.cpp - thanks mamiya
+
+2001-10-26 17:06  dynamite
+
+	* CHANGES, INSTALL, PLAYER_SDK, README, adplug.cpp, adplug.dsp,
+	makefile: release candidate #1
+
+2001-10-23 21:19  dynamite
+
+	* CREDITS, adplug.dsp, analopl.cpp, analopl.h, makefile,
+	makefile.wat: added WATCOM and MSVC support.
+
+2001-10-18 18:44  dynamite
+
+	* CHANGES, CREDITS, INSTALL, README, adlibemu.c, adlibemu.h,
+	adplug.cpp, adplug.h, kemuopl.h, makefile: made linux dynamic
+	library, removed adlibemu.
+
+2001-10-15 13:18  dynamite
+
+	* COPYING, CREDITS, lgpl.txt: documentation cleanup.
+
+2001-10-15 13:13  dynamite
+
+	* README, adplug.cpp: added BAM player. messed with LDS player.
+
+2001-10-08 15:23  dynamite
+
+	* PLAYER_SDK, README, adplug.cpp: misc. changes.
+
+2001-09-24 04:01  cdc_
+
+	* lgpl.txt, adlibemu.c, adlibemu.h, adplug.cpp, adplug.h,
+	emuopl.cpp, emuopl.h, fm.h, fmopl.c, fmopl.h, kemuopl.h, opl.h,
+	realopl.cpp, realopl.h, silentopl.h: added license information
+
+2001-09-15 17:05  dynamite
+
+	* fmopl.c, opl.h: linux fixes.
+
+2001-08-19 17:00  dynamite
+
+	* adlibemu.c, adlibemu.h, adplug.cpp, adplug.h, kemuopl.h:
+	miscellaneous fixups & code cleanups.
+
+2001-07-16 17:00  dynamite
+
+	* adplug.cpp: added DFM player.
+
+2001-07-01 05:42  cdc_
+
+	* realopl.cpp: fixed delay values in realopl.cpp
+
+2001-06-30 21:20  dynamite
+
+	* adplug.cpp: added MKJamz support to core module.
+
+2001-06-30 21:10  dynamite
+
+	* adplug.cpp: made adplug 1.0 core release.
+
+2001-06-24 19:51  dynamite
+
+	* adplug.cpp, realopl.cpp: added preliminary MKJamz player. Some
+	comments added to realopl.cpp.
+
+2001-06-14 20:12  dynamite
+
+	* adplug.cpp: added .wlf support. IMF player rewinds songs
+	automatically now.
+
+2001-05-31 12:20  dynamite
+
+	* adlibemu.c: added proper credits to adlibemu.c & ksm.cpp. Fixed
+	raw.cpp (del variable was falsely interpreted).
+
+2001-05-30 17:42  dynamite
+
+	* adlibemu.c, adlibemu.h, adplug.cpp, adplug.h, emuopl.cpp,
+	emuopl.h, realopl.cpp, fm.h, fmopl.c, fmopl.h, kemuopl.h, opl.h,
+	realopl.h, silentopl.h: initial import.
+
+2001-05-30 17:42  dynamite
+
+	* adlibemu.c, adlibemu.h, adplug.cpp, adplug.h, emuopl.cpp,
+	emuopl.h, realopl.cpp, fm.h, fmopl.c, fmopl.h, kemuopl.h, opl.h,
+	realopl.h, silentopl.h: Initial revision
+

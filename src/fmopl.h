@@ -126,8 +126,8 @@ typedef struct fm_opl_f {
 	OPL_PORTHANDLER_W keyboardhandler_w;
 	int keyboard_param;
 	/* time tables */
-	INT32 AR_TABLE[75];	/* atttack rate tables */
-	INT32 DR_TABLE[75];	/* decay rate tables   */
+	INT32 AR_TABLE[76];	/* atttack rate tables */
+	INT32 DR_TABLE[76];	/* decay rate tables   */
 	UINT32 FN_TABLE[1024];  /* fnumber -> increment counter */
 	/* LFO */
 	INT32 *ams_table;
