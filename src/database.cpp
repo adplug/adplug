@@ -31,6 +31,8 @@
 
 /***** CAdPlugDatabase *****/
 
+const unsigned short CAdPlugDatabase::hash_radix = ADPLUGDB_HASH_RADIX;
+
 CAdPlugDatabase::CAdPlugDatabase()
   : linear_index(0), linear_logic_length(0)
 {

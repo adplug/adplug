@@ -64,14 +64,23 @@ public:
 	{ return std::string(instname[n],1,*instname[n]); };
 
 private:
-	static const unsigned int MAXFREQ = 2000, MINCOPY = 3, MAXCOPY = 255,
-	  COPYRANGES = 6, CODESPERRANGE = MAXCOPY - MINCOPY + 1, TERMINATE = 256,
-	  FIRSTCODE = 257, MAXCHAR = FIRSTCODE + COPYRANGES * CODESPERRANGE - 1,
-	  SUCCMAX = MAXCHAR + 1, TWICEMAX = 2 * MAXCHAR + 1, ROOT = 1,
-	  MAXBUF = 42 * 1024, MAXDISTANCE = 21389, MAXSIZE = 21389 + MAXCOPY;
+
+#define ADPLUG_A2M_COPYRANGES		6
+#define ADPLUG_A2M_FIRSTCODE		257
+#define ADPLUG_A2M_MINCOPY			3
+#define ADPLUG_A2M_MAXCOPY			255
+#define ADPLUG_A2M_CODESPERRANGE	(ADPLUG_A2M_MAXCOPY - ADPLUG_A2M_MINCOPY + 1)
+#define ADPLUG_A2M_MAXCHAR			(ADPLUG_A2M_FIRSTCODE + \
+	ADPLUG_A2M_COPYRANGES * ADPLUG_A2M_CODESPERRANGE - 1)
+#define ADPLUG_A2M_TWICEMAX			(2 * ADPLUG_A2M_MAXCHAR + 1)
+
+	static const unsigned int MAXFREQ, MINCOPY, MAXCOPY, COPYRANGES,
+		CODESPERRANGE, TERMINATE, FIRSTCODE, MAXCHAR, SUCCMAX, TWICEMAX, ROOT,
+		MAXBUF, MAXDISTANCE, MAXSIZE;
 
 	static const unsigned short bitvalue[14];
-	static const signed short copybits[COPYRANGES], copymin[COPYRANGES];
+	static const signed short copybits[ADPLUG_A2M_COPYRANGES],
+		copymin[ADPLUG_A2M_COPYRANGES];
 
 	void inittree();
 	void updatefreq(unsigned short a,unsigned short b);
@@ -81,9 +90,10 @@ private:
 	void decode();
 	unsigned short sixdepak(unsigned short *source,unsigned char *dest,unsigned short size);
 
-	char songname[43],author[43],instname[250][33];
+	char songname[43], author[43], instname[250][33];
 
-	unsigned short ibitcount,ibitbuffer,ibufcount,obufcount,input_size,output_size,leftc[MAXCHAR+1],
-		rghtc[MAXCHAR+1],dad[TWICEMAX+1],freq[TWICEMAX+1],*wdbuf;
-	unsigned char *obuf,*buf;
+	unsigned short ibitcount, ibitbuffer, ibufcount, obufcount, input_size,
+		output_size, leftc[ADPLUG_A2M_MAXCHAR+1], rghtc[ADPLUG_A2M_MAXCHAR+1],
+		dad[ADPLUG_A2M_TWICEMAX+1], freq[ADPLUG_A2M_TWICEMAX+1], *wdbuf;
+	unsigned char *obuf, *buf;
 };
