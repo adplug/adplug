@@ -1,6 +1,6 @@
 Note
 ----
-This program/library is tested and proven to work only with WATCOM C/C++ 11.x!
+This build system is tested and proven to work only with WATCOM C/C++ 11.x!
 It may compile with other (older) versions, but i can't guarantee it.
 
 Configuration
@@ -45,12 +45,32 @@ Uninstallation
 You can automatically delete all installed files by running "wmake uninstall".
 Note that any files created after installation are being left on the target.
 
+Debugging
+---------
+To enable debugging with the WATCOM debugger, add the following line to your
+CONFIG.MIF file:
+
+debug = yes
+
+This remakes all source files with source-level debugging enabled and
+instructs the linker to include debugging information. Be careful with the
+SYSTEM setting in your CONFIG.MIF file, though. Only some extenders are
+supported by the WATCOM debugger. Some distributions may have defined a
+non-compatible extender by default, which you must override by specifying
+your own!
+
 CONFIG.MIF Template
 -------------------
 # Makefile configuration file
 # Lines starting with a '#' are comments.
 # Variables in capital letters are distribution-specific. Be careful when
 # changing any of these!
+
+# If debug is set to "yes", the compiler and linker are instructed to
+# include debug information with the compiled objects and executables.
+# Default: no
+# This example enables debugging.
+#debug = yes
 
 # "bindir" is the target directory for binary (.exe) files.
 # Default: current directory

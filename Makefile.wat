@@ -29,6 +29,7 @@ SYSTEM = dos4g
 #lib_INST =
 #bin_INST =
 
+debug = no
 installfile = install.txt
 submakefile = Makefile.bt
 configfile = config.mif
@@ -52,6 +53,13 @@ uninstall.recursive
 
 # Automatically distributed files
 DIST += $(submakefile) $(installfile)
+
+# Debugging support
+!ifeq debug yes
+CFLAGS += -d2
+CXXFLAGS += -d2
+LDFLAGS += debug all
+!endif
 ### LOCAL VARIABLES END ###
 
 ### MAIN SECTION ###
@@ -65,7 +73,7 @@ DIST += $(submakefile) $(installfile)
         $(LIB) $(LIBFLAGS) $@ +$<
 
 .obj.exe:
-        $(LD) N $@ F {$<} LIB {$(LIBRARIES)} SYS $(SYSTEM) $(LDFLAGS)
+        $(LD) $(LDFLAGS) N $@ F {$<} LIB {$(LIBRARIES)} SYS $(SYSTEM)
 !ifeq SYSTEM pmodew
         pmwlite /C4 $@
         pmwsetup /Q /B0 $@
