@@ -1,21 +1,21 @@
 # AdPlug Makefile, (c) 2001 Simon Peter <dn.tlp@gmx.net>
 
-CC		= cc
-CXX		= c++
-INSTALL		= install
+CC = cc
+CXX = c++
+INSTALL = install
 
-CFLAGS		= -Wall
-CXXFLAGS	= -Wall
-CPPFLAGS	= -Dstricmp=strcasecmp
-LDFLAGS		= -shared
+CFLAGS = -Wall
+CXXFLAGS = -Wall
+CPPFLAGS = -Dstricmp=strcasecmp
+LDFLAGS = -shared
 
-OBJS		= adplug.o emuopl.o fmopl.o
-AUX		= makefile COPYING CREDITS INSTALL README PLAYER_SDK
+OBJS = adplug.o emuopl.o fmopl.o
+AUX = makefile COPYING CREDITS INSTALL README PLAYER_SDK
 
-prefix		= /usr/local
-libdir		= $(prefix)/lib
-includedir	= /usr/include/adplug
-distname	= adplug-1.1
+prefix = /usr/local
+libdir = $(prefix)/lib
+includedir = /usr/include/adplug
+distname = adplug-1.1
 
 all: libadplug.so
 

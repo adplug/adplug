@@ -3,13 +3,14 @@ AdPlug is copyright (C) 1999, 2000, 2001 Simon Peter <dn.tlp@gmx.net>, et al.
 Additional Credits:
 -------------------
 Phil Hassey <philhassey@hotmail.com>:
-	- mid.cpp development
+	- MIDI, CMF, LAA and SCI player development
 
 Marc Winterrowd <nodling@yahoo.com>:
-	- u6m.cpp development
+	- Origin Music player development
 
 Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>:
-	- ym3812 emulator development
+	- YM3812 emulator development
 
 Death Adder <death-adder@juno.com>:
-	- file format docs supply
+	- provided many file format specifications
+	- moral support ;)
