@@ -28,6 +28,7 @@
 #include <string.h>
 #include <binfile.h>
 #include <string>
+#include <iostream>
 
 #if defined(HAVE_SYS_TYPES_H) && defined(HAVE_SYS_STAT_H)
 #  if HAVE_SYS_TYPES_H
@@ -84,13 +85,13 @@ static struct {
   std::string				db_file;
   CAdPlugDatabase::CRecord::RecordType	rtype;
   int					message_level;
-  bool					usedefaultdb;
+  bool					usedefaultdb, usercomment;
   const char				*homedir;
 } cfg = {
   ADPLUGDB_PATH,
   CAdPlugDatabase::CRecord::Plain,
   MSG_NOTE,
-  false,
+  false, false,
   NULL
 };
 
@@ -135,8 +136,11 @@ static void usage()
 	 "\n"
 	 "Database options:\n"
 	 "  -d <file>        Use different database file\n"
+#ifdef ADPLUG_DATA_DIR
 	 "  -s               Use system-wide database file (" ADPLUGDB_PATH ")\n"
-	 "  -t <type>        Add as different record type\n"
+#endif
+	 "  -t <type>        Add as different record type (plain, songinfo, clockspeed)\n"
+	 "  -c               Prompt for record comment\n"
 	 "\n"
 	 "Generic options:\n"
 	 "  -q               Be more quiet\n"
@@ -175,6 +179,10 @@ static void db_add(const char *filename)
 
   record->key = file2key(filename);
   record->filetype = file2type(filename);
+  if(cfg.usercomment)
+    std::cin >> record->comment;
+  else
+    record->comment = filename;
   if(record->filetype == UNKNOWN_FILETYPE) { delete record; return; }
   if(!record->user_read(std::cin, std::cout)) {
     message(MSG_ERROR, "data entry error");
@@ -263,7 +271,7 @@ int main(int argc, char *argv[])
   program_name = strrchr(argv[0], '/') ? strrchr(argv[0], '/') + 1 : argv[0];
 
   // Parse options
-  while((opt = getopt(argc, argv, "d:t:qvhVs")) != -1)
+  while((opt = getopt(argc, argv, "d:t:qvhVsc")) != -1)
     switch(opt) {
     case 'd': cfg.db_file = optarg; break;		// Set database file
     case 't': // Different record type
@@ -282,7 +290,14 @@ int main(int argc, char *argv[])
     case 'v': cfg.message_level++; break;	       	// Be more verbose
     case 'h': usage(); exit(EXIT_SUCCESS); break;	// Display help
     case 'V': copyright(); exit(EXIT_SUCCESS); break;	// Display version
-    case 's': cfg.usedefaultdb = true; break;		// Use system-wide database
+    case 's':						// Use system-wide database
+#ifdef ADPLUG_DATA_DIR
+      cfg.usedefaultdb = true;
+#else
+      message(MSG_WARN, "option not supported on this system -- s");
+#endif
+      break;
+    case 'c': cfg.usercomment = true; break;		// Prompt for comments
     case '?': exit(EXIT_FAILURE);
     }
 

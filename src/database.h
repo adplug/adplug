@@ -53,7 +53,7 @@ public:
 
     RecordType	type;
     CKey	key;
-    std::string	filetype;
+    std::string	filetype, comment;
 
     static CRecord *factory(RecordType type);
     static CRecord *factory(binistream &in);

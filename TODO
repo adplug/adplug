@@ -14,8 +14,6 @@ AdPlug To Do List:
 	- MTR: Arkham Master Tracker [riven-mage]
 	- LDS: Loudness
 
-- Add load(void *mem, unsigned long length) method to CAdPlug. [dynamite]
-
 - Add option to specify keys on commandline with adplugdb. [dynamite]
 
-- Add configure option --with-database to UNIX build. [dynamite]
+- Write adplugdb manpage. [dynamite]

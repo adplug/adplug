@@ -99,8 +99,10 @@ bool CAdPlugDatabase::save(binostream &f)
 
 CAdPlugDatabase::CRecord *CAdPlugDatabase::search(CKey const &key)
 {
-  lookup(key);
-  return get_record();
+  if(lookup(key))
+    return get_record();
+  else
+    return 0;
 }
 
 bool CAdPlugDatabase::lookup(CKey const &key)
@@ -269,7 +271,7 @@ CAdPlugDatabase::CRecord *CAdPlugDatabase::CRecord::factory(binistream &in)
 
   if(rec) {
     rec->key.crc16 = in.readInt(2); rec->key.crc32 = in.readInt(4);
-    rec->filetype = in.readString('\0');
+    rec->filetype = in.readString('\0'); rec->comment = in.readString('\0');
     rec->read_own(in);
     return rec;
   } else {
@@ -281,9 +283,11 @@ CAdPlugDatabase::CRecord *CAdPlugDatabase::CRecord::factory(binistream &in)
 
 void CAdPlugDatabase::CRecord::write(binostream &out)
 {
-  out.writeInt(type, 1); out.writeInt(get_size() + 6 + filetype.length() + 1, 4);
+  out.writeInt(type, 1);
+  out.writeInt(get_size() + filetype.length() + comment.length() + 8, 4);
   out.writeInt(key.crc16, 2); out.writeInt(key.crc32, 4);
   out.writeString(filetype); out.writeInt('\0', 1);
+  out.writeString(comment); out.writeInt('\0', 1);
 
   write_own(out);
 }
@@ -305,6 +309,7 @@ bool CAdPlugDatabase::CRecord::user_write(std::ostream &out)
   out << std::endl;
   out << "Key: " << std::hex << key.crc16 << ":" << key.crc32 << std::dec << std::endl;
   out << "File type: " << filetype << std::endl;
+  out << "Comment: " << comment << std::endl;
 
   return user_write_own(out);
 }
