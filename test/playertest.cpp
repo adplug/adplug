@@ -99,7 +99,7 @@ public:
       std::cerr << "Warning: The player is writing data out of range! (reg = "
 		<< std::hex << reg << ", val = " << val << ")\n";
     if(!f) return;
-    fprintf(f, "%u <- %u\n", reg, val);
+    fprintf(f, "%x <- %x\n", reg, val);
   }
 
   void init()
