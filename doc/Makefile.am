@@ -6,4 +6,6 @@ man_MANS = adplugdb.1
 
 EXTRA_DIST = $(man_MANS)
 
-CLEANFILES = libadplug.cps libadplug.fns libadplug.vrs
+MOSTLYCLEANFILES = stamp-vti libadplug.info*
+
+CLEANFILES = libadplug.cps libadplug.fns libadplug.vrs version.texi

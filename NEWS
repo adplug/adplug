@@ -3,10 +3,13 @@ This is a brief overview of user-visible changes in AdPlug.
 Changes for version 1.5:
 	- New format support:
 		- XSM: eXtra Simple Music
+		- DRO: DOSBox Raw OPL
 	- Added support for .adlib files to IMF player.
 	- Reverted fmopl OPL2 emulator to old LGPL'd version, so AdPlug
 	  is now completely free (LGPL) again. Please read the README
-	  for details.
+	  file for details.
+	- Added Ken Silverman's YM3812 emulator again. The portability
+	  issues have been fixed.
 
 Changes for version 1.4:
 	- Documentation changed into Texinfo format.

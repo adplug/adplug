@@ -13,21 +13,22 @@ real hardware. No OPL2 chip is required for playback.
 
 Supported platforms:
 --------------------
-AdPlug currently is tested to compile and run well under the following
+AdPlug currently is tested to compile and run well on the following
 platforms and compilers:
 
-Hardware		Operating System	Compiler
---------		----------------	--------
-IBM-PC - x86		Win32			MS Visual C++ 6.0
-                        MS-DOS                  OpenWatcom 1.1
-			Linux 2.4		GCC 3.2.3
-			FreeBSD 4.7-STABLE	GCC 2.95.4
-			QNX 6.2.x		GCC 2.95.3
-PPC - G4		MacOS X			GCC 2.95.2
-PPC - RS/6000		Linux 2.2		GCC 2.x
-Alpha			Linux 2.2		GCC 2.95.4
-Sparc - Ultra60		Linux 2.4		GCC 2.95.4
-Sparc - R220		SunOS 5.8		GCC 2.95.3
+Hardware                Operating System        Compiler
+--------                ----------------        --------
+IBM-PC - x86            Windows XP              MS Visual C++ 6.0
+                        MS-DOS 7.0              OpenWatcom 1.1
+                        Linux 2.6.5             GCC 3.3.3
+                        FreeBSD 4.7-STABLE      GCC 2.95.4
+                        QNX 6.2.x               GCC 2.95.3
+PPC - G4                MacOS X                 GCC 2.95.2
+PPC - RS/6000           Linux 2.2               GCC 2.x
+Alpha                   Linux 2.2               GCC 2.95.4
+Sparc - Ultra60         Linux 2.4               GCC 2.95.4
+Sparc - R220            SunOS 5.8               GCC 2.95.3
+ARM                     Linux 2.4.19            GCC 3.3.2
 
 This list only incorporates platforms on which this release of AdPlug has
 been tested successfully. This and/or earlier versions of AdPlug may and did

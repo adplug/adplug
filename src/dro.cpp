@@ -54,6 +54,10 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 bool CdroPlayer::update()
 {
+	if (delay>500) {
+		delay-=500;
+		return true;
+	} else delay=0;
 	while (pos < length) 
 	{	
 		unsigned char cmd = data[pos++];
@@ -90,5 +94,6 @@ void CdroPlayer::rewind(int subsong)
 
 float CdroPlayer::getrefresh()
 {
-	return 1000.0f/(float)delay;
+	if (delay>500) return (1000.0f/500);
+	else return 1000.0f/(float)delay;
 }
