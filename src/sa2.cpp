@@ -137,8 +137,6 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
 		bpm = bpm * 125 / 50;		// cps -> bpm
 	}
 
-	f->ateof();
-
 	if(sat_type & HAS_ARPEGIOLIST) {
 	  init_specialarp();
 	  for(i = 0; i < 256; i++) arplist[i] = f->readInt(1);	// arpeggio list

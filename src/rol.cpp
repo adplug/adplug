@@ -273,7 +273,7 @@ void CrolPlayer::UpdateVoice( int const voice, CVoiceData &voiceData )
     if( !(voiceData.mEventStatus & CVoiceData::kES_VolumeEnd ) &&
         vEvents[voiceData.next_volume_event].time == mCurrTick )
     {
-        SVolumeEvent const &volumeEvent = vEvents[voiceData.next_volume_event];
+      SVolumeEvent const &volumeEvent = vEvents[voiceData.next_volume_event];
 
         if(  voiceData.next_volume_event < vEvents.size() )
         {

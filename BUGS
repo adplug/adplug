@@ -7,3 +7,12 @@ Known bugs and problems:
 
 - Some players are still not endian-clean and may crash on big endian
   architectures.
+
+Excuses for non-working players on certain architectures:
+---------------------------------------------------------
+SunOS 5.9 (Solaris) on x86:
+- Adlib Visual Composer (rol.cpp): Here seems to be some problems with the
+  libstdc++ implementation, at least on my test machine. gdb reports an
+  "incomplete type" error when accessing the Vectors in CVoiceData in
+  method CrolPlayer::UpdateVoice(). The code compiles well though, which is
+  kind of strange.
