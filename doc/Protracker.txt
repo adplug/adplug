@@ -112,6 +112,16 @@ Initial protracker-compatible bpm (sometimes called tempo) setting.
 flags (Standard):
 Refer to 'Special Flags' below.
 
+nop (0):
+The number of patterns in your module. You don't need to set this value. If
+you leave it at 0, CmodPlayer will automatically determine the number of
+_accessed_ patterns (which in no way need to be the same as the actual
+number of patterns in your module) from the orderlist, in the rewind()
+method. The value serves only informational purposes, anyway. It is not
+needed for the actual playback. If you think you know better than
+CmodPlayer, feel free to set it to something else and CmodPlayer won't touch
+it anymore and display your value instead.
+
 Loading Patterns
 ----------------
 AdPlug's Protracker player stores the tracks (or channels, as some may call

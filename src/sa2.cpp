@@ -113,8 +113,8 @@ bool Csa2Loader::load(istream &f, const char *filename)
 		inst[i].slide = 0;
 	}
 	f.read((char *)instname,29*17);			// instrument names
-	f.ignore(3);							// dummy bytes
-	f.read((char *)order,128);				// pattern orders
+	f.ignore(3);					// dummy bytes
+	f.read((char *)order,128);			// pattern orders
 	if (sat_type & HAS_UNKNOWN127) f.ignore(127);
 
 	// infos
@@ -128,16 +128,15 @@ bool Csa2Loader::load(istream &f, const char *filename)
 
 	if(sat_type & HAS_ARPEGIOLIST) {
 	  init_specialarp();
-	  f.read((char *)arplist,sizeof(arplist));	// arpeggio list
-	  f.read((char *)arpcmd,sizeof(arpcmd));	// arpeggio commands
+	  f.read((char *)arplist,256);	// arpeggio list
+	  f.read((char *)arpcmd,256);	// arpeggio commands
 	}
 
 	for(i=0;i<64;i++) {				// track orders
 	  for(j=0;j<9;j++) {
-	    if(sat_type & HAS_TRACKORDER) {
+	    if(sat_type & HAS_TRACKORDER)
 	      trackord[i][j] = f.get();
-	      LogWrite("trackord[%d][%d] = %d\n",i,j,trackord[i][j]);
-	    } else
+	    else
 	      {
 		trackord[i][j] = i * 9 + j;
 	      }
@@ -149,9 +148,9 @@ bool Csa2Loader::load(istream &f, const char *filename)
 	else
 		activechan = 0xffff;
 
-	LogWrite("*** Csa2Loader::load(\"%s\") ***\n",filename);
-	LogWrite("sat_type = %x, nop = %d, length = %d, restartpos = %d, activechan = %x\n",
-		 sat_type, nop, length, restartpos);
+	LogWrite("Csa2Loader::load(\"%s\"): sat_type = %x, nop = %d, "
+		 "length = %d, restartpos = %d, activechan = %x, bpm = %d\n",
+		 filename, sat_type, nop, length, restartpos, activechan, bpm);
 
 	// track data
 	if(sat_type & HAS_OLDPATTERNS) {

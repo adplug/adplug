@@ -56,7 +56,7 @@ public:
 	{ return speed; };
 
 protected:
-	enum Flags {Standard = 0, Decimal, Faust};
+	enum Flags {Standard = 0, Decimal = 1, Faust = 2};
 
 	struct Instrument {
 		unsigned char data[11],arpstart,arpspeed,arppos,arpspdcnt,misc;
@@ -68,7 +68,7 @@ protected:
 	} **tracks;
 
 	unsigned char *order, *arplist, *arpcmd, initspeed;
-	unsigned short tempo, activechan, **trackord, nop, bpm, flags;
+	unsigned short tempo, activechan, **trackord, bpm, flags, nop;
 	unsigned long length, restartpos;
 
 	void init_trackord();

@@ -10,17 +10,11 @@ AdPlug To Do List:
 ------------------
 - Add missing features to A2M loader and/or Protracker player.
 
-- Add more CRC values to IMF file detection in imfcrc.h.
-
 - Get LOUDNESS support to work.
 
-- Fix up missing stuff in MIDI player.
+- Add rhythm mode support to CMF player (inside mid.cpp)
 
-- Protracker player:
-	- Portamento: If target note is key-off, slide to last real note
-	instead. Verify if this really has to be this way.
-
-- Add DEBUG and VERSION defines to Windows and DOS builds [dynamite]
+- Add DEBUG define to DOS build [dynamite]
 
 - Add new Protracker loaders:
 	- DTM: DeFy Adlib Tracker [riven-mage]
@@ -30,8 +24,6 @@ AdPlug To Do List:
 - Add new players:
 	- CFF: CUD BoomTracker [riven-mage]
 	? XAD: Custom player from Burial Grounds BBStro
-
-- Fix up SA2 player. [dynamite]
 
 - Convert the documentation in the 'doc' subdir to a better format.
   [dynamite]

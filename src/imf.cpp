@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * imf.cpp - IMF Player by Simon Peter (dn.tlp@gmx.net)
+ *
+ * FILE FORMAT:
+ * There seem to be 2 different flavors of IMF formats out there. One version
+ * contains just the raw IMF music data. In this case, the first word of the
+ * file is always 0 (because the music data starts this way). This is already
+ * the music data! So read in the entire file and play it.
+ *
+ * If this word is greater than 0, it specifies the size of the following
+ * song data in bytes. In this case, the file has a footer that contains
+ * arbitrary infos about it. Mostly, this is plain ASCII text with some words
+ * of the author. Read and play the specified amount of song data and display
+ * the remaining data as ASCII text.
  */
 
 #include <string.h>
@@ -35,22 +47,30 @@ CPlayer *CimfPlayer::factory(Copl *newopl)
 bool CimfPlayer::load(istream &f, const char *filename)
 {
 	unsigned short fsize;
+	unsigned long filesize;
 
 	// file validation section (actually just an extension check)
 	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".imf"))
 		return false;
 
 	// load section
-	f.read((char *)&fsize,2);		// try to load file size
-	if(!fsize) {	// footerless file
-		f.seekg(0,ios::end);
-		size = f.tellg() / 4;
-		f.seekg(0);
-	} else			// file has got footer
+	f.read((char *)&fsize,2);	// try to load music data size
+	f.seekg(0,ios::end); filesize = f.tellg(); f.seekg(0);
+	if(!fsize)	// footerless file (raw music data)
+		size = filesize / 4;
+	else {		// file has got footer
 		size = fsize / 4;
+		f.ignore(2);
+	}
 
-	data = new Sdata [size];
+	data = new Sdata[size];
 	f.read((char *)data,size * 4);
+	if(fsize) {	// read footer, if any
+	  unsigned long footerlen = filesize - fsize - 2;
+	  footer = new char[footerlen + 1];
+	  f.read(footer,footerlen);
+	  footer[footerlen] = '\0';	// Make ASCIIZ string
+	}
 	rate = getrate(crc32((unsigned char *)data,size*4),size*4);
 	rewind(0);
 	return true;

@@ -47,7 +47,7 @@ const unsigned char CmodPlayer::vibratotab[32] =
 
 CmodPlayer::CmodPlayer(Copl *newopl): CPlayer(newopl), inst(0), order(0),
 arplist(0), arpcmd(0), initspeed(6), activechan(0xffff), flags(Standard),
-nrows(0), npats(0), nchans(0)
+nop(0), nrows(0), npats(0), nchans(0)
 {
   realloc_order(128);
   realloc_patterns(64, 64, 9);
@@ -186,14 +186,14 @@ bool CmodPlayer::update()
 	}
 	pattnr = order[ord];
 
-	if(!rw) LogWrite("CmodPlayer::update(): Pattern: %d, Order: %d\n", pattnr, ord);
+	if(!rw) LogWrite("\nCmodPlayer::update(): Pattern: %d, Order: %d\n", pattnr, ord);
 	LogWrite("CmodPlayer::update():%3d|", rw);
 
 	// play row
 	row = rw;
 	for(chan=0;chan<nchans;chan++) {
 		if(!(activechan >> (15 - chan)) & 1) {	// channel active?
-		  LogWrite("............|");
+		  LogWrite("N/A|");
 		  continue;
 		}
 		if(!(track = trackord[pattnr][chan])) {	// resolve track
@@ -389,12 +389,20 @@ bool CmodPlayer::update()
 
 void CmodPlayer::rewind(unsigned int subsong)
 {
-	songend = del = ord = rw = regbd = 0;
-	tempo = bpm; speed = initspeed;
+  unsigned long i;
 
-	memset(channel,0,sizeof(channel));
-	opl->init();				// reset OPL chip
-	opl->write(1,32);			// Go to ym3812 mode
+  // Reset playing variables
+  songend = del = ord = rw = regbd = 0;
+  tempo = bpm; speed = initspeed;
+
+  // Compute number of patterns, if needed
+  if(!nop)
+    for(i=0;i<length;i++)
+      nop = (order[i] > nop ? order[i] : nop);
+
+  memset(channel,0,sizeof(channel));	// Reset channel status data
+  opl->init();				// Reset OPL chip
+  opl->write(1,32);			// Go to ym3812 mode
 }
 
 float CmodPlayer::getrefresh()
