@@ -29,6 +29,12 @@
  * arbitrary infos about it. Mostly, this is plain ASCII text with some words
  * of the author. Read and play the specified amount of song data and display
  * the remaining data as ASCII text.
+ *
+ * NOTES:
+ * This player handles the two above mentioned formats, as well as a third
+ * type, invented by Martin Fernandez <mfernan@cnba.uba.ar>, that's got a
+ * proper header to add title/game name information. After the header starts
+ * the normal IMF file in one of the two above mentioned formats.
  */
 
 #include <string.h>
@@ -46,31 +52,60 @@ CPlayer *CimfPlayer::factory(Copl *newopl)
 bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
   binistream *f = fp.open(filename); if(!f) return false;
-  unsigned short fsize;
-  unsigned long flsize;
+  unsigned long fsize, flsize, mfsize = 0;
   unsigned int i;
 
-  // file validation section (actually just an extension check)
-  if(!fp.extension(filename, ".imf")) { fp.close(f); return false; }
+  // file validation section
+  {
+    char	header[5];
+    int		version;
+
+    f->readString(header, 5);
+    version = f->readInt(1);
+
+    if(strncmp(header, "ADLIB", 5) || version != 1) {
+      if(!fp.extension(filename, ".imf") && !fp.extension(filename, ".wlf")) {
+	// It's no IMF file at all
+	fp.close(f);
+	return false;
+      } else
+	f->seek(0);	// It's a normal IMF file
+    } else {
+      // It's a IMF file with header
+      track_name = f->readString('\0');
+      game_name = f->readString('\0');
+      f->ignore(1);
+      mfsize = f->pos() + 2;
+    }
+  }
 
   // load section
-  fsize = f->readInt(2);	// try to load music data size
+  if(mfsize)
+    fsize = f->readInt(4);
+  else
+    fsize = f->readInt(2);
   flsize = fp.filesize(f);
   if(!fsize) {		// footerless file (raw music data)
-    f->seek(0);
+    if(mfsize)
+      f->seek(-4, binio::Add);
+    else
+      f->seek(-2, binio::Add);
     size = flsize / 4;
-  } else		// file has got footer
+  } else		// file has got a footer
     size = fsize / 4;
 
   data = new Sdata[size];
-  for(i=0; i<size; i++) {
+  for(i = 0; i < size; i++) {
     data[i].reg = f->readInt(1); data[i].val = f->readInt(1);
     data[i].time = f->readInt(2);
   }
-  if(fsize && (fsize < flsize - 2)) {	// read footer, if any
-    unsigned long footerlen = flsize - fsize - 2;
+
+  // read footer, if any
+  if(fsize && (fsize < flsize - 2 - mfsize)) {
+    unsigned long footerlen = flsize - fsize - 2 - mfsize;
+
     footer = new char[footerlen + 1];
-    f->readString(footer,footerlen);
+    f->readString(footer, footerlen);
     footer[footerlen] = '\0';	// Make ASCIIZ string
   }
 
@@ -103,13 +138,30 @@ void CimfPlayer::rewind(int subsong)
 	opl->init(); opl->write(1,32);	// go to OPL2 mode
 }
 
+std::string CimfPlayer::gettitle()
+{
+  std::string	title;
+
+  title = track_name;
+
+  if(!track_name.empty() && !game_name.empty())
+    title += " - ";
+
+  title += game_name;
+
+  return title;
+}
+
 /*** private methods *************************************/
 
 float CimfPlayer::getrate(binistream *f)
 {
   if(!db) return 700.0f;	// Database offline
+
   f->seek(0, binio::Set);
+
   CClockRecord *record = (CClockRecord *)db->search(CAdPlugDatabase::CKey(*f));
+
   if(!record || record->type != CAdPlugDatabase::CRecord::ClockSpeed)
     return 700.0f;
   else

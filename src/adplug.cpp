@@ -71,7 +71,7 @@
 const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(ChscPlayer::factory, "HSC-Tracker", ".hsc\0"),
   CPlayerDesc(CsngPlayer::factory, "SNGPlay", ".sng\0"),
-  CPlayerDesc(CimfPlayer::factory, "Apogee IMF", ".imf\0"),
+  CPlayerDesc(CimfPlayer::factory, "Apogee IMF", ".imf\0.wlf\0.adlib\0"),
   CPlayerDesc(Ca2mLoader::factory, "Adlib Tracker 2", ".a2m\0"),
   CPlayerDesc(CadtrackLoader::factory, "Adlib Tracker", ".sng\0"),
   CPlayerDesc(CamdLoader::factory, "AMUSIC", ".amd\0"),

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,6 @@
 
 #ifndef H_ADPLUG_IMFPLAYER
 #define H_ADPLUG_IMFPLAYER
-
-#include <binio.h>
 
 #include "player.h"
 
@@ -45,19 +43,21 @@ public:
 
 	std::string gettype()
 	{ return std::string("IMF File Format"); }
+	std::string gettitle();
 	std::string getdesc()
 	{ if(footer) return std::string(footer); else return std::string(); }
 
 protected:
-	unsigned long pos,size;
-	unsigned short del;
-	bool songend;
-	float rate,timer;
-	char *footer;
+	unsigned long	pos,size;
+	unsigned short	del;
+	bool		songend;
+	float		rate,timer;
+	char		*footer;
+	std::string	track_name, game_name;
 
 	struct Sdata {
-		unsigned char reg,val;
-		unsigned short time;
+		unsigned char	reg, val;
+		unsigned short	time;
 	} *data;
 
 private:
