@@ -134,7 +134,7 @@ but are included for testing purposes anyway.
 @itemize @bullet
 @item Unimplemented: OPL3 register writes (not possible with AdLib)
 @end itemize
-@item @file{ROL}: AdLib Visual Composer by AdLib Inc. @strong{(preliminary)}
+@item @file{ROL}: AdLib Visual Composer by AdLib Inc.
 @itemize @bullet
 @item Needs file @file{standard.bnk} in the same directory as loaded file
 @end itemize
