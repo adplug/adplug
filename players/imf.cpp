@@ -144,7 +144,7 @@ float CimfPlayer::getrate(unsigned long crc, unsigned long size)
 {
 	unsigned int i;
 
-	for(i=0;i<MAXFILES;i++)
+	for(i=0;filetab[i].size;i++)
 		if(crc == filetab[i].crc && size == filetab[i].size)
 			return filetab[i].rate;
 
