@@ -4,6 +4,155 @@ $Id$
 
 Introduction
 ------------
+If you want to create a player for a Protracker-derivative format, the
+generic Protracker player 'CmodPlayer' that comes with AdPlug can be of
+great help. It supports all standard Protracker features, plus a good set of
+extensions to cope with most derivative formats.
+
+When writing a player for a Protracker-derivative format, it is almost
+always better to use and extend the CmodPlayer class, instead of writing a
+whole new player.
+
+Features and Limitations
+------------------------
+In addition to handling your data just like the original Protracker would,
+AdPlug's generic Protracker player has the following extra features:
+
+- Special Arpeggio lists, just like in the SA2 format.
+- Extendable set of up to 256 commands.
+- Up to 16 behaviour changing flags.
+
+However, currently, it also imposes some limits. These are:
+
+- Fixed set of 9 channels per pattern (and max. 9 voice polyphony). Not
+  really a limitation, since OPL2 is also just 9 channels. ;)
+- Fixed set of 250 instruments.
+- Fixed track length of 64 rows.
+- Fixed set of 576 tracks, regardless of patterns.
+- Fixed set of 64 patterns.
+
+Most of these limits could easily be expanded, if there is the need for it.
+
+Defaults
+--------
+For historical reasons, CmodPlayer sets defaults to some values that needn't
+be initialized by you. These are:
+- The orderlist is preallocated to 128 entries.
+
+Protracker Loaders
+------------------
+When you decided to extend the CmodPlayer class, instead of writing a whole
+new player, you do this by writing a loader for it. This is done very
+similarily to writing a unique player for AdPlug. Thus, reading the AdPlug
+Player development HOWTO ('Player-Development.txt') is recommended for this
+task, too.
+
+Instead of naming your player class 'CxxxPlayer', you should name it
+'CxxxLoader' or something appropriate if the name is already taken. You then
+publicly inherit the CmodPlayer class and fill the missing methods with
+code. These are now:
+
+static CPlayer *factory(Copl *newopl);          // return a new instance
+bool load(istream &f, const char *filename);	// load file
+float getrefresh();                     	// return needed timer refresh rate
+std::string gettype();                  	// return file type
+
+plus maybe some (or all) of the other informational methods, listed in the
+Player development HOWTO. Refer also to that HOWTO to see what the above
+methods are about.
+
+Designing your loader
+---------------------
+File validation and initial loading is the same as it would be with any
+other player.
+
+The Protracker player needs at least an orderlist, the patterns and the
+instruments to function. Most of the time, you have to convert these between
+your file's ordering and CmodPlayer's internal ordering. Look in the file
+'protrack.cpp', CmodPlayer's actual sources, for a list on how these
+constructs are ordered internally.
+
+Also, please look up the 'Defaults' section in this document, to see if you
+need to reallocate any of the defaults.
+
+There are some variables, that you automatically inherited with your new
+loader, that you have to set in order to tell the Protracker player
+something about your loaded module. These are the following (default preset
+values are printed in brackets after the variable name):
+
+length (unset):
+The orderlist length. When CmodPlayer's orderlist pointer equals or is
+bigger than this length, it is automatically wrapped around to 'restartpos'.
+
+trackord (0):
+Refer to 'Loading Patterns' below on this one.
+
+restartpos (unset):
+The restarting position in the orderlist, when length is exceeded.
+
+activechan (0xffff):
+A flag array, telling the player which channels in every pattern are
+actually active and to be played. The ordering of this variable is a bit
+awkward, so be careful! It is a 16-bit unsigned short, holding the
+activeness of a channel in each of its bits, STARTING AT THE HIGHEST ORDER
+BIT. It also holds values for 16 channels and you can only use the lower 9.
+So, to set channel 0 active, you have to set bit 15 (counting from 0) to 1
+and so on. You only use the upper 9 bits of this variable. Setting the lower
+bits will have no effect.
+
+initspeed (6):
+Initial protracker-compatible speed setting.
+
+bpm (unset):
+Initial protracker-compatible bpm (sometimes called tempo) setting.
+
+flags (Standard):
+Refer to 'Special Flags' below.
+
+Loading Patterns
+----------------
+AdPlug's Protracker player stores the tracks (or channels, as some may call
+them), that make up a pattern, in a way that makes it possible for you to
+reorder and reuse them in an easy way. This also makes storing patterns in
+the classic way a bit awkward.
+
+If you just want to store your tracks the classic Protracker way (usually
+the case), first use the CmodPlayer::init_trackord() method to do an initial
+setup. Then store your tracks in a sequential manner, counting from 0, in
+the 'tracks' array. That is, for the first 9 channels of your first pattern,
+use tracks[0 - 9]. The second dimension of this array holds the rows of
+each channel. For the next 9 channels, you use tracks[10-19], and so on.
+
+If you want to make use of the reorder/reuse feature of the trackord array,
+please refer to the sa2.cpp source file. This player utilizes this method.
+Basically, the 'trackord' array tells the player which track out of the
+'tracks' array he has to insert for each of the 9 tracks of a pattern. Thus,
+the first dimension of this array stands for the corresponding pattern and
+the next dimension holds the entries for all the 9 tracks.
+
+Special Flags
+-------------
+The 'flags' variable holds special flags to change the behaviour of the
+player. These are:
+
+Standard:
+Act like standard Protracker would.
+
+Decimal:
+Command parameters are decimal values, not hexadecimal. For split parameter
+commands (i.e. commands with two parameters, like 0xy), this has no effect,
+since decimal values would be from 0 to 9, anyway. But commands that take
+both parameters as one value (i.e. like 1xx) now take values from 0 to 99
+and handle them properly (i.e. decimal wrap-around is now at 9 to 10 and not
+at F to 10).
+
+Faust:
+Treat the files like Faust Music Creator does.
+[TODO: riven, could you please explain what this is about?]
+
+These flags can be set and unset at any time. To set a flag, just binary OR
+it with the 'flags' variable. Use the 'enum Flags' data type, defined in the
+CmodPlayer class for this purpose.
 
 Deconstruction
 --------------
@@ -11,12 +160,12 @@ Be careful when specifying your own deconstructors! These will generally
 override CmodPlayer's deconstructor, because it is defined virtual. Since
 CmodPlayer's own deconstructor normally handles all deconstruction work
 automatically, you have to do this manually now. It is best to refer to the
-actual deconstructors source to see what you probably have to do.
-
-Here are some hints on what ~CmodPlayer normally does:
-
+actual deconstructor's source to see what you probably have to do.
 
 Special Arpeggio
 ----------------
 To use the special arpeggio facility, you have to initalize it first. Use
-the init_special_arp() method for this purpose.
+the init_specialarp() method for this purpose. CmodPlayer's deconstructor
+automatically handles the deinit for you.
+
+[TODO: write more. Refer to sa2.[cpp,h] for info in the meantime.]

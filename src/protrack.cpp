@@ -24,18 +24,8 @@
  * derivatives. It is derived from the original SA2 player by me. If you got a
  * Protracker-like format, this is most certainly the player you want to use.
  *
- * USAGE:
+ * USAGE AND LIMITS:
  * Read the file 'Protracker.txt' in the 'doc' subdirectory.
- *
- * LIMITS:
- * - Maximum of 9 channels per pattern (and max. 9 voice polyphony).
- * - Maximum of 250 instruments.
- * - Maximum orderlist length is 128 entries.
- * - Fixed track length of 64 rows.
- * - Maximum 576 tracks, regardless of patterns.
- * - Maximum of 64 patterns.
- *
- * Most of these limits could easily be expanded, if there is the need for it.
  *
  * Effect commands:
  * ----------------
@@ -82,7 +72,7 @@
  * 254: Arpeggio loop
  * 255: End of special arpeggio
  *
- * Instrument data (inst[].data[11]) values:
+ * Instrument data (inst[].data[]) values:
  * -----------------------------------------
  *  0 = (Channel)	Feedback strength / Connection type			(reg 0xc0)
  *  1 = (Modulator)	Amp Mod / Vibrato / EG type / Key Scaling / Multiple	(reg 0x20)
@@ -98,6 +88,10 @@
  */
 
 #include "protrack.h"
+#include "debug.h"
+
+#define SPECIALARPLEN	256	// Standard length of special arpeggio lists
+#define JUMPMARKER	0x80	// Orderlist jump marker
 
 static const unsigned short notetable[12] =		// SAdT2 adlib note table
 			{340,363,385,408,432,458,485,514,544,577,611,647};
@@ -107,10 +101,18 @@ static const unsigned char vibratotab[32] =		// SAdT2 vibrato rate table
 
 /*** public methods *************************************/
 
-CmodPlayer::CmodPlayer(Copl *newopl): CPlayer(newopl), initspeed(6), flags(0)
+CmodPlayer::CmodPlayer(Copl *newopl): CPlayer(newopl), order(0), arplist(0),
+arpcmd(0), initspeed(6), activechan(0xffff), flags(Standard), nrows(0),
+npats(0), nchans(0)
 {
-	memset(inst,0,sizeof(inst));
-	memset(trackord,0,64*9*2);
+  memset(inst,0,sizeof(inst));
+  realloc_order(128);
+  realloc_patterns(64, 64, 9);
+}
+
+CmodPlayer::~CmodPlayer()
+{
+  dealloc();
 }
 
 bool CmodPlayer::update()
@@ -123,8 +125,8 @@ bool CmodPlayer::update()
 		return !songend;
 
 	// effect handling (timer dependant)
-	for(chan=0;chan<9;chan++) {
-		if(inst[channel[chan].inst].arpstart)	// special arpeggio
+	for(chan=0;chan<nchans;chan++) {
+		if(arplist && arpcmd && inst[channel[chan].inst].arpstart)	// special arpeggio
 			if(channel[chan].arpspdcnt)
 				channel[chan].arpspdcnt--;
 			else
@@ -162,7 +164,7 @@ bool CmodPlayer::update()
 
 		info1 = channel[chan].info1;
 		info2 = channel[chan].info2;
-		if(flags & MOD_FLAGS_DECIMAL)
+		if(flags & Decimal)
 			info = channel[chan].info1 * 10 + channel[chan].info2;
 		else
 			info = (channel[chan].info1 << 4) + channel[chan].info2;
@@ -240,7 +242,7 @@ bool CmodPlayer::update()
 
 	// play row
 	row = rw;
-	for(chan=0;chan<9;chan++) {
+	for(chan=0;chan<nchans;chan++) {
 		if(!(activechan >> (15 - chan)) & 1)	// channel active?
 			continue;
 		if(!(track = trackord[pattnr][chan]))	// resolve track
@@ -251,7 +253,7 @@ bool CmodPlayer::update()
 		donote = 0;
         if(tracks[track][row].inst) {
             channel[chan].inst = tracks[track][row].inst - 1;
-            if (!(flags & MOD_FLAGS_FAUST)) {
+            if (!(flags & Faust)) {
                 channel[chan].vol1 = 63 - (inst[channel[chan].inst].data[10] & 63);
                 channel[chan].vol2 = 63 - (inst[channel[chan].inst].data[9] & 63);
                 setvolume(chan);
@@ -277,7 +279,7 @@ bool CmodPlayer::update()
 		// command handling (row dependant)
 		info1 = channel[chan].info1;
 		info2 = channel[chan].info2;
-		if(flags & MOD_FLAGS_DECIMAL)
+		if(flags & Decimal)
 			info = channel[chan].info1 * 10 + channel[chan].info2;
 		else
 			info = (channel[chan].info1 << 4) + channel[chan].info2;
@@ -414,13 +416,13 @@ bool CmodPlayer::update()
 	del = speed - 1;	// speed compensation
 	if(!pattbreak) {			// next row (only if no manual advance)
 		rw++;
-		if(rw > 63) {
+		if(rw >= nrows) {
 			rw = 0;
 			ord++;
 		}
 	}
-	if(order[ord] >= 0x80) {	// jump to order
-		ord = order[ord] - 0x80;
+	if(order[ord] >= JUMPMARKER) {	// jump to order
+		ord = order[ord] - JUMPMARKER;
 		songend = 1;
 	}
 
@@ -429,8 +431,8 @@ bool CmodPlayer::update()
 
 void CmodPlayer::rewind(unsigned int subsong)
 {
-	songend = 0; del = 0; tempo = bpm; speed = initspeed;
-	ord = 0; rw = 0; regbd = 0;
+	songend = del = ord = rw = regbd = 0;
+	tempo = bpm; speed = initspeed;
 
 	memset(channel,0,sizeof(channel));
 	opl->init();				// reset OPL chip
@@ -440,6 +442,74 @@ void CmodPlayer::rewind(unsigned int subsong)
 float CmodPlayer::getrefresh()
 {
 	return (float) (tempo / 2.5);
+}
+
+void CmodPlayer::init_trackord()
+{
+  unsigned long i;
+
+  for(i=0;i<npats*nchans;i++)
+    trackord[i / nchans][i % nchans] = i;
+}
+
+bool CmodPlayer::init_specialarp()
+{
+  arplist = new unsigned char[SPECIALARPLEN];
+  arpcmd = new unsigned char[SPECIALARPLEN];
+
+  return true;
+}
+
+bool CmodPlayer::realloc_order(unsigned long len)
+{
+  if(order) delete [] order;
+  order = new unsigned char[len];
+  return true;
+}
+
+bool CmodPlayer::realloc_patterns(unsigned long pats, unsigned long rows, unsigned long chans)
+{
+  unsigned long i;
+
+  dealloc_patterns();
+
+  // set new number of tracks, rows and channels
+  npats = pats; nrows = rows; nchans = chans;
+
+  // alloc new patterns
+  tracks = new (Tracks *)[pats * chans];
+  for(i=0;i<pats*chans;i++) tracks[i] = new Tracks[rows];
+  trackord = new (unsigned short *)[pats];
+  for(i=0;i<pats;i++) trackord[i] = new (unsigned short)[chans];
+  channel = new Channel[chans];
+
+  // initialize new patterns
+  memset(trackord,0,pats*chans*2);
+  memset(tracks,0,pats*chans*rows);
+
+  return true;
+}
+
+void CmodPlayer::dealloc_patterns()
+{
+  unsigned long i;
+
+  // dealloc everything previously allocated
+  if(npats && nrows && nchans) {
+    for(i=0;i<npats*nchans;i++) delete [] tracks[i];
+    delete [] tracks;
+    for(i=0;i<npats;i++) delete [] trackord[i];
+    delete [] trackord;
+    delete [] channel;
+  }
+}
+
+void CmodPlayer::dealloc()
+{
+  if(order) delete [] order;
+  if(arplist) delete [] arplist;
+  if(arpcmd) delete [] arpcmd;
+  dealloc_patterns();
 }
 
 /*** private methods *************************************/
@@ -490,7 +560,7 @@ void CmodPlayer::playnote(unsigned char chan)
 	channel[chan].key = 1;
 	setfreq(chan);
 
-    if (flags & MOD_FLAGS_FAUST) {
+    if (flags & Faust) {
         channel[chan].vol2 = 63;
         channel[chan].vol1 = 63;
         setvolume_alt(chan);

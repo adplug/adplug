@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,9 +16,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * sa2.cpp - SAdT2 Loader by Simon Peter (dn.tlp@gmx.net)
- *           SAdT Loader by Mamiya (mamiya@users.sourceforge.net)
+ * sa2.cpp - SAdT2 Loader by Simon Peter <dn.tlp@gmx.net>
+ *           SAdT Loader by Mamiya <mamiya@users.sourceforge.net>
  */
 
 #include <stdio.h>
@@ -118,7 +117,7 @@ bool Csa2Loader::load(istream &f, const char *filename)
 	if (sat_type & HAS_UNKNOWN127) f.ignore(127);
 
 	// infos
-	f.read((char *)&nop,2); f.read((char *)&length,1); f.read((char *)&restartpos,1);
+	f.read((char *)&nop,2); length = f.get(); restartpos = f.get();
 
 	// bpm
 	f.read((char *)&bpm,2);
@@ -127,8 +126,9 @@ bool Csa2Loader::load(istream &f, const char *filename)
 	}
 
 	if(sat_type & HAS_ARPEGIOLIST) {
-		f.read((char *)arplist,sizeof(arplist));	// arpeggio list
-		f.read((char *)arpcmd,sizeof(arpcmd));		// arpeggio commands
+	  init_specialarp();
+	  f.read((char *)arplist,sizeof(arplist));	// arpeggio list
+	  f.read((char *)arpcmd,sizeof(arpcmd));		// arpeggio commands
 	}
 
 	for(i=0;i<64;i++) {					// track orders

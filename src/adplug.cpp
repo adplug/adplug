@@ -105,9 +105,8 @@ CPlayer *CAdPlug::factory(istream &f, Copl *opl, const char *fn)
 
   LogWrite("*** CAdPlug::factory(f,opl,\"%s\") ***\n",fn);
 
-  LogWrite("Trying: ");
   for(i=0;allplayers[i].factory;i++) {
-    LogWrite("%d, ",i);
+    LogWrite("Trying: %d\n",i);
     if((p = allplayers[i].factory(opl)))
       if(p->load(f,fn)) {
 	LogWrite("got it!\n");

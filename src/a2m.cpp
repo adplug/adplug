@@ -64,6 +64,7 @@ bool Ca2mLoader::load(istream &f, const char *filename)
 
 	// file validation section
 	f.read((char *)&ch,sizeof(ch));
+
 	if(strncmp(ch.id,"_A2module_",10) || (ch.version != 1 && ch.version != 5 && ch.version != 4 && ch.version != 8))
 		return false;
 
@@ -106,6 +107,7 @@ bool Ca2mLoader::load(istream &f, const char *filename)
 			inst[i].misc = 0;
 		inst[i].slide = *(orgptr+i*13+12);
 	}
+
 	orgptr += 250*13;
 	memcpy(order,orgptr,128); orgptr += 128;
 	bpm = *orgptr; orgptr += 1;

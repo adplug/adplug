@@ -22,6 +22,8 @@ AdPlug To Do List:
 
 - Add DEBUG preprocessor macro to Windows' 'Debug' build [dynamite]
 
+- Add VERSION define to DOS and Windows builds [dynamite]
+
 - Implement init_trackord() in CmodPlayer. [dynamite]
 
 - Add new Protracker loaders:

@@ -36,6 +36,7 @@ class CmodPlayer: public CPlayer
 {
 public:
 	CmodPlayer(Copl *newopl);
+	virtual ~CmodPlayer();
 
 	bool update();
 	void rewind(unsigned int subsong);
@@ -57,25 +58,32 @@ public:
 protected:
 	enum Flags {Standard = 0, Decimal, Faust};
 
-	struct {
-		unsigned short freq,nextfreq;
-		unsigned char oct,vol1,vol2,inst,fx,info1,info2,key,nextoct,note,portainfo,vibinfo1,vibinfo2,arppos,arpspdcnt;
-		signed char trigger;
-	} channel[9];
+	struct Channel {
+	  unsigned short freq,nextfreq;
+	  unsigned char oct,vol1,vol2,inst,fx,info1,info2,key,nextoct,
+	    note,portainfo,vibinfo1,vibinfo2,arppos,arpspdcnt;
+	  signed char trigger;
+	} *channel;
 
 	struct {
 		unsigned char data[11],arpstart,arpspeed,arppos,arpspdcnt,misc;
 		signed char slide;
 	} inst[250];
 
-	struct {
+	struct Tracks {
 		unsigned char note,command,inst,param2,param1;
-	} tracks[576][64];
+	} **tracks;
 
-	unsigned char order[128],arplist[256],arpcmd[256],rw,ord,speed,del,songend,regbd,length,restartpos,initspeed;
-	unsigned short tempo,activechan,trackord[64][9],nop,bpm,flags;
+	unsigned char *order,*arplist,*arpcmd,rw,speed,del,songend,regbd,initspeed;
+	unsigned short tempo,activechan,**trackord,nop,bpm,flags,rows;
+	unsigned long length, restartpos, ord, nrows, npats, nchans;
 
 	void init_trackord();
+	bool init_specialarp();
+	bool realloc_order(unsigned long len);
+	bool realloc_patterns(unsigned long pats, unsigned long rows, unsigned long chans);
+
+	void dealloc();
 
 private:
 	void setvolume(unsigned char chan);
@@ -91,6 +99,8 @@ private:
 	void vol_down(unsigned char chan, int amount);
 	void vol_up_alt(unsigned char chan, int amount);
 	void vol_down_alt(unsigned char chan, int amount);
+
+	void dealloc_patterns();
 };
 
 #endif
