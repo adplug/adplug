@@ -3,6 +3,8 @@ This is a brief overview of user-visible changes in AdPlug.
 Changes for version 1.5:
 	- New format support:
 		- XSM: eXtra Simple Music
+	- Added support for .adlib files to IMF player.
+	- Uses newest fmopl OPL2 emulator version 0.70 from MAME 0.74.
 
 Changes for version 1.4:
 	- Documentation changed into Texinfo format.

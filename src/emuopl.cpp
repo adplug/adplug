@@ -1,6 +1,6 @@
 /*
  * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,12 +24,12 @@
 CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
   : use16bit(bit16), stereo(usestereo)
 {
-  YM3812Init(1, 3579545, rate);
+  opl = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
 }
 
 CEmuopl::~CEmuopl()
 {
-  YM3812Shutdown();
+  OPLDestroy(opl);
 }
 
 void CEmuopl::update(short *buf, int samples)
@@ -37,7 +37,7 @@ void CEmuopl::update(short *buf, int samples)
 	int i;
 
 	if(use16bit) {
-		YM3812UpdateOne(0,buf,samples);
+		YM3812UpdateOne(opl,buf,samples);
 
 		if(stereo)
 			for(i=samples-1;i>=0;i--) {
@@ -48,7 +48,7 @@ void CEmuopl::update(short *buf, int samples)
 		short *tempbuf = new short[stereo ? samples*2 : samples];
 		int i;
 
-		YM3812UpdateOne(0,tempbuf,samples);
+		YM3812UpdateOne(opl,tempbuf,samples);
 
 		if(stereo)
 			for(i=samples-1;i>=0;i--) {
@@ -65,11 +65,11 @@ void CEmuopl::update(short *buf, int samples)
 
 void CEmuopl::write(int reg, int val)
 {
-  YM3812Write(0,0,reg);
-  YM3812Write(0,1,val);
+  OPLWrite(opl,0,reg);
+  OPLWrite(opl,1,val);
 }
 
 void CEmuopl::init()
 {
-  YM3812ResetChip(0);
+  OPLResetChip(opl);
 }
