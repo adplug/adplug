@@ -24,7 +24,7 @@
 #include <string>
 
 #include "../src/adplug.h"
-#include "../src/diskopl.h"
+#include "../src/opl.h"
 
 /***** Local variables *****/
 
@@ -41,7 +41,7 @@ static const char *filelist[] = {
   "CHILD1.XSM",		// eXtra Simple Music
   "DTM-TRK1.DTM",	// DeFy Adlib Tracker
   "fdance03.dmo",	// TwinTrack
-  "ice_think.sci",	// Sierra */
+  "ice_think.sci",	// Sierra
   "inc.raw",		// RAW
   //  "loudness.lds",	// Loudness
   "MARIO.A2M",		// AdLib Tracker 2
@@ -50,7 +50,7 @@ static const char *filelist[] = {
   "PLAYMUS1.SNG",	// SNGPlay
   "rat.xad",		// XAD
   "REVELAT.SNG",	// Faust Music Creator
-  "SAILOR.CFF",		// Boomtracker
+  "SAILOR.CFF",		// Boomtracker */
   "samurai.dro",	// DOSBox
   "SCALES.SA2",		// Surprise! Adlib Tracker 2
   "SMKEREM.HSC",	// HSC-Tracker
@@ -62,33 +62,77 @@ static const char *filelist[] = {
   NULL
 };
 
+/***** Testopl *****/
+
+class Testopl: public Copl
+{
+public:
+  Testopl(const std::string filename)
+  {
+    f = fopen(filename.c_str(), "w");
+  }
+
+  virtual ~Testopl()
+  {
+    if(f) fclose(f);
+  }
+
+  void update(CPlayer *p)
+  {
+    if(!f) return;
+    fprintf(f, "r%.2f\n", p->getrefresh());
+  }
+
+  // template methods
+  void write(int reg, int val)
+  {
+    if(!f) return;
+    fprintf(f, "%d <- %d\n", reg, val);
+  }
+
+  void init()
+  {
+    if(!f) return;
+    fprintf(f, "init\n");
+  }
+
+private:
+  FILE	*f;
+};
+
 /***** Local functions *****/
 
-static unsigned long filesize(FILE *f)
-  /* Returns the file size of file f. */
-{
-  long	fpos = ftell(f), fsize;
-  fseek(f, 0, SEEK_END);
-  fsize = ftell(f);
-  fseek(f, fpos, SEEK_SET);
-  return fsize;
-}
-
-static long read_file(char **mem, const std::string filename)
+static bool diff(const std::string fn1, const std::string fn2)
   /*
-   * Reads file 'filename' into memory area 'mem', which will be allocated and
-   * must be freed later, and returns its size.
+   * Compares files 'fn1' and 'fn2' line by line and returns true if they are
+   * equal or false otherwise. A line is at most 79 characters in length or the
+   * comparison will fail.
    */
 {
-  FILE	*f = fopen(filename.c_str(), "rb");
-  if(!f) return -1;
-  long	fsize = filesize(f);
+  FILE	*f1, *f2;
+  bool	retval = true;
 
-  (*mem) = (char *)malloc(fsize);
-  fread(*mem, fsize, 1, f);
-  fclose(f);
+  // open both files
+  if(!(f1 = fopen(fn1.c_str(), "r"))) return false;
+  if(!(f2 = fopen(fn2.c_str(), "r"))) { fclose(f1); return false; }
 
-  return fsize;
+  // compare both files line by line
+  char	*s1 = (char *)malloc(80), *s2 = (char *)malloc(80);
+  while(!(feof(f1) || feof(f2))) {
+    fgets(s1, 80, f1);
+    fgets(s2, 80, f2);
+    if(strncmp(s1, s2, 79)) {
+      retval = false;
+      break;
+    }
+  }
+  free(s1), free(s2);
+  if(feof(f1) != feof(f2))
+    retval = false;
+
+  // close both files
+  fclose(f1), fclose(f2);
+  return retval;
 }
 
 static bool testplayer(const std::string filename)
@@ -98,9 +142,8 @@ static bool testplayer(const std::string filename)
    */
 {
   std::string	fn = std::string(getenv("srcdir")) + "/" + filename;
-  CDiskopl	*opl = new CDiskopl(filename + ".test.raw");
+  Testopl	*opl = new Testopl(filename + ".test");
   CPlayer	*p = CAdPlug::factory(fn, opl);
-  bool		retval = true;
 
   if(!p) { delete opl; return false; }
 
@@ -114,28 +157,14 @@ static bool testplayer(const std::string filename)
   delete p;
   delete opl;
 
-  // Compare with original
-  char	*f1, *f2;
-  long	fsize1 = read_file(&f1, fn + ".orig.raw");
-  long	fsize2 = read_file(&f2, filename + ".test.raw");
-
-  if(fsize1 == fsize2) {
-    for(long i = 0; i < fsize1; i++)
-      if(f1[i] != f2[i]) {
-	retval = false;
-	break;
-      }
-  } else
-    retval = false;
-
-  if(fsize1 != -1) free(f1);
-  if(fsize2 != -1) free(f2);
-  if(retval) {
+  if(diff(fn + ".orig", filename + ".test")) {
     std::cout << "OK\n";
-    remove(std::string(filename + ".test.raw").c_str());
-  } else
+    remove(std::string(filename + ".test").c_str());
+    return true;
+  } else {
     std::cout << "FAIL\n";
-  return retval;
+    return false;
+  }
 }
 
 /***** Main program *****/
