@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,4 +37,18 @@ public:
 	{ return std::string("Adlib Tracker 1.0"); };
 	unsigned int getinstruments()
 	{ return 9; };
+
+private:
+	enum Operators {Carrier = 0, Modulator = 1};
+	static const unsigned short my_notetable[12];
+
+	typedef struct {
+	  struct {
+	    unsigned short appampmod, appvib, maintsuslvl, keybscale, octave,
+	      freqrisevollvldn, softness, attack, decay, release, sustain,
+	      feedback, waveform;
+	  } op[2];
+	} AdTrackInst;
+
+	void convert_instrument(unsigned int n, AdTrackInst *i);
 };

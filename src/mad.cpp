@@ -34,8 +34,8 @@ CPlayer *CmadLoader::factory(Copl *newopl)
 bool CmadLoader::load(istream &f, const char *filename)
 {
   const unsigned char conv_inst[10] = { 2,1,10,9,4,3,6,5,8,7 };
-
-  int i,j,k,t;
+  int j,k,t;
+  unsigned int i;
 
   // 'MAD+' - signed ?
   char id[4];

@@ -1,6 +1,6 @@
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+  Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -15,10 +15,8 @@
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
 
-/*
-  fmc.cpp - FMC loader by Riven the Mage <riven@ok.ru>
+  fmc.cpp - FMC Loader by Riven the Mage <riven@ok.ru>
 */
 
 #include "fmc.h"
@@ -42,6 +40,9 @@ bool CfmcLoader::load(istream &f, const char *filename)
   f.read((char *)&header,sizeof(fmc_header));
   if (strncmp(header.id,"FMC!",4))
     return false;
+
+  // Initialize CmodPlayer
+  realloc_order(256);
 
   // load order
   f.read((char *)order,256);
@@ -105,14 +106,16 @@ bool CfmcLoader::load(istream &f, const char *filename)
   restartpos = 0;
 
   // default volumes
-  for(i=0;i<9;i++)
+  // commented out because this won't have any effect, since rewind(0) will
+  // reset the channel data anyway.
+/*  for(i=0;i<9;i++)
   {
     channel[i].vol1 = 63;
     channel[i].vol2 = 63;
-  }
+  } */
 
   // and flags
-  flags |= MOD_FLAGS_FAUST;
+  flags |= Faust;
 
   rewind(0);
 

@@ -35,11 +35,13 @@
 #define SPECIALARPLEN	256	// Standard length of special arpeggio lists
 #define JUMPMARKER	0x80	// Orderlist jump marker
 
-static const unsigned short notetable[12] =		// SAdT2 adlib note table
-			{340,363,385,408,432,458,485,514,544,577,611,647};
+// SA2 compatible adlib note table
+const unsigned short CmodPlayer::sa2_notetable[12] =
+{340,363,385,408,432,458,485,514,544,577,611,647};
 
-static const unsigned char vibratotab[32] =		// SAdT2 vibrato rate table
-			{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
+// SA2 compatible vibrato rate table
+const unsigned char CmodPlayer::vibratotab[32] =
+{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
 
 /*** public methods *************************************/
 
@@ -50,6 +52,7 @@ nrows(0), npats(0), nchans(0)
   realloc_order(128);
   realloc_patterns(64, 64, 9);
   realloc_instruments(250);
+  init_notetable(sa2_notetable);
 }
 
 CmodPlayer::~CmodPlayer()
@@ -407,6 +410,11 @@ bool CmodPlayer::init_specialarp()
   arpcmd = new unsigned char[SPECIALARPLEN];
 
   return true;
+}
+
+void CmodPlayer::init_notetable(const unsigned short *newnotetable)
+{
+  memcpy(notetable, newnotetable, 12 * 2);
 }
 
 bool CmodPlayer::realloc_order(unsigned long len)

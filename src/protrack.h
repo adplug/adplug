@@ -58,13 +58,6 @@ public:
 protected:
 	enum Flags {Standard = 0, Decimal, Faust};
 
-	struct Channel {
-	  unsigned short freq,nextfreq;
-	  unsigned char oct,vol1,vol2,inst,fx,info1,info2,key,nextoct,
-	    note,portainfo,vibinfo1,vibinfo2,arppos,arpspdcnt;
-	  signed char trigger;
-	} *channel;
-
 	struct Instrument {
 		unsigned char data[11],arpstart,arpspeed,arppos,arpspdcnt,misc;
 		signed char slide;
@@ -74,12 +67,13 @@ protected:
 		unsigned char note,command,inst,param2,param1;
 	} **tracks;
 
-	unsigned char *order,*arplist,*arpcmd,rw,speed,del,songend,regbd,initspeed;
-	unsigned short tempo,activechan,**trackord,nop,bpm,flags,rows;
-	unsigned long length, restartpos, ord, nrows, npats, nchans;
+	unsigned char *order, *arplist, *arpcmd, initspeed;
+	unsigned short tempo, activechan, **trackord, nop, bpm, flags;
+	unsigned long length, restartpos;
 
 	void init_trackord();
 	bool init_specialarp();
+	void init_notetable(const unsigned short *newnotetable);
 	bool realloc_order(unsigned long len);
 	bool realloc_patterns(unsigned long pats, unsigned long rows, unsigned long chans);
 	bool realloc_instruments(unsigned long len);
@@ -87,6 +81,20 @@ protected:
 	void dealloc();
 
 private:
+	static const unsigned short sa2_notetable[12];
+	static const unsigned char vibratotab[32];
+
+	struct Channel {
+	  unsigned short freq,nextfreq;
+	  unsigned char oct,vol1,vol2,inst,fx,info1,info2,key,nextoct,
+	    note,portainfo,vibinfo1,vibinfo2,arppos,arpspdcnt;
+	  signed char trigger;
+	} *channel;
+
+	unsigned char rw, speed, del, songend, regbd;
+	unsigned short rows, notetable[12];
+	unsigned long ord, nrows, npats, nchans;
+
 	void setvolume(unsigned char chan);
 	void setvolume_alt(unsigned char chan);
 	void setfreq(unsigned char chan);
