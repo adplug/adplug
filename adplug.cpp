@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * adplug.cpp - CAdPlug main class implementation, by Simon Peter (dn.tlp@gmx.net)
+ * adplug.cpp - CAdPlug helper class implementation, by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include <fstream.h>
@@ -42,14 +42,14 @@
 #include "imf.h"
 #include "sng.h"
 #include "ksm.h"
-#ifndef __WATCOMC__
-	#include "u6m.h"
-#endif
 #include "mkj.h"
 #include "dfm.h"
 #include "lds.h"
 #include "bam.h"
-#include "rol.h"
+#ifndef __WATCOMC__
+	#include "u6m.h"
+	#include "rol.h"
+#endif
 
 CPlayer *CAdPlug::load_sci(istream &f, char *fn, Copl *opl)
 {
@@ -137,9 +137,11 @@ CPlayer *CAdPlug::factory(char *fn, Copl *opl)
 		if(!stricmp(strrchr(fn,'.')+1,"LDS")) {
 			p = new CldsLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
+#ifndef __WATCOMC__
 		if(!stricmp(strrchr(fn,'.')+1,"ROL")) {
 			p = new CrolPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
+#endif
 	};
 
 	return 0;

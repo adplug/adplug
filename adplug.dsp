@@ -138,13 +138,6 @@ SOURCE=.\players\ksm.cpp
 # Begin Source File
 
 SOURCE=.\players\lds.cpp
-
-!IF  "$(CFG)" == "adplug - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "adplug - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -259,8 +252,6 @@ SOURCE=.\players\ksm.h
 SOURCE=.\players\lds.h
 
 !IF  "$(CFG)" == "adplug - Win32 Release"
-
-# PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "adplug - Win32 Debug"
 

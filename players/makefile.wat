@@ -12,7 +12,7 @@ PLAYERS = protrack.obj a2m.obj amd.obj d00.obj dfm.obj hsc.obj hsp.obj imf.obj k
 all: players.lib
 
 players.lib: $(PLAYERS)
-	wlib -n -b players.lib +protrack +a2m +amd +d00 +dfm +hsc +hsp +imf +ksm +mid +mkj +mtk +rad +raw +s3m +sa2 +sng +lds +bam
+        wlib -n -b players.lib +protrack +a2m +amd +d00 +dfm +hsc +hsp +imf +ksm +mid +mkj +mtk +rad +raw +s3m +sa2 +sng +bam
 
 clean: .symbolic
 	del *.obj

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * adplug.h - CAdPlug main class declaration, by Simon Peter (dn.tlp@gmx.net)
+ * adplug.h - CAdPlug helper class declaration, by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include <iostream.h>
@@ -25,18 +25,16 @@
 #include "players/player.h"
 #include "opl.h"
 
-#define DFLSUBSONG		0					// default subsong to start with
-
 class CAdPlug
 {
 public:
-	CPlayer *factory(char *fn, Copl *opl);
-	CPlayer *factory(istream &f, Copl *opl);
+	static CPlayer *factory(char *fn, Copl *opl);
+	static CPlayer *factory(istream &f, Copl *opl);
 
-	unsigned long songlength(CPlayer *p, unsigned int subsong = 0xffff);
-	void seek(CPlayer *p, unsigned long ms);
+	static unsigned long songlength(CPlayer *p, unsigned int subsong = 0xffff);
+	static void seek(CPlayer *p, unsigned long ms);
 
 private:
-	CPlayer	*load_sci(istream &f, char *fn, Copl *opl);	// special loader for Sierra SCI file format
-	CPlayer	*load_ksm(istream &f, char *fn, Copl *opl);	// special loader for Ken Silverman's music format
+	static CPlayer *load_sci(istream &f, char *fn, Copl *opl);	// special loader for Sierra SCI file format
+	static CPlayer *load_ksm(istream &f, char *fn, Copl *opl);	// special loader for Ken Silverman's music format
 };
