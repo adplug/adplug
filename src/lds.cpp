@@ -27,6 +27,8 @@
 
 bool CldsLoader::load(const std::string &filename, const CFileProvider &fp)
 {
+	return false;
+
   int			i,j,k,l,dnum[9][2];
   unsigned char		ldsinst[46],*ldspat,*ldsm;
   unsigned short	mlen;		// length of music data

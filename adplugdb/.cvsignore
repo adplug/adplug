@@ -7,3 +7,6 @@ Debug
 Release
 *.plg
 config.bat
+*.dsw
+*.opt
+*.ncb
