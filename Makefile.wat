@@ -112,6 +112,7 @@ install: install.recursive $(OUTPUT) .symbolic
 !else
         for %f in ($(include_INST)) do copy %f $(includedir)
 !endif
+!endif
 !ifdef lib_INST
         if not exist $(libdir) mkdir $(libdir)
         for %f in ($(lib_INST)) do copy %f $(libdir)
@@ -129,6 +130,7 @@ uninstall: uninstall.recursive .symbolic
         rmdir $(includedir)\$(includesubdir)
 !else
         for %f in ($(include_INST)) do del $(includedir)\%f
+!endif
 !endif
 !ifdef lib_INST
         for %f in ($(lib_INST)) do del $(libdir)\%f
@@ -164,5 +166,5 @@ $(binarydistfile): $(binarydistlist)
 
 binary-dist: all $(binarydistfile) .symbolic
 !endif
-        
+
 ### MAIN SECTION END ###

@@ -77,20 +77,29 @@ const unsigned char CPlayer::op_table[9] = {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 
 
 /***** List of all players that come in the standard AdPlug distribution *****/
 
-// WARNING: The order of this list is on purpose! AdPlug tries the players in this order, which
-// is to be preserved, because some players take precedence above other players.
+// WARNING: The order of this list is on purpose! AdPlug tries the players in
+// this order, which is to be preserved, because some players take precedence
+// above other players.
 // The list is terminated with an all-NULL element.
 static const struct Players {
   CPlayer *(*factory) (Copl *newopl);
 } allplayers[] = {
-  {CmidPlayer::factory}, {CksmPlayer::factory}, {CrolPlayer::factory}, {CsngPlayer::factory},
-  {Ca2mLoader::factory}, {CradLoader::factory}, {CamdLoader::factory}, {Csa2Loader::factory},
-  {CrawPlayer::factory}, {Cs3mPlayer::factory}, {CmtkLoader::factory}, {CmkjPlayer::factory},
+  {CmidPlayer::factory}, {CksmPlayer::factory},
+#ifndef __WATCOMC__
+  {CrolPlayer::factory},
+#endif
+  {CsngPlayer::factory}, {Ca2mLoader::factory}, {CradLoader::factory},
+  {CamdLoader::factory}, {Csa2Loader::factory}, {CrawPlayer::factory},
+  {Cs3mPlayer::factory}, {CmtkLoader::factory}, {CmkjPlayer::factory},
   {CdfmLoader::factory}, {CbamPlayer::factory}, {CxadbmfPlayer::factory},
   {CxadflashPlayer::factory}, {CxadhypPlayer::factory}, {CxadpsiPlayer::factory},
   {CxadratPlayer::factory}, {CxadhybridPlayer::factory}, {CfmcLoader::factory},
-  {CmadLoader::factory}, {Cu6mPlayer::factory}, {Cd00Player::factory}, {ChspLoader::factory},
-  {ChscPlayer::factory}, {CimfPlayer::factory}, {CldsLoader::factory}, {CadtrackLoader::factory},
+  {CmadLoader::factory},
+#ifndef __WATCOMC__
+  {Cu6mPlayer::factory},
+#endif
+  {Cd00Player::factory}, {ChspLoader::factory}, {ChscPlayer::factory},
+  {CimfPlayer::factory}, {CldsLoader::factory}, {CadtrackLoader::factory},
   {0}
 };
 
