@@ -1,0 +1,59 @@
+AdPlug Player development mini-HOWTO
+Copyright (C) 2001, 2002 Simon Peter <dn.tlp@gmx.net>
+
+Precautions:
+------------
+Your player normally consists of two files (the .h & .cpp files) and you normally
+name them by the file extensions, your player handles. For example, the HSC player
+consists of the files hsc.cpp & hsc.h, because it handles .hsc files. This is the
+same with your player class name. Thus, the HSC player's class is called ChscPlayer.
+
+player.h contains the abstract player interface. You have to include it in your
+player to communicate with AdPlug. It also contains some very helpful structures
+for use in your player. You don't need to use the structs, but you have to use
+the methods provided by the opl object (declared in opl.h, but automatically
+included from player.h) inside the player class to do the OPL I/O and initialization
+work.
+
+Main Work:
+----------
+All you have to do now is to inherit the CPlayer class into your own player class
+and fill the abstract methods with code. You at least have to fill in the
+following methods:
+
+bool load(istream &f);				// load file
+bool update();					// execute replay code
+void rewind(unsigned int subsong);		// rewind to specified subsong
+float getrefresh();				// return needed timer refresh rate
+std::string gettype();				// return file type
+
+The other methods from CPlayer just serve informational purposes (as does
+gettype(), but it's required anyway ;) ) for AdPlug's info box and needn't to be
+filled. It would be nice if you fill them anyway, if that's reasonable for
+your player.
+
+Return true from your load() method, if the file was loaded successfully, or false
+if it couldn't be loaded for any reason (will mostly be wrong file type
+errors, since AdPlug tries its files with any replayer, it is linked to). Your
+update() method will be called with the frequency, you return from your
+getrefresh() method, in Hz. Return true from update() if your module hasn't ended
+yet. If it looped or ended, return false from that point, but play further for any
+subsequent calls to update(). AdPlug will rewind your player by itself, using the
+rewind() function, when necessary.
+
+AdPlug passes the number of the subsong, it wants to play next, to the
+rewind() function. This can be any value from 0 to the value returned by
+getsubsongs(). If you haven't provided your own getsubsongs(), AdPlug will
+presume your player doesn't have support for subsongs. In that case, AdPlug
+will always rewind(0). Please ignore any value passed with rewind(), that is
+out of spec for your player. This should virtually never happen, but who
+knows.
+
+After initializing your player, AdPlug normally first calls load(), and then
+getrefresh() and update() in a loop until something happens (i.e. the user stops
+playback or the song ends). rewind() and all the informational methods can be
+called anytime in between the other calls, but of course only after load() has
+been called.
+
+You can add your own constructors, destructors and methods, as you like. AdPlug
+won't care in any way.
