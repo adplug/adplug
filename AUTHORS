@@ -38,7 +38,7 @@ Nikita V. Kalaganov <riven@ok.ru>:
     - CFF: BoomTracker 4.0
     - DTM: DeFy Adlib Tracker
   - Scream Tracker 3 loader development:
-    - DMO: TwinTrack
+    - DMO: Twin TrackPlayer
   - XMS-Tracker detection support in AMD loader
 
 Sjoerd van der Berg <harekiet@zophar.net>:
@@ -59,3 +59,7 @@ Tyler Montbriand <tsm@accesscomm.ca>:
 Borg No. One <borg_no.one@gmx.de>:
   - Many thanks for digging out the original author (Andras Molnar) of the
     LOUDNESS Sound System and managing to get the sources from him.
+
+Matthew Gambrell <mgambrell@gmail.com>:
+  - Enhancements to the DRO (DOSBox Raw OPL) format
+  - Added dual OPL2 and OPL3 support

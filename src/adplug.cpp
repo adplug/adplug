@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2004 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -64,7 +64,7 @@
 
 /***** Defines *****/
 
-#define VERSION		"1.5"		// AdPlug library version string
+#define VERSION		"1.6"		// AdPlug library version string
 
 /***** CAdPlug *****/
 

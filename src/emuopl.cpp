@@ -22,7 +22,6 @@
 #include "emuopl.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
 
 CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
   : use16bit(bit16), stereo(usestereo)

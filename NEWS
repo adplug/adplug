@@ -1,5 +1,8 @@
 This is a brief overview of user-visible changes in AdPlug.
 
+Changes for version 1.6:
+	- Dual OPL2 and OPL3 support.
+
 Changes for version 1.5:
 	- New format support:
 		- XSM: eXtra Simple Music
