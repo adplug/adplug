@@ -20,6 +20,9 @@
  * emuopl.h - Emulated OPL, by Simon Peter (dn.tlp@gmx.net)
  */
 
+#ifndef H_EMUOPL
+#define H_EMUOPL
+
 #include "opl.h"
 extern "C" {
 #include "fmopl.h"
@@ -55,3 +58,5 @@ private:
 	bool	use16bit,stereo;
 	FM_OPL	*opl;				// holds emulator data
 };
+
+#endif

@@ -10,7 +10,7 @@ AdPlug To Do List:
 ------------------
 - Add missing features to A2M loader and/or Protracker player.
 
-- Add rhythm mode support to CMF player (inside mid.cpp)
+- Add rhythm mode support to CMF player (inside mid.cpp).
 
 - Add new Protracker loaders:
 	- DTM: DeFy Adlib Tracker [riven-mage]
@@ -18,3 +18,5 @@ AdPlug To Do List:
 	- LDS: Loudness
 
 - Maybe change docs again into texinfo format... [dynamite]
+
+- Get cff.[cpp,h] to work on linux. [dynamite]
