@@ -1,6 +1,3 @@
-//
-// beta version. do not compile.
-//
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
   Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
@@ -34,13 +31,12 @@ class CcffLoader: public CmodPlayer
 		CcffLoader(Copl *newopl) : CmodPlayer(newopl) { };
 
 		bool            load(istream &f, const char *filename);
-	        float           getrefresh();
 
-	        std::string     gettype();
-	        std::string     gettitle();
-		std::string	getauthor();
-	        std::string     getinstrument(unsigned int n);
-	        unsigned int    getinstruments();
+        std::string     gettype();
+        std::string 	gettitle();
+		std::string 	getauthor();
+        std::string     getinstrument(unsigned int n);
+        unsigned int    getinstruments();
 
 	private:
 
@@ -80,20 +76,20 @@ class CcffLoader: public CmodPlayer
 
 				unsigned char the_string[256];
 		};
-
-        	struct cff_header
+	
+		struct cff_header
 		{
-			char		id[16];
-			char		version;
+			unsigned char	id[16];
+			unsigned char	version;
 			unsigned short	size;
-			char		packed;
-			char		reserved[12];
+			unsigned char	packed;
+			unsigned char	reserved[12];
 		} header;
 
 		struct cff_instrument
 		{
-			char		data[12];
-			char		name[20];
+			unsigned char	data[12];
+			char			name[21];
 		} instruments[47];
 
 		char    song_title[20];

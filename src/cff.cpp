@@ -1,6 +1,3 @@
-//
-// beta version. do not compile.
-//
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
   Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
@@ -22,6 +19,11 @@
 /*
   cff.cpp - BoomTracker loader by Riven the Mage <riven@ok.ru>
 */
+/*
+  - bug: key-off isn't working
+  - bug: bad arpeggio handling
+  - FINAL TEST
+*/
 
 #include "cff.h"
 
@@ -35,7 +37,10 @@ CPlayer *CcffLoader::factory(Copl *newopl)
 
 bool CcffLoader::load(istream &f, const char *filename)
 {
+	cff_unpacker unpacker;
+
 	const unsigned char conv_inst[11] = { 2,1,10,9,4,3,6,5,0,8,7 };
+	const unsigned short conv_note[12] = { 0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287, 0x2AE };
 
 	int i,j,k,t=0;
 
@@ -46,16 +51,18 @@ bool CcffLoader::load(istream &f, const char *filename)
 	if (memcmp(header.id,"<CUD-FM-File>""\x1A\xDE\xE0",16))
 		return false;
 
-	unsigned char *module = new unsigned char [header.size];
+	unsigned char *module = new unsigned char [0x10000];
 
 	// packed ?
 	if (header.packed)
 	{
-		unsigned char *packed_module = new unsigned char [header.size];
+		unsigned char *packed_module = new unsigned char [header.size + 4];
+
+		memset(packed_module,0,header.size + 4);
 
 		f.read((char *)packed_module,header.size);
 
-		if (!unpack(packed_module,module))
+		if (!unpacker.unpack(packed_module,module))
 		{
 			delete packed_module;
 			delete module;
@@ -74,6 +81,7 @@ bool CcffLoader::load(istream &f, const char *filename)
 	realloc_order(64);
 	realloc_patterns(36,64,9);
 
+	init_notetable(conv_note);
 	init_trackord();
 
 	// load instruments
@@ -83,14 +91,16 @@ bool CcffLoader::load(istream &f, const char *filename)
 
 		for(j=0;j<11;j++)
 			inst[i].data[conv_inst[j]] = instruments[i].data[j];
+
+		instruments[i].name[20] = 0;
 	}
 
 	// number of patterns
 	nop = module[0x5E0];
 
 	// load title & author
-	memcpy(song_title,&module[0x600],20);
-	memcpy(song_author,&module[0x614],20);
+	memcpy(song_title,&module[0x614],20);
+	memcpy(song_author,&module[0x600],20);
 
 	// load order
 	memcpy(order,&module[0x628],64);
@@ -105,24 +115,31 @@ bool CcffLoader::load(istream &f, const char *filename)
 				cff_event *event = (cff_event *)&module[0x669 + ((i*64+k)*9+j)*3];
 
 				// convert note
-			        tracks[t][k].note = (event->byte0 == 0x6D) ? 127 : event->byte0;
+				if (event->byte0 == 0x6D)
+					tracks[t][k].note = 127;
+				else
+					if (event->byte0)
+						tracks[t][k].note = event->byte0;
 
 				// convert parameters
-	        		tracks[t][k].param1  = event.byte2 >> 4;
-	        		tracks[t][k].param2  = event.byte2 & 0x0F;
+        		tracks[t][k].param1  = event->byte2 >> 4;
+        		tracks[t][k].param2  = event->byte2 & 0x0F;
 
 				// convert effect
 				switch (event->byte1)
 				{
 					case 'I': // set instrument
-						tracks[t][k].inst = event->byte2;
-	        				tracks[t][k].param1 = tracks[t][k].param2 = 0;
+						tracks[t][k].inst = event->byte2 + 1;
+        				tracks[t][k].param1 = tracks[t][k].param2 = 0;
 						break;
-/*
-  TODO: non-typical frequency calculation
 					case 'H': // set tempo
+						tracks[t][k].command = 7;
+						if (event->byte2 < 0x16)
+						{
+        					tracks[t][k].param1 = 0x07;
+			        		tracks[t][k].param2 = 0x0D;
+						}
 						break;
-*/
 					case 'A': // set speed
 						tracks[t][k].command = 19;
 						break;
@@ -136,10 +153,13 @@ bool CcffLoader::load(istream &f, const char *filename)
 						tracks[t][k].command = 27;
 						break;
 					case 'C': // set modulator volume
-						tracks[t][k].command = 21;
-						break;
 					case 'G': // set carrier volume
-						tracks[t][k].command = 22;
+						if (event->byte1 == 'C')
+							tracks[t][k].command = 21;
+						else
+							tracks[t][k].command = 22;
+						tracks[t][k].param1 = (0x3F - event->byte2) >> 4;
+						tracks[t][k].param2 = (0x3F - event->byte2) & 0x0F;
 						break;
 					case 'B': // set carrier waveform
 						tracks[t][k].command = 25;
@@ -154,8 +174,8 @@ bool CcffLoader::load(istream &f, const char *filename)
 						break;
 					case 'D': // volume slide
 						tracks[t][k].command = 26;
-	        				tracks[t][k].param1  = event.byte2 & 0x0F;
-	        				tracks[t][k].param2  = event.byte2 >> 4;
+        				tracks[t][k].param1  = event->byte2 & 0x0F;
+        				tracks[t][k].param2  = event->byte2 >> 4;
 						break;
 					case 'J': // arpeggio
 						break;
@@ -168,16 +188,28 @@ bool CcffLoader::load(istream &f, const char *filename)
 
 	delete module;
 
+    // default instruments
+	for (i=0;i<9;i++)
+	{
+		if (!tracks[i][0].inst)
+			tracks[i][0].inst = i + 1;
+	}
+
 	// order loop point
 	restartpos = 0;
 
 	// order length
 	for (i=0;i<64;i++)
+	{
 		if (order[i] >= 0x80)
 		{
 			length = i;
 			break;
 		}
+	}
+
+	// default tempo
+	bpm = 0x7D;
 
 	rewind(0);
 
@@ -186,7 +218,7 @@ bool CcffLoader::load(istream &f, const char *filename)
 
 std::string CcffLoader::gettype()
 {
-#ifndef DETAIL_INFO
+#ifdef SHORT_INFO
 	std::string xstr = "BoomTracker 4";
 #else
 	std::string xstr = "BoomTracker 4.0+ (version 1)";
@@ -200,22 +232,22 @@ std::string CcffLoader::gettype()
 
 std::string CcffLoader::gettitle()
 {
-  return std::string(song_title,20);
+	return std::string(song_title,20);
 }
 
 std::string CcffLoader::getauthor()
 {
-  return std::string(song_author,20);
+	return std::string(song_author,20);
 }
 
 std::string CcffLoader::getinstrument(unsigned int n)
 {
-  return std::string(instruments[n].name,20);
+	return std::string(instruments[n].name);
 }
 
 unsigned int CcffLoader::getinstruments()
 {
-  return 47;
+	return 47;
 }
 
 /* -------- Private Methods ------------------------------- */
@@ -233,8 +265,10 @@ unsigned int CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char
 	if (memcmp(ibuf,"YsComp""\x07""CUD1997""\x1A\x04",16))
 		return 0;
 
-	input = ibuf;
+	input = ibuf + 16;
 	output = obuf;
+
+	output_length = 0;
 
 	heap = (unsigned char *)malloc(0x10000);
 	dictionary = (unsigned char **)malloc(sizeof(unsigned char *)*0x8000);
@@ -278,14 +312,14 @@ unsigned int CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char
 
 			code_length = 2;
 
-			unsigned char symbol_length = get_code() + 1;
+			unsigned char repeat_length = get_code() + 1;
 
 			code_length = 4 << get_code();
 
 			unsigned long repeat_counter = get_code();
 
-			for (int i=0;i<repeat_counter*symbol_length;i++)
-				output[output_length++] = output[output_length - symbol_length];
+			for (int i=0;i<repeat_counter*repeat_length;i++)
+				output[output_length++] = output[output_length - repeat_length];
 
 			code_length = old_code_length;
 
