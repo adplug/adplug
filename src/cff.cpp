@@ -71,6 +71,12 @@ bool CcffLoader::load(istream &f, const char *filename)
 
 		delete unpacker;
 		delete packed_module;
+
+		if (memcmp(&module[0x5E1],"CUD-FM-File - SEND A POSTCARD -",31))
+		{
+			delete module;
+			return false;
+		}
 	}
 	else
 	{
@@ -398,9 +404,6 @@ long CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
 
 	free(heap);
 	free(dictionary);
-
-	if (memcmp(output + 0x5E1,"CUD-FM-File - SEND A POSTCARD -",31))
-		return 0;
 
 	return output_length;
 }
