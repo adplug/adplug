@@ -73,7 +73,7 @@ On Windows, you just have to build the 'Debug' version of the library.
 On DOS, you have to add the define manually to the preprocessor commandline
 variable 'CPPFLAGS' in your 'config.mif' file. If you created your build
 configuration by using the template from 'INSTALL.dos', you just have to
-uncomment the line containing 'CPPFLAGS +=' and add a '-DDEBUG' to it.
+uncomment the line containing 'CPPFLAGS +=' and add a '-dDEBUG' to it.
 
 AdPlug logs to stderr by default. The output can be redirected anytime to a
 user specified logfile. This is done by using the 'CAdPlug::debug_output'
