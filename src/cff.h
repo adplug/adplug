@@ -75,7 +75,8 @@ class CcffLoader: public CmodPlayer
 
 				unsigned char the_string[256];
 		};
-	
+
+#pragma pack(1)
 		struct cff_header
 		{
 			unsigned char	id[16];
@@ -84,6 +85,7 @@ class CcffLoader: public CmodPlayer
 			unsigned char	packed;
 			unsigned char	reserved[12];
 		} header;
+#pragma pack()
 
 		struct cff_instrument
 		{
