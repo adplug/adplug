@@ -111,6 +111,7 @@ CPlayer *CAdPlug::load_ksm(istream &f, const char *fn, Copl *opl)
 
 CPlayer *CAdPlug::load_rol(istream &f, const char *fn, Copl *opl)
 {
+#ifndef __WATCOMC__
 	CrolPlayer	*mp = new CrolPlayer(opl);
 	char		*pfn = new char [strlen(fn)+9];
 
@@ -122,6 +123,7 @@ CPlayer *CAdPlug::load_rol(istream &f, const char *fn, Copl *opl)
 		return mp;
 	delete mp;
 	f.seekg(0);
+#endif
 	return 0;
 }
 

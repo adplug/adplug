@@ -1,4 +1,5 @@
-# AdPlug Makefile for WATCOM v11, (c) 2001, 2002 Simon Peter <dn.tlp@gmx.net>
+# AdPlug Makefile for WATCOM C/C++ 11.x
+# Copyright (c) 2001, 2002 Simon Peter <dn.tlp@gmx.net>
 
 CC = wcc386
 CXX = wpp386
@@ -7,10 +8,13 @@ CFLAGS = -oneatx -oh -ei -zp8 -5 -fpi87 -fp5 -zq
 CXXFLAGS = -oneatx -oh -oi+ -ei -zp8 -5 -fpi87 -fp5 -zq
 CPPFLAGS = -dstd= -dstring=String
 
-PLAYERS = protrack.obj a2m.obj amd.obj d00.obj dfm.obj hsc.obj hsp.obj imf.obj \
-ksm.obj mid.obj mkj.obj mtk.obj rad.obj raw.obj s3m.obj sa2.obj sng.obj bam.obj
+PLAYERS = protrack.obj a2m.obj amd.obj d00.obj dfm.obj hsc.obj hsp.obj &
+imf.obj ksm.obj mid.obj mkj.obj mtk.obj rad.obj raw.obj s3m.obj sa2.obj &
+sng.obj bam.obj xad.obj mad.obj fmc.obj bmf.obj debug.obj flash.obj &
+hybrid.obj hyp.obj psi.obj rat.obj
 
-OBJS = $(PLAYERS) adplug.obj emuopl.obj fmopl.obj realopl.obj analopl.obj
+OBJS = $(PLAYERS) adplug.obj emuopl.obj fmopl.obj realopl.obj analopl.obj &
+diskopl.obj
 
 .c.obj:
 	$(CC) $(CFLAGS) $(CPPFLAGS) $[.
@@ -21,12 +25,14 @@ OBJS = $(PLAYERS) adplug.obj emuopl.obj fmopl.obj realopl.obj analopl.obj
 all: adplug.lib
 
 clean: .symbolic
-	del $(OBJS)
+        del *.obj
 	del adplug.lib
 
+distclean: clean .symbolic
+        del *.err
+
 adplug.lib: $(OBJS)
-# TODO: make objects correctly added
-	wlib -n -b adplug.lib +*.obj
+        wlib -n -b $@ +$<
 
 adplug.obj: adplug.cpp *.h
 emuopl.obj: emuopl.cpp emuopl.h fmopl.obj opl.h
@@ -34,6 +40,7 @@ realopl.obj: realopl.cpp realopl.h
 analopl.obj: analopl.cpp analopl.h
 diskopl.obj: diskopl.cpp diskopl.h
 fmopl.obj: fmopl.c fmopl.h
+debug.obj: debug.c debug.h
 
 $(PLAYERS): player.h
 protrack.obj: protrack.cpp protrack.h
@@ -55,3 +62,12 @@ raw.obj: raw.cpp raw.h
 s3m.obj: s3m.cpp s3m.h
 sa2.obj: sa2.cpp sa2.h protrack.h
 sng.obj: sng.cpp sng.h
+xad.obj: xad.cpp xad.h
+mad.obj: mad.cpp mad.h protrack.h
+fmc.obj: fmc.cpp fmc.h protrack.h
+bmf.obj: bmf.cpp bmf.h
+flash.obj: flash.cpp flash.h
+hybrid.obj: hybrid.cpp hybrid.h
+hyp.obj: hyp.cpp hyp.h
+psi.obj: psi.cpp psi.h
+rat.obj: rat.cpp rat.h

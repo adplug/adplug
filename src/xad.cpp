@@ -22,8 +22,7 @@
 */
 
 #include "xad.h"
-
-#include "debug.c"
+#include "debug.h"
 
 /* -------- Public Methods -------------------------------- */
 
