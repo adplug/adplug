@@ -1,36 +1,21 @@
 /*
- * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *
- * File: fmopl.c -- software implementation of FM sound generator
- *
- * Copyright (C) 1999 Tatsuyuki Satoh , MultiArcadeMachineEmurator development
- * Released here with permission of the author under the LGPL.
- *
- * Version 0.36f
- *
- */
+**
+** File: fmopl.c -- software implementation of FM sound generator
+**
+** Copyright (C) 1999,2000 Tatsuyuki Satoh , MultiArcadeMachineEmurator development
+**
+** Version 0.37a
+**
+*/
 
 /*
 	preliminary :
 	Problem :
 	note:
 */
+
+#define INLINE __inline
+#define HAS_YM3812 1
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,10 +24,17 @@
 #include <math.h>
 //#include "driver.h"		/* use M.A.M.E. */
 #include "fmopl.h"
-#include "fm.h"
 
 #ifndef PI
 #define PI 3.14159265358979323846
+#endif
+
+/* -------------------- for debug --------------------- */
+/* #define OPL_OUTPUT_LOG */
+#ifdef OPL_OUTPUT_LOG
+static FILE *opl_dbg_fp = NULL;
+static FM_OPL *opl_dbg_opl[16];
+static int opl_dbg_maxchip,opl_dbg_chip;
 #endif
 
 /* -------------------- preliminary define section --------------------- */
@@ -114,51 +106,52 @@ static const int slot_array[32]=
 };
 
 /* key scale level */
-#define ML (0.1875*2/EG_STEP)
+/* table is 3dB/OCT , DV converts this in TL step at 6dB/OCT */
+#define DV (EG_STEP/2)
 static const UINT32 KSL_TABLE[8*16]=
 {
 	/* OCT 0 */
-	 0.000*ML, 0.000*ML, 0.000*ML, 0.000*ML,
-	 0.000*ML, 0.000*ML, 0.000*ML, 0.000*ML,
-	 0.000*ML, 0.000*ML, 0.000*ML, 0.000*ML,
-	 0.000*ML, 0.000*ML, 0.000*ML, 0.000*ML,
+	 0.000/DV, 0.000/DV, 0.000/DV, 0.000/DV,
+	 0.000/DV, 0.000/DV, 0.000/DV, 0.000/DV,
+	 0.000/DV, 0.000/DV, 0.000/DV, 0.000/DV,
+	 0.000/DV, 0.000/DV, 0.000/DV, 0.000/DV,
 	/* OCT 1 */
-	 0.000*ML, 0.000*ML, 0.000*ML, 0.000*ML,
-	 0.000*ML, 0.000*ML, 0.000*ML, 0.000*ML,
-	 0.000*ML, 0.750*ML, 1.125*ML, 1.500*ML,
-	 1.875*ML, 2.250*ML, 2.625*ML, 3.000*ML,
+	 0.000/DV, 0.000/DV, 0.000/DV, 0.000/DV,
+	 0.000/DV, 0.000/DV, 0.000/DV, 0.000/DV,
+	 0.000/DV, 0.750/DV, 1.125/DV, 1.500/DV,
+	 1.875/DV, 2.250/DV, 2.625/DV, 3.000/DV,
 	/* OCT 2 */
-	 0.000*ML, 0.000*ML, 0.000*ML, 0.000*ML,
-	 0.000*ML, 1.125*ML, 1.875*ML, 2.625*ML,
-	 3.000*ML, 3.750*ML, 4.125*ML, 4.500*ML,
-	 4.875*ML, 5.250*ML, 5.625*ML, 6.000*ML,
+	 0.000/DV, 0.000/DV, 0.000/DV, 0.000/DV,
+	 0.000/DV, 1.125/DV, 1.875/DV, 2.625/DV,
+	 3.000/DV, 3.750/DV, 4.125/DV, 4.500/DV,
+	 4.875/DV, 5.250/DV, 5.625/DV, 6.000/DV,
 	/* OCT 3 */
-	 0.000*ML, 0.000*ML, 0.000*ML, 1.875*ML,
-	 3.000*ML, 4.125*ML, 4.875*ML, 5.625*ML,
-	 6.000*ML, 6.750*ML, 7.125*ML, 7.500*ML,
-	 7.875*ML, 8.250*ML, 8.625*ML, 9.000*ML,
+	 0.000/DV, 0.000/DV, 0.000/DV, 1.875/DV,
+	 3.000/DV, 4.125/DV, 4.875/DV, 5.625/DV,
+	 6.000/DV, 6.750/DV, 7.125/DV, 7.500/DV,
+	 7.875/DV, 8.250/DV, 8.625/DV, 9.000/DV,
 	/* OCT 4 */
-	 0.000*ML, 0.000*ML, 3.000*ML, 4.875*ML,
-	 6.000*ML, 7.125*ML, 7.875*ML, 8.625*ML,
-	 9.000*ML, 9.750*ML,10.125*ML,10.500*ML,
-	10.875*ML,11.250*ML,11.625*ML,12.000*ML,
+	 0.000/DV, 0.000/DV, 3.000/DV, 4.875/DV,
+	 6.000/DV, 7.125/DV, 7.875/DV, 8.625/DV,
+	 9.000/DV, 9.750/DV,10.125/DV,10.500/DV,
+	10.875/DV,11.250/DV,11.625/DV,12.000/DV,
 	/* OCT 5 */
-	 0.000*ML, 3.000*ML, 6.000*ML, 7.875*ML,
-	 9.000*ML,10.125*ML,10.875*ML,11.625*ML,
-	12.000*ML,12.750*ML,13.125*ML,13.500*ML,
-	13.875*ML,14.250*ML,14.625*ML,15.000*ML,
+	 0.000/DV, 3.000/DV, 6.000/DV, 7.875/DV,
+	 9.000/DV,10.125/DV,10.875/DV,11.625/DV,
+	12.000/DV,12.750/DV,13.125/DV,13.500/DV,
+	13.875/DV,14.250/DV,14.625/DV,15.000/DV,
 	/* OCT 6 */
-	 0.000*ML, 6.000*ML, 9.000*ML,10.875*ML,
-	12.000*ML,13.125*ML,13.875*ML,14.625*ML,
-	15.000*ML,15.750*ML,16.125*ML,16.500*ML,
-	16.875*ML,17.250*ML,17.625*ML,18.000*ML,
+	 0.000/DV, 6.000/DV, 9.000/DV,10.875/DV,
+	12.000/DV,13.125/DV,13.875/DV,14.625/DV,
+	15.000/DV,15.750/DV,16.125/DV,16.500/DV,
+	16.875/DV,17.250/DV,17.625/DV,18.000/DV,
 	/* OCT 7 */
-	 0.000*ML, 9.000*ML,12.000*ML,13.875*ML,
-	15.000*ML,16.125*ML,16.875*ML,17.625*ML,
-	18.000*ML,18.750*ML,19.125*ML,19.500*ML,
-	19.875*ML,20.250*ML,20.625*ML,21.000*ML
+	 0.000/DV, 9.000/DV,12.000/DV,13.875/DV,
+	15.000/DV,16.125/DV,16.875/DV,17.625/DV,
+	18.000/DV,18.750/DV,19.125/DV,19.500/DV,
+	19.875/DV,20.250/DV,20.625/DV,21.000/DV
 };
-#undef ML
+#undef DV
 
 /* sustain lebel table (3db per step) */
 /* 0 - 15: 0, 3, 6, 9,12,15,18,21,24,27,30,33,36,39,42,93 (dB)*/
@@ -207,7 +200,7 @@ static int num_lock = 0;
 /* work table */
 static void *cur_chip = NULL;	/* current chip point */
 /* currenct chip state */
-/* static FMSAMPLE  *bufL,*bufR; */
+/* static OPLSAMPLE  *bufL,*bufR; */
 static OPL_CH *S_CH;
 static OPL_CH *E_CH;
 OPL_SLOT *SLOT7_1,*SLOT7_2,*SLOT8_1,*SLOT8_2;
@@ -228,21 +221,12 @@ static INT32 feedback2;		/* connect for SLOT 2 */
 
 #define LOG_LEVEL LOG_INF
 
-static void Log(int level,char *format,...)
-{
-#if 0
-	va_list argptr;
-
-	if( level < LOG_LEVEL ) return;
-	va_start(argptr,format);
-	/* */
-	if (errorlog) vfprintf( errorlog, format , argptr);
-#endif
-}
+//#define LOG(n,x) if( (n)>=LOG_LEVEL ) logerror x
+#define LOG(n,x)
 
 /* --------------------- subroutines  --------------------- */
 
-int Limit( int val, int max, int min ) {
+INLINE int Limit( int val, int max, int min ) {
 	if ( val > max )
 		val = max;
 	else if ( val < min )
@@ -252,7 +236,7 @@ int Limit( int val, int max, int min ) {
 }
 
 /* status set and IRQ handling */
-void OPL_STATUS_SET(FM_OPL *OPL,int flag)
+INLINE void OPL_STATUS_SET(FM_OPL *OPL,int flag)
 {
 	/* set status flag */
 	OPL->status |= flag;
@@ -268,7 +252,7 @@ void OPL_STATUS_SET(FM_OPL *OPL,int flag)
 }
 
 /* status reset and IRQ handling */
-void OPL_STATUS_RESET(FM_OPL *OPL,int flag)
+INLINE void OPL_STATUS_RESET(FM_OPL *OPL,int flag)
 {
 	/* reset status flag */
 	OPL->status &=~flag;
@@ -284,7 +268,7 @@ void OPL_STATUS_RESET(FM_OPL *OPL,int flag)
 }
 
 /* IRQ mask set */
-void OPL_STATUSMASK_SET(FM_OPL *OPL,int flag)
+INLINE void OPL_STATUSMASK_SET(FM_OPL *OPL,int flag)
 {
 	OPL->statusmask = flag;
 	/* IRQ handling check */
@@ -293,19 +277,18 @@ void OPL_STATUSMASK_SET(FM_OPL *OPL,int flag)
 }
 
 /* ----- key on  ----- */
-void OPL_KEYON(OPL_SLOT *SLOT)
+INLINE void OPL_KEYON(OPL_SLOT *SLOT)
 {
 	/* sin wave restart */
 	SLOT->Cnt = 0;
 	/* set attack */
 	SLOT->evm = ENV_MOD_AR;
 	SLOT->evs = SLOT->evsa;
-	if(!SLOT->eg_typ)			// by dynamite!
-		SLOT->evc = EG_AST;		// by dynamite!
+	SLOT->evc = EG_AST;
 	SLOT->eve = EG_AED;
 }
 /* ----- key off ----- */
-void OPL_KEYOFF(OPL_SLOT *SLOT)
+INLINE void OPL_KEYOFF(OPL_SLOT *SLOT)
 {
 	if( SLOT->evm > ENV_MOD_RR)
 	{
@@ -321,7 +304,7 @@ void OPL_KEYOFF(OPL_SLOT *SLOT)
 
 /* ---------- calcrate Envelope Generator & Phase Generator ---------- */
 /* return : envelope output */
-UINT32 OPL_CALC_SLOT( OPL_SLOT *SLOT )
+INLINE UINT32 OPL_CALC_SLOT( OPL_SLOT *SLOT )
 {
 	/* calcrate envelope generator */
 	if( (SLOT->evc+=SLOT->evs) >= SLOT->eve )
@@ -367,7 +350,7 @@ static void set_algorythm( OPL_CH *CH)
 }
 
 /* ---------- frequency counter for operater update ---------- */
-void CALC_FCSLOT(OPL_CH *CH,OPL_SLOT *SLOT)
+INLINE void CALC_FCSLOT(OPL_CH *CH,OPL_SLOT *SLOT)
 {
 	int ksr;
 
@@ -387,7 +370,7 @@ void CALC_FCSLOT(OPL_CH *CH,OPL_SLOT *SLOT)
 }
 
 /* set multi,am,vib,EG-TYP,KSR,mul */
-void set_mul(FM_OPL *OPL,int slot,int v)
+INLINE void set_mul(FM_OPL *OPL,int slot,int v)
 {
 	OPL_CH   *CH   = &OPL->P_CH[slot/2];
 	OPL_SLOT *SLOT = &CH->SLOT[slot&1];
@@ -401,7 +384,7 @@ void set_mul(FM_OPL *OPL,int slot,int v)
 }
 
 /* set ksl & tl */
-void set_ksl_tl(FM_OPL *OPL,int slot,int v)
+INLINE void set_ksl_tl(FM_OPL *OPL,int slot,int v)
 {
 	OPL_CH   *CH   = &OPL->P_CH[slot/2];
 	OPL_SLOT *SLOT = &CH->SLOT[slot&1];
@@ -417,7 +400,7 @@ void set_ksl_tl(FM_OPL *OPL,int slot,int v)
 }
 
 /* set attack rate & decay rate  */
-void set_ar_dr(FM_OPL *OPL,int slot,int v)
+INLINE void set_ar_dr(FM_OPL *OPL,int slot,int v)
 {
 	OPL_CH   *CH   = &OPL->P_CH[slot/2];
 	OPL_SLOT *SLOT = &CH->SLOT[slot&1];
@@ -434,7 +417,7 @@ void set_ar_dr(FM_OPL *OPL,int slot,int v)
 }
 
 /* set sustain level & release rate */
-void set_sl_rr(FM_OPL *OPL,int slot,int v)
+INLINE void set_sl_rr(FM_OPL *OPL,int slot,int v)
 {
 	OPL_CH   *CH   = &OPL->P_CH[slot/2];
 	OPL_SLOT *SLOT = &CH->SLOT[slot&1];
@@ -451,7 +434,7 @@ void set_sl_rr(FM_OPL *OPL,int slot,int v)
 /* operator output calcrator */
 #define OP_OUT(slot,env,con)   slot->wavetable[((slot->Cnt+con)/(0x1000000/SIN_ENT))&(SIN_ENT-1)][env]
 /* ---------- calcrate one of channel ---------- */
-void OPL_CALC_CH( OPL_CH *CH )
+INLINE void OPL_CALC_CH( OPL_CH *CH )
 {
 	UINT32 env_out;
 	OPL_SLOT *SLOT;
@@ -496,7 +479,7 @@ void OPL_CALC_CH( OPL_CH *CH )
 
 /* ---------- calcrate rythm block ---------- */
 #define WHITE_NOISE_db 6.0
-void OPL_CALC_RH( OPL_CH *CH )
+INLINE void OPL_CALC_RH( OPL_CH *CH )
 {
 	UINT32 env_tam,env_sd,env_top,env_hh;
 	int whitenoise = (rand()&1)*(WHITE_NOISE_db/EG_STEP);
@@ -602,9 +585,9 @@ static void init_timetables( FM_OPL *OPL , int ARRATE , int DRRATE )
 	}
 #if 0
 	for (i = 0;i < 64 ;i++){	/* make for overflow area */
-		Log(LOG_WAR,"rate %2d , ar %f ms , dr %f ms \n",i,
+		LOG(LOG_WAR,("rate %2d , ar %f ms , dr %f ms \n",i,
 			((double)(EG_ENT<<ENV_BITS) / OPL->AR_TABLE[i]) * (1000.0 / OPL->rate),
-			((double)(EG_ENT<<ENV_BITS) / OPL->DR_TABLE[i]) * (1000.0 / OPL->rate) );
+			((double)(EG_ENT<<ENV_BITS) / OPL->DR_TABLE[i]) * (1000.0 / OPL->rate) ));
 	}
 #endif
 }
@@ -643,7 +626,7 @@ static int OPLOpenTable( void )
 		rate = ((1<<TL_BITS)-1)/pow(10,EG_STEP*t/20);	/* dB -> voltage */
 		TL_TABLE[       t] =  (int)rate;
 		TL_TABLE[TL_MAX+t] = -TL_TABLE[t];
-/*		Log(LOG_INF,"TotalLevel(%3d) = %x\n",t,TL_TABLE[t]);*/
+/*		LOG(LOG_INF,("TotalLevel(%3d) = %x\n",t,TL_TABLE[t]));*/
 	}
 	/* fill volume off area */
 	for ( t = EG_ENT-1; t < TL_MAX ;t++){
@@ -662,7 +645,7 @@ static int OPLOpenTable( void )
 		SIN_TABLE[          s] = SIN_TABLE[SIN_ENT/2-s] = &TL_TABLE[j];
         /* degree 180 - 270    , degree 360 - 270 : minus section */
 		SIN_TABLE[SIN_ENT/2+s] = SIN_TABLE[SIN_ENT  -s] = &TL_TABLE[TL_MAX+j];
-/*		Log(LOG_INF,"sin(%3d) = %f:%f db\n",s,pom,(double)j * EG_STEP);*/
+/*		LOG(LOG_INF,("sin(%3d) = %f:%f db\n",s,pom,(double)j * EG_STEP));*/
 	}
 	for (s = 0;s < SIN_ENT;s++)
 	{
@@ -697,7 +680,7 @@ static int OPLOpenTable( void )
 		pom = (double)VIB_RATE*0.06*sin(2*PI*i/VIB_ENT); /* +-100sect step */
 		VIB_TABLE[i]         = VIB_RATE + (pom*0.07); /* +- 7cent */
 		VIB_TABLE[VIB_ENT+i] = VIB_RATE + (pom*0.14); /* +-14cent */
-		/* Log(LOG_INF,"vib %d=%d\n",i,VIB_TABLE[VIB_ENT+i]); */
+		/* LOG(LOG_INF,("vib %d=%d\n",i,VIB_TABLE[VIB_ENT+i])); */
 	}
 	return 1;
 }
@@ -712,7 +695,7 @@ static void OPLCloseTable( void )
 }
 
 /* CSM Key Controll */
-void CSMKeyControll(OPL_CH *CH)
+INLINE void CSMKeyControll(OPL_CH *CH)
 {
 	OPL_SLOT *slot1 = &CH->SLOT[SLOT1];
 	OPL_SLOT *slot2 = &CH->SLOT[SLOT2];
@@ -819,7 +802,7 @@ static void OPLWriteReg(FM_OPL *OPL, int r, int v)
 				if(OPL->keyboardhandler_w)
 					OPL->keyboardhandler_w(OPL->keyboard_param,v);
 				else
-					Log(LOG_WAR,"OPL:write unmapped KEYBOARD port\n");
+					LOG(LOG_WAR,("OPL:write unmapped KEYBOARD port\n"));
 			}
 			return;
 		case 0x07:	/* DELTA-T controll : START,REC,MEMDATA,REPT,SPOFF,x,x,RST */
@@ -1000,7 +983,7 @@ static void OPLWriteReg(FM_OPL *OPL, int r, int v)
 		CH = &OPL->P_CH[slot/2];
 		if(OPL->wavesel)
 		{
-			/* Log(LOG_INF,"OPL SLOT %d wave select %d\n",slot,v&3); */
+			/* LOG(LOG_INF,("OPL SLOT %d wave select %d\n",slot,v&3)); */
 			CH->SLOT[slot&1].wavetable = &SIN_TABLE[(v&0x03)*SIN_ENT];
 		}
 		return;
@@ -1032,7 +1015,7 @@ static void OPL_UnLockTable(void)
 	OPLCloseTable();
 }
 
-#if 1//(BUILD_YM3812 || BUILD_YM3526)
+#if (BUILD_YM3812 || BUILD_YM3526)
 /*******************************************************************************/
 /*		YM3812 local section                                                   */
 /*******************************************************************************/
@@ -1042,7 +1025,7 @@ void YM3812UpdateOne(FM_OPL *OPL, INT16 *buffer, int length)
 {
     int i;
 	int data;
-	FMSAMPLE *buf = buffer;
+	OPLSAMPLE *buf = buffer;
 	UINT32 amsCnt  = OPL->amsCnt;
 	UINT32 vibCnt  = OPL->vibCnt;
 	UINT8 rythm = OPL->rythm&0x20;
@@ -1086,6 +1069,14 @@ void YM3812UpdateOne(FM_OPL *OPL, INT16 *buffer, int length)
 
 	OPL->amsCnt = amsCnt;
 	OPL->vibCnt = vibCnt;
+#ifdef OPL_OUTPUT_LOG
+	if(opl_dbg_fp)
+	{
+		for(opl_dbg_chip=0;opl_dbg_chip<opl_dbg_maxchip;opl_dbg_chip++)
+			if( opl_dbg_opl[opl_dbg_chip] == OPL) break;
+		fprintf(opl_dbg_fp,"%c%c%c",0x20+opl_dbg_chip,length&0xff,length/256);
+	}
+#endif
 }
 #endif /* (BUILD_YM3812 || BUILD_YM3526) */
 
@@ -1095,7 +1086,7 @@ void Y8950UpdateOne(FM_OPL *OPL, INT16 *buffer, int length)
 {
     int i;
 	int data;
-	FMSAMPLE *buf = buffer;
+	OPLSAMPLE *buf = buffer;
 	UINT32 amsCnt  = OPL->amsCnt;
 	UINT32 vibCnt  = OPL->vibCnt;
 	UINT8 rythm = OPL->rythm&0x20;
@@ -1130,7 +1121,7 @@ void Y8950UpdateOne(FM_OPL *OPL, INT16 *buffer, int length)
 		vib = vib_table[(vibCnt+=vibIncr)>>VIB_SHIFT];
 		outd[0] = 0;
 		/* deltaT ADPCM */
-		if( DELTAT->flag )
+		if( DELTAT->portstate )
 			YM_DELTAT_ADPCM_CALC(DELTAT);
 		/* FM part */
 		for(CH=S_CH ; CH < R_CH ; CH++)
@@ -1146,7 +1137,7 @@ void Y8950UpdateOne(FM_OPL *OPL, INT16 *buffer, int length)
 	OPL->amsCnt = amsCnt;
 	OPL->vibCnt = vibCnt;
 	/* deltaT START flag */
-	if( !DELTAT->flag )
+	if( !DELTAT->portstate )
 		OPL->status &= 0xfe;
 }
 #endif
@@ -1176,7 +1167,7 @@ void OPLResetChip(FM_OPL *OPL)
 			/* wave table */
 			CH->SLOT[s].wavetable = &SIN_TABLE[0];
 			/* CH->SLOT[s].evm = ENV_MOD_RR; */
-			CH->SLOT[s].evc = /*EG_OFF;*/EG_AST;	// by dynamite!
+			CH->SLOT[s].evc = EG_OFF;
 			CH->SLOT[s].eve = EG_OFF+1;
 			CH->SLOT[s].evs = 0;
 		}
@@ -1230,12 +1221,37 @@ FM_OPL *OPLCreate(int type, int clock, int rate)
 	OPL_initalize(OPL);
 	/* reset chip */
 	OPLResetChip(OPL);
+#ifdef OPL_OUTPUT_LOG
+	if(!opl_dbg_fp)
+	{
+		opl_dbg_fp = fopen("opllog.opl","wb");
+		opl_dbg_maxchip = 0;
+	}
+	if(opl_dbg_fp)
+	{
+		opl_dbg_opl[opl_dbg_maxchip] = OPL;
+		fprintf(opl_dbg_fp,"%c%c%c%c%c%c",0x00+opl_dbg_maxchip,
+			type,
+			clock&0xff,
+			(clock/0x100)&0xff,
+			(clock/0x10000)&0xff,
+			(clock/0x1000000)&0xff);
+		opl_dbg_maxchip++;
+	}
+#endif
 	return OPL;
 }
 
 /* ----------  Destroy one of vietual YM3812 ----------       */
 void OPLDestroy(FM_OPL *OPL)
 {
+#ifdef OPL_OUTPUT_LOG
+	if(opl_dbg_fp)
+	{
+		fclose(opl_dbg_fp);
+		opl_dbg_fp = NULL;
+	}
+#endif
 	OPL_UnLockTable();
 	free(OPL);
 }
@@ -1282,6 +1298,14 @@ int OPLWrite(FM_OPL *OPL,int a,int v)
 	else
 	{	/* data port */
 		if(OPL->UpdateHandler) OPL->UpdateHandler(OPL->UpdateParam,0);
+#ifdef OPL_OUTPUT_LOG
+	if(opl_dbg_fp)
+	{
+		for(opl_dbg_chip=0;opl_dbg_chip<opl_dbg_maxchip;opl_dbg_chip++)
+			if( opl_dbg_opl[opl_dbg_chip] == OPL) break;
+		fprintf(opl_dbg_fp,"%c%c%c",0x10+opl_dbg_chip,OPL->address,v);
+	}
+#endif
 		OPLWriteReg(OPL,OPL->address,v);
 	}
 	return OPL->status>>7;
@@ -1302,7 +1326,7 @@ unsigned char OPLRead(FM_OPL *OPL,int a)
 			if(OPL->keyboardhandler_r)
 				return OPL->keyboardhandler_r(OPL->keyboard_param);
 			else
-				Log(LOG_WAR,"OPL:read unmapped KEYBOARD port\n");
+				LOG(LOG_WAR,("OPL:read unmapped KEYBOARD port\n"));
 		}
 		return 0;
 #if 0
@@ -1315,7 +1339,7 @@ unsigned char OPLRead(FM_OPL *OPL,int a)
 			if(OPL->porthandler_r)
 				return OPL->porthandler_r(OPL->port_param);
 			else
-				Log(LOG_WAR,"OPL:read unmapped I/O port\n");
+				LOG(LOG_WAR,("OPL:read unmapped I/O port\n"));
 		}
 		return 0;
 	case 0x1a: /* PCM-DATA    */

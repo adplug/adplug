@@ -1,32 +1,14 @@
-/*
- * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *
- * Header file for "fmopl.c", Copyright (C) 1999 Tatsuyuki Satoh.
- * Released here with permission of the author under the LGPL.
- */
-
 #ifndef __FMOPL_H_
 #define __FMOPL_H_
 
+/* --- select emulation chips --- */
 #define BUILD_YM3812 (HAS_YM3812)
-#define BUILD_YM3526 (HAS_YM3526)
-#define BUILD_Y8950  (HAS_Y8950)
+//#define BUILD_YM3526 (HAS_YM3526)
+//#define BUILD_Y8950  (HAS_Y8950)
+
+/* --- system optimize --- */
+/* select bit size of output : 8 or 16 */
+#define OPL_OUTPUT_BIT 16
 
 /* compiler dependence */
 #ifndef OSD_CPU_H
@@ -38,6 +20,14 @@ typedef signed char		INT8;    /* signed  8bit   */
 typedef signed short	INT16;   /* signed 16bit   */
 typedef signed int		INT32;   /* signed 32bit   */
 #endif
+
+#if (OPL_OUTPUT_BIT==16)
+typedef INT16 OPLSAMPLE;
+#endif
+#if (OPL_OUTPUT_BIT==8)
+typedef unsigned char  OPLSAMPLE;
+#endif
+
 
 #if BUILD_Y8950
 #include "ymdeltat.h"
@@ -56,6 +46,7 @@ typedef unsigned char (*OPL_PORTHANDLER_R)(int param);
 #define OPL_TYPE_KEYBOARD  0x04  /* keyboard interface */
 #define OPL_TYPE_IO        0x08  /* I/O port */
 
+/* Saving is necessary for member of the 'R' mark for suspend/resume */
 /* ---------- OPL one of slot  ---------- */
 typedef struct fm_opl_slot {
 	INT32 TL;		/* total level     :TL << 8            */
@@ -76,9 +67,9 @@ typedef struct fm_opl_slot {
 	INT32 evc;		/* envelope counter                    */
 	INT32 eve;		/* envelope counter end point          */
 	INT32 evs;		/* envelope counter step               */
-	INT32 evsa;	/* envelope step for AR :AR[ksr]       */
-	INT32 evsd;	/* envelope step for DR :DR[ksr]       */
-	INT32 evsr;	/* envelope step for RR :RR[ksr]       */
+	INT32 evsa;	/* envelope step for AR :AR[ksr]           */
+	INT32 evsd;	/* envelope step for DR :DR[ksr]           */
+	INT32 evsr;	/* envelope step for RR :RR[ksr]           */
 	/* LFO */
 	UINT8 ams;		/* ams flag                            */
 	UINT8 vib;		/* vibrate flag                        */
@@ -104,7 +95,7 @@ typedef struct fm_opl_channel {
 
 /* OPL state */
 typedef struct fm_opl_f {
-	UINT8 type;			/* chip type                        */
+	UINT8 type;			/* chip type                         */
 	int clock;			/* master clock  (Hz)                */
 	int rate;			/* sampling rate (Hz)                */
 	double freqbase;	/* frequency base                    */
@@ -114,11 +105,11 @@ typedef struct fm_opl_f {
 	UINT8 statusmask;	/* status mask                       */
 	UINT32 mode;		/* Reg.08 : CSM , notesel,etc.       */
 	/* Timer */
-	int T[2];			/* timer counter       */
-	UINT8 st[2];		/* timer enable        */
+	int T[2];			/* timer counter                     */
+	UINT8 st[2];		/* timer enable                      */
 	/* FM channel slots */
-	OPL_CH *P_CH;		/* pointer of CH       */
-	int	max_ch;			/* maximum channel     */
+	OPL_CH *P_CH;		/* pointer of CH                     */
+	int	max_ch;			/* maximum channel                   */
 	/* Rythm sention */
 	UINT8 rythm;		/* Rythm mode , key flag */
 #if BUILD_Y8950

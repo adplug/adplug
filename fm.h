@@ -1,45 +1,31 @@
 /*
- * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
- * 
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *
- * File: fm.h -- header file for software emuration for FM sound genelator
- *
- */
+  File: fm.h -- header file for software emulation for FM sound generator
+
+*/
 #ifndef _H_FM_FM_
 #define _H_FM_FM_
 
 /* --- select emulation chips --- */
-//#define BUILD_YM2203  (HAS_YM2203)		/* build YM2203(OPN)   emulator */
-//#define BUILD_YM2608  (HAS_YM2608)		/* build YM2608(OPNA)  emulator */
-//#define BUILD_YM2610  (HAS_YM2610)		/* build YM2610(OPNB)  emulator */
-//#define BUILD_YM2610B (HAS_YM2610B)		/* build YM2610B(OPNB?)emulator */
-//#define BUILD_YM2612  (HAS_YM2612)		/* build YM2612(OPN2)  emulator */
-//#define BUILD_YM2151  (HAS_YM2151)		/* build YM2151(OPM)   emulator */
+#define BUILD_YM2203  (HAS_YM2203)		/* build YM2203(OPN)   emulator */
+#define BUILD_YM2608  (HAS_YM2608)		/* build YM2608(OPNA)  emulator */
+#define BUILD_YM2610  (HAS_YM2610)		/* build YM2610(OPNB)  emulator */
+#define BUILD_YM2610B (HAS_YM2610B)		/* build YM2610B(OPNB?)emulator */
+#define BUILD_YM2612  (HAS_YM2612 || HAS_YM3438)		/* build YM2612(OPN2)  emulator */
+#define BUILD_YM2151  (HAS_YM2151)		/* build YM2151(OPM)   emulator */
 
 /* --- system optimize --- */
-/* select stereo output buffer : mixing / separate */
-//#define FM_STEREO_MIX
-/* select output size : 8bit or 16bit */
-#define FM_OUTPUT_BIT 16
+/* select stereo output buffer : 1=mixing / 0=separate */
+#define FM_STEREO_MIX 0
+/* select bit size of output : 8 or 16 */
+#define FM_SAMPLE_BITS 16
+/* select timer system internal or external */
+#define FM_INTERNAL_TIMER 0
 
-/* --- speed optimize --- */
-#define FM_LFO_SUPPORT 1 	/* support LFO unit */
-#define FM_SEG_SUPPORT 0	/* OPN SSG type envelope support   */
+/* --- speedup optimize --- */
+/* support OPN SSG type envelope mode */
+#define FM_SEG_SUPPORT 0
+/* busy flag enulation , The definition of FM_GET_TIME_NOW() is necessary. */
+#define FM_BUSY_FLAG_SUPPORT 1
 
 /* --- external SSG(YM2149/AY-3-8910)emulator interface port */
 /* used by YM2203,YM2608,and YM2610 */
@@ -48,24 +34,30 @@
 /* int n    = chip number        */
 /* int clk  = MasterClock(Hz)    */
 /* int rate = sample rate(Hz) */
-#define SSGClk(chip,clock) AY8910_set_clock(chip,clock)
+#define SSGClk(chip,clock) AY8910_set_clock((chip)+ay8910_index_ym,clock)
 
 /* SSGWrite : Write SSG port     */
 /* int n    = chip number        */
 /* int a    = address            */
 /* int v    = data               */
-#define SSGWrite(n,a,v) AY8910Write(n,a,v)
+#define SSGWrite(n,a,v) AY8910Write((n)+ay8910_index_ym,a,v)
 
 /* SSGRead  : Read SSG port */
 /* int n    = chip number   */
 /* return   = Read data     */
-#define SSGRead(n) AY8910Read(n)
+#define SSGRead(n) AY8910Read((n)+ay8910_index_ym)
 
 /* SSGReset : Reset SSG chip */
 /* int n    = chip number   */
-#define SSGReset(chip) AY8910_reset(chip)
+#define SSGReset(chip) AY8910_reset((chip)+ay8910_index_ym)
 
 /* --- external callback funstions for realtime update --- */
+
+/* for busy flag emulation , function FM_GET_TIME_NOW() should be */
+/* return the present time in second unit with (double) value     */
+  /* in timer.c */
+  #define FM_GET_TIME_NOW() timer_get_time()
+
 #if BUILD_YM2203
   /* in 2203intf.c */
   #define YM2203UpdateReq(chip) YM2203UpdateRequest(chip)
@@ -99,8 +91,7 @@ typedef signed int		INT32;   /* signed 32bit   */
 #endif
 
 #define YM2203_NUMBUF 1
-
-#ifdef FM_STEREO_MIX
+#if FM_STEREO_MIX
   #define YM2151_NUMBUF 1
   #define YM2608_NUMBUF 1
   #define YM2612_NUMBUF 1
@@ -112,11 +103,11 @@ typedef signed int		INT32;   /* signed 32bit   */
   #define YM2612_NUMBUF 2    /* FM L+R */
 #endif
 
-#if (FM_OUTPUT_BIT==16)
+#if (FM_SAMPLE_BITS==16)
 typedef INT16 FMSAMPLE;
 typedef unsigned long FMSAMPLE_MIX;
 #endif
-#if (FM_OUTPUT_BIT==8)
+#if (FM_SAMPLE_BITS==8)
 typedef unsigned char  FMSAMPLE;
 typedef unsigned short FMSAMPLE_MIX;
 #endif
@@ -237,7 +228,10 @@ void OPMResetChip(int num);
 void OPMUpdateOne(int num, INT16 **buffer, int length );
 /* ---- set callback hander when port CT0/1 write ----- */
 /* CT.bit0 = CT0 , CT.bit1 = CT1 */
-void OPMSetPortHander(int n,void (*PortWrite)(int offset,int CT) );
+/*
+typedef void (*mem_write_handler)(int offset,int data);
+*/
+void OPMSetPortHander(int n,mem_write_handler PortWrite);
 /* JB 981119  - so it will match MAME's memory write functions scheme*/
 
 int YM2151Write(int n,int a,unsigned char v);
