@@ -18,8 +18,7 @@
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
+
   dmo.cpp - TwinTeam loader by Riven the Mage <riven@ok.ru>
 */
 
@@ -35,6 +34,7 @@ CPlayer *CdmoLoader::factory(Copl *newopl)
 
 bool CdmoLoader::load(istream &f, const char *filename)
 {
+
 	rewind(0);
 
 	return true;	
@@ -42,7 +42,7 @@ bool CdmoLoader::load(istream &f, const char *filename)
 
 std::string CdmoLoader::gettype()
 {
-	return std::string("TwinTeam Packed S3M");
+	return std::string("TwinTeam (packed S3M)");
 }
 
 /* -------- Private Methods ------------------------------- */
@@ -103,7 +103,7 @@ WORD CdmoLoader::dmo_unpacker::unpack_block(char *ibuf, long ilen, char *obuf)
 	char *ipos = ibuf;
 	char *opos = obuf;
 
-	// LZ??
+	// LZSS-derived
 	while (ipos - ibuf < ilen)
 	{
 		code = *ipos++;
@@ -182,7 +182,6 @@ long CdmoLoader::dmo_unpacker::unpack(char *ibuf, long ilen, char *obuf)
 		return 0;
 
 	ibuf += 12;
-	ilen -= 12;
 
 	WORD block_count = *(WORD *)ibuf;
 

@@ -15,18 +15,11 @@
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
 
-/*
   fmc.h - FMC loader by Riven the Mage <riven@ok.ru>
 */
 
-#ifndef __FMC_LOADER__
-#define __FMC_LOADER__
-
 #include "protrack.h"
-
-#pragma pack(1)
 
 class CfmcLoader: public CmodPlayer
 {
@@ -95,7 +88,3 @@ private:
 
         void            buildinst(unsigned char i);
 };
-
-#pragma pack()
-
-#endif // __FMC_LOADER__
