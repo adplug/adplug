@@ -28,37 +28,27 @@ extern "C" {
 #include "ymf262.h"
 }
 
-class CEmuopl: public Copl_2
+class CEmuopl: public Copl
 {
-public:
-	CEmuopl(int rate, bool bit16, bool usestereo);	// rate = sample rate
-	virtual ~CEmuopl();
+ public:
+  CEmuopl(int rate, bool bit16, bool usestereo);	// rate = sample rate
+  virtual ~CEmuopl();
 
-	void update(short *buf, int samples);	// fill buffer
+  void update(short *buf, int samples);			// fill buffer
 
-	// template methods
-	void write(int reg, int val);
-	void init();
+  void write(int reg, int val);
+  void setchip(int n);
 
-	//for Copl_2 interface
-	void setChip(int chip);
-	void setMode(int mode);
+  void init();
+  void settype(ChipType type);
 
-private:
-	bool	use16bit,stereo;
-	FM_OPL	*opl[2];				// holds opl2 emulator data
-	YMF262::Class *opl3;			//opl3 emulator
-
-	short *mixbuf0;
-	short *mixbuf1;
-	int mixbufSamples;
-	
-	//specified by Copl_2 interface
-	int currChip; 
-	int currMode;
-	
-
-
+ private:
+  bool		use16bit,stereo;
+  FM_OPL	*opl[2];				// OPL2 emulator data
+  YMF262::Class *opl3;					// OPL3 emulator
+  short		*mixbuf0, *mixbuf1;
+  int		mixbufSamples, currChip;
+  ChipType	currType;
 };
 
 #endif

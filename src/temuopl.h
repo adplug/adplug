@@ -16,26 +16,32 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * opl.h - OPL base class, by Simon Peter <dn.tlp@gmx.net>
+ * temuopl.h - Tatsuyuki Satoh's OPL2 emulator, by Simon Peter <dn.tlp@gmx.net>
  */
 
-#ifndef H_ADPLUG_OPL
-#define H_ADPLUG_OPL
+#ifndef H_ADPLUG_TEMUOPL
+#define H_ADPLUG_TEMUOPL
 
-class Copl
+#include "opl.h"
+extern "C" {
+#include "fmopl.h"
+}
+
+class CTemuopl: public Copl
 {
 public:
-  typedef enum {
-    TYPE_OPL2, TYPE_OPL3, TYPE_DUAL_OPL2
-  } ChipType;
+	CTemuopl(int rate, bool bit16, bool usestereo);	// rate = sample rate
+	virtual ~CTemuopl();
 
-  virtual void write(int reg, int val) = 0;	// combined register select + data write
-  virtual void setchip(int n) {}		// select OPL chip
+	void update(short *buf, int samples);	// fill buffer
 
-  virtual void init(void) = 0;			// reinitialize OPL chip(s)
-  virtual void settype(ChipType type) {}	// Set OPL chip's type
+	// template methods
+	void write(int reg, int val);
+	void init();
 
-  virtual void update(short *buf, int samples) {}	// Emulation only: fill buffer
+private:
+	bool	use16bit,stereo;
+	FM_OPL	*opl;				// holds emulator data
 };
 
 #endif

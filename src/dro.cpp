@@ -24,8 +24,9 @@
  *
   */
 
-#include "dro.h"
 #include <stdio.h>
+
+#include "dro.h"
 
 /*** public methods *************************************/
 
@@ -75,11 +76,11 @@ bool CdroPlayer::update()
 			return true;
 		case 2:
 			index = 0;
-			if(opl_2) opl_2->setChip(0);
+			opl->setchip(0);
 			break;
 		case 3:
 			index = 1;
-			if(opl_2) opl_2->setChip(1);
+			opl->setchip(1);
 			break;
 		default:
 			if(cmd==4) cmd = data[pos++]; //data override
@@ -102,18 +103,15 @@ void CdroPlayer::rewind(int subsong)
 	for(int i=0;i<256;i++)
 		opl->write(i,0);
 	
-	if(opl_2){
-		opl_2->setChip(1);
-		for(int i=0;i<256;i++)
-			opl->write(i,0);
-		opl_2->setChip(0);
+	opl->setchip(1);
+	for(int i=0;i<256;i++)
+		opl->write(i,0);
+	opl->setchip(0);
 
-		if(mode == ModeOPL2)
-			opl_2->setMode(0);
-		if(mode == ModeOPL3)
-			opl_2->setMode(1);
-		if(mode == ModeDUALOPL2)
-			opl_2->setMode(2);
+	switch(mode) {
+	ModeOPL2: opl->settype(Copl::TYPE_OPL2); break;
+	ModeOPL3: opl->settype(Copl::TYPE_OPL3); break;
+	ModeDUALOPL2: opl->settype(Copl::TYPE_DUAL_OPL2); break;
 	}
 }
 

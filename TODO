@@ -3,8 +3,7 @@ $Id$
 To AdPlug SourceForge developers:
 ---------------------------------
 If anyone happens to take over a task listed here, please mark that you're
-doing so, somehow. Your SourceForge login name is a good way to identify
-yourself.
+doing so. Your SourceForge login name is a good way to identify yourself.
 
 AdPlug To Do List:
 ------------------
@@ -14,8 +13,6 @@ AdPlug To Do List:
 	- MTR: Arkham Master Tracker [riven-mage]
 
 - Add some index entries to documentation. [dynamite]
-
-- Implement OPL3 support using YMF262 emulator from MAME. [dynamite]
 
 - Split out endian-unclean players of the main test case and make them
   another one. [dynamite]

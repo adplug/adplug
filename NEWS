@@ -2,6 +2,8 @@ This is a brief overview of user-visible changes in AdPlug.
 
 Changes for version 1.6:
 	- Dual OPL2 and OPL3 support.
+	- This version is not binary-compatible with older versions! All
+	  linked applications need to be recompiled.
 
 Changes for version 1.5:
 	- New format support:

@@ -74,7 +74,6 @@ public:
 
 protected:
 	Copl		*opl;	// our OPL chip
-	Copl_2		*opl_2;	// Copl_2 interface; may be null if such an interface is unavailable
 	CAdPlugDatabase	*db;	// AdPlug Database
 
 	static const unsigned short	note_table[12];	// standard adlib note table
