@@ -56,8 +56,7 @@ bool CrawPlayer::load(istream &f, const char *filename)
 
 bool CrawPlayer::update()
 {
-	if(songend || pos > length)
-		return false;
+	if(pos > length) return false;
 
 	if(del) {
 		del--;
@@ -67,18 +66,25 @@ bool CrawPlayer::update()
 	do {
 		switch(data[pos].command) {
 		case 0: del = data[pos].param - 1; break;
-		case 2: if(!data[pos].param) {
-					speed = *(unsigned short *)&data[++pos];
-				} else
-					opl3 = data[pos].param - 1;
-				break;
-		case 0xff: if(data[pos].param == 0xff)
-						songend = true;
-				   break;
-		default: if(!opl3)
-					opl->write(data[pos].command,data[pos].param);
-				 break;
+		case 2:
+		  if(!data[pos].param)
+		    speed = *(unsigned short *)&data[++pos];
+		  else
+		    opl3 = data[pos].param - 1;
+		  break;
+		case 0xff:
+		  if(data[pos].param == 0xff) {
+		    rewind(0);		// auto-rewind song
+		    songend = true;
+		    return !songend;
+		  }
+		  break;
+		default:
+		  if(!opl3)
+		    opl->write(data[pos].command,data[pos].param);
+		  break;
 		}
+
 		pos++;
 	} while(data[pos-1].command);
 
