@@ -367,6 +367,17 @@ bool CmodPlayer::update()
 			if(info2 != 0x0f)
 				opl->write(0xe0 + op_table[chan],info2);
 			break;
+		case 27: // set chip tremolo/vibrato
+			if (info1)
+				regbd |= 128;
+			else
+				regbd &= 127;
+			if (info2)
+				regbd |= 64;
+			else
+				regbd &= 191;
+			opl->write(0xbd,regbd);
+			break;
 		}
 	}
 

@@ -95,10 +95,6 @@ update_end:
   return (plr.playing && (!plr.looping));
 }
 
-#ifdef WIN32
-#pragma warning(disable:4715)
-#endif
-
 float CxadPlayer::getrefresh()
 {
   return xadplayer_getrefresh();
@@ -108,10 +104,6 @@ std::string CxadPlayer::gettype()
 {
   return xadplayer_gettype();
 }
-
-#ifdef WIN32
-#pragma warning(default:4715)
-#endif
 
 std::string CxadPlayer::gettitle()
 {

@@ -197,6 +197,7 @@ Value | Command                               | Values               | Range
  24xx | Fine frequency slide down             | xx=sliding speed     | [0-FF]
  25xy | Set carrier/modulator waveform        | xy=carr wav|mod wav  | [0-3,F]
  26xy | Volume slide                          | xy=vol up|vol down   | [0-F]
+ 27xy | Set chip tremolo/vibrato              | xy=tr depth|vb depth | [0-1]
 255-- | No operation (NOP)
 ------+---------------------------------------+----------------------+------
 Table 1. Effect commands

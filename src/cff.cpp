@@ -1,5 +1,5 @@
 //
-// alpha version. do not compile.
+// beta version. do not compile.
 //
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
@@ -35,6 +35,11 @@ CPlayer *CcffLoader::factory(Copl *newopl)
 
 bool CcffLoader::load(istream &f, const char *filename)
 {
+	const unsigned char conv_inst[11] = { 2,1,10,9,4,3,6,5,0,8,7 };
+
+	int i,j,k,t=0;
+
+	// read header
 	f.read((char *)&header,sizeof(header));
 
 	// '<CUD-FM-File>' - signed ?
@@ -64,16 +69,115 @@ bool CcffLoader::load(istream &f, const char *filename)
 		f.read((char *)module,header.size);
 	}
 
+	// init CmodPlayer
+	realloc_instruments(47);
+	realloc_order(64);
+	realloc_patterns(36,64,9);
 
+	init_trackord();
 
+	// load instruments
+	for (i=0;i<47;i++)
+	{
+		memcpy(&instruments[i],&module[i*32],sizeof(cff_instrument));
 
+		for(j=0;j<11;j++)
+			inst[i].data[conv_inst[j]] = instruments[i].data[j];
+	}
 
+	// number of patterns
+	nop = module[0x5E0];
 
+	// load title & author
+	memcpy(song_title,&module[0x600],20);
+	memcpy(song_author,&module[0x614],20);
 
+	// load order
+	memcpy(order,&module[0x628],64);
 
+	// load tracks
+	for (i=0;i<nop;i++)
+	{
+		for (j=0;j<9;j++)
+		{
+			for (k=0;k<64;k++)
+			{
+				cff_event *event = (cff_event *)&module[0x669 + ((i*64+k)*9+j)*3];
 
+				// convert note
+			        tracks[t][k].note = (event->byte0 == 0x6D) ? 127 : event->byte0;
+
+				// convert parameters
+	        		tracks[t][k].param1  = event.byte2 >> 4;
+	        		tracks[t][k].param2  = event.byte2 & 0x0F;
+
+				// convert effect
+				switch (event->byte1)
+				{
+					case 'I': // set instrument
+						tracks[t][k].inst = event->byte2;
+	        				tracks[t][k].param1 = tracks[t][k].param2 = 0;
+						break;
+/*
+  TODO: non-typical frequency calculation
+					case 'H': // set tempo
+						break;
+*/
+					case 'A': // set speed
+						tracks[t][k].command = 19;
+						break;
+					case 'L': // pattern break
+						tracks[t][k].command = 13;
+						break;
+					case 'K': // order jump
+						tracks[t][k].command = 11;
+						break;
+					case 'M': // set vibrato/tremolo
+						tracks[t][k].command = 27;
+						break;
+					case 'C': // set modulator volume
+						tracks[t][k].command = 21;
+						break;
+					case 'G': // set carrier volume
+						tracks[t][k].command = 22;
+						break;
+					case 'B': // set carrier waveform
+						tracks[t][k].command = 25;
+						tracks[t][k].param1 = event->byte2;
+						tracks[t][k].param2 = 0x0F;
+						break;
+					case 'E': // frequency slide down
+						tracks[t][k].command = 2;
+						break;
+					case 'F': // frequency slide up
+						tracks[t][k].command = 1;
+						break;
+					case 'D': // volume slide
+						tracks[t][k].command = 26;
+	        				tracks[t][k].param1  = event.byte2 & 0x0F;
+	        				tracks[t][k].param2  = event.byte2 >> 4;
+						break;
+					case 'J': // arpeggio
+						break;
+				}
+			}
+
+			t++;
+		}
+	}
 
 	delete module;
+
+	// order loop point
+	restartpos = 0;
+
+	// order length
+	for (i=0;i<64;i++)
+		if (order[i] >= 0x80)
+		{
+			length = i;
+			break;
+		}
 
 	rewind(0);
 
@@ -94,11 +198,31 @@ std::string CcffLoader::gettype()
 	return std::string(xstr);
 }
 
+std::string CcffLoader::gettitle()
+{
+  return std::string(song_title,20);
+}
+
+std::string CcffLoader::getauthor()
+{
+  return std::string(song_author,20);
+}
+
+std::string CcffLoader::getinstrument(unsigned int n)
+{
+  return std::string(instruments[n].name,20);
+}
+
+unsigned int CcffLoader::getinstruments()
+{
+  return 47;
+}
+
 /* -------- Private Methods ------------------------------- */
 
 #ifdef _WIN32
-	#pragma warning(disable:4244)
-	#pragma warning(disable:4018)
+#pragma warning(disable:4244)
+#pragma warning(disable:4018)
 #endif
 
 /*
@@ -273,6 +397,6 @@ void CcffLoader::cff_unpacker::expand_dictionary(unsigned char *string)
 }
 
 #ifdef _WIN32
-	#pragma warning(default:4244)
-	#pragma warning(default:4018)
+#pragma warning(default:4244)
+#pragma warning(default:4018)
 #endif
