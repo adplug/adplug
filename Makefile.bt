@@ -7,6 +7,6 @@ AUX = doc\*.ms README AUTHORS NEWS COPYING TODO ChangeLog
 DIST = src\*.c src\*.cpp src\*.h src\Makefile.bt $(AUX) INSTALL
 BINARYDIST = src\*.h src\adplug.lib $(AUX)
 
-distfile = adplg13s.zip
-binarydistfile = adplug13.zip
+distfile = adplg14s.zip
+binarydistfile = adplug14.zip
 installfile = INSTALL.dos
