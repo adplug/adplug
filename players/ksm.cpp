@@ -1,5 +1,9 @@
 /*
  * ksm.cpp - KSM Player by Simon Peter (dn.tlp@gmx.net)
+ *
+ * NOTES:
+ * This is a nearly direct adaption of the original playksm
+ * by Ken Silverman.
  */
 
 #include <fstream.h>

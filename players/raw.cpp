@@ -35,23 +35,21 @@ bool CrawPlayer::update()
 	if(songend || pos > length)
 		return false;
 
-	if(del > 1) {
+	if(del) {
 		del--;
 		return !songend;
 	}
 
 	do {
 		switch(data[pos].command) {
-		case 0: del = data[pos].param; break;
+		case 0: del = data[pos].param - 1; break;
 		case 2: if(!data[pos].param) {
-					speed = *(unsigned short *) &data[++pos];
-					if(!speed)
-						speed = 0xffff;
+					speed = *(unsigned short *)&data[++pos];
 				} else
 					opl3 = data[pos].param - 1;
 				break;
 		case 0xff: if(data[pos].param == 0xff)
-						songend = 1;
+						songend = true;
 				   break;
 		default: if(!opl3)
 					opl->write(data[pos].command,data[pos].param);
@@ -65,12 +63,11 @@ bool CrawPlayer::update()
 
 void CrawPlayer::rewind(unsigned int subsong)
 {
-	if(!clock) clock = 0xffff;
-	pos = 0; del = 0; speed = clock; songend = 0; opl3 = 0;
+	pos = del = opl3 = 0; speed = clock; songend = false;
 	opl->init(); opl->write(1,32);	// go to OPL2 mode
 }
 
 float CrawPlayer::getrefresh()
 {
-	return 1193180 / (float) (speed+1);	// timer oscillator speed / (wait register+1) = clock frequency
+	return 1193180 / (float)(speed ? speed : 0xffff);	// timer oscillator speed / wait register = clock frequency
 }

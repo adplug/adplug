@@ -29,7 +29,7 @@ extern "C" {
 enum outputs {emuks, emuts, opl2, opl2emuks, opl2emuts};
 
 // globals
-#define ADPLUGVERS		"AdPlug v0.10"		// AdPlug version string
+#define ADPLUGVERS		"AdPlug v1.0"		// AdPlug version string
 #define WM_WA_MPEG_EOF	WM_USER+2			// post to Winamp at EOF
 #define WM_AP_UPDATE	WM_USER+100			// post to FileInfoProc to update window
 #define DFLEMU			emuts				// default (safe) emulation mode

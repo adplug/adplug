@@ -1,11 +1,11 @@
-AdPlug v0.10 by Simon Peter (dn.tlp@gmx.net)
+AdPlug v1.0 by Simon Peter (dn.tlp@gmx.net)
   - YM3812 emulator by Tatsuyuki Satoh (tatuyuki@tky.3web.ne.jp)
   - Second YM3812 emulator by Ken Silverman (kjs@lems.brown.edu)
   - MID, CMF, LAA & SCI replayer by Phil Hassey (philhassey@hotmail.com)
   - Ultima 6 Music replayer by Marc Winterrowd (nodling@yahoo.com)
   - many file format docs supplied by Death Adder (death-adder@juno.com)
 
-Website       : http://dfg.theunderdogs.org/adlib/adplug/
+Website       : http://adplug.sourceforge.net
 Mailing List  : email to: dn.tlp@gmx.net with subject: subscribe adplug-list [your email address]
 Module Archive: http://www.chiptune.de
 
@@ -113,6 +113,8 @@ me first.
 
 Release History:
 ----------------
+- v1.0 (2001-05-30)
+  - AdPlug is open-source now!
 - v0.10 (2001-05-25)
   - Fixes to severe bugs in v0.9, i apologize for that
   - Inverted usage of "Formats" configuration tab to conform to the usual

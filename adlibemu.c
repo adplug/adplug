@@ -1,3 +1,6 @@
+// "ADLIBEMU.C" Copyright (c) 1998-2001 Ken Silverman
+// Ken Silverman's official web site: "http://www.advsys.net/ken"
+
 /*
 This file is a digital Adlib emulator for OPL2 and possibly OPL3
 

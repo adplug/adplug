@@ -27,6 +27,7 @@ protected:
 	} *data;
 
 	unsigned long pos,length;
-	unsigned short clock,speed,del;
-	char songend,opl3;
+	unsigned short clock,speed;
+	unsigned char del,opl3;
+	bool songend;
 };
