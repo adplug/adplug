@@ -1,3 +1,12 @@
+2004-09-29 18:50  dynamite
+
+	* test/: SATNIGHT.HSP, SATNIGHT.ref: Added HSP test case.
+
+2004-09-29 18:45  dynamite
+
+	* ChangeLog, src/hsp.cpp, src/hsp.h, test/playertest.cpp: Fixed HSP
+	loader and added test case.
+
 2004-09-29 17:38  dynamite
 
 	* doc/: .cvsignore, libadplug.texi: Updated documentation.

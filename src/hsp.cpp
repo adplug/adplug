@@ -30,38 +30,39 @@ CPlayer *ChspLoader::factory(Copl *newopl)
 
 bool ChspLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-        binistream *f = fp.open(filename); if(!f) return false;
-	unsigned short i,j,orgsize;
-	unsigned long filesize;
-	unsigned char *cmp,*org;
+  binistream	*f = fp.open(filename); if(!f) return false;
+  unsigned long	i, j, orgsize, filesize;
+  unsigned char	*cmp, *org;
 
-	// file validation section
-	if(!fp.extension(filename, ".hsp")) { fp.close(f); return false; }
+  // file validation section
+  if(!fp.extension(filename, ".hsp")) { fp.close(f); return false; }
 
-	filesize = fp.filesize(f);
-	orgsize = f->readInt(2);
-	if(orgsize > 59187) { fp.close(f); return false; }
+  filesize = fp.filesize(f);
+  orgsize = f->readInt(2);
+  if(orgsize > 59187) { fp.close(f); return false; }
 
-	// load section
-	cmp = new unsigned char[filesize];
-	for(i = 0; i < filesize; i++) cmp[i] = f->readInt(1);
-	fp.close(f);
+  // load section
+  cmp = new unsigned char[filesize];
+  for(i = 0; i < filesize; i++) cmp[i] = f->readInt(1);
+  fp.close(f);
 
-	org = new unsigned char[orgsize];
-	for(i = 0, j = 0; i < filesize; j += cmp[i], i += 2)	// RLE decompress
-	  memset(org + j, cmp[i + 1], cmp[i]);
-	delete [] cmp;
+  org = new unsigned char[orgsize];
+  for(i = 0, j = 0; i < filesize; j += cmp[i], i += 2) {	// RLE decompress
+    if(j >= orgsize) break;	// memory boundary check
+    memset(org + j, cmp[i + 1], j + cmp[i] < orgsize ? cmp[i] : orgsize - j - 1);
+  }
+  delete [] cmp;
 
-	memcpy(instr, org, 128 * 12);		// instruments
-	for(i = 0; i < 128; i++) {		// correct instruments
-		instr[i][2] ^= (instr[i][2] & 0x40) << 1;
-		instr[i][3] ^= (instr[i][3] & 0x40) << 1;
-		instr[i][11] >>= 4;		// slide
-	}
-	memcpy(song, org + 128 * 12, 51);	// tracklist
-	memcpy(patterns, org + 128 * 12 + 51, orgsize - 128 * 12 - 51);	// patterns
-	delete [] org;
+  memcpy(instr, org, 128 * 12);		// instruments
+  for(i = 0; i < 128; i++) {		// correct instruments
+    instr[i][2] ^= (instr[i][2] & 0x40) << 1;
+    instr[i][3] ^= (instr[i][3] & 0x40) << 1;
+    instr[i][11] >>= 4;		// slide
+  }
+  memcpy(song, org + 128 * 12, 51);	// tracklist
+  memcpy(patterns, org + 128 * 12 + 51, orgsize - 128 * 12 - 51);	// patterns
+  delete [] org;
 
-	rewind(0);
-	return true;
+  rewind(0);
+  return true;
 }
