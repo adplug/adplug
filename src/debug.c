@@ -2,19 +2,17 @@
   AdPlug Debug Logger, by RtM <riven@ok.ru>
 */
 
-#ifdef _DEBUG
-
 #include <stdio.h>
 #include <stdarg.h>
 
 static FILE *f_log;
 
-static void LogOpen(char *log)
+void LogOpen(char *log)
 {
   f_log = fopen(log,"wt");
 }
 
-static void LogWrite(char *fmt, ...)
+void LogWrite(char *fmt, ...)
 {
   char logbuffer[256];
 
@@ -26,9 +24,7 @@ static void LogWrite(char *fmt, ...)
   fprintf(f_log,logbuffer);
 }
 
-static void LogClose(void)
+void LogClose(void)
 {
   fclose(f_log);
 }
-
-#endif // _DEBUG

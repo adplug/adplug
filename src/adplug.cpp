@@ -44,7 +44,7 @@
 #include "ksm.h"
 #include "mkj.h"
 #include "dfm.h"
-#include "lds.h"
+//#include "lds.h"
 #include "bam.h"
 #include "fmc.h"
 #include "bmf.h"
@@ -62,7 +62,7 @@
 const unsigned short CPlayer::note_table[12] = {363,385,408,432,458,485,514,544,577,611,647,686};
 const unsigned char CPlayer::op_table[9] = {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 0x10, 0x11, 0x12};
 
-int CAdPlug::get_basepath_index(char *fn)
+int CAdPlug::get_basepath_index(const char *fn)
 {
   int i;
 
@@ -73,7 +73,7 @@ int CAdPlug::get_basepath_index(char *fn)
   return ++i;
 }
 
-CPlayer *CAdPlug::load_sci(istream &f, char *fn, Copl *opl)
+CPlayer *CAdPlug::load_sci(istream &f, const char *fn, Copl *opl)
 {
 	CmidPlayer *mp = new CmidPlayer(opl);
 	char *pfn = new char [strlen(fn)+9];
@@ -90,7 +90,7 @@ CPlayer *CAdPlug::load_sci(istream &f, char *fn, Copl *opl)
 	return 0;
 }
 
-CPlayer *CAdPlug::load_ksm(istream &f, char *fn, Copl *opl)
+CPlayer *CAdPlug::load_ksm(istream &f, const char *fn, Copl *opl)
 {
 	CksmPlayer	*mp = new CksmPlayer(opl);
 	char		*pfn = new char [strlen(fn)+9];
@@ -109,7 +109,7 @@ CPlayer *CAdPlug::load_ksm(istream &f, char *fn, Copl *opl)
 	return 0;
 }
 
-CPlayer *CAdPlug::load_rol(istream &f, char *fn, Copl *opl)
+CPlayer *CAdPlug::load_rol(istream &f, const char *fn, Copl *opl)
 {
 	CrolPlayer	*mp = new CrolPlayer(opl);
 	char		*pfn = new char [strlen(fn)+9];
@@ -125,7 +125,7 @@ CPlayer *CAdPlug::load_rol(istream &f, char *fn, Copl *opl)
 	return 0;
 }
 
-CPlayer *CAdPlug::factory(char *fn, Copl *opl)
+CPlayer *CAdPlug::factory(const char *fn, Copl *opl)
 {
 	CPlayer		*p;
 	ifstream	f(fn, ios::in | ios::binary);
@@ -165,9 +165,9 @@ CPlayer *CAdPlug::factory(char *fn, Copl *opl)
 		if(!stricmp(strrchr(fn,'.')+1,"KSM")) {
 			p = new CksmPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
-		if(!stricmp(strrchr(fn,'.')+1,"LDS")) {
+/*		if(!stricmp(strrchr(fn,'.')+1,"LDS")) {
 			p = new CldsLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
-		}
+		} */
 	};
 
 	return 0;

@@ -13,6 +13,7 @@
 */
 
 #include "rat.h"
+#include "debug.h"
 
 static const unsigned char rat_adlib_bases[18] =
 {

@@ -19,6 +19,7 @@
 */
 
 #include "psi.h"
+#include "debug.h"
 
 static const unsigned char psi_adlib_registers[99] =
 {

@@ -12,6 +12,7 @@
 */
 
 #include "flash.h"
+#include "debug.h"
 
 static const unsigned char flash_adlib_registers[99] =
 {

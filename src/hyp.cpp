@@ -12,6 +12,7 @@
 */
 
 #include "hyp.h"
+#include "debug.h"
 
 static const unsigned char hyp_adlib_registers[99] =
 {

@@ -24,6 +24,7 @@
 */
 
 #include "bmf.h"
+#include "debug.h"
 
 static const unsigned char bmf_adlib_registers[117] =
 {

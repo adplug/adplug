@@ -28,16 +28,16 @@
 class CAdPlug
 {
 public:
-	static CPlayer *factory(char *fn, Copl *opl);
+	static CPlayer *factory(const char *fn, Copl *opl);
 	static CPlayer *factory(istream &f, Copl *opl);
 
-	static unsigned long songlength(CPlayer *p, unsigned int subsong = 0xffff);
+	static unsigned long songlength(CPlayer *p, unsigned int subsong);
 	static void seek(CPlayer *p, unsigned long ms);
 
 private:
-	static CPlayer *load_sci(istream &f, char *fn, Copl *opl);	// special loader for Sierra SCI file format
-	static CPlayer *load_ksm(istream &f, char *fn, Copl *opl);	// special loader for Ken Silverman's music format
-	static CPlayer *load_rol(istream &f, char *fn, Copl *opl);	// special loader for ROL file format
+	static CPlayer *load_sci(istream &f, const char *fn, Copl *opl); // special loader for Sierra SCI file format
+	static CPlayer *load_ksm(istream &f, const char *fn, Copl *opl); // special loader for Ken Silverman's music format
+	static CPlayer *load_rol(istream &f, const char *fn, Copl *opl); // special loader for ROL file format
 
-	static int get_basepath_index(char *fn);
+	static int get_basepath_index(const char *fn);
 };

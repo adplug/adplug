@@ -5,17 +5,17 @@
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
 
 CFG=adplug - Win32 Debug
-!MESSAGE Dies ist kein gueltiges Makefile. Zum Erstellen dieses Projekts mit NMAKE
-!MESSAGE verwenden Sie den Befehl "Makefile exportieren" und fuehren Sie den Befehl
+!MESSAGE Dies ist kein gültiges Makefile. Zum Erstellen dieses Projekts mit NMAKE
+!MESSAGE verwenden Sie den Befehl "Makefile exportieren" und führen Sie den Befehl
 !MESSAGE 
 !MESSAGE NMAKE /f "adplug.mak".
 !MESSAGE 
-!MESSAGE Sie koennen beim Ausfuehren von NMAKE eine Konfiguration angeben
+!MESSAGE Sie können beim Ausführen von NMAKE eine Konfiguration angeben
 !MESSAGE durch Definieren des Makros CFG in der Befehlszeile. Zum Beispiel:
 !MESSAGE 
 !MESSAGE NMAKE /f "adplug.mak" CFG="adplug - Win32 Debug"
 !MESSAGE 
-!MESSAGE Fuer die Konfiguration stehen zur Auswahl:
+!MESSAGE Für die Konfiguration stehen zur Auswahl:
 !MESSAGE 
 !MESSAGE "adplug - Win32 Release" (basierend auf  "Win32 (x86) Static Library")
 !MESSAGE "adplug - Win32 Debug" (basierend auf  "Win32 (x86) Static Library")
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo
+# ADD LIB32 /nologo /out:"Debug\adplugd.lib"
 
 !ENDIF 
 
@@ -87,32 +87,39 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\players\a2m.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\adlibemu.c
+SOURCE=.\a2m.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\adplug.cpp
-# ADD CPP /I "players"
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\amd.cpp
+SOURCE=.\amd.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\bam.cpp
+SOURCE=.\analopl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\d00.cpp
+SOURCE=.\bam.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\dfm.cpp
+SOURCE=.\bmf.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\d00.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\debug.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\dfm.cpp
 # End Source File
 # Begin Source File
 
@@ -124,52 +131,81 @@ SOURCE=.\emuopl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\flash.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\fmc.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\fmopl.c
 # ADD CPP /W1
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\hsc.cpp
+SOURCE=.\hsc.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\hsp.cpp
+SOURCE=.\hsp.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\imf.cpp
+SOURCE=.\hybrid.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\ksm.cpp
+SOURCE=.\hyp.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\lds.cpp
+SOURCE=.\imf.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\mid.cpp
+SOURCE=.\ksm.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\mkj.cpp
+SOURCE=.\lds.cpp
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\mtk.cpp
+SOURCE=.\mad.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\protrack.cpp
+SOURCE=.\mid.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\rad.cpp
+SOURCE=.\mkj.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\raw.cpp
+SOURCE=.\mtk.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\protrack.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\psi.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\rad.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\rat.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\raw.cpp
 # End Source File
 # Begin Source File
 
@@ -177,32 +213,27 @@ SOURCE=.\realopl.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\rol.cpp
-
-!IF  "$(CFG)" == "adplug - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "adplug - Win32 Debug"
-
-# ADD CPP /Zp8
-
-!ENDIF 
-
+SOURCE=.\rol.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\s3m.cpp
+SOURCE=.\s3m.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\sa2.cpp
+SOURCE=.\sa2.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\sng.cpp
+SOURCE=.\sng.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\u6m.cpp
+SOURCE=.\u6m.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\xad.cpp
 # End Source File
 # End Group
 # Begin Group "Header-Dateien"
@@ -210,11 +241,7 @@ SOURCE=.\players\u6m.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\players\a2m.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\adlibemu.h
+SOURCE=.\a2m.h
 # End Source File
 # Begin Source File
 
@@ -222,19 +249,31 @@ SOURCE=.\adplug.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\amd.h
+SOURCE=.\amd.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\bam.h
+SOURCE=.\analopl.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\d00.h
+SOURCE=.\bam.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\dfm.h
+SOURCE=.\bmf.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\d00.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\debug.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dfm.h
 # End Source File
 # Begin Source File
 
@@ -246,51 +285,68 @@ SOURCE=.\emuopl.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\flash.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\fmc.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\fmopl.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\hsc.h
+SOURCE=.\hsc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\hsp.h
+SOURCE=.\hsp.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\imf.h
+SOURCE=.\hybrid.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\imfcrc.h
+SOURCE=.\hyp.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\kemuopl.h
+SOURCE=.\imf.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\ksm.h
+SOURCE=.\imfcrc.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\lds.h
+SOURCE=.\ksm.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\mid.h
+SOURCE=.\lds.h
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\mididata.h
+SOURCE=.\mad.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\mkj.h
+SOURCE=.\mid.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\mtk.h
+SOURCE=.\mididata.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\mkj.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\mtk.h
 # End Source File
 # Begin Source File
 
@@ -298,19 +354,27 @@ SOURCE=.\opl.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\player.h
+SOURCE=.\player.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\protrack.h
+SOURCE=.\protrack.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\rad.h
+SOURCE=.\psi.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\raw.h
+SOURCE=.\rad.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\rat.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\raw.h
 # End Source File
 # Begin Source File
 
@@ -318,15 +382,15 @@ SOURCE=.\realopl.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\rol.h
+SOURCE=.\rol.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\s3m.h
+SOURCE=.\s3m.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\sa2.h
+SOURCE=.\sa2.h
 # End Source File
 # Begin Source File
 
@@ -334,11 +398,15 @@ SOURCE=.\silentopl.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\sng.h
+SOURCE=.\sng.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\players\u6m.h
+SOURCE=.\u6m.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\xad.h
 # End Source File
 # End Group
 # End Target

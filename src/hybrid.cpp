@@ -13,6 +13,7 @@
 */
 
 #include "hybrid.h"
+#include "debug.h"
 
 unsigned char hyb_adlib_registers[99] = 
 {
