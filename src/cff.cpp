@@ -92,7 +92,7 @@ bool CcffLoader::load(istream &f, const char *filename)
 	{
 		memcpy(&instruments[i],&module[i*32],sizeof(cff_instrument));
 
-		for(j=0;j<11;j++)
+		for (j=0;j<11;j++)
 			inst[i].data[conv_inst[j]] = instruments[i].data[j];
 
 		instruments[i].name[20] = 0;
@@ -227,13 +227,6 @@ bool CcffLoader::load(istream &f, const char *filename)
 
 	delete module;
 
-	// default instruments
-	for (i=0;i<9;i++)
-	{
-		if (!tracks[i][0].inst)
-			tracks[i][0].inst = i + 1;
-	}
-
 	// order loop
 	restartpos = 0;
 
@@ -253,6 +246,20 @@ bool CcffLoader::load(istream &f, const char *filename)
 	rewind(0);
 
 	return true;	
+}
+
+void CcffLoader::rewind(unsigned int subsong)
+{
+	CmodPlayer::rewind(subsong);
+
+	// default instruments
+	for (int i=0;i<9;i++)
+	{
+		channel[i].inst = i;
+
+		channel[i].vol1 = 63 - (inst[i].data[10] & 63);
+		channel[i].vol2 = 63 - (inst[i].data[9] & 63);
+	}
 }
 
 std::string CcffLoader::gettype()

@@ -24,18 +24,18 @@
 class CcffLoader: public CmodPlayer
 {
 	public:
-
 		static CPlayer *factory(Copl *newopl);
 
 		CcffLoader(Copl *newopl) : CmodPlayer(newopl) { };
 
-		bool            load(istream &f, const char *filename);
+		bool			load(istream &f, const char *filename);
+		void			rewind(unsigned int subsong);
 
-		std::string     gettype();
-		std::string 	gettitle();
-		std::string 	getauthor();
-		std::string     getinstrument(unsigned int n);
-		unsigned int    getinstruments();
+		std::string		gettype();
+		std::string		gettitle();
+		std::string		getauthor();
+		std::string		getinstrument(unsigned int n);
+		unsigned int	getinstruments();
 
 	private:
 
