@@ -43,7 +43,7 @@ static const char *filelist[] = {
   "fdance03.dmo",	// TwinTrack
   "ice_think.sci",	// Sierra
   "inc.raw",		// RAW
-  //  "loudness.lds",	// Loudness
+  "loudness.lds",	// Loudness
   "MARIO.A2M",		// AdLib Tracker 2
   "mi2_big_tree1.laa",	// LucasArts
   "michaeld.cmf",	// Creative Music Format
@@ -92,8 +92,11 @@ public:
   // template methods
   void write(int reg, int val)
   {
+    if(reg > 255 || val > 255)
+      std::cerr << "Warning: The player is writing data out of range! (reg = "
+		<< reg << ", val = " << val << ")\n";
     if(!f) return;
-    fprintf(f, "%d <- %d\n", reg, val);
+    fprintf(f, "%u <- %u\n", reg, val);
   }
 
   void init()
@@ -151,7 +154,10 @@ static bool testplayer(const std::string filename)
   Testopl	*opl = new Testopl(filename + ".test");
   CPlayer	*p = CAdPlug::factory(fn, opl);
 
-  if(!p) { delete opl; return false; }
+  if(!p) {
+    std::cout << "Error loading: " << fn << std::endl;
+    delete opl; return false;
+  }
 
   // Output file information
   std::cout << "Testing format: " << p->gettype() << " - ";
@@ -181,9 +187,14 @@ int main(int argc, char *argv[])
   bool		retval = true;
 
   // Try all files one by one
-  for(i = 0; filelist[i] != NULL; i++)
-    if(!testplayer(filelist[i]))
-      retval = false;
+  if(argc > 1) {
+    for(i = 1; i < argc; i++)
+      if(!testplayer(argv[i]))
+	retval = false;
+  } else
+    for(i = 0; filelist[i] != NULL; i++)
+      if(!testplayer(filelist[i]))
+	retval = false;
 
   return retval ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -39,7 +39,7 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
 	unsigned char buf;
 	int i,j, k, notedis = 0;
 	const unsigned char convfx[16] = {0,1,2,3,4,5,6,255,8,255,10,11,12,13,255,15};
-	unsigned sat_type;
+	unsigned char sat_type;
 	enum SAT_TYPE {
 		HAS_ARPEGIOLIST = (1 << 7),
 		HAS_V7PATTERNS = (1 << 6),
@@ -136,6 +136,8 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
 	if(sat_type & HAS_OLDBPM) {
 		bpm = bpm * 125 / 50;		// cps -> bpm
 	}
+
+	f->ateof();
 
 	if(sat_type & HAS_ARPEGIOLIST) {
 	  init_specialarp();
