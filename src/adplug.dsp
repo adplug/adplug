@@ -153,6 +153,10 @@ SOURCE=.\dmo.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\dro.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\dtm.cpp
 # End Source File
 # Begin Source File
@@ -339,6 +343,10 @@ SOURCE=.\diskopl.h
 # Begin Source File
 
 SOURCE=.\dmo.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dro.h
 # End Source File
 # Begin Source File
 

@@ -87,9 +87,9 @@ bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
 		    trackord[i][j] = f->readInt(2) + 1;
 		numtrax = f->readInt(2);
 		for(k=0;k<numtrax;k++) {
-		  i = f->readInt(2);
-		  if(i > 575) i = 575;	// fix corrupted modules
-		  j = 0;
+			i = f->readInt(2);
+			if(i > 575) i = 575;	// fix corrupted modules
+			j = 0;
 			do {
 				buf = f->readInt(1);
 				if(buf & 128) {
