@@ -107,6 +107,7 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
 
   // load header
   binisstream	uf(module, unpacked_length);
+  uf.setFlag(binio::BigEndian, false); uf.setFlag(binio::FloatIEEE);
 
   memset(&header,0,sizeof(s3mheader));
 
