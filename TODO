@@ -1,10 +1,12 @@
-To Do List:
------------
-- Add missing features to A2M loader and/or Protracker player.
+$Id$
 
-- Reimplement format detection and player initialization scheme in adplug.cpp.
-Some kind of a list of the players would be feasible. Using a static
-initialization method inside the players' interface.
+If anyone is happen to take over a task listed here, please mark that you're
+doing so, somehow. Your SourceForge login name is a good way to identify
+yourself.
+
+AdPlug To Do List:
+------------------
+- Add missing features to A2M loader and/or Protracker player.
 
 - Add more CRC values to IMF file detection in imfcrc.h.
 
@@ -14,15 +16,21 @@ initialization method inside the players' interface.
 
 - Protracker player:
 	- Portamento: If target note is key-off, slide to last real note
-	instead.
+	instead. Verify if this really has to be this way.
 
-- Add new loaders: 
+- Add DEBUG preprocessor macro to Windows' 'Debug' build [dynamite]
+
+- Implement init_trackord() in CmodPlayer. [dynamite]
+
+- Add new Protracker loaders:
 	- DTM: DeFy Adlib Tracker
 	- MTR: Arkham Master Tracker
 	? DMO: TwinTeam packed S3M
+	- SNG: Adlib Tracker 1.0 [dynamite]
 
 - Add new players:
 	- CFF: CUD BoomTracker
 	? XAD: Custom player from Burial Grounds BBStro
 
 - Make Protracker player more flexible for upgrades
+  [dynamite: I am working on this, partly. Any suggestions are welcome!]

@@ -25,7 +25,13 @@
 
 /* -------- Public Methods -------------------------------- */
 
-bool CmadLoader::load(istream &f)
+CPlayer *CmadLoader::factory(Copl *newopl)
+{
+  CmadLoader *p = new CmadLoader(newopl);
+  return p;
+}
+
+bool CmadLoader::load(istream &f, const char *filename)
 {
   const unsigned char conv_inst[10] = { 2,1,10,9,4,3,6,5,8,7 };
 

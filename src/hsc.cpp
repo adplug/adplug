@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,24 +16,41 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
  * hsc.cpp - HSC Player by Simon Peter (dn.tlp@gmx.net)
  */
 
+#include <string.h>
+
 #include "hsc.h"
+#include "debug.h"
 
 /*** public methods **************************************/
 
-bool ChscPlayer::load(istream &f)
+CPlayer *ChscPlayer::factory(Copl *newopl)
+{
+  ChscPlayer *p = new ChscPlayer(newopl);
+  return p;
+}
+
+bool ChscPlayer::load(istream &f, const char *filename)
 {
 	int i;
 
 	// file validation section
+	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".hsc")) {
+	  LogWrite("ChscPlayer::load(,\"%s\"): Not a HSC file! (strlen(filename)"
+		   " == %d) < 4 and/or filename does not end in \".hsc\"\n",
+		   filename,strlen(filename));
+	  return false;
+	}
 	f.seekg(0,ios::end);
-	if(f.tellg() > 59187)
-		return false;
+	if(f.tellg() > 59187) {
+	  LogWrite("ChscPlayer::load(,\"%s\"): Not a HSC file! (filesize == %u) > 59187\n",filename,f.tellg());
+	  return false;
+	}
 
 	// load section
+	LogWrite("ChscPlayer::load(,\"%s\"): Loading...\n",filename);
 	f.seekg(0);
 	f.read((char *)instr,128*12);	// load instruments
 	for (i=0;i<128;i++) {			// correct instruments

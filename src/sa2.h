@@ -26,11 +26,13 @@
 class Csa2Loader: public CmodPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	Csa2Loader(Copl *newopl)
 		: CmodPlayer(newopl)
 	{ }
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 
 	std::string gettype();
 	std::string gettitle();

@@ -25,13 +25,16 @@
 class CmidPlayer: public CPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	CmidPlayer(Copl *newopl)
-		: CPlayer(newopl), author(&emptystr), title(&emptystr), remarks(&emptystr), emptystr('\0'), insfile(0), flen(0), data(0)
+		: CPlayer(newopl), author(&emptystr), title(&emptystr),
+	  remarks(&emptystr), emptystr('\0'), fname(0), flen(0), data(0)
 	{ };
 	~CmidPlayer()
-	{ if(data) delete [] data; if(insfile) delete [] insfile; };
+	{ if(data) delete [] data; if(fname) free(fname); };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	bool update();
 	void rewind(unsigned int subsong);
 	float getrefresh();
@@ -47,9 +50,6 @@ public:
 	{ return tins; };
 	unsigned int getsubsongs()
 	{ return subsongs; };
-
-	void set_sierra_insfile(char *ifile)
-	{ insfile = new char [strlen(ifile)+1]; strcpy(insfile,ifile); };
 
 protected:
 	struct midi_channel {
@@ -69,7 +69,7 @@ protected:
 		unsigned char pv;
 	};
 
-	char *author,*title,*remarks,emptystr,*insfile;
+    char *author,*title,*remarks,emptystr,*fname;
     long flen;
     unsigned long pos;
     unsigned long sierra_pos; //sierras gotta be special.. :>

@@ -1,8 +1,11 @@
-AdPlug Player development mini-HOWTO
+AdPlug Player development HOWTO
 Copyright (C) 2001, 2002 Simon Peter <dn.tlp@gmx.net>
+$Id$
 
 Precautions:
 ------------
+Be sure to also read the AdPlug Hacking HOWTO ('Hacking.txt').
+
 Your player normally consists of two files (the .h & .cpp files) and you normally
 name them by the file extensions, your player handles. For example, the HSC player
 consists of the files hsc.cpp & hsc.h, because it handles .hsc files. This is the

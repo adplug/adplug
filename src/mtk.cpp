@@ -24,7 +24,13 @@
 
 /*** public methods **************************************/
 
-bool CmtkLoader::load(istream &f)
+CPlayer *CmtkLoader::factory(Copl *newopl)
+{
+  CmtkLoader *p = new CmtkLoader(newopl);
+  return p;
+}
+
+bool CmtkLoader::load(istream &f, const char *filename)
 {
 	struct {
 		char id[18];

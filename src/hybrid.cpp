@@ -46,6 +46,12 @@ unsigned char hyb_default_instrument[11] =
   0x00, 0xFF, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0x00
 };
 
+CPlayer *CxadhybridPlayer::factory(Copl *newopl)
+{
+  CxadhybridPlayer *p = new CxadhybridPlayer(newopl);
+  return p;
+}
+
 bool CxadhybridPlayer::xadplayer_load(istream &f)
 {
   if(xad.fmt != HYBRID)
@@ -114,7 +120,7 @@ void CxadhybridPlayer::xadplayer_update()
     // read event
     unsigned short event = *(unsigned short *)&tune[0xADE + (hyb.order[hyb.order_pos*9 + i] * 64 * 2) + (patpos * 2)];
 
-#ifdef _DEBUG
+#ifdef DEBUG
    LogWrite("track %02X, channel %02X, event %04X:\n", hyb.order[hyb.order_pos*9 + i], i, event );
 #endif
 
@@ -191,7 +197,7 @@ void CxadhybridPlayer::xadplayer_update()
   }
 
 update_slides:
-#ifdef _DEBUG
+#ifdef DEBUG
    LogWrite("slides:\n");
 #endif
   // update fine frequency slides

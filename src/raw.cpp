@@ -27,7 +27,13 @@
 
 /*** public methods *************************************/
 
-bool CrawPlayer::load(istream &f)
+CPlayer *CrawPlayer::factory(Copl *newopl)
+{
+  CrawPlayer *p = new CrawPlayer(newopl);
+  return p;
+}
+
+bool CrawPlayer::load(istream &f, const char *filename)
 {
 	char id[8];
 	unsigned long filesize,fpos;

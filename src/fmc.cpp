@@ -25,7 +25,13 @@
 
 /* -------- Public Methods -------------------------------- */
 
-bool CfmcLoader::load(istream &f)
+CPlayer *CfmcLoader::factory(Copl *newopl)
+{
+  CfmcLoader *p = new CfmcLoader(newopl);
+  return p;
+}
+
+bool CfmcLoader::load(istream &f, const char *filename)
 {
   const unsigned char conv_fx[16] = {0,1,2,3,4,8,255,255,255,255,26,11,12,13,14,15};
 

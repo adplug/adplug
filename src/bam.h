@@ -25,13 +25,15 @@
 class CbamPlayer: public CPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	CbamPlayer(Copl *newopl)
 		: CPlayer(newopl), song(0)
 	{ };
 	~CbamPlayer()
 	{ if(song) delete [] song; };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	bool update();
 	void rewind(unsigned int subsong);
 	float getrefresh()

@@ -25,13 +25,15 @@
 class CmkjPlayer: public CPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	CmkjPlayer(Copl *newopl)
 		: CPlayer(newopl), songbuf(0)
 	{ };
 	~CmkjPlayer()
 	{ if(songbuf) delete [] songbuf; };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	bool update();
 	void rewind(unsigned int subsong);
 	float getrefresh();

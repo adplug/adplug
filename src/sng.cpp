@@ -22,7 +22,13 @@
 
 #include "sng.h"
 
-bool CsngPlayer::load(istream &f)
+CPlayer *CsngPlayer::factory(Copl *newopl)
+{
+  CsngPlayer *p = new CsngPlayer(newopl);
+  return p;
+}
+
+bool CsngPlayer::load(istream &f, const char *filename)
 {
 	// file validation section
 	f.read((char *)&header,sizeof(header));

@@ -40,7 +40,13 @@ static const unsigned short notetable[12] =	// D00 note table
 
 /*** public methods *************************************/
 
-bool Cd00Player::load(istream &f)
+CPlayer *Cd00Player::factory(Copl *newopl)
+{
+  Cd00Player *p = new Cd00Player(newopl);
+  return p;
+}
+
+bool Cd00Player::load(istream &f, const char *filename)
 {
 	d00header		*checkhead;
 	d00header1		*ch;

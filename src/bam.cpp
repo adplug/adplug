@@ -60,7 +60,13 @@ static const unsigned short freq[] = {172,182,193,205,217,230,243,258,274,
 7657,7685,7715,7748,7782,7819,7858,7898,7942,7988,8037,8089,8143,8191,8191,
 8191,8191,8191,8191,8191,8191,8191,8191,8191,8191};
 
-bool CbamPlayer::load(istream &f)
+CPlayer *CbamPlayer::factory(Copl *newopl)
+{
+  CbamPlayer *p = new CbamPlayer(newopl);
+  return p;
+}
+
+bool CbamPlayer::load(istream &f, const char *filename)
 {
 	char			id[4];
 

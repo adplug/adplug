@@ -21,12 +21,6 @@
   xad.cpp - XAD shell player by Riven the Mage <riven@ok.ru>
 */
 
-// Redefine this, if you want the debug output to go elsewhere.
-// Under DOS/Windows, using "CON:" as filename will log to the (debug) console.
-#ifdef _DEBUG
-#define XAD_DEBUG_FILE	"xad.log"
-#endif
-
 #include "xad.h"
 #include "debug.h"
 
@@ -34,10 +28,6 @@
 
 CxadPlayer::CxadPlayer(Copl * newopl) : CPlayer(newopl)
 {
-#ifdef _DEBUG
-  LogOpen(XAD_DEBUG_FILE);
-#endif
-
   tune = 0;
 }
 
@@ -45,13 +35,9 @@ CxadPlayer::~CxadPlayer()
 {
   if (tune)
     delete [] tune;
-
-#ifdef _DEBUG
-  LogClose();
-#endif
 }
 
-bool CxadPlayer::load(istream &f)
+bool CxadPlayer::load(istream &f, const char *filename)
 {
   bool ret = false;
 
@@ -90,7 +76,7 @@ void CxadPlayer::rewind(unsigned int subsong)
   // rewind()
   xadplayer_rewind(subsong);
 
-#ifdef _DEBUG
+#ifdef DEBUG
   LogWrite("-----------\n");
 #endif
 }
@@ -152,7 +138,7 @@ unsigned int CxadPlayer::getinstruments()
 void CxadPlayer::opl_write(int reg, int val)
 {
   adlib[reg] = val;
-#ifdef _DEBUG
+#ifdef DEBUG
   LogWrite("[ %02X ] = %02X\n",reg,val);
 #endif
   opl->write(reg,val);

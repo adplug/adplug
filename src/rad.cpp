@@ -25,7 +25,13 @@
 
 #include "rad.h"
 
-bool CradLoader::load(istream &f)
+CPlayer *CradLoader::factory(Copl *newopl)
+{
+  CradLoader *p = new CradLoader(newopl);
+  return p;
+}
+
+bool CradLoader::load(istream &f, const char *filename)
 {
 	char id[16];
 	unsigned char buf,ch,c,b,inp;

@@ -25,13 +25,15 @@
 class CmtkLoader: public ChscPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	CmtkLoader(Copl *newopl)
 		: ChscPlayer(newopl)
 	{
 		mtkmode = 1;
 	};
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 
 	std::string gettype()
 	{ return std::string("MPU-401 Trakker"); };

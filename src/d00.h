@@ -25,13 +25,15 @@
 class Cd00Player: public CPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	Cd00Player(Copl *newopl)
 		: CPlayer(newopl), filedata(0)
 	{ };
 	~Cd00Player()
 	{ if(filedata) delete [] filedata; };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	bool update();
 	void rewind(unsigned int subsong);
 	float getrefresh();

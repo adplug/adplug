@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * player.h - replayer base class, by Simon Peter (dn.tlp@gmx.net)
+ * player.h - replayer base class, by Simon Peter <dn.tlp@gmx.net>
  */
 
 #ifndef H_PLAYER
@@ -30,48 +29,50 @@
 class CPlayer
 {
 public:
-	CPlayer(Copl *newopl)											// newopl = OPL chip to use
+	CPlayer(Copl *newopl)	// newopl = OPL chip to use
 		: opl(newopl)
 	{ }
 	virtual ~CPlayer()
 	{ }
 
-	virtual bool load(istream &f) = 0;								// loads file
-	virtual bool update() = 0;										// executes replay code for 1 tick
-	virtual void rewind(unsigned int subsong = 0xffff) = 0;			// rewinds to specified subsong
-	virtual float getrefresh() = 0;									// returns needed timer refresh rate
+/***** Operational methods *****/
+	virtual bool load(istream &f, const char *filename) = 0;	// loads file
+	virtual bool update() = 0;					// executes replay code for 1 tick
+	virtual void rewind(unsigned int subsong = 0xffff) = 0;		// rewinds to specified subsong
+	virtual float getrefresh() = 0;					// returns needed timer refresh rate
 
-	virtual std::string gettype() = 0;								// returns file type
-	virtual std::string gettitle()									// returns song title
+/***** Informational methods *****/
+	virtual std::string gettype() = 0;	// returns file type
+	virtual std::string gettitle()		// returns song title
 	{ return std::string(); }
-	virtual std::string getauthor()									// returns song author name
+	virtual std::string getauthor()		// returns song author name
 	{ return std::string(); }
-	virtual std::string getdesc()									// returns song description
+	virtual std::string getdesc()		// returns song description
 	{ return std::string(); }
-	virtual unsigned int getpatterns()								// returns number of patterns
+	virtual unsigned int getpatterns()	// returns number of patterns
 	{ return 0; }
-	virtual unsigned int getpattern()								// returns currently playing pattern
+	virtual unsigned int getpattern()	// returns currently playing pattern
 	{ return 0; }
-	virtual unsigned int getorders()								// returns size of orderlist
+	virtual unsigned int getorders()	// returns size of orderlist
 	{ return 0; }
-	virtual unsigned int getorder()									// returns currently playing song position
+	virtual unsigned int getorder()		// returns currently playing song position
 	{ return 0; }
-	virtual unsigned int getrow()									// returns currently playing row
+	virtual unsigned int getrow()		// returns currently playing row
 	{ return 0; }
-	virtual unsigned int getspeed()									// returns current song speed
+	virtual unsigned int getspeed()		// returns current song speed
 	{ return 0; }
-	virtual unsigned int getsubsongs()								// returns number of subsongs
+	virtual unsigned int getsubsongs()	// returns number of subsongs
 	{ return 1; }
-	virtual unsigned int getinstruments()							// returns number of instruments
+	virtual unsigned int getinstruments()	// returns number of instruments
 	{ return 0; }
-	virtual std::string getinstrument(unsigned int n)				// returns n-th instrument name
+	virtual std::string getinstrument(unsigned int n)	// returns n-th instrument name
 	{ return std::string(); }
 
 protected:
-	Copl	*opl;													// our OPL chip
+	Copl *opl;	// our OPL chip
 
-	static const unsigned short	note_table[12];						// standard adlib note table
-	static const unsigned char	op_table[9];						// the 9 operators as expected by the OPL2
+	static const unsigned short note_table[12];	// standard adlib note table
+	static const unsigned char op_table[9];		// the 9 operators as expected by the OPL2
 };
 
 #endif

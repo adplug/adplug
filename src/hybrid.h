@@ -7,6 +7,8 @@
 class CxadhybridPlayer: public CxadPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
   CxadhybridPlayer(Copl *newopl): CxadPlayer(newopl)
     { }
 

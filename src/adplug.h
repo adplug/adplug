@@ -21,6 +21,7 @@
  */
 
 #include <iostream.h>
+#include <string>
 
 #include "player.h"
 #include "opl.h"
@@ -29,15 +30,11 @@ class CAdPlug
 {
 public:
 	static CPlayer *factory(const char *fn, Copl *opl);
-	static CPlayer *factory(istream &f, Copl *opl);
+	static CPlayer *factory(istream &f, Copl *opl, const char *fn = NULL);
 
 	static unsigned long songlength(CPlayer *p, unsigned int subsong);
 	static void seek(CPlayer *p, unsigned long ms);
+	static std::string get_version();
 
-private:
-	static CPlayer *load_sci(istream &f, const char *fn, Copl *opl); // special loader for Sierra SCI file format
-	static CPlayer *load_ksm(istream &f, const char *fn, Copl *opl); // special loader for Ken Silverman's music format
-	static CPlayer *load_rol(istream &f, const char *fn, Copl *opl); // special loader for ROL file format
-
-	static int get_basepath_index(const char *fn);
+	static void debug_output(std::string filename);
 };

@@ -7,6 +7,8 @@
 class CxadbmfPlayer: public CxadPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
   CxadbmfPlayer(Copl *newopl): CxadPlayer(newopl)
     { };
   ~CxadbmfPlayer()

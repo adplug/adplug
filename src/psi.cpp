@@ -41,6 +41,12 @@ static const unsigned short psi_notes[16] =
   0x0000, 0x0000, 0x0000, 0x0000 // by riven
 };
 
+CPlayer *CxadpsiPlayer::factory(Copl *newopl)
+{
+  CxadpsiPlayer *p = new CxadpsiPlayer(newopl);
+  return p;
+}
+
 void CxadpsiPlayer::xadplayer_rewind(unsigned int subsong)
 {
   opl_write(0x01, 0x20);
@@ -83,7 +89,7 @@ void CxadpsiPlayer::xadplayer_update()
       opl_write(0xB0+i, 0x00);
 
       unsigned char event = tune[ptr++];
-#ifdef _DEBUG
+#ifdef DEBUG
   LogWrite("channel %02X, event %02X:\n",i+1,event);
 #endif
 
@@ -93,7 +99,7 @@ void CxadpsiPlayer::xadplayer_update()
         ptr = psi.seq_table[(i<<1) + 1];
 
         event = tune[ptr++];
-#ifdef _DEBUG
+#ifdef DEBUG
   LogWrite(" channel %02X, event %02X:\n",i+1,event);
 #endif
 
@@ -112,7 +118,7 @@ void CxadpsiPlayer::xadplayer_update()
         psi.note_delay[i] = (event & 0x7F);
 
         event = tune[ptr++];
-#ifdef _DEBUG
+#ifdef DEBUG
   LogWrite("  channel %02X, event %02X:\n",i+1,event);
 #endif
       }

@@ -39,7 +39,13 @@ static const signed short copybits[COPYRANGES] = {4,6,8,10,12,14}, copymin[COPYR
 
 /*** public methods *************************************/
 
-bool Ca2mLoader::load(istream &f)
+CPlayer *Ca2mLoader::factory(Copl *newopl)
+{
+  Ca2mLoader *p = new Ca2mLoader(newopl);
+  return p;
+}
+
+bool Ca2mLoader::load(istream &f, const char *filename)
 {
 #pragma pack(1)
 	struct {

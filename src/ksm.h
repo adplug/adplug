@@ -25,13 +25,15 @@
 class CksmPlayer: public CPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	CksmPlayer(Copl *newopl)
 		: CPlayer(newopl), note(0)
 	{ };
 	~CksmPlayer()
 	{ if(note) delete [] note; };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	bool update();
 	void rewind(unsigned int subsong);
 	float getrefresh()

@@ -64,6 +64,12 @@ static const unsigned char flash_default_instrument[8] =
   0x00, 0x00, 0x3F, 0x3F, 0xFF, 0xFF, 0xFF, 0xFF
 };
 
+CPlayer *CxadflashPlayer::factory(Copl *newopl)
+{
+  CxadflashPlayer *p = new CxadflashPlayer(newopl);
+  return p;
+}
+
 void CxadflashPlayer::xadplayer_rewind(unsigned int subsong)
 {
   int i;
@@ -101,7 +107,7 @@ void CxadflashPlayer::xadplayer_update()
 
     unsigned char event_b0 = tune[event_pos++];
     unsigned char event_b1 = tune[event_pos++];
-#ifdef _DEBUG
+#ifdef DEBUG
   LogWrite("channel %02X, event %02X %02X:\n",i+1,event_b0,event_b1);
 #endif
 

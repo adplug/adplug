@@ -5,3 +5,63 @@ Refer to the appropriate INSTALL files for your build system:
 INSTALL.unix    All UNIX builds, including cygwin
 INSTALL.win32   Microsoft Visual C++ builds
 INSTALL.dos     WATCOM C/C++ builds
+
+Some notes about the build system(s):
+-------------------------------------
+AdPlug's build system is very diverse for all the different supported
+platforms. Basically, at this time, it consists of 3 different build
+systems, which partly act together.
+
+UNIX builds use the GNU build system (autoconf, automake, libtool) to make
+it work on most unices without me having to worry about anyone of them. I
+won't use configuration headers (i.e. config.h) with AdPlug, since that
+would involve making the code autoconf-specific and sacrifice code support
+for the other build systems, which don't support configuration headers.
+
+Windows builds use a combination of MSVC's spare build support offers and a
+set of batch files. I made this "build system" up by myself, after being
+desperately frustrated with MSVC's nonexistant build offers (of course, i
+could've used NMAKE, but that would sacrifice any IDE convenience - and
+Windows users don't really want to use a CLI anymore, do they? ;) ).
+
+DOS builds use a similar system to the GNU build system. This is my own
+build system, which i could as well publish separately, if there should be
+any demand. Essentially, it works very close to GNU automake, using a
+distribution-specific Makefile snippet called 'Makefile.bt' (resembling to
+'Makefile.am') and a Makefile template, generating the final Makefile. Since
+it is just a replacement for GNU automake, there is also no config-header
+support.
+
+Every build system uses its own configuration scheme and thus has to be
+maintained separately, which is a great burden for the distribution
+maintainer (me ;) ) as more target systems are added. Maybe i will try to
+have them synchronize automatically in the future...
+
+CVS and UNIX:
+-------------
+If you checked out from CVS and use UNIX, first run:
+
+./autogen.sh
+
+to generate the build cruft and get the configure script. Oh, and did i
+mention you need recent versions of autoconf, automake and libtool?
+
+Debugging AdPlug:
+-----------------
+If you feel you have to debug AdPlug, you can compile it with debug logging
+support. This is disabled by default. To enable it, you have to define the
+DEBUG preprocessor macro. This is done differently on the various builds.
+
+On UNIX, you have to give an '--enable-debug' commandline option to the
+'configure' script to enable debugging.
+
+On Windows, you just have to build the 'Debug' version of the library.
+
+On DOS, you have to add the define manually to the preprocessor commandline
+variable 'CPPFLAGS' in your 'config.mif' file. If you created your build
+configuration by using the template from 'INSTALL.dos', you just have to
+uncomment the line containing 'CPPFLAGS +=' and add a '-DDEBUG' to it.
+
+AdPlug logs to stderr by default. The output can be redirected anytime to a
+user specified logfile. This is done by using the 'CAdPlug::debug_output'
+method of the 'CAdPlug' class.

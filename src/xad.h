@@ -31,11 +31,13 @@
 class CxadPlayer: public CPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
         CxadPlayer(Copl * newopl);
 
         ~CxadPlayer();
 
-        bool            load(istream &f);
+        bool            load(istream &f, const char *filename);
         bool            update();
         void            rewind(unsigned int subsong);
         float           getrefresh();

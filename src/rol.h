@@ -14,6 +14,8 @@
 class CrolPlayer: public CPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
     CrolPlayer(Copl *newopl)
         : CPlayer         ( newopl )
           ,rol_header     ( NULL )
@@ -26,17 +28,12 @@ public:
 
     ~CrolPlayer();
 
-    virtual bool  load(istream &f);
+    virtual bool  load(istream &f, const char *filename);
     virtual bool  update();
     virtual void  rewind(unsigned int subsong);	 // rewinds to specified subsong
     virtual float getrefresh();			         // returns needed timer refresh rate
 
     virtual std::string gettype() { return std::string("Adlib Visual Composer"); }
-
-    void get_bnk_filename(std::string fn)
-      {
-	bnk_filename = fn;
-      }
 
 private:
     typedef unsigned short    uint16;
@@ -215,7 +212,7 @@ private:
     } SUsedList;
 
     void load_tempo_events     ( istream &f );
-    bool load_voice_data       ( istream &f );
+    bool load_voice_data       ( istream &f, std::string bnk_filename );
     void load_note_events      ( istream &f, CVoiceData &voice );
     void load_instrument_events( istream &f, CVoiceData &voice,
                                  istream &bnk_file, SBnkHeader const &bnk_header );
@@ -272,7 +269,6 @@ private:
     int                         mCurrTick;
     int                         mTimeOfLastNote;
     float                       mRefresh;
-    std::string			bnk_filename;
 
     static char         bdRegister;
     static char         bxRegister[9];

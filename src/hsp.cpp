@@ -24,13 +24,22 @@
 
 #include "hsp.h"
 
-bool ChspLoader::load(istream &f)
+CPlayer *ChspLoader::factory(Copl *newopl)
+{
+  ChspLoader *p = new ChspLoader(newopl);
+  return p;
+}
+
+bool ChspLoader::load(istream &f, const char *filename)
 {
 	unsigned short i,j,orgsize;
 	unsigned long filesize;
 	unsigned char *cmp,*org;
 
 	// file validation section
+	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".hsp"))
+	  return false;
+
 	f.seekg(0,ios::end); filesize = f.tellg(); f.seekg(0);
 	f.read((char *)&orgsize,2);
 	if(orgsize > 59187)

@@ -22,7 +22,13 @@
 
 #include "amd.h"
 
-bool CamdLoader::load(istream &f)
+CPlayer *CamdLoader::factory(Copl *newopl)
+{
+  CamdLoader *p = new CamdLoader(newopl);
+  return p;
+}
+
+bool CamdLoader::load(istream &f, const char *filename)
 {
 	struct {
 		char id[9];

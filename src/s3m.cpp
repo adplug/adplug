@@ -36,6 +36,12 @@ static const unsigned char vibratotab[32] =		// vibrato rate table
 
 /*** public methods *************************************/
 
+CPlayer *Cs3mPlayer::factory(Copl *newopl)
+{
+  Cs3mPlayer *p = new Cs3mPlayer(newopl);
+  return p;
+}
+
 Cs3mPlayer::Cs3mPlayer(Copl *newopl): CPlayer(newopl)
 {
 	int			i,j,k;
@@ -51,7 +57,7 @@ Cs3mPlayer::Cs3mPlayer(Copl *newopl): CPlayer(newopl)
 			}
 }
 
-bool Cs3mPlayer::load(istream &f)
+bool Cs3mPlayer::load(istream &f, const char *filename)
 {
 	unsigned short	insptr[99],pattptr[99];
 	int				i,row;

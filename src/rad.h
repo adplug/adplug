@@ -25,11 +25,13 @@
 class CradLoader: public CmodPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	CradLoader(Copl *newopl)
 		: CmodPlayer(newopl)
 	{ *desc = '\0'; };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	float getrefresh();
 
 	std::string gettype()

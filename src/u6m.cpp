@@ -23,7 +23,13 @@
 
 #include "u6m.h"
 
-bool Cu6mPlayer::load(istream &f)
+CPlayer *Cu6mPlayer::factory(Copl *newopl)
+{
+  Cu6mPlayer *p = new Cu6mPlayer(newopl);
+  return p;
+}
+
+bool Cu6mPlayer::load(istream &f, const char *filename)
 {
     // file validation section
     // this section only checks a few *necessary* conditions

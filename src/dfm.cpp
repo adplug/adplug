@@ -25,7 +25,13 @@
 
 #include "dfm.h"
 
-bool CdfmLoader::load(istream &f)
+CPlayer *CdfmLoader::factory(Copl *newopl)
+{
+  CdfmLoader *p = new CdfmLoader(newopl);
+  return p;
+}
+
+bool CdfmLoader::load(istream &f, const char *filename)
 {
 	unsigned char		tmpins[11],npats,n,note,fx,c,r,param;
 	unsigned int		i;

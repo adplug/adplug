@@ -25,11 +25,13 @@
 class CdfmLoader: public CmodPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	CdfmLoader(Copl *newopl)
 		: CmodPlayer(newopl)
 	{ };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	float getrefresh();
 
 	std::string gettype();

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "rol.h"
+#include "debug.h"
 
 int const CrolPlayer::kSizeofDataRecord    =  30;
 int const CrolPlayer::kMaxTickBeat         =  60;
@@ -44,6 +45,12 @@ CrolPlayer::uint16 const CrolPlayer::kNoteTable[12] =
 
 /*** public methods **************************************/
 
+CPlayer *CrolPlayer::factory(Copl *newopl)
+{
+  CrolPlayer *p = new CrolPlayer(newopl);
+  return p;
+}
+
 CrolPlayer::~CrolPlayer()
 {
     if( rol_header != NULL )
@@ -52,13 +59,35 @@ CrolPlayer::~CrolPlayer()
     }
 }
 
-bool CrolPlayer::load(istream &f)
+bool CrolPlayer::load(istream &f, const char *filename)
 {
+    char *fn = new char[strlen(filename)+9];
+    int i;
+    std::string bnk_filename;
+
+    LogWrite("*** CrolPlayer::load(f, \"%s\") ***\n",filename);
+    strcpy(fn,filename);
+    for (i=strlen(fn)-1; i>=0; i--)
+      if (fn[i] == '/' || fn[i] == '\\')
+	break;
+    strcpy(fn+i+1,"standard.bnk");
+    bnk_filename = fn;
+    delete [] fn;
+    LogWrite("bnk_filename = \"%s\"\n",bnk_filename.c_str());
+
     rol_header = new SRolHeader;
     memset( rol_header, 0, sizeof(SRolHeader) );
 
     f.read( (char *)&rol_header->version_major, sizeof(int16) );
     f.read( (char *)&rol_header->version_minor, sizeof(int16) );
+
+    // Version check
+    if(rol_header->version_major != 0 || rol_header->version_minor != 4) {
+      LogWrite("Unsupported file version %d.%d or not a ROL file!\n",
+	       rol_header->version_major, rol_header->version_minor);
+      LogWrite("--- CrolPlayer::load ---\n");
+      return false;
+    }
 
     f.seekg( 40, ios::cur );
 
@@ -79,12 +108,15 @@ bool CrolPlayer::load(istream &f)
 
     mTimeOfLastNote = 0;
 
-    if( load_voice_data( f ) != true )
+    if( load_voice_data( f, bnk_filename ) != true )
     {
-        return false;
+      LogWrite("CrolPlayer::load_voice_data(f) failed!\n");
+      LogWrite("--- CrolPlayer::load ---\n");
+      return false;
     }
 
     rewind( 0 );
+    LogWrite("--- CrolPlayer::load ---\n");
     return true;
 }
 
@@ -377,10 +409,9 @@ void CrolPlayer::load_tempo_events( istream &f )
     }
 }
 
-bool CrolPlayer::load_voice_data( istream &f )
+bool CrolPlayer::load_voice_data( istream &f, std::string bnk_filename )
 {
     SBnkHeader bnk_header;
-
     ifstream bnk_file(bnk_filename.c_str(), ios::in | ios::binary );
 
     if( bnk_file.is_open() )

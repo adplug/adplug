@@ -7,6 +7,8 @@
 class CxadflashPlayer: public CxadPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
   CxadflashPlayer(Copl *newopl): CxadPlayer(newopl)
     { };
 

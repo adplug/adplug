@@ -84,6 +84,12 @@ void CmidPlayer::midiprintf(char *format, ...)
     }
 #endif
 
+CPlayer *CmidPlayer::factory(Copl *newopl)
+{
+  CmidPlayer *p = new CmidPlayer(newopl);
+  return p;
+}
+
 unsigned char CmidPlayer::datalook(long pos)
 {
     if (pos<0 || pos > flen) return(0);
@@ -142,13 +148,22 @@ bool CmidPlayer::load_sierra_ins()
 {
     long i,j,k,l;
     unsigned char ins[28];
-	ifstream f(insfile, ios::in | ios::binary);
+    char pfilename[strlen(fname)+9];
 
-	if(!f.is_open())
-		return false;
+    strcpy(pfilename,fname);
+    j=0;
+    for(i=strlen(pfilename)-1; i >= 0; i--)
+      if(pfilename[i] == '/' || pfilename[i] == '\\') {
+	j = i+1;
+	break;
+      }
+    sprintf(pfilename+j+3,"patch.003");
 
-	f.ignore(2);
-	tins = 0;
+    ifstream f(pfilename, ios::in | ios::binary);
+    if(!f.is_open()) return false;
+
+    f.ignore(2);
+    tins = 0;
     for (i=0; i<2; i++)
         {
         for (k=0; k<48; k++)
@@ -244,11 +259,13 @@ unsigned long CmidPlayer::filelength(istream &f)
 	return size;
 }
 
-bool CmidPlayer::load(istream &f)
+bool CmidPlayer::load(istream &f, const char *filename)
 {
     int good;
     unsigned char s[6];
 
+    fname = (char *)malloc(strlen(filename)+1);
+    strcpy(fname,filename);
     f.read((char *)s,6);
     good=0;
     subsongs=0;

@@ -55,6 +55,11 @@ static const unsigned char bmf_default_instrument[13] =
   0x01, 0x01, 0x3F, 0x3F, 0x00, 0x00, 0xF0, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+CPlayer *CxadbmfPlayer::factory(Copl *newopl)
+{
+  CxadbmfPlayer *p = new CxadbmfPlayer(newopl);
+  return p;
+}
 
 bool CxadbmfPlayer::xadplayer_load(istream &f)
 {
@@ -64,7 +69,7 @@ bool CxadbmfPlayer::xadplayer_load(istream &f)
   if(xad.fmt != BMF)
     return false;
 
-#ifdef _DEBUG
+#ifdef DEBUG
   LogWrite("\nbmf_load():\n\n");
 #endif
   if (!strncmp((char *)&tune[0],"BMF1.2",6))
@@ -184,7 +189,7 @@ void CxadbmfPlayer::xadplayer_rewind(unsigned int subsong)
   }
 
   plr.speed = bmf.speed;
-#ifdef _DEBUG
+#ifdef DEBUG
   LogWrite("speed: %x\n",plr.speed);
 #endif
 
@@ -220,7 +225,7 @@ void CxadbmfPlayer::xadplayer_update()
       bmf.channel[i].delay--;
 	else
 	{
-#ifdef _DEBUG
+#ifdef DEBUG
    LogWrite("channel %02X:\n", i);
 #endif
       bmf_event event;
@@ -229,7 +234,7 @@ void CxadbmfPlayer::xadplayer_update()
   	  while (true)
 	  {
         memcpy(&event, &bmf.streams[i][bmf.channel[i].stream_position], sizeof(bmf_event));
-#ifdef _DEBUG
+#ifdef DEBUG
    LogWrite("%02X %02X %02X %02X %02X %02X\n",event.note,event.delay,event.volume,event.instrument,event.cmd,event.cmd_data );
 #endif
 
@@ -386,7 +391,7 @@ std::string CxadbmfPlayer::xadplayer_getinstrument(unsigned int i)
 
 int CxadbmfPlayer::__bmf_convert_stream(unsigned char *stream, int channel)
 {
-#ifdef _DEBUG
+#ifdef DEBUG
   LogWrite("channel %02X (note,delay,volume,instrument,command,command_data):\n",channel);
   unsigned char *last = stream;
 #endif
@@ -552,7 +557,7 @@ int CxadbmfPlayer::__bmf_convert_stream(unsigned char *stream, int channel)
 
     } // if (is_cmd)
 
-#ifdef _DEBUG
+#ifdef DEBUG
    LogWrite("%02X %02X %02X %02X %02X %02X  <----  ", 
 			bmf.streams[channel][pos].note,	
 			bmf.streams[channel][pos].delay,

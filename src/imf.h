@@ -25,13 +25,15 @@
 class CimfPlayer: public CPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	CimfPlayer(Copl *newopl)
 		: CPlayer(newopl), data(0)
 	{ };
 	~CimfPlayer()
 	{ if(data) delete [] data; };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	bool update();
 	void rewind(unsigned int subsong);
 	float getrefresh()

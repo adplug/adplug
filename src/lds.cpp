@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,20 +16,31 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
  * lds.cpp - LOUDNESS Loader by Simon Peter (dn.tlp@gmx.net)
  */
+
+#include <string.h>
 
 #include "lds.h"
 
 /*** public methods *************************************/
 
-bool CldsLoader::load(istream &f)
+CPlayer *CldsLoader::factory(Copl *newopl)
+{
+  CldsLoader *p = new CldsLoader(newopl);
+  return p;
+}
+
+bool CldsLoader::load(istream &f, const char *filename)
 {
 	int				i,j,k,l,dnum[9][2];
 	unsigned char	ldsinst[46],*ldspat,*ldsm;
 	unsigned short	mlen;									// length of music data
 	const char		ixlt[11] = {1,4,2,5,9,6,10,7,3,8,0};	// instrument translation map
+
+	// file validation section (actually just an extension check)
+	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".lds"))
+		return false;
 
 	f.ignore(15);			// ignore header
 	f.get((char)insts);		// get number of instruments

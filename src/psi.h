@@ -7,6 +7,8 @@
 class CxadpsiPlayer: public CxadPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
   CxadpsiPlayer(Copl *newopl): CxadPlayer(newopl)
     { }
 

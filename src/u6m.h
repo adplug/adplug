@@ -32,6 +32,7 @@
 class Cu6mPlayer: public CPlayer
 {
     public:
+  static CPlayer *factory(Copl *newopl);
 
 	Cu6mPlayer(Copl *newopl) : CPlayer(newopl), song_data(0)
     {
@@ -43,7 +44,7 @@ class Cu6mPlayer: public CPlayer
         if(song_data) delete[] song_data;
     };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	bool update();
 	void rewind(unsigned int subsong);
 	float getrefresh();

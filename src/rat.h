@@ -7,6 +7,8 @@
 class CxadratPlayer: public CxadPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
   CxadratPlayer(Copl *newopl): CxadPlayer(newopl)
     { }
 

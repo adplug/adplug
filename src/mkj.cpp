@@ -22,7 +22,13 @@
 
 #include "mkj.h"
 
-bool CmkjPlayer::load(istream &f)
+CPlayer *CmkjPlayer::factory(Copl *newopl)
+{
+  CmkjPlayer *p = new CmkjPlayer(newopl);
+  return p;
+}
+
+bool CmkjPlayer::load(istream &f, const char *filename)
 {
 	char	id[6];
 	float	ver;

@@ -25,7 +25,13 @@
 
 #include "sa2.h"
 
-bool Csa2Loader::load(istream &f)
+CPlayer *Csa2Loader::factory(Copl *newopl)
+{
+  Csa2Loader *p = new Csa2Loader(newopl);
+  return p;
+}
+
+bool Csa2Loader::load(istream &f, const char *filename)
 {
 	struct {
 		unsigned char data[11],arpstart,arpspeed,arppos,arpspdcnt;

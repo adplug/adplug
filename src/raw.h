@@ -25,13 +25,15 @@
 class CrawPlayer: public CPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	CrawPlayer(Copl *newopl)
 		: CPlayer(newopl), data(0)
 	{ };
 	~CrawPlayer()
 	{ if(data) delete [] data; };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	bool update();
 	void rewind(unsigned int subsong);
 	float getrefresh();

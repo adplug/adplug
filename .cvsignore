@@ -1,8 +1,6 @@
 autom4te.cache
 aclocal.m4
 config.guess
-config.h
-config.h.in
 config.log
 config.mif
 config.status

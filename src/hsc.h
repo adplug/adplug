@@ -28,11 +28,13 @@
 class ChscPlayer: public CPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	ChscPlayer(Copl *newopl)
 		: CPlayer(newopl), mtkmode(0)
 	{ };
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 	bool update();
 	void rewind(unsigned int subsong);
 	float getrefresh()

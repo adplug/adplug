@@ -1,19 +1,5 @@
-AdPlug - Replayer for many OPL2/OPL3 audio file formats
+AdPlug - A free AdLib sound player library
 Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, et al.
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Website       : http://adplug.sourceforge.net
 Module Archive: http://www.chiptune.de
@@ -33,22 +19,13 @@ platforms and compilers:
 Platform     Compiler(s)
 --------     -----------
 Windows      Visual C++ 6.0, cygwin
-MS-DOS       WATCOM C/C++ 11.0
+MS-DOS       WATCOM C/C++ 11.x
 Linux        GCC 2.x, GCC 3.x
 FreeBSD      GCC 2.x, GCC 3.x
 
 The library builds as dynamic and/or static link library, depending on
 the facilities provided by the host OS. These are autodetected. On Windows,
 using VC6, only a static link library is built right now.
-
-CVS and UNIX:
--------------
-If you checked out from CVS and use UNIX, first run:
-
-./autogen.sh
-
-to generate the build cruft and get the configure script. Oh, and did i
-mention you need recent versions of autoconf, automake and libtool?
 
 Supported formats:
 ------------------
@@ -111,5 +88,21 @@ Some files (especially SA2) will sound distorted through the emulator. This is
 a well-known "problem" with software mixing, hearable when the composer plays
 the same sound on multiple channels. Hardware mixing is unaffected by this
 issue.
+
+Legal:
+------
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 	- Simon Peter <dn.tlp@gmx.net>

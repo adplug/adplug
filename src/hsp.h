@@ -25,9 +25,11 @@
 class ChspLoader: public ChscPlayer
 {
 public:
+  static CPlayer *factory(Copl *newopl);
+
 	ChspLoader(Copl *newopl)
 		: ChscPlayer(newopl)
 	{};
 
-	bool load(istream &f);
+	bool load(istream &f, const char *filename);
 };

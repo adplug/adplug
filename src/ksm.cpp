@@ -25,8 +25,10 @@
  */
 
 #include <fstream.h>
+#include <string.h>
 
 #include "ksm.h"
+#include "debug.h"
 
 static const unsigned int adlibfreq[63] = {
 	0,
@@ -39,10 +41,39 @@ static const unsigned int adlibfreq[63] = {
 
 /*** public methods **************************************/
 
-bool CksmPlayer::load(istream &f)
+CPlayer *CksmPlayer::factory(Copl *newopl)
+{
+  CksmPlayer *p = new CksmPlayer(newopl);
+  return p;
+}
+
+bool CksmPlayer::load(istream &f, const char *filename)
 {
 	int i;
 	char instbuf[11];
+	char *fn = new char[strlen(filename)+9];
+
+	// file validation section
+	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".ksm")) {
+	  LogWrite("CksmPlayer::load(,\"%s\"): File doesn't have '.ksm' extension! Rejected!\n",filename);
+	  return false;
+	}
+
+	LogWrite("*** CksmPlayer::load(,\"%s\") ***\n",filename);
+	strcpy(fn,filename);
+	for (i=strlen(fn)-1; i>=0; i--)
+	  if (fn[i] == '/' || fn[i] == '\\')
+	    break;
+	strcpy(fn+i+1,"insts.dat");
+	LogWrite("Instruments file: \"%s\"\n",fn);
+	ifstream insf(fn, ios::in | ios::binary);
+	delete [] fn;
+	if(!insf.is_open()) {
+	  LogWrite("Couldn't open instruments file! Aborting!\n");
+	  LogWrite("--- CksmPlayer::load ---\n");
+	  return false;
+	}
+	loadinsts(insf);
 
 	f.read((char *)trinst,16);
 	f.read((char *)trquant,16);
@@ -82,6 +113,7 @@ bool CksmPlayer::load(istream &f)
 	}
 
 	rewind(0);
+	LogWrite("--- CksmPlayer::load ---\n");
 	return true;
 }
 
