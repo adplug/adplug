@@ -1,53 +1,71 @@
 /*
-   MIDI & MIDI-like file player - Last Update: 8/16/2000
-                    by Phil Hassey - www.imitationpickles.org
-                                     philhassey@hotmail.com
-
-   Can play the following
-        .LAA - a raw save of a Lucas Arts Adlib music
-               or
-               a raw save of a LucasFilm Adlib music
-        .MID - a "midi" save of a Lucas Arts Adlib music
-             - or general MIDI files
-        .CMF - Creative Music Format
-        .SCI - the sierra "midi" format.
-               Files must be in the form
-               xxxNAME.sci
-               So that the loader can load the right patch file:
-               xxxPATCH.003  (patch.003 must be saved from the
-                              sierra resource from each game.)
-
-   6/2/2000:  v1.0 relased by phil hassey
-        Status:  LAA is almost perfect
-                        - some volumes are a bit off (intrument too quiet)
-                 MID is fine (who wants to listen to MIDI vid adlib anyway)
-                 CMF is okay (still needs the adlib rythm mode implemented
-                              for real)
-   6/6/2000:
-        Status:  SCI:  there are two SCI formats, orginal and advanced.
-                      original:  (Found in SCI/EGA Sierra Adventures)
-                                 played almost perfectly, I believe
-                                 there is one mistake in the instrument
-                                 loader that causes some sounds to
-                                 not be quite right.  Most sounds are fine.
-                      advanced:  (Found in SCI/VGA Sierra Adventures)
-                                 These are multi-track files.  (Thus the
-                                 player had to be modified to work with
-                                 them.)  This works fine.
-                                 There are also multiple tunes in each file.
-                                 I think some of them are supposed to be
-                                 played at the same time, but I'm not sure
-                                 when.
-    8/16/200:
-        Status:  LAA: now EGA and VGA lucas games work pretty well
-
-   Other acknowledgements:
-    Allegro - for the midi instruments and the midi volume table
-    SCUMM Revisited - for getting the .LAA / .MIDs out of those
-                      LucasArts files.
-    FreeSCI - for some information on the sci music files
-    SD - the SCI Decoder (to get all .sci out of the Sierra files)
-*/
+ * Adplug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *
+ * MIDI & MIDI-like file player - Last Update: 8/16/2000
+ *                  by Phil Hassey - www.imitationpickles.org
+ *                                   philhassey@hotmail.com
+ *
+ * Can play the following
+ *      .LAA - a raw save of a Lucas Arts Adlib music
+ *             or
+ *             a raw save of a LucasFilm Adlib music
+ *      .MID - a "midi" save of a Lucas Arts Adlib music
+ *           - or general MIDI files
+ *      .CMF - Creative Music Format
+ *      .SCI - the sierra "midi" format.
+ *             Files must be in the form
+ *             xxxNAME.sci
+ *             So that the loader can load the right patch file:
+ *             xxxPATCH.003  (patch.003 must be saved from the
+ *                            sierra resource from each game.)
+ *
+ * 6/2/2000:  v1.0 relased by phil hassey
+ *      Status:  LAA is almost perfect
+ *                      - some volumes are a bit off (intrument too quiet)
+ *               MID is fine (who wants to listen to MIDI vid adlib anyway)
+ *               CMF is okay (still needs the adlib rythm mode implemented
+ *                            for real)
+ * 6/6/2000:
+ *      Status:  SCI:  there are two SCI formats, orginal and advanced.
+ *                    original:  (Found in SCI/EGA Sierra Adventures)
+ *                               played almost perfectly, I believe
+ *                               there is one mistake in the instrument
+ *                               loader that causes some sounds to
+ *                               not be quite right.  Most sounds are fine.
+ *                    advanced:  (Found in SCI/VGA Sierra Adventures)
+ *                               These are multi-track files.  (Thus the
+ *                               player had to be modified to work with
+ *                               them.)  This works fine.
+ *                               There are also multiple tunes in each file.
+ *                               I think some of them are supposed to be
+ *                               played at the same time, but I'm not sure
+ *                               when.
+ *  8/16/200:
+ *      Status:  LAA: now EGA and VGA lucas games work pretty well
+ *
+ * Other acknowledgements:
+ *  Allegro - for the midi instruments and the midi volume table
+ *  SCUMM Revisited - for getting the .LAA / .MIDs out of those
+ *                    LucasArts files.
+ *  FreeSCI - for some information on the sci music files
+ *  SD - the SCI Decoder (to get all .sci out of the Sierra files)
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
