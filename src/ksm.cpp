@@ -44,7 +44,6 @@ bool CksmPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
   binistream	*f;
   int		i;
-  char		instbuf[11];
   char		*fn = new char[filename.length() + 9];
 
   // file validation section
@@ -83,33 +82,13 @@ bool CksmPlayer::load(const std::string &filename, const CFileProvider &fp)
   for(i = 0; i < numnotes; i++) note[i] = f->readInt(4);
   fp.close(f);
 
-  if (!trchan[11]) {
+  if(!trchan[11]) {
     drumstat = 0;
     numchans = 9;
+  } else {
+    drumstat = 32;
+    numchans = 6;
   }
-  if (trchan[11] == 1)
-    {
-      for(i=0;i<11;i++)
-	instbuf[i] = inst[trinst[11]][i];
-      instbuf[1] = ((instbuf[1]&192)|(trvol[11])^63);
-      setinst(6,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
-      for(i=0;i<5;i++)
-	instbuf[i] = inst[trinst[12]][i];
-      for(i=5;i<11;i++)
-	instbuf[i] = inst[trinst[15]][i];
-      instbuf[1] = ((instbuf[1]&192)|(trvol[12])^63);
-      instbuf[6] = ((instbuf[6]&192)|(trvol[15])^63);
-      setinst(7,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
-      for(i=0;i<5;i++)
-	instbuf[i] = inst[trinst[14]][i];
-      for(i=5;i<11;i++)
-	instbuf[i] = inst[trinst[13]][i];
-      instbuf[1] = ((instbuf[1]&192)|(trvol[14])^63);
-      instbuf[6] = ((instbuf[6]&192)|(trvol[13])^63);
-      setinst(8,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
-      drumstat = 32;
-      numchans = 6;
-    }
 
   rewind(0);
   AdPlug_LogWrite("--- CksmPlayer::load ---\n");
@@ -253,6 +232,27 @@ void CksmPlayer::rewind(int subsong)
 
 	songend = false;
 	opl->init(); opl->write(1,32); opl->write(4,0); opl->write(8,0); opl->write(0xbd,drumstat);
+
+	if (trchan[11] == 1) {
+	  for(i=0;i<11;i++)
+	    instbuf[i] = inst[trinst[11]][i];
+	  instbuf[1] = ((instbuf[1]&192)|(trvol[11])^63);
+	  setinst(6,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
+	  for(i=0;i<5;i++)
+	    instbuf[i] = inst[trinst[12]][i];
+	  for(i=5;i<11;i++)
+	    instbuf[i] = inst[trinst[15]][i];
+	  instbuf[1] = ((instbuf[1]&192)|(trvol[12])^63);
+	  instbuf[6] = ((instbuf[6]&192)|(trvol[15])^63);
+	  setinst(7,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
+	  for(i=0;i<5;i++)
+	    instbuf[i] = inst[trinst[14]][i];
+	  for(i=5;i<11;i++)
+	    instbuf[i] = inst[trinst[13]][i];
+	  instbuf[1] = ((instbuf[1]&192)|(trvol[14])^63);
+	  instbuf[6] = ((instbuf[6]&192)|(trvol[13])^63);
+	  setinst(8,instbuf[0],instbuf[1],instbuf[2],instbuf[3],instbuf[4],instbuf[5],instbuf[6],instbuf[7],instbuf[8],instbuf[9],instbuf[10]);
+	}
 
 	for(i=0;i<numchans;i++)
 	{
