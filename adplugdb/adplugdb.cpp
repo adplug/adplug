@@ -131,6 +131,7 @@ static void usage()
 	 "  add <files>      Add (and replace) files to database\n"
 	 "  list [files]     List files (or everything) from database\n"
 	 "  remove <files>   Remove files from database\n"
+	 "  merge <files>    Merge other databases with the current one\n"
 	 "\n"
 	 "Database options:\n"
 	 "  -d <file>        Use different database file\n"
@@ -337,6 +338,20 @@ int main(int argc, char *argv[])
       db_save();
     } else {
       message(MSG_ERROR, "remove -- missing file argument");
+      exit(EXIT_FAILURE);
+    }
+  } else
+  if(!strcmp(argv[optind], "merge")) {	// Merge databases together
+    db_error(dbokay);
+    if(++optind < argc) {
+      for(;optind < argc; optind++)
+	if(mydb.load(argv[optind]))
+	  message(MSG_NOTE, "merged database -- %s", argv[optind]);
+	else
+	  message(MSG_WARN, "could not open database -- %s", argv[optind]);
+      db_save();
+    } else {
+      message(MSG_ERROR, "merge -- missing file argument");
       exit(EXIT_FAILURE);
     }
   } else {

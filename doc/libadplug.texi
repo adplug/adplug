@@ -711,11 +711,48 @@ The application's interface to the database is defined through the
 @code{CAdPlugDatabase} class, residing in the header file
 @file{database.h}.
 
+If you just want to pass a database for AdPlug to make use of it,
+reading @ref{Usage with CAdPlug} is sufficient. If you want to write a
+complete database manipulation application, you have to read the other
+subsections as well.
+
 @menu
+* Usage with CAdPlug::
 * Records::
 * Keys::
-* Usage::
+* Players using the Database::
+* Direct Usage::
 @end menu
+
+@node Usage with CAdPlug
+@subsection Usage with CAdPlug
+
+You can pass AdPlug a database for it to get specific information
+about a file. Some file formats store insufficient information within
+themselves and AdPlug uses the database to get the missing data. You
+do not need to include any more header files other than
+@file{adplug.h} within your application to do this.
+
+To hand a database to AdPlug, you have to initialize an instance of
+@code{CAdPlugDatabase} first. To do this, you just have to declare an
+object of this class. This creates an empty database for
+you.
+
+Additionally, for the database to be of any use to AdPlug, you have to
+fill it with some records (see @ref{Records}). This is most preferably
+done by loading an already existing database from a file. To do this,
+you use the @code{load(std::string  @var{db_name})} method of the
+class. This will merge any records in the database file @var{db_name}
+into your database object. You can merge any more database files, if
+you wish. Only new records will be merged. Duplicate records will be
+ignored.
+
+To hand your database to AdPlug, you simply call
+@code{CAdPlug::set_database(CAdPlugDatabase *db)} and pass a pointer
+to your database object as the only argument. From now on, AdPlug will
+use your database to do lookups for special information about some
+file types. You have to keep your instance of the database until you
+close AdPlug and free it by yourself after that.
 
 @node Records
 @subsection Records
@@ -823,8 +860,19 @@ Operator that compares two key objects and returns @samp{true} when
 they are equal. @samp{false} is returned otherwise.
 @end ftable
 
-@node Usage
-@subsection Usage
+@node Players using the Database
+@subsection Players using the Database
+
+The following players make active use of the database:
+
+@table @asis
+@item Apogee IMF
+The IMF player uses the database to find out about the timer clock
+speed of a file, since this data is not stored in the file itself.
+@end table
+
+@node Direct Usage
+@subsection Direct Usage
 
 The following methods are for application usage of the database:
 

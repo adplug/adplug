@@ -37,7 +37,7 @@ CxadPlayer::~CxadPlayer()
 
 bool CxadPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
-  binistream *f = fp.open(filename);
+  binistream *f = fp.open(filename); if(!f) return false;
   bool ret = false;
 
   // load header

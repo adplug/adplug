@@ -16,4 +16,4 @@ AdPlug To Do List:
 
 - Add load(void *mem, unsigned long length) method to CAdPlug. [dynamite]
 
-- adplugdb should open database in user's home directory first. [dynamite]
+- Add option to specify keys on commandline with adplugdb. [dynamite]
