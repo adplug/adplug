@@ -16,7 +16,3 @@ AdPlug To Do List:
 	- DTM: DeFy Adlib Tracker [riven-mage]
 	- MTR: Arkham Master Tracker [riven-mage]
 	- LDS: Loudness
-
-- Make documentation build target (on UNIX, use the 'groff-it' script in the
-  meantime. Doc building is not automatic on other systems for now...).
-  [dynamite]
