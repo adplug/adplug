@@ -1,0 +1,6 @@
+This directory contains unsupported parts of the AdPlug library
+and contributions to it (which are also unsupported).
+
+Index of the contained subdirectories:
+--------------------------------------
+MSVC6		Microsoft Visual C++ 6.0 project files
