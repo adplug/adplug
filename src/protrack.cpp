@@ -411,7 +411,6 @@ void CmodPlayer::rewind(unsigned int subsong)
     for(i=0;i<length;i++)
       nop = (order[i] > nop ? order[i] : nop);
 
-  memset(channel,0,sizeof(channel));	// Reset channel status data
   opl->init();				// Reset OPL chip
   opl->write(1,32);			// Go to ym3812 mode
 }
@@ -464,6 +463,7 @@ bool CmodPlayer::realloc_patterns(unsigned long pats, unsigned long rows, unsign
   trackord = new unsigned short *[pats];
   for(i=0;i<pats;i++) trackord[i] = new unsigned short[chans];
   channel = new Channel[chans];
+  memset(channel,0,sizeof(Channel)*chans);
 
   // initialize new patterns
   for(i=0;i<pats*chans;i++) memset(tracks[i],0,sizeof(Tracks)*rows);
