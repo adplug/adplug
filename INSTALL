@@ -56,6 +56,9 @@ autoreconf --install
 to generate the build cruft and get the configure script. Oh, and did i
 mention you need recent versions of autoconf, automake and libtool? ;)
 
+When building a CVS version, always supply the --enable-maintainer-mode
+option to the configure script!
+
 Debugging AdPlug:
 -----------------
 If you feel you have to debug AdPlug, you can compile it with debug logging
