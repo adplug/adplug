@@ -65,12 +65,13 @@ bool CimfPlayer::load(istream &f, const char *filename)
 
 	data = new Sdata[size];
 	f.read((char *)data,size * 4);
-	if(fsize) {	// read footer, if any
+	if(fsize && (fsize < filesize - 2)) {	// read footer, if any
 	  unsigned long footerlen = filesize - fsize - 2;
 	  footer = new char[footerlen + 1];
 	  f.read(footer,footerlen);
 	  footer[footerlen] = '\0';	// Make ASCIIZ string
 	}
+
 	rate = getrate(crc32((unsigned char *)data,size*4),size*4);
 	rewind(0);
 	return true;
