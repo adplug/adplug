@@ -1,0 +1,7 @@
+# AdPlug Makefile for Watcom and OpenWatcom
+# Copyright (c) 2004 Simon Peter <dn.tlp@gmx.net>
+
+OUTPUT = playertest.exe
+
+LIBRARIES = ..\src\adplug.lib binio.lib
+OBJS = playertest.obj
