@@ -44,6 +44,8 @@ bool CcffLoader::load(istream &f, const char *filename)
 
 	int i,j,k,t=0;
 
+	unsigned char old_event_byte2[9] = {0};
+
 	// read header
 	f.read((char *)&header,sizeof(header));
 
@@ -125,6 +127,9 @@ bool CcffLoader::load(istream &f, const char *filename)
         		tracks[t][k].param1  = event->byte2 >> 4;
         		tracks[t][k].param2  = event->byte2 & 0x0F;
 
+				if (event->byte2)
+					old_event_byte2[j] = event->byte2;
+
 				// convert effect
 				switch (event->byte1)
 				{
@@ -178,6 +183,11 @@ bool CcffLoader::load(istream &f, const char *filename)
         				tracks[t][k].param2  = event->byte2 >> 4;
 						break;
 					case 'J': // arpeggio
+						if (!event->byte2)
+						{
+							tracks[t][k].param1  = old_event_byte2[j] >> 4;
+							tracks[t][k].param2  = old_event_byte2[j] & 0x0F;
+						}
 						break;
 				}
 			}
