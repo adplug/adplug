@@ -6,10 +6,10 @@
 
 bool CmkjPlayer::load(istream &f)
 {
-	char			id[6];
-	float			ver;
-	unsigned int	i;
-	short			inst[8];
+	char	id[6];
+	float	ver;
+	int		i;
+	short	inst[8];
 
 	// file validation
 	f.read(id,6);
@@ -43,8 +43,8 @@ bool CmkjPlayer::load(istream &f)
 
 bool CmkjPlayer::update()
 {
-	unsigned int	c,i;
-	short			note;
+	int		c,i;
+	short	note;
 
 	for(c=0;c<maxchannel;c++) {
 		if(!channel[c].defined)
@@ -135,7 +135,7 @@ bool CmkjPlayer::update()
 
 void CmkjPlayer::rewind(unsigned int subsong)
 {
-	unsigned int i;
+	int i;
 
 	for(i=0;i<maxchannel;i++) {
 		channel[i].flag = false;

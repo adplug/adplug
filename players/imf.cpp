@@ -17,11 +17,8 @@ bool CimfPlayer::load(istream &f)
 		f.seekg(0,ios::end);
 		size = f.tellg() / 4;
 		f.seekg(0);
-		dn2 = 1;
-	} else {			// file has got footer
+	} else			// file has got footer
 		size = fsize / 4;
-		dn2 = 0;
-	}
 
 	data = new Sdata [size];
 	f.read((char *)data,size * 4);
@@ -34,7 +31,7 @@ bool CimfPlayer::update()
 {
 	do {
 		opl->write(data[pos].reg,data[pos].val);
-		timer = rate / (float)(del = data[pos].time + 1);
+		del = data[pos].time;
 		pos++;
 	} while(!del && pos < size);
 
@@ -42,6 +39,7 @@ bool CimfPlayer::update()
 		pos = 0;
 		songend = true;
 	}
+	else timer = rate / (float)del;
 
 	return !songend;
 }
@@ -132,5 +130,5 @@ float CimfPlayer::getrate(unsigned long crc, unsigned long size)
 		if(crc == filetab[i].crc && size == filetab[i].size)
 			return filetab[i].rate;
 
-	return dn2 ? 280.0f : 700.0f;
+	return 700.0f;
 }

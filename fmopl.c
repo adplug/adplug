@@ -14,7 +14,6 @@
 	note:
 */
 
-#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -601,24 +600,24 @@ static int OPLOpenTable( void )
 	double pom;
 
 	/* allocate dynamic tables */
-	if( (TL_TABLE = HeapAlloc(GetProcessHeap(), 0, TL_MAX*2*sizeof(INT32))) == NULL)
+	if( (TL_TABLE = malloc(TL_MAX*2*sizeof(INT32))) == NULL)
 		return 0;
-	if( (SIN_TABLE = HeapAlloc(GetProcessHeap(), 0, SIN_ENT*4 *sizeof(INT32 *))) == NULL)
+	if( (SIN_TABLE = malloc(SIN_ENT*4 *sizeof(INT32 *))) == NULL)
 	{
-		HeapFree(GetProcessHeap(), 0, TL_TABLE);
-		return 0;
-	}
-	if( (AMS_TABLE = HeapAlloc(GetProcessHeap(), 0, AMS_ENT*2 *sizeof(INT32))) == NULL)
-	{
-		HeapFree(GetProcessHeap(), 0, TL_TABLE);
-		HeapFree(GetProcessHeap(), 0, SIN_TABLE);
+		free(TL_TABLE);
 		return 0;
 	}
-	if( (VIB_TABLE = HeapAlloc(GetProcessHeap(), 0, VIB_ENT*2 *sizeof(INT32))) == NULL)
+	if( (AMS_TABLE = malloc(AMS_ENT*2 *sizeof(INT32))) == NULL)
 	{
-		HeapFree(GetProcessHeap(), 0, TL_TABLE);
-		HeapFree(GetProcessHeap(), 0, SIN_TABLE);
-		HeapFree(GetProcessHeap(), 0, AMS_TABLE);
+		free(TL_TABLE);
+		free(SIN_TABLE);
+		return 0;
+	}
+	if( (VIB_TABLE = malloc(VIB_ENT*2 *sizeof(INT32))) == NULL)
+	{
+		free(TL_TABLE);
+		free(SIN_TABLE);
+		free(AMS_TABLE);
 		return 0;
 	}
 	/* make total level table */
@@ -688,10 +687,10 @@ static int OPLOpenTable( void )
 
 static void OPLCloseTable( void )
 {
-	HeapFree(GetProcessHeap(), 0, TL_TABLE);
-	HeapFree(GetProcessHeap(), 0, SIN_TABLE);
-	HeapFree(GetProcessHeap(), 0, AMS_TABLE);
-	HeapFree(GetProcessHeap(), 0, VIB_TABLE);
+	free(TL_TABLE);
+	free(SIN_TABLE);
+	free(AMS_TABLE);
+	free(VIB_TABLE);
 }
 
 /* CSM Key Controll */
@@ -1195,7 +1194,7 @@ FM_OPL *OPLCreate(int type, int clock, int rate)
 	if(type&OPL_TYPE_ADPCM) state_size+= sizeof(YM_DELTAT);
 #endif
 	/* allocate memory block */
-	ptr = HeapAlloc(GetProcessHeap(), 0, state_size);
+	ptr = malloc(state_size);
 	if(ptr==NULL) return NULL;
 	/* clear */
 	memset(ptr,0,state_size);
@@ -1220,7 +1219,7 @@ FM_OPL *OPLCreate(int type, int clock, int rate)
 void OPLDestroy(FM_OPL *OPL)
 {
 	OPL_UnLockTable();
-	HeapFree(GetProcessHeap(), 0, OPL);
+	free(OPL);
 }
 
 /* ----------  Option handlers ----------       */
