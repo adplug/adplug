@@ -47,7 +47,7 @@ bool CdmoLoader::load(istream &f, const char *filename)
 	dmo_unpacker *unpacker = new dmo_unpacker;
 	unsigned char chkhdr[16];
 
-	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".dmo"))
+      	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".dmo"))
 	  return false;
 
 	f.read(chkhdr,16);

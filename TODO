@@ -8,8 +8,6 @@ yourself.
 
 AdPlug To Do List:
 ------------------
-- Add missing features to A2M loader and/or Protracker player.
-
 - Add rhythm mode support to CMF player (inside mid.cpp).
 
 - Add new Protracker loaders:
@@ -18,10 +16,20 @@ AdPlug To Do List:
 
 - Maybe change docs again into texinfo format... [dynamite]
 
-- Get cff.[cpp,h] to work on linux. [dynamite]
-
 - Add an AM_PATH_ADPLUG aclocal defun to the UNIX build. [dynamite]
 
-- Add file extension and description to allplayers[] struct. [dynamite]
+- Reimplement struct allplayers[] to also include entries for format ID,
+  file extension, format description (which is currently returned from the
+  CPlayer::gettype() method), enable/disable flag, and maybe also a flag
+  that indicates if a file extension check is to be performed before the
+  player's load method can be called. [dynamite]
 
-- Move allplayers[] struct and VERSION define out of adplug.cpp. [dynamite]
+- Construct a class to handle the allplayers[] struct and maybe include the
+  struct itself inside the class. Maybe just extend CAdPlug. [dynamite]
+
+- Move struct allplayers[] and VERSION #define out of adplug.cpp and inside
+  a new file players.h or similar. [dynamite]
+
+- Add module recognization lookup database and construct a controlling
+  class. Has to have fields like file hash, format ID, user-defined data,
+  title & author information. Inspect available small-db libraries for this.
