@@ -20,7 +20,7 @@
   dtm.cpp - DTM loader by Riven the Mage <riven@ok.ru>
 */
 
-#include <windows.h>
+//#include <windows.h>
 #include "dtm.h"
 
 /* -------- Public Methods -------------------------------- */

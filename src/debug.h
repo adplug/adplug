@@ -34,8 +34,8 @@
 
 extern "C"
 {
-	void LogFile(const char *filename);
-	void LogWrite(const char *fmt, ...);
+        void AdPlug_LogFile(const char *filename);
+        void AdPlug_LogWrite(const char *fmt, ...);
 }
 
 #endif

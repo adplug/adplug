@@ -121,7 +121,7 @@ void CxadhybridPlayer::xadplayer_update()
     unsigned short event = *(unsigned short *)&tune[0xADE + (hyb.order[hyb.order_pos*9 + i] * 64 * 2) + (patpos * 2)];
 
 #ifdef DEBUG
-   LogWrite("track %02X, channel %02X, event %04X:\n", hyb.order[hyb.order_pos*9 + i], i, event );
+   AdPlug_LogWrite("track %02X, channel %02X, event %04X:\n", hyb.order[hyb.order_pos*9 + i], i, event );
 #endif
 
     // calculate variables
@@ -198,7 +198,7 @@ void CxadhybridPlayer::xadplayer_update()
 
 update_slides:
 #ifdef DEBUG
-   LogWrite("slides:\n");
+   AdPlug_LogWrite("slides:\n");
 #endif
   // update fine frequency slides
   for(i=0;i<9;i++)

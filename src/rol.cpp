@@ -65,7 +65,7 @@ bool CrolPlayer::load(istream &f, const char *filename)
     int i;
     std::string bnk_filename;
 
-    LogWrite("*** CrolPlayer::load(f, \"%s\") ***\n",filename);
+    AdPlug_LogWrite("*** CrolPlayer::load(f, \"%s\") ***\n",filename);
     strcpy(fn,filename);
     for (i=strlen(fn)-1; i>=0; i--)
       if (fn[i] == '/' || fn[i] == '\\')
@@ -73,7 +73,7 @@ bool CrolPlayer::load(istream &f, const char *filename)
     strcpy(fn+i+1,"standard.bnk");
     bnk_filename = fn;
     delete [] fn;
-    LogWrite("bnk_filename = \"%s\"\n",bnk_filename.c_str());
+    AdPlug_LogWrite("bnk_filename = \"%s\"\n",bnk_filename.c_str());
 
     rol_header = new SRolHeader;
     memset( rol_header, 0, sizeof(SRolHeader) );
@@ -83,9 +83,9 @@ bool CrolPlayer::load(istream &f, const char *filename)
 
     // Version check
     if(rol_header->version_major != 0 || rol_header->version_minor != 4) {
-      LogWrite("Unsupported file version %d.%d or not a ROL file!\n",
+      AdPlug_LogWrite("Unsupported file version %d.%d or not a ROL file!\n",
 	       rol_header->version_major, rol_header->version_minor);
-      LogWrite("--- CrolPlayer::load ---\n");
+      AdPlug_LogWrite("--- CrolPlayer::load ---\n");
       return false;
     }
 
@@ -110,13 +110,13 @@ bool CrolPlayer::load(istream &f, const char *filename)
 
     if( load_voice_data( f, bnk_filename ) != true )
     {
-      LogWrite("CrolPlayer::load_voice_data(f) failed!\n");
-      LogWrite("--- CrolPlayer::load ---\n");
+      AdPlug_LogWrite("CrolPlayer::load_voice_data(f) failed!\n");
+      AdPlug_LogWrite("--- CrolPlayer::load ---\n");
       return false;
     }
 
     rewind( 0 );
-    LogWrite("--- CrolPlayer::load ---\n");
+    AdPlug_LogWrite("--- CrolPlayer::load ---\n");
     return true;
 }
 

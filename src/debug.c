@@ -28,12 +28,13 @@
 
 static FILE *log = NULL;
 
-void LogFile(const char *filename)
+void AdPlug_LogFile(const char *filename)
 {
+  if(log) fclose(log);
   log = fopen(filename,"wt");
 }
 
-void LogWrite(const char *fmt, ...)
+void AdPlug_LogWrite(const char *fmt, ...)
 {
   char logbuffer[256];
   va_list argptr;
@@ -51,7 +52,7 @@ void LogWrite(const char *fmt, ...)
 
 #else
 
-void LogFile(char *filename) { }
-void LogWrite(char *fmt, ...) { }
+void AdPlug_LogFile(char *filename) { }
+void AdPlug_LogWrite(char *fmt, ...) { }
 
 #endif

@@ -110,7 +110,11 @@ CPlayer *CAdPlug::factory(const char *fn, Copl *opl)
 {
 	ifstream f(fn, ios::in | ios::binary);
 
-	if(!f.is_open()) return 0;
+        if(!f.is_open()) {
+                AdPlug_LogWrite("CAdPlug::factory(\"%s\",opl): File could not be "
+                        "opened!\n",fn);
+                return 0;
+        }
 	return factory(f,opl,fn);
 }
 
@@ -119,14 +123,14 @@ CPlayer *CAdPlug::factory(istream &f, Copl *opl, const char *fn)
   CPlayer *p;
   unsigned int i;
 
-  LogWrite("*** CAdPlug::factory(f,opl,\"%s\") ***\n",fn);
+  AdPlug_LogWrite("*** CAdPlug::factory(f,opl,\"%s\") ***\n",fn);
 
   for(i=0;allplayers[i].factory;i++) {
-    LogWrite("Trying: %d\n",i);
+    AdPlug_LogWrite("Trying: %d\n",i);
     if((p = allplayers[i].factory(opl)))
       if(p->load(f,fn)) {
-	LogWrite("got it!\n");
-	LogWrite("--- CAdPlug::factory ---\n");
+        AdPlug_LogWrite("got it!\n");
+        AdPlug_LogWrite("--- CAdPlug::factory ---\n");
 	return p;
       } else {
 	delete p;
@@ -134,8 +138,8 @@ CPlayer *CAdPlug::factory(istream &f, Copl *opl, const char *fn)
       }
   }
 
-  LogWrite("End of list!\n");
-  LogWrite("--- CAdPlug::factory ---\n");
+  AdPlug_LogWrite("End of list!\n");
+  AdPlug_LogWrite("--- CAdPlug::factory ---\n");
   return 0;
 }
 
@@ -168,6 +172,6 @@ std::string CAdPlug::get_version()
 
 void CAdPlug::debug_output(std::string filename)
 {
-  LogFile(filename.c_str());
-  LogWrite("CAdPlug::debug_output(\"%s\"): Redirected.\n",filename.c_str());
+  AdPlug_LogFile(filename.c_str());
+  AdPlug_LogWrite("CAdPlug::debug_output(\"%s\"): Redirected.\n",filename.c_str());
 }

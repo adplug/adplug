@@ -70,7 +70,7 @@ bool CxadbmfPlayer::xadplayer_load(istream &f)
     return false;
 
 #ifdef DEBUG
-  LogWrite("\nbmf_load():\n\n");
+  AdPlug_LogWrite("\nbmf_load():\n\n");
 #endif
   if (!strncmp((char *)&tune[0],"BMF1.2",6))
   {
@@ -190,7 +190,7 @@ void CxadbmfPlayer::xadplayer_rewind(unsigned int subsong)
 
   plr.speed = bmf.speed;
 #ifdef DEBUG
-  LogWrite("speed: %x\n",plr.speed);
+  AdPlug_LogWrite("speed: %x\n",plr.speed);
 #endif
 
   bmf.active_streams = 9;
@@ -226,7 +226,7 @@ void CxadbmfPlayer::xadplayer_update()
 	else
 	{
 #ifdef DEBUG
-   LogWrite("channel %02X:\n", i);
+   AdPlug_LogWrite("channel %02X:\n", i);
 #endif
       bmf_event event;
 
@@ -235,7 +235,7 @@ void CxadbmfPlayer::xadplayer_update()
 	  {
         memcpy(&event, &bmf.streams[i][bmf.channel[i].stream_position], sizeof(bmf_event));
 #ifdef DEBUG
-   LogWrite("%02X %02X %02X %02X %02X %02X\n",event.note,event.delay,event.volume,event.instrument,event.cmd,event.cmd_data );
+   AdPlug_LogWrite("%02X %02X %02X %02X %02X %02X\n",event.note,event.delay,event.volume,event.instrument,event.cmd,event.cmd_data );
 #endif
 
         if (event.cmd == 0xFF)
@@ -392,7 +392,7 @@ std::string CxadbmfPlayer::xadplayer_getinstrument(unsigned int i)
 int CxadbmfPlayer::__bmf_convert_stream(unsigned char *stream, int channel)
 {
 #ifdef DEBUG
-  LogWrite("channel %02X (note,delay,volume,instrument,command,command_data):\n",channel);
+  AdPlug_LogWrite("channel %02X (note,delay,volume,instrument,command,command_data):\n",channel);
   unsigned char *last = stream;
 #endif
   unsigned char *stream_start = stream;
@@ -558,7 +558,7 @@ int CxadbmfPlayer::__bmf_convert_stream(unsigned char *stream, int channel)
     } // if (is_cmd)
 
 #ifdef DEBUG
-   LogWrite("%02X %02X %02X %02X %02X %02X  <----  ", 
+   AdPlug_LogWrite("%02X %02X %02X %02X %02X %02X  <----  ", 
 			bmf.streams[channel][pos].note,	
 			bmf.streams[channel][pos].delay,
 			bmf.streams[channel][pos].volume, 
@@ -567,8 +567,8 @@ int CxadbmfPlayer::__bmf_convert_stream(unsigned char *stream, int channel)
 			bmf.streams[channel][pos].cmd_data
 		   );
    for(int zz=0;zz<(stream-last);zz++)
-     LogWrite("%02X ",last[zz]);
-   LogWrite("\n");
+     AdPlug_LogWrite("%02X ",last[zz]);
+   AdPlug_LogWrite("\n");
    last=stream;
 #endif
     pos++;

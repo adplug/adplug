@@ -148,7 +148,7 @@ bool Csa2Loader::load(istream &f, const char *filename)
 	else
 		activechan = 0xffff;
 
-	LogWrite("Csa2Loader::load(\"%s\"): sat_type = %x, nop = %d, "
+        AdPlug_LogWrite("Csa2Loader::load(\"%s\"): sat_type = %x, nop = %d, "
 		 "length = %d, restartpos = %d, activechan = %x, bpm = %d\n",
 		 filename, sat_type, nop, length, restartpos, activechan, bpm);
 

@@ -38,19 +38,19 @@ bool ChscPlayer::load(istream &f, const char *filename)
 
 	// file validation section
 	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".hsc")) {
-	  LogWrite("ChscPlayer::load(,\"%s\"): Not a HSC file! (strlen(filename)"
+          AdPlug_LogWrite("ChscPlayer::load(,\"%s\"): Not a HSC file! (strlen(filename)"
 		   " == %d) < 4 and/or filename does not end in \".hsc\"\n",
 		   filename,strlen(filename));
 	  return false;
 	}
 	f.seekg(0,ios::end);
 	if(f.tellg() > 59187) {
-	  LogWrite("ChscPlayer::load(,\"%s\"): Not a HSC file! (filesize == %u) > 59187\n",filename,f.tellg());
+          AdPlug_LogWrite("ChscPlayer::load(,\"%s\"): Not a HSC file! (filesize == %u) > 59187\n",filename,f.tellg());
 	  return false;
 	}
 
 	// load section
-	LogWrite("ChscPlayer::load(,\"%s\"): Loading...\n",filename);
+        AdPlug_LogWrite("ChscPlayer::load(,\"%s\"): Loading...\n",filename);
 	f.seekg(0);
 	f.read((char *)instr,128*12);	// load instruments
 	for (i=0;i<128;i++) {			// correct instruments

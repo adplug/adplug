@@ -108,7 +108,7 @@ void CxadflashPlayer::xadplayer_update()
     unsigned char event_b0 = tune[event_pos++];
     unsigned char event_b1 = tune[event_pos++];
 #ifdef DEBUG
-  LogWrite("channel %02X, event %02X %02X:\n",i+1,event_b0,event_b1);
+  AdPlug_LogWrite("channel %02X, event %02X %02X:\n",i+1,event_b0,event_b1);
 #endif
 
     if (event_b0 == 0x80)               // 0.0x80: Set Instrument

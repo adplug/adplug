@@ -113,7 +113,7 @@ void CxadratPlayer::xadplayer_update()
   {
     memcpy(&event,&rat.tracks[rat.order[rat.order_pos]][rat.pattern_pos][i],sizeof(rat_event));
 #ifdef DEBUG
-   LogWrite("order %02X, pattern %02X, row %02X, channel %02X, event %02X %02X %02X %02X %02X:\n",
+   AdPlug_LogWrite("order %02X, pattern %02X, row %02X, channel %02X, event %02X %02X %02X %02X %02X:\n",
 	         rat.order_pos, rat.order[rat.order_pos], rat.pattern_pos, i, event.note, event.instrument, event.volume, event.fx, event.fxp
            );
 #endif
@@ -255,7 +255,7 @@ unsigned int CxadratPlayer::xadplayer_getinstruments()
 unsigned char CxadratPlayer::__rat_calc_volume(unsigned char ivol, unsigned char cvol, unsigned char gvol)
 {
 #ifdef DEBUG
-   LogWrite("volumes: instrument %02X, channel %02X, global %02X:\n", ivol, cvol, gvol);
+   AdPlug_LogWrite("volumes: instrument %02X, channel %02X, global %02X:\n", ivol, cvol, gvol);
 #endif
   unsigned short vol;
 

@@ -55,7 +55,7 @@ bool CadtrackLoader::load(istream &f, const char *filename)
   if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".sng"))
     return false;
   f.seekg(0,ios::end); if(f.tellg() != 36000) return false; f.seekg(0);
-  LogWrite("CadtrackLoader::load(,\"%s\"): Valid .sng file. Checking for .ins file...\n",filename);
+  AdPlug_LogWrite("CadtrackLoader::load(,\"%s\"): Valid .sng file. Checking for .ins file...\n",filename);
 
   // check for instruments file
   instfilename = (char *)malloc(strlen(filename)+1);
@@ -65,7 +65,7 @@ bool CadtrackLoader::load(istream &f, const char *filename)
   free(instfilename);
   if(!instf.is_open()) return false;
   instf.seekg(0,ios::end); if(instf.tellg() != 468) return false; instf.seekg(0);
-  LogWrite("CadtrackLoader::load(,,): Valid .ins file found! Loading...\n");
+  AdPlug_LogWrite("CadtrackLoader::load(,,): Valid .ins file found! Loading...\n");
 
   // give CmodPlayer a hint on what we're up to
   realloc_patterns(1,1000,9); realloc_instruments(9); realloc_order(1);

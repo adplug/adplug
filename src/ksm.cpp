@@ -55,22 +55,22 @@ bool CksmPlayer::load(istream &f, const char *filename)
 
 	// file validation section
 	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".ksm")) {
-	  LogWrite("CksmPlayer::load(,\"%s\"): File doesn't have '.ksm' extension! Rejected!\n",filename);
+          AdPlug_LogWrite("CksmPlayer::load(,\"%s\"): File doesn't have '.ksm' extension! Rejected!\n",filename);
 	  return false;
 	}
 
-	LogWrite("*** CksmPlayer::load(,\"%s\") ***\n",filename);
+        AdPlug_LogWrite("*** CksmPlayer::load(,\"%s\") ***\n",filename);
 	strcpy(fn,filename);
 	for (i=strlen(fn)-1; i>=0; i--)
 	  if (fn[i] == '/' || fn[i] == '\\')
 	    break;
 	strcpy(fn+i+1,"insts.dat");
-	LogWrite("Instruments file: \"%s\"\n",fn);
+        AdPlug_LogWrite("Instruments file: \"%s\"\n",fn);
 	ifstream insf(fn, ios::in | ios::binary);
 	delete [] fn;
 	if(!insf.is_open()) {
-	  LogWrite("Couldn't open instruments file! Aborting!\n");
-	  LogWrite("--- CksmPlayer::load ---\n");
+          AdPlug_LogWrite("Couldn't open instruments file! Aborting!\n");
+          AdPlug_LogWrite("--- CksmPlayer::load ---\n");
 	  return false;
 	}
 	loadinsts(insf);
@@ -113,7 +113,7 @@ bool CksmPlayer::load(istream &f, const char *filename)
 	}
 
 	rewind(0);
-	LogWrite("--- CksmPlayer::load ---\n");
+        AdPlug_LogWrite("--- CksmPlayer::load ---\n");
 	return true;
 }
 

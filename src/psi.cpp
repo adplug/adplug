@@ -90,7 +90,7 @@ void CxadpsiPlayer::xadplayer_update()
 
       unsigned char event = tune[ptr++];
 #ifdef DEBUG
-  LogWrite("channel %02X, event %02X:\n",i+1,event);
+  AdPlug_LogWrite("channel %02X, event %02X:\n",i+1,event);
 #endif
 
       // end of sequence ?
@@ -100,7 +100,7 @@ void CxadpsiPlayer::xadplayer_update()
 
         event = tune[ptr++];
 #ifdef DEBUG
-  LogWrite(" channel %02X, event %02X:\n",i+1,event);
+  AdPlug_LogWrite(" channel %02X, event %02X:\n",i+1,event);
 #endif
 
         // set sequence loop flag
@@ -119,7 +119,7 @@ void CxadpsiPlayer::xadplayer_update()
 
         event = tune[ptr++];
 #ifdef DEBUG
-  LogWrite("  channel %02X, event %02X:\n",i+1,event);
+  AdPlug_LogWrite("  channel %02X, event %02X:\n",i+1,event);
 #endif
       }
 

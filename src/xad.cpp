@@ -77,7 +77,7 @@ void CxadPlayer::rewind(unsigned int subsong)
   xadplayer_rewind(subsong);
 
 #ifdef DEBUG
-  LogWrite("-----------\n");
+  AdPlug_LogWrite("-----------\n");
 #endif
 }
 
@@ -131,7 +131,7 @@ void CxadPlayer::opl_write(int reg, int val)
 {
   adlib[reg] = val;
 #ifdef DEBUG
-  LogWrite("[ %02X ] = %02X\n",reg,val);
+  AdPlug_LogWrite("[ %02X ] = %02X\n",reg,val);
 #endif
   opl->write(reg,val);
 }

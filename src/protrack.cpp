@@ -186,23 +186,23 @@ bool CmodPlayer::update()
 	}
 	pattnr = order[ord];
 
-	if(!rw) LogWrite("\nCmodPlayer::update(): Pattern: %d, Order: %d\n", pattnr, ord);
-	LogWrite("CmodPlayer::update():%3d|", rw);
+        if(!rw) AdPlug_LogWrite("\nCmodPlayer::update(): Pattern: %d, Order: %d\n", pattnr, ord);
+        AdPlug_LogWrite("CmodPlayer::update():%3d|", rw);
 
 	// play row
 	row = rw;
 	for(chan=0;chan<nchans;chan++) {
 		if(!(activechan >> (15 - chan)) & 1) {	// channel active?
-		  LogWrite("N/A|");
+                  AdPlug_LogWrite("N/A|");
 		  continue;
 		}
 		if(!(track = trackord[pattnr][chan])) {	// resolve track
-		  LogWrite("------------|");
+                  AdPlug_LogWrite("------------|");
 		  continue;
 		} else
 			track--;
 
-		LogWrite("%3d%3d%2X%2X%2X|", tracks[track][row].note,
+                AdPlug_LogWrite("%3d%3d%2X%2X%2X|", tracks[track][row].note,
 			 tracks[track][row].inst, tracks[track][row].command,
 			 tracks[track][row].param2, tracks[track][row].param1);
 
@@ -394,7 +394,7 @@ bool CmodPlayer::update()
 		songend = 1;
 	}
 
-	LogWrite("\n");
+        AdPlug_LogWrite("\n");
 	return !songend;
 }
 
