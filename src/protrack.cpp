@@ -240,25 +240,31 @@ bool CmodPlayer::update()
 	}
 	pattnr = order[ord];
 
+	LogWrite("CmodPlayer::update(): %d/%d/%d: ",ord,pattnr,rw);
+
 	// play row
 	row = rw;
 	for(chan=0;chan<nchans;chan++) {
 		if(!(activechan >> (15 - chan)) & 1)	// channel active?
 			continue;
+		LogWrite("|%d",chan);
 		if(!(track = trackord[pattnr][chan]))	// resolve track
 			continue;
 		else
 			track--;
 
+		LogWrite("(%d)",track);
+
 		donote = 0;
-        if(tracks[track][row].inst) {
-            channel[chan].inst = tracks[track][row].inst - 1;
-            if (!(flags & Faust)) {
-                channel[chan].vol1 = 63 - (inst[channel[chan].inst].data[10] & 63);
-                channel[chan].vol2 = 63 - (inst[channel[chan].inst].data[9] & 63);
-                setvolume(chan);
-            }
-        }
+		if(tracks[track][row].inst) {
+		  channel[chan].inst = tracks[track][row].inst - 1;
+		  if (!(flags & Faust)) {
+		    channel[chan].vol1 = 63 - (inst[channel[chan].inst].data[10] & 63);
+		    channel[chan].vol2 = 63 - (inst[channel[chan].inst].data[9] & 63);
+		    setvolume(chan);
+		  }
+		}
+
 		if(tracks[track][row].note && tracks[track][row].command != 3) {	// no tone portamento
 			channel[chan].note = tracks[track][row].note;
 			setnote(chan,tracks[track][row].note);
@@ -414,7 +420,7 @@ bool CmodPlayer::update()
 	}
 
 	del = speed - 1;	// speed compensation
-	if(!pattbreak) {			// next row (only if no manual advance)
+	if(!pattbreak) {	// next row (only if no manual advance)
 		rw++;
 		if(rw >= nrows) {
 			rw = 0;
@@ -426,6 +432,7 @@ bool CmodPlayer::update()
 		songend = 1;
 	}
 
+	LogWrite("          \r");
 	return !songend;
 }
 
@@ -449,7 +456,7 @@ void CmodPlayer::init_trackord()
   unsigned long i;
 
   for(i=0;i<npats*nchans;i++)
-    trackord[i / nchans][i % nchans] = i;
+    trackord[i / nchans][i % nchans] = i + 1;
 }
 
 bool CmodPlayer::init_specialarp()
@@ -484,8 +491,8 @@ bool CmodPlayer::realloc_patterns(unsigned long pats, unsigned long rows, unsign
   channel = new Channel[chans];
 
   // initialize new patterns
-  memset(trackord,0,pats*chans*2);
-  memset(tracks,0,pats*chans*rows);
+  for(i=0;i<pats*chans;i++) memset(tracks[i],0,sizeof(Tracks)*rows);
+  for(i=0;i<pats;i++) memset(trackord[i],0,chans*2);
 
   return true;
 }

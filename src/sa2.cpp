@@ -23,6 +23,7 @@
 #include <stdio.h>
 
 #include "sa2.h"
+#include "debug.h"
 
 CPlayer *Csa2Loader::factory(Copl *newopl)
 {
@@ -131,21 +132,26 @@ bool Csa2Loader::load(istream &f, const char *filename)
 	  f.read((char *)arpcmd,sizeof(arpcmd));		// arpeggio commands
 	}
 
-	for(i=0;i<64;i++) {					// track orders
-		for(j=0;j<9;j++) {
-			if(sat_type & HAS_TRACKORDER)
-				f.read((char *)&trackord[i][j],1);
-			else
-			{
-				trackord[i][j] = i * 9 + j;
-			}
-		}
+	for(i=0;i<64;i++) {				// track orders
+	  for(j=0;j<9;j++) {
+	    if(sat_type & HAS_TRACKORDER) {
+	      trackord[i][j] = f.get();
+	      LogWrite("trackord[%d][%d] = %d\n",i,j,trackord[i][j]);
+	    } else
+	      {
+		trackord[i][j] = i * 9 + j;
+	      }
+	  }
 	}
 
 	if(sat_type & HAS_ACTIVECHANNELS)
 		f.read((char *)&activechan,2);			// active channels
 	else
 		activechan = 0xffff;
+
+	LogWrite("*** Csa2Loader::load(\"%s\") ***\n",filename);
+	LogWrite("sat_type = %x, nop = %d, length = %d, restartpos = %d, activechan = %x\n",
+		 sat_type, nop, length, restartpos);
 
 	// track data
 	if(sat_type & HAS_OLDPATTERNS) {
@@ -163,7 +169,8 @@ bool Csa2Loader::load(istream &f, const char *filename)
 			}
 			i+=9;
 		}
-	} else if(sat_type & HAS_V7PATTERNS) {
+	} else
+	  if(sat_type & HAS_V7PATTERNS) {
 		i = 0;
 		while(f.peek() != EOF) {
 			for(j=0;j<64;j++) {
@@ -181,7 +188,7 @@ bool Csa2Loader::load(istream &f, const char *filename)
 			}
 			i+=9;
 		}
-	} else {
+	  } else {
 		i = 0;
 		while(f.peek() != EOF) {
 			for(j=0;j<64;j++) {
@@ -197,7 +204,7 @@ bool Csa2Loader::load(istream &f, const char *filename)
 			}
 			i++;
 		}
-	}
+	  }
 
 	// fix instrument names
 	for(i=0;i<29;i++)

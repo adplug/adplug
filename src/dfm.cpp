@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,14 +16,14 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * dfm.cpp - Digital-FM Loader by Simon Peter (dn.tlp@gmx.net)
+ * dfm.cpp - Digital-FM Loader by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include <stdio.h>
 #include <string.h>
 
 #include "dfm.h"
+#include "debug.h"
 
 CPlayer *CdfmLoader::factory(Copl *newopl)
 {
@@ -43,9 +43,8 @@ bool CdfmLoader::load(istream &f, const char *filename)
 		return false;
 
 	// load
-	restartpos = 0; activechan = 0xffff; flags = MOD_FLAGS_STANDARD; bpm = 0;
-	for(i=0;i<64*9;i++) trackord[i/9][i%9] = i+1;
-	memset(tracks,0,576*64);
+	restartpos = 0; flags = Standard; bpm = 0;
+	init_trackord();
 	f.read(songinfo,33);
 	initspeed = f.get();
 	f.read((char *)instname,32*12);

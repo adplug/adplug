@@ -58,11 +58,9 @@ bool CldsLoader::load(istream &f, const char *filename)
 
 	for(i=0;i<nop;i++)
 		order[i] = i;
-	memset(tracks,0,576*64);
-	length = nop; restartpos = 0; activechan = 0xffff;
-	initspeed = 6; bpm = 18; flags = MOD_FLAGS_STANDARD;
-	for(i=0;i<64*9;i++)		// patterns
-		trackord[i/9][i%9] = i+1;
+	length = nop; restartpos = 0;
+	initspeed = 6; bpm = 18; flags = Standard;
+	init_trackord();		// patterns
 	for(i=0;i<9;i++) {
 		dnum[i][0] = -1;
 		dnum[i][1] = 1;

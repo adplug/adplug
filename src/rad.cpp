@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * rad.cpp - RAD Loader by Simon Peter (dn.tlp@gmx.net)
+ * rad.cpp - RAD Loader by Simon Peter <dn.tlp@gmx.net>
  *
  * BUGS:
  * some volumes are dropped out
@@ -73,9 +72,7 @@ bool CradLoader::load(istream &f, const char *filename)
 	length = f.get();
 	f.read((char *)order,length);	// orderlist
 	f.read((char *)patofs,32*2);	// pattern offset table
-	for(i=0;i<64*9;i++)		// patterns
-		trackord[i/9][i%9] = i+1;
-	memset(tracks,0,576*64);
+	init_trackord();		// patterns
 	for(i=0;i<32;i++)
 		if(patofs[i]) {
 			f.seekg(patofs[i]);

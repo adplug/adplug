@@ -20,11 +20,7 @@ AdPlug To Do List:
 	- Portamento: If target note is key-off, slide to last real note
 	instead. Verify if this really has to be this way.
 
-- Add DEBUG preprocessor macro to Windows' 'Debug' build [dynamite]
-
-- Add VERSION define to DOS and Windows builds [dynamite]
-
-- Implement init_trackord() in CmodPlayer. [dynamite]
+- Add DEBUG and VERSION defines to Windows and DOS builds [dynamite]
 
 - Add new Protracker loaders:
 	- DTM: DeFy Adlib Tracker [riven-mage]
@@ -36,7 +32,6 @@ AdPlug To Do List:
 	- CFF: CUD BoomTracker [riven-mage]
 	? XAD: Custom player from Burial Grounds BBStro
 
-- Make Protracker player more flexible for upgrades
-  [dynamite: I am working on this, partly. Any suggestions are welcome!]
+- Fix up SA2 player. [dynamite]
 
-- Write Protracker-derivative-player-development-HOWTO [dynamite]
+- Fix up Player-development-HOWTO [dynamite]
