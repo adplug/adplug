@@ -72,7 +72,7 @@ may contain many replay issues, but are included for testing purposes anyway.
 - ROL: AdLib Visual Composer by AdLib Inc.
   - Needs file 'standard.bnk' in the same directory as loaded file
     (be careful under UNIX - it's case sensitive!)
-- S3M: Screamtracker 3 by Future Crew
+- S3M: Scream Tracker 3 by Future Crew
   - Bugs: Extra Fine Slides (EEx, FEx) & Fine Vibrato (Uxy) are inaccurate
 - SA2: Surprise! Adlib Tracker 2 by Surprise! Productions
 - SAT: Surprise! Adlib Tracker by Surprise! Productions

@@ -64,12 +64,12 @@ bool CdmoLoader::load(istream &f, const char *filename)
 	// load file
 	f.read((char *)packed_module,packed_length);
 
-	// decrypt()
+	// decrypt
 	unpacker->decrypt(packed_module,packed_length);
 
 	unsigned char *module = new unsigned char [0x2000 * (*(unsigned short *)&packed_module[12])];
 
-	// unpack()
+	// unpack
 	if (!unpacker->unpack(packed_module+12,module))
 	{
 		delete unpacker;

@@ -377,7 +377,7 @@ std::string Cs3mPlayer::gettype()
 	default: strcpy(filever,"3.??");
 	}
 
-	return (std::string("Screamtracker ") + filever);
+	return (std::string("Scream Tracker ") + filever);
 }
 
 float Cs3mPlayer::getrefresh()
