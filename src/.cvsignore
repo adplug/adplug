@@ -9,6 +9,7 @@ Makefile.in
 *.dsw
 *.lib
 *.err
+*.plg
 Debug
 Release
 config.bat

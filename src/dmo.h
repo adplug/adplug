@@ -52,6 +52,7 @@ class CdmoLoader: public Cs3mPlayer
 				unsigned long bseed;
 		};
 
+#pragma pack(1)
 		struct dmo_header
 		{
 			char			id[22];
@@ -75,4 +76,5 @@ class CdmoLoader: public Cs3mPlayer
 			unsigned char	type;
 			unsigned char	data[12];
 		};
+#pragma pack()
 };
