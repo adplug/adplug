@@ -7,9 +7,8 @@
 
   file(s) : HYBRID.EXE
      type : Hybrid cracktro for Apache Longbow CD-RIP
-     tune : by Mig29Fulcrum
-   player : by (?)Cyber [HYBRID]
-  comment : ripped ?
+     tune : from 'Mig-29 Fulcrum' game by Domark
+   player : from 'Mig-29 Fulcrum' game by Domark
 */
 
 #include "hybrid.h"
