@@ -524,7 +524,8 @@ void CmodPlayer::playnote(unsigned char chan)
 {
 	unsigned char op = op_table[chan], insnr = channel[chan].inst;
 
-	opl->write(0xb0 + chan, 0);	// stop old note
+	if(!(flags & NoKeyOn))
+	  opl->write(0xb0 + chan, 0);	// stop old note
 
 	// set instrument data
 	opl->write(0x20 + op, inst[insnr].data[1]);

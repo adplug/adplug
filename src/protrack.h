@@ -56,7 +56,7 @@ public:
 	{ return speed; };
 
 protected:
-	enum Flags {Standard = 0, Decimal = 1, Faust = 2};
+	enum Flags {Standard = 0, Decimal = 1, Faust = 2, NoKeyOn = 4};
 
 	struct Instrument {
 		unsigned char data[11],arpstart,arpspeed,arppos,arpspdcnt,misc;

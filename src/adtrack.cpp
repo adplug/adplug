@@ -69,7 +69,7 @@ bool CadtrackLoader::load(istream &f, const char *filename)
 
   // give CmodPlayer a hint on what we're up to
   realloc_patterns(1,1000,9); realloc_instruments(9); realloc_order(1);
-  init_trackord(); // init_notetable(my_notetable);
+  init_trackord(); flags = NoKeyOn; // init_notetable(my_notetable);
   (*order) = 0; length = 1; restartpos = 0; bpm = 120; initspeed = 3;
 
   // load instruments from instruments file
@@ -119,13 +119,15 @@ void CadtrackLoader::convert_instrument(unsigned int n, AdTrackInst *i)
   inst[n].data[2] += i->op[Carrier].appvib ? 1 << 6 : 0;
   inst[n].data[2] += i->op[Carrier].maintsuslvl ? 1 << 5 : 0;
   inst[n].data[2] += i->op[Carrier].keybscale ? 1 << 4 : 0;
-  inst[n].data[2] += (i->op[Carrier].octave + 1) & 0xffff; // Bug in original Tracker
+  //  inst[n].data[2] += (i->op[Carrier].octave + 1) & 0xffff; // Bug in original Tracker
+  inst[n].data[2] += i->op[Carrier].octave & 0xf;
   // Modulator...
   inst[n].data[1] = i->op[Modulator].appampmod ? 1 << 7 : 0;
   inst[n].data[1] += i->op[Modulator].appvib ? 1 << 6 : 0;
   inst[n].data[1] += i->op[Modulator].maintsuslvl ? 1 << 5 : 0;
   inst[n].data[1] += i->op[Modulator].keybscale ? 1 << 4 : 0;
-  inst[n].data[1] += (i->op[Modulator].octave + 1) & 0xffff; // Bug in original tracker
+  //  inst[n].data[1] += (i->op[Modulator].octave + 1) & 0xffff; // Bug in original tracker
+  inst[n].data[1] += i->op[Modulator].octave & 0xf;
 
   // Carrier "Key Scaling / Level" register
   inst[n].data[10] = (i->op[Carrier].freqrisevollvldn & 3) << 6;
