@@ -23,36 +23,27 @@
 
 #ifdef DEBUG
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <string.h>
 
-static char *logfilename = NULL;
+static FILE *log = stderr;
 
 void LogFile(const char *filename)
 {
-  if(logfilename) free(logfilename);
-  logfilename = (char *)malloc(strlen(filename)+1);
-  strcpy(logfilename,filename);
+  log = fopen(filename,"wt");
 }
 
 void LogWrite(const char *fmt, ...)
 {
   char logbuffer[256];
   va_list argptr;
-  FILE *log;
 
   va_start(argptr, fmt);
   vsprintf(logbuffer, fmt, argptr);
   va_end(argptr);
 
-  if(logfilename) {
-    log = fopen(logfilename,"at");
-    fprintf(log,logbuffer);
-    fclose(log);
-  } else
-    fprintf(stderr,logbuffer);
+  fprintf(log,logbuffer);
+  fflush(log);
 }
 
 #else

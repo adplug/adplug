@@ -119,15 +119,13 @@ void CadtrackLoader::convert_instrument(unsigned int n, AdTrackInst *i)
   inst[n].data[2] += i->op[Carrier].appvib ? 1 << 6 : 0;
   inst[n].data[2] += i->op[Carrier].maintsuslvl ? 1 << 5 : 0;
   inst[n].data[2] += i->op[Carrier].keybscale ? 1 << 4 : 0;
-  //  inst[n].data[2] += (i->op[Carrier].octave + 1) & 0xffff; // Bug in original Tracker
-  inst[n].data[2] += i->op[Carrier].octave & 0xf;
+  inst[n].data[2] += (i->op[Carrier].octave + 1) & 0xffff; // Bug in original Tracker
   // Modulator...
   inst[n].data[1] = i->op[Modulator].appampmod ? 1 << 7 : 0;
   inst[n].data[1] += i->op[Modulator].appvib ? 1 << 6 : 0;
   inst[n].data[1] += i->op[Modulator].maintsuslvl ? 1 << 5 : 0;
   inst[n].data[1] += i->op[Modulator].keybscale ? 1 << 4 : 0;
-  //  inst[n].data[1] += (i->op[Modulator].octave + 1) & 0xffff; // Bug in original tracker
-  inst[n].data[1] += i->op[Modulator].octave & 0xf;
+  inst[n].data[1] += (i->op[Modulator].octave + 1) & 0xffff; // Bug in original tracker
 
   // Carrier "Key Scaling / Level" register
   inst[n].data[10] = (i->op[Carrier].freqrisevollvldn & 3) << 6;

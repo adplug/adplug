@@ -39,7 +39,7 @@ public:
 	{ return 9; };
 
 private:
-	enum Operators {Carrier = 0, Modulator = 1};
+        enum Operators {Carrier = 1, Modulator = 0};
 	static const unsigned short my_notetable[12];
 
 	typedef struct {
