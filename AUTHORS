@@ -27,10 +27,11 @@ Akintunde Omitowoju <oplx@yahoo.com>:
 	- AdLib Visual Composer (.ROL) player development
 
 Nikita V. Kalaganov <riven@ok.ru>:
-	- Player development for the following formats:
+	- Player development:
+		- XAD: shell player and custom modules
+	- Protracker loader development:
 		- SNG: Faust Music Creator
-		- CFF: BoomTracker 4.0
-		- XAD: Custom modules
 		- MAD: Mlat Adlib Tracker
-	- XAD module shell player development
+		- CFF: BoomTracker 4.0
+		- DTM: DeFy Adlib Tracker
 	- XMS-Tracker detection support in AMD loader
