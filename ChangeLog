@@ -1,3 +1,342 @@
+2004-09-29 17:38  dynamite
+
+	* doc/: .cvsignore, libadplug.texi: Updated documentation.
+
+2004-09-28 20:37  dynamite
+
+	* src/adplug.dsp, src/kemuopl.h, src/lds.cpp, test/loudness.ref:
+	Updated loudness test reference file.
+
+2004-09-27 22:38  dynamite
+
+	* src/lds.h: Forgot to save, woops.
+
+2004-09-27 22:37  dynamite
+
+	* INSTALL, README, src/lds.cpp, src/lds.h: Finalized loudness
+	player! yeah!
+
+2004-09-03 20:43  dynamite
+
+	* AUTHORS, BUGS, TODO: Updated some docs.
+
+2004-09-03 15:05  dynamite
+
+	* INSTALL.win32, Makefile.bt, Makefile.wat, README, TODO,
+	src/Makefile.bt, src/adplug.dsp, src/d00.cpp, src/lds.cpp,
+	src/lds.h, src/s3m.cpp: DOS/Windows fixes.
+
+2004-09-03 13:45  dynamite
+
+	* test/: ice_thnk.sci, loudness.lds, mi2.laa: Fixed test-suite.
+
+2004-09-03 13:18  dynamite
+
+	* test/Makefile.bt: Added Watcom Makefile
+
+2004-09-03 13:16  dynamite
+
+	* test/loudness.lds: [no log message]
+
+2004-09-03 13:07  dynamite
+
+	* test/: 2001.ref, ADAGIO.ref, ALLOYRUN.ref, ARAB.ref, BEGIN.ref,
+	BOOTUP.ref, CHILD1.ref, DTM-TRK1.ref, HIP_D.ref, MARIO.ref,
+	PLAYMUS1.ref, REVELAT.ref, SAILOR.ref, SCALES.ref, SMKEREM.ref,
+	SONG1.ref, TOCCATA.ref, TUBES.ref, loudness.lds, playertest.cpp,
+	TU_BLESS.ref, VIB_VOL3.ref, 2001.MKJ.ref, ADAGIO.DFM.ref,
+	WONDERIN.ref, adlibsp.ref, bmf1_2.ref, fdance03.ref, flash.ref,
+	hybrid.ref, hyp.ref, ice_thnk.ref, inc.ref, loudness.ref, mi2.ref,
+	michaeld.ref, playertest.dsp, psi1.ref, rat.ref, samurai.ref,
+	ALLOYRUN.RAD.ref, ARAB.BAM.ref, BEGIN.KSM.ref, BOOTUP.M.ref,
+	CHILD1.XSM.ref, DTM-TRK1.DTM.ref, HIP_D.ROL.ref, MARIO.A2M.ref,
+	PLAYMUS1.SNG.ref, REVELAT.SNG.ref, SAILOR.CFF.ref, SCALES.SA2.ref,
+	SMKEREM.HSC.ref, SONG1.sng.ref, TOCCATA.MAD.ref, TUBES.SAT.ref,
+	TU_BLESS.AMD.ref, VIB_VOL3.D00.ref, WONDERIN.IMF.ref,
+	adlibsp.s3m.ref, bmf1_2.xad.ref, fdance03.dmo.ref, flash.xad.ref,
+	hybrid.xad.ref, hyp.xad.ref, ice_think.sci, ice_think.sci.ref,
+	inc.raw.ref, loudness.lds.ref, mi2_big_tree1.laa,
+	mi2_big_tree1.laa.ref, michaeld.cmf.ref, psi1.xad.ref, rat.xad.ref,
+	samurai.dro.ref: Made test-suite compatible with 8+3 char filename
+	systems (i.e. DOS).
+
+2004-09-02 22:27  dynamite
+
+	* test/: .cvsignore, .cvsignore: Updated by TortoiseCVS
+
+2004-09-02 21:48  dynamite
+
+	* src/dmo.cpp: Fixed endianness of TwinTeam player.
+
+2004-09-02 19:07  dynamite
+
+	* BUGS, src/rol.cpp, src/sa2.cpp: More architecture changes.
+
+2004-09-01 23:05  dynamite
+
+	* src/rol.cpp, src/rol.h, test/HIP_D.ROL.ref, test/playertest.cpp:
+	Updated rol player.
+
+2004-09-01 21:07  dynamite
+
+	* test/: 2001.MKJ.ref, ADAGIO.DFM.ref, ALLOYRUN.RAD.ref,
+	ARAB.BAM.ref, BEGIN.KSM.ref, BOOTUP.M.ref, CHILD1.XSM.ref,
+	DTM-TRK1.DTM.ref, HIP_D.ROL.ref, MARIO.A2M.ref, PLAYMUS1.SNG.ref,
+	REVELAT.SNG.ref, SAILOR.CFF.ref, SCALES.SA2.ref, SMKEREM.HSC.ref,
+	SONG1.sng.ref, TOCCATA.MAD.ref, TUBES.SAT.ref, TU_BLESS.AMD.ref,
+	VIB_VOL3.D00.ref, WONDERIN.IMF.ref, adlibsp.s3m.ref,
+	bmf1_2.xad.ref, fdance03.dmo.ref, flash.xad.ref, hybrid.xad.ref,
+	hyp.xad.ref, ice_think.sci.ref, inc.raw.ref, loudness.lds.ref,
+	mi2_big_tree1.laa.ref, michaeld.cmf.ref, playertest.cpp,
+	psi1.xad.ref, rat.xad.ref, samurai.dro.ref: Slightly modified test
+	suite reference format. Now using hex-values.
+
+2004-09-01 19:32  dynamite
+
+	* src/: dmo.cpp, dmo.h: Made player endian and wordsize clean.
+
+2004-09-01 14:33  dynamite
+
+	* src/dmo.cpp, src/dmo.h, src/hsc.cpp, src/hsc.h, src/lds.cpp,
+	src/lds.h, src/player.h, test/SMKEREM.HSC.ref, test/playertest.cpp:
+	Endian fixes. OPL write fixes. LOUDNESS player now reports song
+	position.
+
+2004-08-31 15:20  dynamite
+
+	* test/: HIP_D.ROL.ref, loudness.lds.ref: Updated test-suite.
+
+2004-08-31 00:20  dynamite
+
+	* NEWS, src/adplug.cpp, src/lds.cpp: Finalized LOUDNESS player.
+	just some small quirks left.
+
+2004-08-26 14:23  dynamite
+
+	* src/Makefile.am, src/lds.cpp, src/lds.h, src/sa2.cpp,
+	test/HIP_D.ROL.ref, test/MARIO.A2M.ref, test/loudness.lds,
+	test/playertest.cpp: Implemented LOUDNESS player. SA2 amd64 fixes.
+	Fixed test-suite.
+
+2004-08-25 16:53  dynamite
+
+	* src/: rol.cpp, rol.h: Added pitch event handling and quirks to
+	make it work on amd64.
+
+2004-08-18 18:33  dynamite
+
+	* test/: 2001.MKJ.orig, 2001.MKJ.ref, ADAGIO.DFM.orig,
+	ADAGIO.DFM.ref, ALLOYRUN.RAD.orig, ALLOYRUN.RAD.ref, ARAB.BAM.orig,
+	ARAB.BAM.ref, BEGIN.KSM.orig, BEGIN.KSM.ref, BOOTUP.M.orig,
+	BOOTUP.M.ref, CHILD1.XSM.orig, CHILD1.XSM.ref, DTM-TRK1.DTM.orig,
+	DTM-TRK1.DTM.ref, HIP_D.ROL.orig, HIP_D.ROL.ref, MARIO.A2M.orig,
+	MARIO.A2M.ref, PLAYMUS1.SNG.orig, PLAYMUS1.SNG.ref,
+	REVELAT.SNG.orig, REVELAT.SNG.ref, SAILOR.CFF.orig, SAILOR.CFF.ref,
+	SCALES.SA2.orig, SCALES.SA2.ref, SMKEREM.HSC.orig, SMKEREM.HSC.ref,
+	SONG1.sng.orig, SONG1.sng.ref, TOCCATA.MAD.orig, TOCCATA.MAD.ref,
+	TUBES.SAT.orig, TUBES.SAT.ref, TU_BLESS.AMD.orig, TU_BLESS.AMD.ref,
+	VIB_VOL3.D00.orig, VIB_VOL3.D00.ref, WONDERIN.IMF.orig,
+	WONDERIN.IMF.ref, adlibsp.s3m.orig, adlibsp.s3m.ref,
+	bmf1_2.xad.orig, bmf1_2.xad.ref, fdance03.dmo.orig,
+	fdance03.dmo.ref, flash.xad.orig, flash.xad.ref, hybrid.xad.orig,
+	hybrid.xad.ref, hyp.xad.orig, hyp.xad.ref, ice_think.sci.orig,
+	ice_think.sci.ref, inc.raw.orig, inc.raw.ref,
+	mi2_big_tree1.laa.orig, mi2_big_tree1.laa.ref, michaeld.cmf.orig,
+	michaeld.cmf.ref, playertest.cpp, psi1.xad.orig, psi1.xad.ref,
+	rat.xad.orig, rat.xad.ref, samurai.dro.orig, samurai.dro.ref: .orig
+	was a bad file extension decision for the reference files, as it is
+	the standard extension used by patch to mark an original and is
+	also ignored by CVS by default. I thus renamed all reference files
+	to have an extension of .ref instead.
+
+2004-08-18 18:24  dynamite
+
+	* test/: HIP_D.ROL.orig, bmf1_2.xad.orig, flash.xad.orig,
+	hybrid.xad.orig, hyp.xad.orig, psi1.xad.orig: Added more reference
+	file formats.
+
+2004-08-18 18:23  dynamite
+
+	* src/dro.cpp, src/raw.cpp, test/HIP_D.ROL, test/bmf1_2.xad,
+	test/flash.xad, test/hybrid.xad, test/hyp.xad, test/inc.raw.orig,
+	test/playertest.cpp, test/psi1.xad, test/standard.bnk: Added more
+	reference formats to test-suite.
+
+2004-08-18 16:48  dynamite
+
+	* test/: 2001.MKJ.orig, 2001.MKJ.orig.raw, ADAGIO.DFM.orig,
+	ADAGIO.DFM.orig.raw, ALLOYRUN.RAD.orig, ALLOYRUN.RAD.orig.raw,
+	ARAB.BAM.orig, ARAB.BAM.orig.raw, BEGIN.KSM.orig,
+	BEGIN.KSM.orig.raw, BOOTUP.M.orig, BOOTUP.M.orig.raw,
+	CHILD1.XSM.orig, CHILD1.XSM.orig.raw, DTM-TRK1.DTM.orig,
+	DTM-TRK1.DTM.orig.raw, MARIO.A2M.orig, MARIO.A2M.orig.raw,
+	PLAYMUS1.SNG.orig, PLAYMUS1.SNG.orig.raw, REVELAT.SNG.orig,
+	REVELAT.SNG.orig.raw, SAILOR.CFF.orig, SAILOR.CFF.orig.raw,
+	SCALES.SA2.orig, SCALES.SA2.orig.raw, SMKEREM.HSC.orig,
+	SMKEREM.HSC.orig.raw, SONG1.sng.orig, SONG1.sng.orig.raw,
+	TOCCATA.MAD.orig, TOCCATA.MAD.orig.raw, TUBES.SAT.orig,
+	TUBES.SAT.orig.raw, TU_BLESS.AMD.orig, TU_BLESS.AMD.orig.raw,
+	VIB_VOL3.D00.orig, VIB_VOL3.D00.orig.raw, WONDERIN.IMF.orig,
+	WONDERIN.IMF.orig.raw, adlibsp.s3m.orig, adlibsp.s3m.orig.raw,
+	fdance03.dmo.orig, fdance03.dmo.orig.raw, ice_think.sci.orig,
+	ice_think.sci.orig.raw, inc.raw.orig, inc.raw.orig.raw,
+	mi2_big_tree1.laa.orig, mi2_big_tree1.laa.orig.raw,
+	michaeld.cmf.orig, michaeld.cmf.orig.raw, playertest.cpp,
+	rat.xad.orig, rat.xad.orig.raw, samurai.dro.orig,
+	samurai.dro.orig.raw: Switched to new player test reference file
+	format.
+
+2004-08-17 22:30  dynamite
+
+	* src/cff.cpp, src/dmo.cpp, src/dtm.cpp, src/mid.cpp,
+	src/protrack.cpp, src/raw.cpp, src/sng.cpp,
+	test/TOCCATA.MAD.orig.raw, test/TUBES.SAT.orig.raw,
+	test/TU_BLESS.AMD.orig.raw, test/inc.raw.orig.raw,
+	test/playertest.cpp: Fixed multiple memory leaks.
+
+2004-08-16 23:15  dynamite
+
+	* INSTALL, INSTALL.unix, NEWS: Updated autotools.
+
+2004-08-16 23:10  dynamite
+
+	* INSTALL, src/mkj.cpp, test/2001.MKJ.orig.raw,
+	test/playertest.cpp: Fixed MKJamz player on multi-CPU platforms.
+
+2004-08-16 15:44  dynamite
+
+	* test/playertest.cpp: Added status info.
+
+2004-08-16 00:20  dynamite
+
+	* test/playertest.cpp: Added playernames.
+
+2004-08-16 00:15  dynamite
+
+	* test/.cvsignore: Added .cvsignore.
+
+2004-08-16 00:14  dynamite
+
+	* test/2001.MKJ, test/2001.MKJ.orig.raw, test/ADAGIO.DFM,
+	test/ADAGIO.DFM.orig.raw, test/ALLOYRUN.RAD,
+	test/ALLOYRUN.RAD.orig.raw, test/ARAB.BAM, test/ARAB.BAM.orig.raw,
+	test/BEGIN.KSM, test/BEGIN.KSM.orig.raw, test/BOOTUP.M,
+	test/BOOTUP.M.orig.raw, test/CHILD1.XSM, test/CHILD1.XSM.orig.raw,
+	test/DTM-TRK1.DTM, test/DTM-TRK1.DTM.orig.raw, test/MARIO.A2M,
+	test/MARIO.A2M.orig.raw, test/Makefile.am, test/PLAYMUS1.SNG,
+	test/PLAYMUS1.SNG.orig.raw, test/REVELAT.SNG,
+	test/REVELAT.SNG.orig.raw, test/SAILOR.CFF,
+	test/SAILOR.CFF.orig.raw, test/SCALES.SA2,
+	test/SCALES.SA2.orig.raw, test/SMKEREM.HSC,
+	test/SMKEREM.HSC.orig.raw, test/SONG1.ins, test/SONG1.sng,
+	test/SONG1.sng.orig.raw, test/TOCCATA.MAD,
+	test/TOCCATA.MAD.orig.raw, test/TUBES.SAT, test/TUBES.SAT.orig.raw,
+	test/TU_BLESS.AMD, test/TU_BLESS.AMD.orig.raw, test/VIB_VOL3.D00,
+	test/VIB_VOL3.D00.orig.raw, test/WONDERIN.IMF,
+	test/WONDERIN.IMF.orig.raw, test/adlibsp.s3m,
+	test/adlibsp.s3m.orig.raw, test/fdance03.dmo,
+	test/fdance03.dmo.orig.raw, test/ice_think.sci,
+	test/ice_think.sci.orig.raw, test/icepatch.003, test/inc.raw,
+	test/inc.raw.orig.raw, test/insts.dat, test/mi2_big_tree1.laa,
+	test/mi2_big_tree1.laa.orig.raw, test/michaeld.cmf,
+	test/michaeld.cmf.orig.raw, test/playertest.cpp, test/rat.xad,
+	test/rat.xad.orig.raw, test/samurai.dro, test/samurai.dro.orig.raw,
+	Makefile.am, configure.in: Added Test-Suite.
+
+2004-08-09 14:08  dynamite
+
+	* adplugdb/getopt.c, adplugdb/getopt.h, doc/Makefile.am: Reverted
+	getopt.
+
+2004-08-08 21:20  dynamite
+
+	* adplugdb/: adplugdb.cpp, getopt.c, getopt.h: Updated getopt.
+
+2004-08-06 23:45  dynamite
+
+	* NEWS, README, doc/Makefile.am, src/dro.cpp: Updated distclean
+	target.
+
+2004-07-09 15:11  dynamite
+
+	* src/: adplug.dsp, amd.cpp: Windows fixes.
+
+2004-07-05 15:03  dynamite
+
+	* AUTHORS, COPYING, src/Makefile.am, src/adplug.cpp, src/amd.cpp,
+	src/dro.cpp, src/dro.h: Added "DOSBox Raw OPL" player (.dro). Fixed
+	AMD loader.
+
+2004-05-14 17:21  dynamite
+
+	* src/ksm.cpp: Fixed drums in ksm player.
+
+2004-05-13 11:33  dynamite
+
+	* COPYING, NEWS, README, adplugdb/.cvsignore, src/Makefile.am,
+	src/adlibemu.c, src/adlibemu.h, src/emuopl.h, src/kemuopl.h,
+	src/lds.cpp, src/opl.h: Added Ken Silverman's emulator again.
+
+2004-05-09 18:56  dynamite
+
+	* adplugdb/.cvsignore, src/lds.cpp: Disabled Loudness player.
+
+2004-04-14 12:08  dynamite
+
+	* src/adplug.dsp: Added xsm player
+
+2003-11-03 16:41  dynamite
+
+	* AUTHORS, NEWS, src/emuopl.cpp, src/emuopl.h, src/fmopl.c,
+	src/fmopl.h: Reverted fmopl OPL2 emulator to former open-source
+	version.
+
+2003-08-15 19:31  dynamite
+
+	* src/: adplug.cpp, imf.cpp, imf.h, player.h: Added playback
+	capability for .adlib files to IMF player.
+
+2003-05-04 21:25  dynamite
+
+	* INSTALL: Added more info about UNIX CVS compiles.
+
+2003-05-04 21:23  dynamite
+
+	* NEWS: Updated NEWS.
+
+2003-05-04 20:02  dynamite
+
+	* INSTALL, Makefile.bt, adplug.qpg, adplug.spec, configure.in,
+	src/adplug.cpp, src/adtrack.cpp, src/lds.cpp, src/rol.cpp,
+	src/sa2.cpp: Fixed unsupported files being left open bug. Added
+	more UNIX and CVS install instructions. Bumped version number.
+
+2003-05-04 00:34  dynamite
+
+	* src/: xsm.cpp, xsm.h: Added XSM player.
+
+2003-05-04 00:33  dynamite
+
+	* NEWS, adplug.qpg, doc/libadplug.texi, src/Makefile.am,
+	src/Makefile.bt, src/adplug.cpp, src/adtrack.cpp, src/lds.cpp,
+	src/lds.h, src/mkj.cpp, src/mkj.h, src/rol.cpp, src/sa2.cpp: Fixed
+	some replay glitches in MKJamz player, but still not perfect. Fixed
+	some files being left open on unsupported file types. Bumped
+	version numbers.
+
+2003-03-19 12:45  dynamite
+
+	* Makefile.bt, NEWS, adplug.qpg, adplug.spec, configure.in,
+	src/adplug.cpp: Bumped version number.
+
+2003-03-18 17:02  dynamite
+
+	* Makefile.bt: late-coming DOS build fixes.
+
+2003-03-18 14:46  dynamite
+
+	* ChangeLog: Updated ChangeLog.
+
 2003-03-18 12:41  dynamite
 
 	* Makefile.bt: DOS build fixes. Release Candidate #3.

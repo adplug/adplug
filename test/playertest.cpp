@@ -65,6 +65,7 @@ static const char *filelist[] = {
   "hybrid.xad", 	// xad: hybrid
   "hyp.xad",		// xad: hyp
   "psi1.xad",		// xad: PSI
+  "SATNIGHT.HSP",	// HSC Packed
   NULL
 };
 

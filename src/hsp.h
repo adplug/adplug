@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,9 @@
  * hsp.h: HSC Packed Loader by Simon Peter <dn.tlp@gmx.net>
  */
 
+#ifndef H_ADPLUG_HSPLOADER
+#define H_ADPLUG_HSPLOADER
+
 #include "hsc.h"
 
 class ChspLoader: public ChscPlayer
@@ -32,3 +35,5 @@ public:
 
 	bool load(const std::string &filename, const CFileProvider &fp);
 };
+
+#endif
