@@ -8,7 +8,7 @@ class CimfPlayer: public CPlayer
 {
 public:
 	CimfPlayer(Copl *newopl)
-		: CPlayer(newopl)
+		: CPlayer(newopl), data(0)
 	{ };
 	~CimfPlayer()
 	{ if(data) delete [] data; };

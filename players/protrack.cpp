@@ -61,6 +61,12 @@ static const vibratotab[32] =				// vibrato rate table
 
 /*** public methods *************************************/
 
+CmodPlayer::CmodPlayer(Copl *newopl): CPlayer(newopl), flags(0), initspeed(6)
+{
+	memset(inst,0,sizeof(inst));
+	memset(trackord,0,64*9*2);
+}
+
 bool CmodPlayer::update()
 {
 	unsigned char pattbreak=0,donote;						// remember vars

@@ -63,6 +63,7 @@ bool CksmPlayer::load(istream &f)
 		numchans = 6;
 	}
 
+	rewind(0);
 	return true;
 }
 

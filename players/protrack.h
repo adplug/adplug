@@ -12,9 +12,7 @@
 class CmodPlayer: public CPlayer
 {
 public:
-	CmodPlayer(Copl *newopl)
-		: CPlayer(newopl), flags(0), initspeed(6)
-	{ memset(inst,0,sizeof(inst)); };
+	CmodPlayer(Copl *newopl);
 
 	bool update();
 	void rewind(unsigned int subsong);

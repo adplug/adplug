@@ -1,5 +1,5 @@
 /*
- * sa2.c - SAdT2 Loader by Simon Peter (dn.tlp@gmx.net)
+ * sa2.cpp - SAdT2 Loader by Simon Peter (dn.tlp@gmx.net)
  *
  * NOTES:
  * SAdT2 version 7 files are unimplemented (i don't have any).
@@ -36,7 +36,7 @@ bool Csa2Loader::load(istream &f)
 	if(header.version == 9)
 		f.read((char *)&activechan,2);			// active channels
 	else
-		activechan = 0xff80;	// v8 files have always all channels active
+		activechan = 0xffff;	// v8 files have always all channels active
 
 	// track data
 	i = 0;
