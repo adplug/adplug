@@ -56,7 +56,7 @@ bool CbamPlayer::update()
 		return !songend;
 	}
 
-	if(pos >= size) {
+	if(pos >= size) {	// EOF detection
 		pos = 0;
 		songend = true;
 	}
@@ -99,31 +99,44 @@ bool CbamPlayer::update()
 			pos += 12;
 			break;
 		case 80:	// set label
-			label[c] = ++pos;
+			label[c].target = ++pos;
+			label[c].defined = true;
 			break;
 		case 96:	// jump
-			switch(song[pos+1]) {
-			case 0:		// end of loop
-				pos += 2;
-				break;
-			case 254:	// infinite loop
-				pos = label[c];
-				songend = true;
-				break;
-			case 255:	// chorus
-				gosub = pos + 2;
-				pos = label[c];
-				break;
-			default:	// finite loop
-				song[pos+1]--;
-				pos = label[c];
-				break;
-			}
+			if(label[c].defined)
+				switch(song[pos+1]) {
+				case 254:	// infinite loop
+					if(label[c].defined) {
+						pos = label[c].target;
+						songend = true;
+						break;
+					}
+					// fall through...
+				case 255:	// chorus
+					if(!chorus && label[c].defined) {
+						chorus = true;
+						gosub = pos + 2;
+						pos = label[c].target;
+						break;
+					}
+					// fall through...
+				case 0:		// end of loop
+					pos += 2;
+					break;
+				default:	// finite loop
+					song[pos+1]--;
+					pos = label[c].target;
+					break;
+				}
 			break;
 		case 112:	// end of chorus
-			pos = gosub;
+			if(chorus) {
+				pos = gosub;
+				chorus = false;
+			} else
+				pos++;
 			break;
-		default:	// reserved command
+		default:	// reserved command (skip)
 			pos++;
 			break;
 		}
@@ -137,6 +150,7 @@ bool CbamPlayer::update()
 
 void CbamPlayer::rewind(unsigned int subsong)
 {
-	pos = 0; songend = false; del = 0; gosub = 0; memset(label,0,16*4);
+	pos = 0; songend = false; del = 0; gosub = 0; chorus = false;
+	memset(label,0,sizeof(label)); label[0].defined = true;
 	opl->init(); opl->write(1,32);
 }

@@ -42,6 +42,11 @@ public:
 
 private:
 	unsigned char	*song,del;
-	unsigned long	pos,size,label[16],gosub;
-	bool			songend;
+	unsigned long	pos,size,gosub;
+	bool			songend,chorus;
+
+	struct {
+		unsigned long	target;
+		bool			defined;
+	} label[16];
 };
