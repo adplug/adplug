@@ -2,7 +2,7 @@ lib_LTLIBRARIES = libadplug.la
 
 libadplug_la_SOURCES = adplug.cpp emuopl.cpp fmopl.c diskopl.cpp debug.c \
 debug.h fprovide.cpp player.cpp database.cpp hsc.cpp sng.cpp imf.cpp \
-players.cpp protrack.cpp a2m.cpp
+players.cpp protrack.cpp a2m.cpp adtrack.cpp amd.cpp
 
 libadplug_la_LDFLAGS = -release @VERSION@
 

@@ -28,19 +28,20 @@
 /***** Replayer includes *****/
 
 #include "hsc.h"
+#include "amd.h"
+#include "a2m.h"
+#include "imf.h"
+#include "sng.h"
+#include "adtrack.h"
 /*#include "mtk.h"
 #include "hsp.h"
 #include "s3m.h"
 #include "raw.h"
 #include "d00.h"
 #include "sa2.h"
-#include "amd.h"
-#include "rad.h" */
-#include "a2m.h"
-//#include "mid.h"
-#include "imf.h"
-#include "sng.h"
-/*#include "ksm.h"
+#include "rad.h"
+#include "mid.h"
+#include "ksm.h"
 #include "mkj.h"
 #include "dfm.h"
 #include "lds.h"
@@ -53,7 +54,6 @@
 #include "rat.h"
 #include "hybrid.h"
 #include "mad.h"
-#include "adtrack.h"
 #include "cff.h"
 #include "dtm.h"
 #include "dmo.h"
@@ -72,6 +72,8 @@ static const CPlayerDesc allplayers[] = {
   CPlayerDesc(CsngPlayer::factory, "SNGPlay", ".sng"),
   CPlayerDesc(CimfPlayer::factory, "IMF", ".imf"),
   CPlayerDesc(Ca2mLoader::factory, "Adlib Tracker 2", ".a2m"),
+  CPlayerDesc(CadtrackLoader::factory, "Adlib Tracker 1.0", ".sng"),
+  CPlayerDesc(CamdLoader::factory, "AMUSIC AdLib Tracker", ".amd"),
   CPlayerDesc()
 };
 

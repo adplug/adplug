@@ -269,7 +269,7 @@ CAdPlugDatabase::CRecord *CAdPlugDatabase::CRecord::factory(binistream &in)
 
   if(rec) {
     rec->key.crc16 = in.readInt(2); rec->key.crc32 = in.readInt(4);
-    rec->filetype = in.readString();
+    rec->filetype = in.readString('\0');
     rec->read_own(in);
     return rec;
   } else {
@@ -355,8 +355,8 @@ CInfoRecord::CInfoRecord()
 
 void CInfoRecord::read_own(binistream &in)
 {
-  title = in.readString();
-  author = in.readString();
+  title = in.readString('\0');
+  author = in.readString('\0');
 }
 
 void CInfoRecord::write_own(binostream &out)

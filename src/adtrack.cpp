@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <fstream.h>
 
 #include "adtrack.h"
 #include "debug.h"
@@ -40,32 +39,30 @@
 
 CPlayer *CadtrackLoader::factory(Copl *newopl)
 {
-  CadtrackLoader *p = new CadtrackLoader(newopl);
-  return p;
+  return new CadtrackLoader(newopl);
 }
 
-bool CadtrackLoader::load(istream &f, const char *filename)
+bool CadtrackLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-  char *instfilename, note[2];
+  binistream *f = fp.open(filename); if(!f) return false;
+  binistream *instf;
+  char note[2];
   unsigned short rwp;
   unsigned char chp, octave, pnote = 0;
+  int i,j;
   AdTrackInst myinst;
 
   // file validation
-  if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".sng"))
-    return false;
-  f.seekg(0,ios::end); if(f.tellg() != 36000) return false; f.seekg(0);
-  AdPlug_LogWrite("CadtrackLoader::load(,\"%s\"): Valid .sng file. Checking for .ins file...\n",filename);
+  if(!extension(filename, ".sng") || filesize(f) != 36000)
+    { fp.close(f); return false; }
 
   // check for instruments file
-  instfilename = (char *)malloc(strlen(filename)+1);
-  strcpy(instfilename,filename);
-  strcpy(strrchr(instfilename,'.'),".ins");
-  ifstream instf(instfilename, ios::in | ios::binary);
-  free(instfilename);
-  if(!instf.is_open()) return false;
-  instf.seekg(0,ios::end); if(instf.tellg() != 468) return false; instf.seekg(0);
-  AdPlug_LogWrite("CadtrackLoader::load(,,): Valid .ins file found! Loading...\n");
+  std::string instfilename(filename, 0, filename.find_last_of('.'));
+  instfilename += ".ins";
+  AdPlug_LogWrite("CadtrackLoader::load(,\"%s\"): Checking for \"%s\"...\n",
+		  filename.c_str(), instfilename.c_str());
+  instf = fp.open(instfilename);
+  if(!instf || filesize(instf) != 468) { fp.close(f); return false; }
 
   // give CmodPlayer a hint on what we're up to
   realloc_patterns(1,1000,9); realloc_instruments(9); realloc_order(1);
@@ -73,15 +70,31 @@ bool CadtrackLoader::load(istream &f, const char *filename)
   (*order) = 0; length = 1; restartpos = 0; bpm = 120; initspeed = 3;
 
   // load instruments from instruments file
-  for(unsigned char i=0;i<9;i++) {
-    instf.read((char *)&myinst,sizeof(AdTrackInst));
+  for(i=0;i<9;i++) {
+    for(j=0;j<2;j++) {
+      myinst.op[j].appampmod = instf->readInt(2);
+      myinst.op[j].appvib = instf->readInt(2);
+      myinst.op[j].maintsuslvl = instf->readInt(2);
+      myinst.op[j].keybscale = instf->readInt(2);
+      myinst.op[j].octave = instf->readInt(2);
+      myinst.op[j].freqrisevollvldn = instf->readInt(2);
+      myinst.op[j].softness = instf->readInt(2);
+      myinst.op[j].attack = instf->readInt(2);
+      myinst.op[j].decay = instf->readInt(2);
+      myinst.op[j].release = instf->readInt(2);
+      myinst.op[j].sustain = instf->readInt(2);
+      myinst.op[j].feedback = instf->readInt(2);
+      myinst.op[j].waveform = instf->readInt(2);
+    }
     convert_instrument(i, &myinst);
   }
+  fp.close(instf);
 
   // load file
   for(rwp=0;rwp<1000;rwp++)
     for(chp=0;chp<9;chp++) {
-      f.read(note,2); octave = f.get(); f.ignore();	// read next record
+      // read next record
+      f->readString(note, 2); octave = f->readInt(1); f->ignore();
       switch(*note) {
       case 'C': if(note[1] == '#') pnote = 2; else pnote = 1; break;
       case 'D': if(note[1] == '#') pnote = 4; else pnote = 3; break;
@@ -93,7 +106,7 @@ bool CadtrackLoader::load(istream &f, const char *filename)
       case '\0':
 	if(note[1] == '\0') tracks[chp][rwp].note = 127; else return false;
 	break;
-      default: return false;
+      default: fp.close(f); return false;
       }
       if((*note) != '\0') {
 	tracks[chp][rwp].note = pnote + (octave * 12);
@@ -101,6 +114,7 @@ bool CadtrackLoader::load(istream &f, const char *filename)
       }
     }
 
+  fp.close(f);
   rewind(0);
   return true;
 }
@@ -119,7 +133,7 @@ void CadtrackLoader::convert_instrument(unsigned int n, AdTrackInst *i)
   inst[n].data[2] += i->op[Carrier].appvib ? 1 << 6 : 0;
   inst[n].data[2] += i->op[Carrier].maintsuslvl ? 1 << 5 : 0;
   inst[n].data[2] += i->op[Carrier].keybscale ? 1 << 4 : 0;
-  inst[n].data[2] += (i->op[Carrier].octave + 1) & 0xffff; // Bug in original Tracker
+  inst[n].data[2] += (i->op[Carrier].octave + 1) & 0xffff; // Bug in original tracker
   // Modulator...
   inst[n].data[1] = i->op[Modulator].appampmod ? 1 << 7 : 0;
   inst[n].data[1] += i->op[Modulator].appvib ? 1 << 6 : 0;

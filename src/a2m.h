@@ -21,25 +21,6 @@
 
 #include "protrack.h"
 
-/*
-#define MAXFREQ			2000
-#define MINCOPY			3
-#define MAXCOPY			255
-#define COPYRANGES		6
-#define CODESPERRANGE	(MAXCOPY - MINCOPY + 1)
-
-#define TERMINATE		256
-#define FIRSTCODE		257
-#define MAXCHAR			(FIRSTCODE + COPYRANGES * CODESPERRANGE - 1)
-#define SUCCMAX			(MAXCHAR + 1)
-#define TWICEMAX		(2 * MAXCHAR + 1)
-#define ROOT			1
-#define MAXBUF			(42 * 1024)
-
-#define MAXDISTANCE		21389
-#define MAXSIZE			21389 + MAXCOPY
-*/
-
 class Ca2mLoader: public CmodPlayer
 {
 public:

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,64 +16,62 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * amd.cpp - AMD Loader by Simon Peter (dn.tlp@gmx.net)
+ * amd.cpp - AMD Loader by Simon Peter <dn.tlp@gmx.net>
  */
+
+#include <string.h>
 
 #include "amd.h"
 
 CPlayer *CamdLoader::factory(Copl *newopl)
 {
-  CamdLoader *p = new CamdLoader(newopl);
-  return p;
+  return new CamdLoader(newopl);
 }
 
-bool CamdLoader::load(istream &f, const char *filename)
+bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
 {
+    binistream *f = fp.open(filename); if(!f) return false;
 	struct {
 		char id[9];
 		unsigned char version;
 	} header;
-	int i,j,t;
-	unsigned char buf,buf2,buf3;
+	int i, j, k, t, numtrax;
+	unsigned char buf, buf2, buf3;
 	const unsigned char convfx[10] = {0,1,2,9,17,11,13,18,3,14};
 
 	// file validation section
-	f.seekg(0,ios::end);
-	if(f.tellg() < 1062 + sizeof(header)) return false;
-	f.seekg(1062);
-	f.read((char *)&header,sizeof(header));
-	if(strncmp(header.id,"<o\xefQU\xeeRoR",9) && strncmp(header.id,"MaDoKaN96",9))
-		return false;
+	if(filesize(f) < 1072) { fp.close(f); return false; }
+	f->seek(1062); f->readString(header.id, 9);
+	header.version = f->readInt(1);
+	if(strncmp(header.id, "<o\xefQU\xeeRoR", 9) &&
+	   strncmp(header.id, "MaDoKaN96", 9)) { fp.close(f); return false; }
 
 	// load section
-	version = header.version;
-	memset(inst,0,sizeof(inst));
-	f.seekg(0);
-	f.read(songname,sizeof(songname));
-	f.read(author,sizeof(author));
-	for(i=0;i<26;i++) {
-		f.read(instname[i],23);
-		f.read((char *)inst[i].data,11);
+	memset(inst, 0, sizeof(inst));
+	f->seek(0);
+	f->readString(songname, sizeof(songname));
+	f->readString(author, sizeof(author));
+	for(i = 0; i < 26; i++) {
+		f->readString(instname[i], 23);
+		for(j = 0; j < 11; j++) inst[i].data[j] = f->readInt(1);
 	}
-	length = f.get();
-	nop = f.get() + 1;	// convert to 16bit
-	f.read((char *)order,128);
-	f.read((char *)&header,sizeof(header));
+	length = f->readInt(1); nop = f->readInt(1) + 1;
+	for(i=0;i<128;i++) order[i] = f->readInt(1);
+	f->seek(10, binio::Add);
 	if(header.version == 0x10) {	// unpacked module
 		for(i=0;i<64*9;i++)
 			trackord[i/9][i%9] = i+1;
 		t = 0;
-		while(f.peek() != EOF) {
+		while(!f->ateof()) {
 			for(j=0;j<64;j++)
 				for(i=t;i<t+9;i++) {
-					buf = f.get();
+					buf = f->readInt(1);
 					tracks[i][j].param2 = (buf&127) % 10;
 					tracks[i][j].param1 = (buf&127) / 10;
-					buf = f.get();
+					buf = f->readInt(1);
 					tracks[i][j].inst = buf >> 4;
 					tracks[i][j].command = buf & 0x0f;
-					buf = f.get();
+					buf = f->readInt(1);
 					if(buf >> 4)	// fix bug in AMD save routine
 						tracks[i][j].note = ((buf & 14) >> 1) * 12 + (buf >> 4);
 					else
@@ -84,19 +82,16 @@ bool CamdLoader::load(istream &f, const char *filename)
 		}
 	} else {						// packed module
 		for(i=0;i<nop;i++)
-			for(j=0;j<9;j++) {
-				f.read((char *)&trackord[i][j],2);
-				trackord[i][j]++;
-			}
-		i = 0;
-		f.ignore(2);
-		while(f.peek() != EOF) {
-			f.read((char *)&i,2);
+		  for(j=0;j<9;j++)
+			  trackord[i][j] = f->readInt(2) + 1;
+		numtrax = f->readInt(2);
+		for(k=0;k<numtrax;k++) {
+		  i = f->readInt(2);
 			j = 0;
 			do {
-				buf = f.get();
+				buf = f->readInt(1);
 				if(buf & 128) {
-					for(t=j;t<j+(buf & 127) && t < 64;t++) {
+					for(t = j; t < j + (buf & 127) && t < 64; t++) {
 						tracks[i][t].command = 0;
 						tracks[i][t].inst = 0;
 						tracks[i][t].note = 0;
@@ -108,10 +103,10 @@ bool CamdLoader::load(istream &f, const char *filename)
 				}
 				tracks[i][j].param2 = buf % 10;
 				tracks[i][j].param1 = buf / 10;
-				buf = f.get();
+				buf = f->readInt(1);
 				tracks[i][j].inst = buf >> 4;
 				tracks[i][j].command = buf & 0x0f;
-				buf = f.get();
+				buf = f->readInt(1);
 				if(buf >> 4)	// fix bug in AMD save routine
 					tracks[i][j].note = ((buf & 14) >> 1) * 12 + (buf >> 4);
 				else
@@ -121,6 +116,7 @@ bool CamdLoader::load(istream &f, const char *filename)
 			} while(j<64);
 		}
 	}
+	fp.close(f);
 
 	// convert to protracker replay data
 	bpm = 50; restartpos = 0; activechan = 0xffff; flags = Decimal;
@@ -161,6 +157,7 @@ bool CamdLoader::load(istream &f, const char *filename)
 				}
 			}
 		}
+
 	rewind(0);
 	return true;
 }

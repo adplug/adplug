@@ -193,7 +193,6 @@ more about the build systems.
 @menu
 * Coding Style::
 * Debug Logging::
-* Documentation::
 @end menu
 
 @node Coding Style
@@ -270,16 +269,6 @@ For asynchronous threads, there is no way but to prefix any line with
 the function name, because these messages will be sprayed throughout
 the logfile.
 @end itemize
-
-@node Documentation
-@section Documentation
-
-AdPlug's documentation is written in ASCII textfiles and Texinfo
-files. This way, one can easily convert the documentation to all types
-of document formats.
-
-If you would like to add to the existing documentation, please use the
-writing style, that's already been used here.
 
 @node Player development
 @chapter Player development
