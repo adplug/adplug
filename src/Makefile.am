@@ -18,4 +18,4 @@ mtk.h protrack.h rad.h raw.h s3m.h sa2.h sng.h u6m.h player.h fmc.h mad.h \
 xad.h bmf.h flash.h hyp.h psi.h rat.h hybrid.h rol.h
 
 EXTRA_DIST = Makefile.bt adplug.dsp analopl.cpp analopl.h realopl.cpp \
-realopl.h
+realopl.h vc6inst.bat

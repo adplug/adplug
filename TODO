@@ -15,5 +15,3 @@ initialization method inside the players' interface.
 - Protracker player:
 	- Portamento: If target note is key-off, slide to last real note
 	instead.
-
-- Write install.win32

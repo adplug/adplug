@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,23 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ * imfcrc.h - IMF file CRC checksums, by Simon Peter <dn.tlp@gmx.net>
  *
- * imfcrc.h - CRC checksums for non-standard IMF files, by Simon Peter <dn.tlp@gmx.net>
+ * NOTES:
+ * These checksums are used by the IMF replayer to detect the IMF file to be
+ * played and set the timer refresh rate accordingly, since there is no
+ * method of setting the right timer rate otherwise.
+ *
+ * Fields are: Checksum, filesize, timer refresh rate
+ *
+ * The checksums are computed using the 'cksum' tool, found in the
+ * GNU textutils package.
+ *
+ * DISCLAIMER:
+ * These refresh rates and filenames in the comments are by no means meant
+ * to be exact or complete. They were determined mostly by listening to the
+ * original game's music and then guessing the right values. Contributions
+ * to this list are always welcome!
  */
 
 static const struct {
@@ -47,6 +62,7 @@ static const struct {
 	// Duke Nukem 2
 	{144795658u,24804,280.0f},	// dn2_1.imf
 	{2588111802u,34768,280.0f},	// dn2_2.imf
+	{3609219510u,8736,280.0f},	// Dukeiia.imf
 
 	// Commander Keen 4-6
 	{3682452985u,6324,560.44f},	// 2FUTURE.IMF
