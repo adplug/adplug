@@ -1,3 +1,224 @@
+2003-03-17 15:00  dynamite
+
+	* AUTHORS, COPYING, TODO, adplug_mdk.spec, src/adplug.cpp: Fixed
+	faust music creator file extension. Removed mandrake spec file. 
+	Release Candidate. Added excerpt of MAME license.
+
+2003-03-16 20:35  dynamite
+
+	* src/: Makefile.bt, player.cpp: DOS build fixes.
+
+2003-03-16 17:56  dynamite
+
+	* NEWS, doc/libadplug.texi, src/fmopl.c, src/player.cpp: Updated
+	fmopl to MAME 0.66 source. Updated CPlayer::songlength(), it now
+	doesn't touch the OPL while calculating the song length.
+
+2003-03-13 16:19  dynamite
+
+	* src/: rol.cpp, rol.h: Fixed CR/LF's.
+
+2003-03-13 14:54  dynamite
+
+	* src/adplug.dsp: Synced windows build.
+
+2003-03-13 13:45  dynamite
+
+	* src/: Makefile.am, adplug.cpp, rol.cpp, rol.h: Added new version
+	of .rol player.
+
+2003-03-07 14:41  dynamite
+
+	* BUGS, src/fmopl.c, src/protrack.cpp: Fixed symbol clash in fmopl
+	emulator. Thanks to Goetz Waschk!
+
+2003-03-04 22:45  dynamite
+
+	* adplug.qpg: Added some missing header files to QNX packaging.
+
+2003-03-04 13:47  dynamite
+
+	* README, adplug.spec: Updated systems compatibility list. Updated
+	groups in redhat spec file.
+
+2003-03-03 21:37  dynamite
+
+	* doc/libadplug.texi: Changed info directory category from GNU
+	Libraries to Software Libraries.
+
+2003-03-03 16:45  dynamite
+
+	* TODO, adplug_mdk.spec, src/Makefile.am: Added Mandrake .spec
+	file.
+
+2003-03-01 19:51  dynamite
+
+	* src/: database.cpp, database.h: Database now uses heap instead of
+	stack. (phew)
+
+2003-03-01 18:43  dynamite
+
+	* adplugdb/Makefile.bt: Fixed library dependency for DOS build.
+
+2003-02-27 17:45  dynamite
+
+	* adplugdb/: adplugdb.dsp, vc6inst.bat: Windows build fixes.
+
+2003-02-25 23:19  dynamite
+
+	* TODO, adplugdb/adplugdb.cpp, doc/Makefile.am, doc/adplugdb.1,
+	src/adplug.cpp: Added adplugdb manpage.
+
+2003-02-23 17:16  dynamite
+
+	* AUTHORS: Documentation updates.
+
+2003-02-23 12:17  dynamite
+
+	* adplug.qpg: Added QNX packaging file.
+
+2003-02-22 18:06  dynamite
+
+	* adplugdb/.cvsignore: Updated by TortoiseCVS
+
+2003-02-22 00:19  dynamite
+
+	* INSTALL.dos, Makefile.bt, Makefile.wat, adplugdb/Makefile.bt,
+	adplugdb/getopt.h, src/Makefile.bt: DOS build fixes.
+
+2003-02-21 20:46  dynamite
+
+	* src/: players.cpp, players.h: Fixed harsh memory corruption by
+	implementing a forgotten copy-constructor in CPlayerDesc class.
+
+2003-02-21 00:31  dynamite
+
+	* adplugdb/.cvsignore, adplugdb/adplugdb.cpp,
+	adplugdb/adplugdb.dsp, adplugdb/getopt.h, src/adplug.dsp,
+	src/fmopl.c: Windows build fixes.
+
+2003-02-20 19:36  dynamite
+
+	* adplugdb/adplugdb.cpp, doc/libadplug.texi, src/database.cpp,
+	src/database.h: Fixed logic error in the database, when multiple
+	databases are in use.
+
+2003-02-19 11:29  dynamite
+
+	* TODO, adplugdb/adplugdb.cpp, src/database.cpp, src/database.h,
+	src/imf.cpp: Fixed database search. Removed WITH_DATABASE
+	conditional.
+
+2003-02-18 15:03  dynamite
+
+	* src/: fmopl.c, fmopl.h: Removed redundant LFs from new fmopl OPL2
+	emulator sources.
+
+2003-02-17 17:46  dynamite
+
+	* TODO, src/imfcrc.h: Removed imfcrc file.
+
+2003-02-17 17:42  dynamite
+
+	* TODO, adplugdb/adplugdb.cpp, doc/libadplug.texi,
+	src/fprovide.cpp, src/xad.cpp: Fixed loading of nonexistant files.
+	Updated documentation.
+
+2003-02-17 14:48  dynamite
+
+	* AUTHORS, NEWS, TODO, configure.in, adplugdb/Makefile.am,
+	adplugdb/adplugdb.cpp, src/database.cpp, src/emuopl.cpp,
+	src/emuopl.h, src/fmopl.c, src/fmopl.h: Added newest fmopl OPL2
+	emulator. Made adplugdb access home directory first, before trying
+	system-wide database, on systems that support it.
+
+2003-02-16 14:43  dynamite
+
+	* doc/.cvsignore, doc/libadplug.texi, INSTALL, README, TODO,
+	adplugdb/adplugdb.cpp, src/adplug.h, src/database.h: Updated
+	documentation.
+
+2003-01-30 20:28  dynamite
+
+	* src/: adplug.dsp, sng.cpp: Windows fixes.
+
+2003-01-30 18:18  dynamite
+
+	* TODO, src/adplug.cpp, src/adplug.h, src/fprovide.cpp,
+	src/players.cpp, src/players.h: Added lookup_filetype() method to
+	CPlayers class. Random fixes otherwise.
+
+2003-01-28 14:40  dynamite
+
+	* TODO: Updated TODO list.
+
+2003-01-28 14:34  dynamite
+
+	* src/: Makefile.am, adplug.cpp, adtrack.cpp, amd.cpp, bam.cpp,
+	bam.h, bmf.cpp, bmf.h, cff.cpp, cff.h, d00.cpp, d00.h, dfm.cpp,
+	dfm.h, dmo.cpp, dmo.h, dtm.cpp, dtm.h, flash.cpp, flash.h, fmc.cpp,
+	fmc.h, fprovide.cpp, fprovide.h, hsc.cpp, hsp.cpp, hsp.h,
+	hybrid.cpp, hybrid.h, hyp.cpp, hyp.h, imf.cpp, ksm.cpp, ksm.h,
+	lds.cpp, lds.h, mad.cpp, mad.h, mid.cpp, mid.h, mkj.cpp, mkj.h,
+	mtk.cpp, mtk.h, player.cpp, player.h, psi.cpp, psi.h, rad.cpp,
+	rad.h, rat.cpp, rat.h, raw.cpp, raw.h, s3m.cpp, s3m.h, sa2.cpp,
+	sa2.h, u6m.cpp, u6m.h, xad.cpp, xad.h: Updated rest of players for
+	new loading framework. ROL player still missing.  Waiting for
+	Akintunde to fix it.
+
+2003-01-23 17:27  dynamite
+
+	* doc/libadplug.texi, src/Makefile.am, src/a2m.h, src/adplug.cpp,
+	src/adtrack.cpp, src/adtrack.h, src/amd.cpp, src/amd.h,
+	src/database.cpp: Updated adtrack and amd replayers to new file
+	handling code.
+
+2003-01-16 22:28  dynamite
+
+	* Makefile.wat, src/Makefile.bt: DOS build fixes.
+
+2003-01-16 22:05  dynamite
+
+	* src/database.cpp: Removed invalid libbinio access.
+
+2003-01-07 16:47  dynamite
+
+	* src/: a2m.cpp, a2m.h, adplug.dsp, database.cpp, database.h:
+	Windows fixes.
+
+2003-01-04 17:50  dynamite
+
+	* BUGS, Makefile.am, NEWS, README, TODO, configure.in,
+	adplugdb/.cvsignore, adplugdb/Makefile.am, adplugdb/adplugdb.cpp,
+	adplugdb/getopt.c, adplugdb/getopt.h, doc/.cvsignore,
+	doc/Makefile.am, doc/fdl.texi, doc/libadplug.texi, src/Makefile.am,
+	src/a2m.cpp, src/a2m.h, src/adplug.cpp, src/adplug.h,
+	src/database.cpp, src/database.h, src/fprovide.cpp, src/fprovide.h,
+	src/hsc.cpp, src/hsc.h, src/imf.cpp, src/imf.h, src/opl.h,
+	src/player.cpp, src/player.h, src/players.cpp, src/players.h,
+	src/protrack.cpp, src/protrack.h, src/sng.cpp, src/sng.h,
+	src/u6m.cpp, src/u6m.h, src/xad.cpp, src/xad.h: Added database
+	framework, implemented new loading system, some fixes, added
+	'adplugdb' database maintenance utility and rewrote the IMF, SNG,
+	HSC and A2M replayers to support the new loading system. All other
+	players are still broken at this point. The documentation is also
+	not in sync with these changes, yet!
+
+2002-11-28 15:04  dynamite
+
+	* AUTHORS, ChangeLog, TODO, adplug.spec, doc/.cvsignore,
+	doc/Hacking.ms, doc/Makefile.am, doc/Player-Development.ms,
+	doc/Protracker.ms, doc/libadplug.texi, src/fmopl.h: Converted docs
+	into Texinfo format. Added Red Hat RPM spec file. Fixed memory leak
+	in fmopl.
+
+2002-11-18 21:04  dynamite
+
+	* INSTALL, INSTALL.dos, README, README.dos, src/Makefile.bt,
+	src/rol.h, src/u6m.h: Revised DOS build installation instructions. 
+	Added -oi+ compiler flag to DOS build to work around a compiler
+	bug.
+
 2002-11-16 18:57  dynamite
 
 	* src/: Makefile.bt, adplug.cpp: Enabled STL using code under

@@ -4,4 +4,6 @@ libadplug_TEXINFOS = fdl.texi
 
 man_MANS = adplugdb.1
 
-# EXTRA_DIST = $(man_MANS)
+EXTRA_DIST = $(man_MANS)
+
+CLEANFILES = libadplug.cps libadplug.fns libadplug.vrs

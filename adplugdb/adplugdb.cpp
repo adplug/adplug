@@ -122,7 +122,7 @@ static CAdPlugDatabase::CKey file2key(const char *filename)
   if(cfg.cmdkeys) {	// We got a key spec
     CAdPlugDatabase::CKey key;
 
-    sscanf(filename, "%x:%x", &key.crc16, &key.crc32);
+    sscanf(filename, "%hx:%lx", &key.crc16, &key.crc32);
     return key;
   } else {		// We got a real filename
     binifstream f(filename);

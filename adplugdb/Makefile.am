@@ -1,9 +1,11 @@
 bin_PROGRAMS = adplugdb
 
-adplugdb_SOURCES = adplugdb.cpp
+adplugdb_SOURCES = adplugdb.cpp getopt.c getopt.h
 
 adplugdb_LDADD = -L../src -ladplug
 
 adplug_data_dir = $(datadir)/adplug
 
 AM_CPPFLAGS = -DADPLUG_DATA_DIR=\"$(adplug_data_dir)\"
+
+EXTRA_DIST = adplugdb.dsp Makefile.bt vc6inst.bat
