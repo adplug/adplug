@@ -25,13 +25,13 @@ AdPlug To Do List:
 - Implement init_trackord() in CmodPlayer. [dynamite]
 
 - Add new Protracker loaders:
-	- DTM: DeFy Adlib Tracker
-	- MTR: Arkham Master Tracker
+	- DTM: DeFy Adlib Tracker [riven-mage]
+	- MTR: Arkham Master Tracker [riven-mage]
 	? DMO: TwinTeam packed S3M
 	- SNG: Adlib Tracker 1.0 [dynamite]
 
 - Add new players:
-	- CFF: CUD BoomTracker
+	- CFF: CUD BoomTracker [riven-mage]
 	? XAD: Custom player from Burial Grounds BBStro
 
 - Make Protracker player more flexible for upgrades
