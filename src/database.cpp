@@ -404,7 +404,7 @@ void CClockRecord::write_own(binostream &out)
 
 unsigned long CClockRecord::get_size()
 {
-  return sizeof(binio::Float);
+  return 4;
 }
 
 bool CClockRecord::user_read_own(std::istream &in, std::ostream &out)
