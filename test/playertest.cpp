@@ -41,11 +41,11 @@ static const char *filelist[] = {
   "CHILD1.XSM",		// eXtra Simple Music
   "DTM-TRK1.DTM",	// DeFy Adlib Tracker
   "fdance03.dmo",	// TwinTrack
-  "ice_think.sci",	// Sierra
+  "ice_thnk.sci",	// Sierra
   "inc.raw",		// RAW
   "loudness.lds",	// Loudness
   "MARIO.A2M",		// AdLib Tracker 2
-  "mi2_big_tree1.laa",	// LucasArts
+  "mi2.laa",		// LucasArts
   "michaeld.cmf",	// Creative Music Format
   "PLAYMUS1.SNG",	// SNGPlay
   "rat.xad",		// xad: rat
@@ -79,6 +79,7 @@ public:
   Testopl(const std::string filename)
   {
     f = fopen(filename.c_str(), "w");
+	if(!f) std::cerr << "Error opening for writing: " << filename << std::endl;
   }
 
   virtual ~Testopl()
@@ -154,7 +155,13 @@ static bool testplayer(const std::string filename)
    */
 {
   std::string	fn = std::string(srcdir) + "/" + filename;
-  Testopl	*opl = new Testopl(filename + ".test");
+#ifdef __WATCOMC__
+  std::string	testfn = tmpnam(NULL);
+#else
+  std::string	testfn = filename + ".test";
+#endif
+  std::string	reffn = fn.substr(0, fn.find_last_of(".")) + ".ref";
+  Testopl	*opl = new Testopl(testfn);
   CPlayer	*p = CAdPlug::factory(fn, opl);
 
   if(!p) {
@@ -172,9 +179,9 @@ static bool testplayer(const std::string filename)
   delete p;
   delete opl;
 
-  if(diff(fn + ".ref", filename + ".test")) {
+  if(diff(reffn, testfn)) {
     std::cout << "OK\n";
-    remove(std::string(filename + ".test").c_str());
+    remove(std::string(testfn).c_str());
     return true;
   } else {
     std::cout << "FAIL\n";
