@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "amd.h"
+#include "debug.h"
 
 CPlayer *CamdLoader::factory(Copl *newopl)
 {
@@ -30,7 +31,7 @@ CPlayer *CamdLoader::factory(Copl *newopl)
 
 bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-    binistream *f = fp.open(filename); if(!f) return false;
+        binistream *f = fp.open(filename); if(!f) return false;
 	struct {
 		char id[9];
 		unsigned char version;
@@ -83,11 +84,12 @@ bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
 	} else {						// packed module
 		for(i=0;i<nop;i++)
 		  for(j=0;j<9;j++)
-			  trackord[i][j] = f->readInt(2) + 1;
+		    trackord[i][j] = f->readInt(2) + 1;
 		numtrax = f->readInt(2);
 		for(k=0;k<numtrax;k++) {
 		  i = f->readInt(2);
-			j = 0;
+		  if(i > 575) i = 575;	// fix corrupted modules
+		  j = 0;
 			do {
 				buf = f->readInt(1);
 				if(buf & 128) {

@@ -60,6 +60,7 @@
 #include "u6m.h"
 #include "rol.h"
 #include "xsm.h"
+#include "dro.h"
 
 /***** Defines *****/
 
@@ -102,6 +103,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(Cu6mPlayer::factory, "Ultima 6 Music", ".m\0"),
   CPlayerDesc(CrolPlayer::factory, "Adlib Visual Composer", ".rol\0"),
   CPlayerDesc(CxsmPlayer::factory, "eXtra Simple Music", ".xsm\0"),
+  CPlayerDesc(CdroPlayer::factory, "DOSBox Raw OPL", ".dro\0"),
   CPlayerDesc()
 };
 
