@@ -15,43 +15,34 @@
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
 
-/*
   mad.h - MAD loader by Riven the Mage <riven@ok.ru>
 */
 
-#ifndef __MAD_LOADER__
-#define __MAD_LOADER__
-
 #include "protrack.h"
-
-#pragma pack(1)
 
 class CmadLoader: public CmodPlayer
 {
-public:
-  static CPlayer *factory(Copl *newopl);
+	public:
+		static CPlayer *factory(Copl *newopl);
 
-        CmadLoader(Copl *newopl) : CmodPlayer(newopl) { };
+		CmadLoader(Copl *newopl) : CmodPlayer(newopl) { };
 
-        bool            load(istream &f, const char *filename);
-        float           getrefresh();
+		bool			load(istream &f, const char *filename);
+		void			rewind(unsigned int subsong);
+		float			getrefresh();
 
-        std::string     gettype();
-        std::string     getinstrument(unsigned int n);
-        unsigned int    getinstruments();
+		std::string	gettype();
+		std::string	getinstrument(unsigned int n);
+		unsigned int	getinstruments();
 
-private:
-        struct mad_instrument
-        {
-                char            name[8];
-                unsigned char   data[12]; // last two unused
-        } instruments[9];
+	private:
 
-	unsigned char   timer;
+		struct mad_instrument
+		{
+			char            name[8];
+			unsigned char   data[12]; // last two unused
+		} instruments[9];
+
+		unsigned char   timer;
 };
-
-#pragma pack()
-
-#endif // __MAD_LOADER__

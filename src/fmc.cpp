@@ -31,154 +31,156 @@ CPlayer *CfmcLoader::factory(Copl *newopl)
 
 bool CfmcLoader::load(istream &f, const char *filename)
 {
-  const unsigned char conv_fx[16] = {0,1,2,3,4,8,255,255,255,255,26,11,12,13,14,15};
+	const unsigned char conv_fx[16] = {0,1,2,3,4,8,255,255,255,255,26,11,12,13,14,15};
 
-  int i,j,t;
-  fmc_event event;
+	int i,j,k,t=0;
 
-  // 'FMC!' - signed ?
-  f.read((char *)&header,sizeof(fmc_header));
-  if (strncmp(header.id,"FMC!",4))
-    return false;
+	// 'FMC!' - signed ?
+	f.read((char *)&header,sizeof(fmc_header));
+	if (strncmp(header.id,"FMC!",4))
+		return false;
 
-  // Initialize CmodPlayer
-  realloc_order(256);
+	// init CmodPlayer
+	realloc_instruments(32);
+	realloc_order(256);
+	realloc_patterns(64,64,header.numchan);
 
-  // load order
-  f.read((char *)order,256);
+	init_trackord();
 
-  f.ignore(2);
+	// load order
+	f.read((char *)order,256);
 
-  // load instruments
-  f.read((char *)instruments,32*sizeof(fmc_instrument));
+	f.ignore(2);
 
-  // load tracks
-  t = 0;
-  while(f.peek() != EOF)
-  {
-    for(i=0;i<header.numchan;i++)
-    {
-      for(j=0;j<64;j++)
-      {
-        // read event
-        f.read((char *)&event,sizeof(fmc_event));
+	// load instruments
+	f.read((char *)instruments,32*sizeof(fmc_instrument));
 
-        // convert event
-        tracks[t][j].note = event.byte0 & 0x7F;
-        tracks[t][j].inst = ((event.byte0 & 0x80) >> 3) + (event.byte1 >> 4) + 1;
-        tracks[t][j].command = conv_fx[event.byte1 & 0x0F];
-        tracks[t][j].param1 = event.byte2 >> 4;
-        tracks[t][j].param2 = event.byte2 & 0x0F;
+	// load tracks
+	for (i=0;i<64;i++)
+	{
+		if (f.peek() == EOF)
+			break;
 
-        // convert fx
-        if (tracks[t][j].command == 0x0E) // 0x0E (14): Retrig
-          tracks[t][j].param1 = 3;
-        if (tracks[t][j].command == 0x1A) // 0x1A (26): Volume Slide
-          if (tracks[t][j].param1 > tracks[t][j].param2)
-          {
-            tracks[t][j].param1 -= tracks[t][j].param2;
-            tracks[t][j].param2 = 0;
-          }
-          else
-          {
-            tracks[t][j].param2 -= tracks[t][j].param1;
-            tracks[t][j].param1 = 0;
-          }
-      }
+		for (j=0;j<header.numchan;j++)
+		{
+			for (k=0;k<64;k++)
+			{
+				fmc_event event;
 
-      // save track number
-      trackord[t/header.numchan][i] = ++t;
-    }
-  }
+				// read event
+				f.read((char *)&event,sizeof(fmc_event));
 
-  // compute order length
-  for(i=0;i<256;i++)
-    if (order[i] >= 0xFE)
-      length = i;
+				// convert event
+				tracks[t][k].note = event.byte0 & 0x7F;
+				tracks[t][k].inst = ((event.byte0 & 0x80) >> 3) + (event.byte1 >> 4) + 1;
+				tracks[t][k].command = conv_fx[event.byte1 & 0x0F];
+				tracks[t][k].param1 = event.byte2 >> 4;
+				tracks[t][k].param2 = event.byte2 & 0x0F;
 
-  // convert instruments
-  for(i=0;i<31;i++)
-    buildinst(i);
+				// fix effects
+				if (tracks[t][k].command == 0x0E) // 0x0E (14): Retrig
+					tracks[t][k].param1 = 3;
+				if (tracks[t][k].command == 0x1A) // 0x1A (26): Volume Slide
+					if (tracks[t][k].param1 > tracks[t][k].param2)
+					{
+						tracks[t][k].param1 -= tracks[t][k].param2;
+						tracks[t][k].param2 = 0;
+					}
+					else
+					{
+						tracks[t][k].param2 -= tracks[t][k].param1;
+						tracks[t][k].param1 = 0;
+					}
+			}
 
-  // data for ProTracker
-  activechan = (0xffff >> (16 - header.numchan)) << (16 - header.numchan);
-  nop = t / header.numchan;
-  restartpos = 0;
+			t++;
+		}
+	}
 
-  // default volumes
-  // commented out because this won't have any effect, since rewind(0) will
-  // reset the channel data anyway.
-/*  for(i=0;i<9;i++)
-  {
-    channel[i].vol1 = 63;
-    channel[i].vol2 = 63;
-  } */
+	// convert instruments
+	for (i=0;i<31;i++)
+		buildinst(i);
 
-  // and flags
-  flags |= Faust;
+	// order length
+	for (i=0;i<256;i++)
+	{
+		if (order[i] >= 0xFE)
+		{
+			length = i;
+			break;
+		}
+	}
 
-  rewind(0);
+	// data for Protracker
+	activechan = (0xffff >> (16 - header.numchan)) << (16 - header.numchan);
+	nop = t / header.numchan;
+	restartpos = 0;
 
-  return true;
+	// flags
+	flags = Faust;
+
+	rewind(0);
+
+	return true;
 }
 
 float CfmcLoader::getrefresh()
 {
-  return 50.0f;
+	return 50.0f;
 }
 
 std::string CfmcLoader::gettype()
 {
-  return std::string("Faust Music Creator");
+	return std::string("Faust Music Creator");
 }
 
 std::string CfmcLoader::gettitle()
 {
-  return std::string(header.title);
+	return std::string(header.title);
 }
 
 std::string CfmcLoader::getinstrument(unsigned int n)
 {
-  return std::string(instruments[n].name);
+	return std::string(instruments[n].name);
 }
 
 unsigned int CfmcLoader::getinstruments()
 {
-  return 32;
+	return 32;
 }
 
 /* -------- Private Methods ------------------------------- */
 
 void CfmcLoader::buildinst(unsigned char i)
 {
-  inst[i].data[0]   = ((instruments[i].synthesis & 1) ^ 1);
-  inst[i].data[0]  |= ((instruments[i].feedback & 7) << 1);
+	inst[i].data[0]   = ((instruments[i].synthesis & 1) ^ 1);
+	inst[i].data[0]  |= ((instruments[i].feedback & 7) << 1);
 
-  inst[i].data[3]   = ((instruments[i].mod_attack & 15) << 4);
-  inst[i].data[3]  |=  (instruments[i].mod_decay & 15);
-  inst[i].data[5]   = ((15 - (instruments[i].mod_sustain & 15)) << 4);
-  inst[i].data[5]  |=  (instruments[i].mod_release & 15);
-  inst[i].data[9]   =  (63 - (instruments[i].mod_volume & 63));
-  inst[i].data[9]  |= ((instruments[i].mod_ksl & 3) << 6);
-  inst[i].data[1]   =  (instruments[i].mod_freq_multi & 15);
-  inst[i].data[7]   =  (instruments[i].mod_waveform & 3);
-  inst[i].data[1]  |= ((instruments[i].mod_sustain_sound & 1) << 5);
-  inst[i].data[1]  |= ((instruments[i].mod_ksr & 1) << 4);
-  inst[i].data[1]  |= ((instruments[i].mod_vibrato & 1) << 6);
-  inst[i].data[1]  |= ((instruments[i].mod_tremolo & 1) << 7);
+	inst[i].data[3]   = ((instruments[i].mod_attack & 15) << 4);
+	inst[i].data[3]  |=  (instruments[i].mod_decay & 15);
+	inst[i].data[5]   = ((15 - (instruments[i].mod_sustain & 15)) << 4);
+	inst[i].data[5]  |=  (instruments[i].mod_release & 15);
+	inst[i].data[9]   =  (63 - (instruments[i].mod_volume & 63));
+	inst[i].data[9]  |= ((instruments[i].mod_ksl & 3) << 6);
+	inst[i].data[1]   =  (instruments[i].mod_freq_multi & 15);
+	inst[i].data[7]   =  (instruments[i].mod_waveform & 3);
+	inst[i].data[1]  |= ((instruments[i].mod_sustain_sound & 1) << 5);
+	inst[i].data[1]  |= ((instruments[i].mod_ksr & 1) << 4);
+	inst[i].data[1]  |= ((instruments[i].mod_vibrato & 1) << 6);
+	inst[i].data[1]  |= ((instruments[i].mod_tremolo & 1) << 7);
 
-  inst[i].data[4]   = ((instruments[i].car_attack & 15) << 4);
-  inst[i].data[4]  |=  (instruments[i].car_decay & 15);
-  inst[i].data[6]   = ((15 - (instruments[i].car_sustain & 15)) << 4);
-  inst[i].data[6]  |=  (instruments[i].car_release & 15);
-  inst[i].data[10]  =  (63 - (instruments[i].car_volume & 63));
-  inst[i].data[10] |= ((instruments[i].car_ksl & 3) << 6);
-  inst[i].data[2]   =  (instruments[i].car_freq_multi & 15);
-  inst[i].data[8]   =  (instruments[i].car_waveform & 3);
-  inst[i].data[2]  |= ((instruments[i].car_sustain_sound & 1) << 5);
-  inst[i].data[2]  |= ((instruments[i].car_ksr & 1) << 4);
-  inst[i].data[2]  |= ((instruments[i].car_vibrato & 1) << 6);
-  inst[i].data[2]  |= ((instruments[i].car_tremolo & 1) << 7);
+	inst[i].data[4]   = ((instruments[i].car_attack & 15) << 4);
+	inst[i].data[4]  |=  (instruments[i].car_decay & 15);
+	inst[i].data[6]   = ((15 - (instruments[i].car_sustain & 15)) << 4);
+	inst[i].data[6]  |=  (instruments[i].car_release & 15);
+	inst[i].data[10]  =  (63 - (instruments[i].car_volume & 63));
+	inst[i].data[10] |= ((instruments[i].car_ksl & 3) << 6);
+	inst[i].data[2]   =  (instruments[i].car_freq_multi & 15);
+	inst[i].data[8]   =  (instruments[i].car_waveform & 3);
+	inst[i].data[2]  |= ((instruments[i].car_sustain_sound & 1) << 5);
+	inst[i].data[2]  |= ((instruments[i].car_ksr & 1) << 4);
+	inst[i].data[2]  |= ((instruments[i].car_vibrato & 1) << 6);
+	inst[i].data[2]  |= ((instruments[i].car_tremolo & 1) << 7);
 
-  inst[i].slide     =   instruments[i].pitch_shift;
+	inst[i].slide     =   instruments[i].pitch_shift;
 }

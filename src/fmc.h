@@ -23,68 +23,69 @@
 
 class CfmcLoader: public CmodPlayer
 {
-public:
-  static CPlayer *factory(Copl *newopl);
+	public:
+		static CPlayer *factory(Copl *newopl);
 
-        CfmcLoader(Copl *newopl) : CmodPlayer(newopl) { };
+		CfmcLoader(Copl *newopl) : CmodPlayer(newopl) { };
 
-        bool            load(istream &f, const char *filename);
-        float           getrefresh();
+		bool			load(istream &f, const char *filename);
+		float			getrefresh();
 
-        std::string     gettype();
-        std::string     gettitle();
-        std::string     getinstrument(unsigned int n);
-        unsigned int    getinstruments();
+		std::string	gettype();
+		std::string	gettitle();
+		std::string	getinstrument(unsigned int n);
+		unsigned int	getinstruments();
 
-private:
-        struct fmc_event
-        {
-                unsigned char   byte0;
-                unsigned char   byte1;
-                unsigned char   byte2;
-        };
+	private:
 
-        struct fmc_header
-        {
-                char            id[4];
-                char            title[21];
-                unsigned char   numchan;
-        } header;
+		struct fmc_event
+		{
+			unsigned char   byte0;
+			unsigned char   byte1;
+			unsigned char   byte2;
+		};
 
-        struct fmc_instrument
-        {
-                unsigned char   synthesis;
-                unsigned char   feedback;
+		struct fmc_header
+		{
+			char            id[4];
+			char            title[21];
+			unsigned char   numchan;
+		} header;
 
-                unsigned char   mod_attack;
-                unsigned char   mod_decay;
-                unsigned char   mod_sustain;
-                unsigned char   mod_release;
-                unsigned char   mod_volume;
-                unsigned char   mod_ksl;
-                unsigned char   mod_freq_multi;
-                unsigned char   mod_waveform;
-                unsigned char   mod_sustain_sound;
-                unsigned char   mod_ksr;
-                unsigned char   mod_vibrato;
-                unsigned char   mod_tremolo;
-                unsigned char   car_attack;
-                unsigned char   car_decay;
-                unsigned char   car_sustain;
-                unsigned char   car_release;
-                unsigned char   car_volume;
-                unsigned char   car_ksl;
-                unsigned char   car_freq_multi;
-                unsigned char   car_waveform;
-                unsigned char   car_sustain_sound;
-                unsigned char   car_ksr;
-                unsigned char   car_vibrato;
-                unsigned char   car_tremolo;
+		struct fmc_instrument
+		{
+			unsigned char   synthesis;
+			unsigned char   feedback;
 
-                signed char     pitch_shift;
+			unsigned char   mod_attack;
+			unsigned char   mod_decay;
+			unsigned char   mod_sustain;
+			unsigned char   mod_release;
+			unsigned char   mod_volume;
+			unsigned char   mod_ksl;
+			unsigned char   mod_freq_multi;
+			unsigned char   mod_waveform;
+			unsigned char   mod_sustain_sound;
+			unsigned char   mod_ksr;
+			unsigned char   mod_vibrato;
+			unsigned char   mod_tremolo;
+			unsigned char   car_attack;
+			unsigned char   car_decay;
+			unsigned char   car_sustain;
+			unsigned char   car_release;
+			unsigned char   car_volume;
+			unsigned char   car_ksl;
+			unsigned char   car_freq_multi;
+			unsigned char   car_waveform;
+			unsigned char   car_sustain_sound;
+			unsigned char   car_ksr;
+			unsigned char   car_vibrato;
+			unsigned char   car_tremolo;
 
-                char            name[21];
-        } instruments[32];
+			signed char     pitch_shift;
 
-        void            buildinst(unsigned char i);
+			char            name[21];
+		} instruments[32];
+
+		void            buildinst(unsigned char i);
 };

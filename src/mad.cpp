@@ -15,9 +15,7 @@
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
 
-/*
   mad.cpp - MAD loader by Riven the Mage <riven@ok.ru>
 */
 
@@ -33,99 +31,107 @@ CPlayer *CmadLoader::factory(Copl *newopl)
 
 bool CmadLoader::load(istream &f, const char *filename)
 {
-  const unsigned char conv_inst[10] = { 2,1,10,9,4,3,6,5,8,7 };
-  int j,k,t;
-  unsigned int i;
+	const unsigned char conv_inst[10] = { 2,1,10,9,4,3,6,5,8,7 };
 
-  // 'MAD+' - signed ?
-  char id[4];
-  f.read(id,4);
-  if (strncmp(id,"MAD+",4))
-    return false;
+	int i,j,k,t=0;
 
-  // load instruments
-  f.read((char *)instruments,9*sizeof(mad_instrument));
+	// 'MAD+' - signed ?
+	char id[4];
+	f.read(id,4);
+	if (strncmp(id,"MAD+",4))
+		return false;
 
-  // fix instruments
-  for(i=0;i<9;i++)
-    for(j=0;j<10;j++)
-      inst[i].data[conv_inst[j]] = instruments[i].data[j];
+	// load instruments
+	f.read((char *)instruments,9*sizeof(mad_instrument));
 
-  // data for ProTracker
-  f.ignore(1);
-  length = f.get();
-  nop = f.get();
-  timer = f.get();
+	f.ignore(1);
 
-  // load tracks
-  for(i=0;i<nop;i++)
-  {
-    for(k=0;k<32;k++)
-    {
-      for(j=0;j<9;j++)
-      {
-        // calculate track number
-        t = i*9 + j;
+	// data for Protracker
+	length = f.get();
+	nop = f.get();
+	timer = f.get();
 
-        // read event
-        unsigned char event = f.get();
+	// init CmodPlayer
+	realloc_instruments(9);
+	realloc_order(length);
+	realloc_patterns(nop,32,9);
 
-        // convert event
-        tracks[t][k].note = (event < 0x61) ? event : 0;
-        tracks[t][k].inst = (event < 0x61) ? j + 1 : 0;
-        tracks[t][k].command = 0;
-        tracks[t][k].param1 = 0;
-        tracks[t][k].param2 = 0;
+	init_trackord();
 
-        // fix fx
-        if (event == 0xFF) // 0xFF: Release note
-          tracks[t][k].command = 8;
-        if (event == 0xFE) // 0xFE: Pattern Break
-          tracks[t][k].command = 13;
-      }
-    }
+	// load tracks
+	for (i=0;i<nop;i++)
+	{
+		for (k=0;k<32;k++)
+		{
+			for (j=0;j<9;j++)
+			{
+				t = i*9+j;
 
-    // set 'end of pattern' (due to 32-row-patterns)
-    tracks[i*9+8][31].command = 13;
+				// read event
+				unsigned char event = f.get();
 
-    // save track numbers
-    for(j=0;j<9;j++)
-      trackord[i][j] = i*9 + j + 1;
-  }
+				// convert event
+				if (event < 0x61)
+					tracks[t][k].note = event;
+				if (event == 0xFF) // 0xFF: Release note
+					tracks[t][k].command = 8;
+				if (event == 0xFE) // 0xFE: Pattern Break
+					tracks[t][k].command = 13;
+			}
+		}
+	}
 
-  // load order
-  f.read((char *)order,length);
+	// load order
+	f.read((char *)order,length);
 
-  // fix order
-  for(i=0;i<length;i++)
-    order[i]--;
+	// convert instruments
+	for (i=0;i<9;i++)
+		for (j=0;j<10;j++)
+			inst[i].data[conv_inst[j]] = instruments[i].data[j];
 
-  // data for ProTracker
-  activechan = 0xffff;
-  restartpos = 0;
-  initspeed = 1;
+	// convert order
+	for(i=0;i<length;i++)
+		order[i]--;
 
-  rewind(0);
+	// data for Protracker
+	restartpos = 0;
+	initspeed = 1;
 
-  return true;
+	rewind(0);
+
+	return true;
+}
+
+void CmadLoader::rewind(unsigned int subsong)
+{
+	CmodPlayer::rewind(subsong);
+
+	// default instruments
+	for (int i=0;i<9;i++)
+	{
+		channel[i].inst = i;
+
+		channel[i].vol1 = 63 - (inst[i].data[10] & 63);
+		channel[i].vol2 = 63 - (inst[i].data[9] & 63);
+	}
 }
 
 float CmadLoader::getrefresh()
 {
-  return (float)timer;
+	return (float)timer;
 }
 
 std::string CmadLoader::gettype()
 {
-  return std::string("Mlat Adlib Tracker");
+	return std::string("Mlat Adlib Tracker");
 }
 
 std::string CmadLoader::getinstrument(unsigned int n)
 {
-  return std::string(instruments[n].name,8);
+	return std::string(instruments[n].name,8);
 }
 
 unsigned int CmadLoader::getinstruments()
 {
-  return 9;
+	return 9;
 }
