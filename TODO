@@ -15,9 +15,8 @@ AdPlug To Do List:
 - Add rhythm mode support to CMF player (inside mid.cpp)
 
 - Add new Protracker loaders:
-	- CFF: CUD BoomTracker [riven-mage]
 	- DTM: DeFy Adlib Tracker [riven-mage]
-	- MTR: Arkham Master Tracker
+	- MTR: Arkham Master Tracker [riven-mage]
 
 - Add new Screamtracker 3 loader:
 	- DMO: TwinTeam Packed S3M
