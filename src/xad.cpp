@@ -35,8 +35,9 @@ CxadPlayer::~CxadPlayer()
     delete [] tune;
 }
 
-bool CxadPlayer::load(istream &f, const char *filename)
+bool CxadPlayer::load(std::string filename, const CFileProvider &fp)
 {
+  binistream *f = fp.open(filename);
   bool ret = false;
 
   // 'XAD!' - signed ?
@@ -45,6 +46,7 @@ bool CxadPlayer::load(istream &f, const char *filename)
     return false;
 
   // get file size
+  tune_size = filesize(f);
   f.seekg(0,ios::end);
   tune_size = f.tellg();
   f.seekg(sizeof(xad_header));
@@ -59,10 +61,11 @@ bool CxadPlayer::load(istream &f, const char *filename)
   if (ret)
     rewind(0);
 
+  fp.close(f);
   return ret;
 }
 
-void CxadPlayer::rewind(unsigned int subsong)
+void CxadPlayer::rewind(int subsong)
 {
   opl->init();
 

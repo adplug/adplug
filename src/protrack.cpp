@@ -45,9 +45,9 @@ const unsigned char CmodPlayer::vibratotab[32] =
 
 /*** public methods *************************************/
 
-CmodPlayer::CmodPlayer(Copl *newopl): CPlayer(newopl), inst(0), order(0),
-arplist(0), arpcmd(0), initspeed(6), activechan(0xffff), flags(Standard),
-nop(0), nrows(0), npats(0), nchans(0)
+CmodPlayer::CmodPlayer(Copl *newopl)
+  : CPlayer(newopl), inst(0), order(0), arplist(0), arpcmd(0), initspeed(6),
+    activechan(0xffff), flags(Standard), nop(0), nrows(0), npats(0), nchans(0)
 {
   realloc_order(128);
   realloc_patterns(64, 64, 9);
@@ -407,7 +407,7 @@ bool CmodPlayer::update()
 	return !songend;
 }
 
-void CmodPlayer::rewind(unsigned int subsong)
+void CmodPlayer::rewind(int subsong)
 {
   unsigned long i;
 

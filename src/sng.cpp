@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,33 +16,41 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * sng.cpp - SNG Player by Simon Peter (dn.tlp@gmx.net)
+ * sng.cpp - SNG Player by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include "sng.h"
 
 CPlayer *CsngPlayer::factory(Copl *newopl)
 {
-  CsngPlayer *p = new CsngPlayer(newopl);
-  return p;
+  return new CsngPlayer(newopl);
 }
 
-bool CsngPlayer::load(istream &f, const char *filename)
+bool CsngPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
-	// file validation section
-	f.read((char *)&header,sizeof(header));
-	if(strncmp(header.id,"ObsM",4))
-		return false;
+  binistream *f = fp.open(filename); if(!f) return false;
+  int i;
 
-	// load section
-	data = new Sdata [(header.length / 2) + 1];
-	f.read((char *)data,header.length);
+  // load header
+  f->readString(header.id, 4);
+  header.length = f->readInt(2); header.start = f->readInt(2);
+  header.loop = f->readInt(2); header.delay = f->readInt(1);
+  header.compressed = f->readInt(1);
 
-	header.length /= 2; header.start /= 2; header.loop /= 2;
+  // file validation section
+  if(strncmp(header.id,"ObsM",4)) { fp.close(f); return false; }
 
-	rewind(0);
-	return true;
+  // load section
+  data = new Sdata [header.length / 2];
+  for(i = 0; i < header.length / 2; i++) {
+    data[i].val = f->readInt(1);
+    data[i].reg = f->readInt(1);
+  }
+
+  header.length /= 2; header.start /= 2; header.loop /= 2;
+  rewind(0);
+  fp.close(f);
+  return true;
 }
 
 bool CsngPlayer::update()
@@ -69,7 +77,7 @@ bool CsngPlayer::update()
 	return !songend;
 }
 
-void CsngPlayer::rewind(unsigned int subsong)
+void CsngPlayer::rewind(int subsong)
 {
 	pos = header.start; del = header.delay; songend = false;
 	opl->init(); opl->write(1,32);	// go to OPL2 mode

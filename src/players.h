@@ -16,37 +16,36 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * adplug.h - AdPlug main header file, by Simon Peter <dn.tlp@gmx.net>
+ * players.h - Players enumeration, by Simon Peter <dn.tlp@gmx.net>
  */
 
-#ifndef H_ADPLUG_ADPLUG
-#define H_ADPLUG_ADPLUG
+#ifndef H_ADPLUG_PLAYERS
+#define H_ADPLUG_PLAYERS
 
 #include <string>
+#include <list>
 
-#include "player.h"
 #include "opl.h"
-#include "fprovide.h"
-#include "players.h"
-#include "database.h"
+#include "player.h"
 
-class CAdPlug
+class CPlayerDesc
 {
-  friend CPlayer::CPlayer(Copl *newopl);
-
 public:
-  static const CPlayers players;
+  typedef CPlayer	*(*Factory)(Copl *);
 
-  static CPlayer *factory(const std::string &fn, Copl *opl,
-			  const CPlayers &pl = players,
-			  const CFileProvider &fp = CProvider_Filesystem());
+  Factory	factory;
+  std::string	filetype, extension;
 
-  static void set_database(CAdPlugDatabase *db);
-  static std::string get_version();
-  static void debug_output(const std::string &filename);
+  CPlayerDesc();
+  CPlayerDesc(Factory f, std::string type, std::string ext);
 
-private:
-  static CAdPlugDatabase *database;
+  ~CPlayerDesc();
+};
+
+class CPlayers: public std::list<const CPlayerDesc *>
+{
+public:
+  const CPlayerDesc *lookup_extension(const std::string &extension) const;
 };
 
 #endif

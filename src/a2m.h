@@ -21,6 +21,7 @@
 
 #include "protrack.h"
 
+/*
 #define MAXFREQ			2000
 #define MINCOPY			3
 #define MAXCOPY			255
@@ -37,6 +38,7 @@
 
 #define MAXDISTANCE		21389
 #define MAXSIZE			21389 + MAXCOPY
+*/
 
 class Ca2mLoader: public CmodPlayer
 {
@@ -47,7 +49,7 @@ public:
 		: CmodPlayer(newopl)
 	{ };
 
-	bool load(istream &f, const char *filename);
+	bool load(const std::string &filename, const CFileProvider &fp);
 	float getrefresh();
 
 	std::string gettype()
@@ -62,6 +64,15 @@ public:
 	{ return std::string(instname[n],1,*instname[n]); };
 
 private:
+	static const unsigned int MAXFREQ = 2000, MINCOPY = 3, MAXCOPY = 255,
+	  COPYRANGES = 6, CODESPERRANGE = MAXCOPY - MINCOPY + 1, TERMINATE = 256,
+	  FIRSTCODE = 257, MAXCHAR = FIRSTCODE + COPYRANGES * CODESPERRANGE - 1,
+	  SUCCMAX = MAXCHAR + 1, TWICEMAX = 2 * MAXCHAR + 1, ROOT = 1,
+	  MAXBUF = 42 * 1024, MAXDISTANCE = 21389, MAXSIZE = 21389 + MAXCOPY;
+
+	static const unsigned short bitvalue[14];
+	static const signed short copybits[COPYRANGES], copymin[COPYRANGES];
+
 	void inittree();
 	void updatefreq(unsigned short a,unsigned short b);
 	void updatemodel(unsigned short code);

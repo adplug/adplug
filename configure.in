@@ -1,7 +1,7 @@
 # Tell autoconf we're compiling a C++ library, using automake & libtool
 AC_INIT(adplug,1.4)
 AC_CONFIG_SRCDIR(src/adplug.cpp)
-AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile adplugdb/Makefile])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AM_PROG_LIBTOOL
@@ -14,7 +14,8 @@ AC_PROG_CC
 AC_PROG_CXX
 
 # Check for needed libraries.
-AC_CHECK_LIB(stdc++,main,,AC_MSG_ERROR([libstdc++ not installed ***]))
+AC_CHECK_LIB(stdc++,main,,AC_MSG_ERROR([libstdc++ not installed]))
+AC_CHECK_LIB(binio,main,,AC_MSG_ERROR([libbinio not installed]))
 
 # Sanitize some compiler features, which may be broken...
 AC_C_CONST

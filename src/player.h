@@ -16,32 +16,36 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * player.h - replayer base class, by Simon Peter <dn.tlp@gmx.net>
+ * player.h - Replayer base class, by Simon Peter <dn.tlp@gmx.net>
  */
 
-#ifndef H_PLAYER
-#define H_PLAYER
+#ifndef H_ADPLUG_PLAYER
+#define H_ADPLUG_PLAYER
 
-#include <iostream.h>
 #include <string>
+
+#include "fprovide.h"
 #include "opl.h"
+#include "database.h"
 
 class CPlayer
 {
 public:
-	CPlayer(Copl *newopl)	// newopl = OPL chip to use
-		: opl(newopl)
-	{ }
-	virtual ~CPlayer()
-	{ }
+        CPlayer(Copl *newopl);
+	virtual ~CPlayer();
 
 /***** Operational methods *****/
-	virtual bool load(istream &f, const char *filename) = 0;	// loads file
-	virtual bool update() = 0;					// executes replay code for 1 tick
-	virtual void rewind(unsigned int subsong = 0xffff) = 0;		// rewinds to specified subsong
-	virtual float getrefresh() = 0;					// returns needed timer refresh rate
+	void seek(unsigned long ms);
+
+	virtual bool load(const std::string &filename,	// loads file
+			  const CFileProvider &fp = CProvider_Filesystem()) = 0;
+	virtual bool update() = 0;			// executes replay code for 1 tick
+	virtual void rewind(int subsong = -1) = 0;	// rewinds to specified subsong
+	virtual float getrefresh() = 0;			// returns needed timer refresh rate
 
 /***** Informational methods *****/
+	unsigned long songlength(int subsong = -1);
+
 	virtual std::string gettype() = 0;	// returns file type
 	virtual std::string gettitle()		// returns song title
 	{ return std::string(); }
@@ -69,10 +73,15 @@ public:
 	{ return std::string(); }
 
 protected:
-	Copl *opl;	// our OPL chip
+	Copl		*opl;	// our OPL chip
+	CAdPlugDatabase	*db;	// AdPlug Database
 
 	static const unsigned short note_table[12];	// standard adlib note table
 	static const unsigned char op_table[9];		// the 9 operators as expected by the OPL2
+
+	bool extension(const std::string &filename,	// checks for matching file extension
+		       const std::string &extension);
+	unsigned long filesize(binistream *f);		// returns filesize of stream
 };
 
 #endif

@@ -20,8 +20,8 @@
  * opl.h - OPL base class declaration, by Simon Peter (dn.tlp@gmx.net)
  */
 
-#ifndef H_OPL
-#define H_OPL
+#ifndef H_ADPLUG_OPL
+#define H_ADPLUG_OPL
 
 class Copl
 {

@@ -19,6 +19,11 @@
  * imf.h - IMF Player by Simon Peter <dn.tlp@gmx.net>
  */
 
+#ifndef H_ADPLUG_IMFPLAYER
+#define H_ADPLUG_IMFPLAYER
+
+#include <binio.h>
+
 #include "player.h"
 
 class CimfPlayer: public CPlayer
@@ -28,13 +33,13 @@ public:
 
 	CimfPlayer(Copl *newopl)
 	  : CPlayer(newopl), footer(0), data(0)
-	{ };
+	{ }
 	~CimfPlayer()
 	{ if(data) delete [] data; if(footer) delete [] footer; };
 
-	bool load(istream &f, const char *filename);
+	bool load(const std::string &filename, const CFileProvider &fp);
 	bool update();
-	void rewind(unsigned int subsong);
+	void rewind(int subsong);
 	float getrefresh()
 	{ return timer; };
 
@@ -56,6 +61,7 @@ protected:
 	} *data;
 
 private:
-	unsigned long crc32(unsigned char *buf, unsigned long size);
-	float getrate(unsigned long crc, unsigned long size);
+	float getrate(binistream *f);
 };
+
+#endif

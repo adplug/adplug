@@ -1,10 +1,9 @@
 \input texinfo   @c -*-texinfo-*-
 @c %**start of header
 @setfilename libadplug.info
-@settitle AdPlug Core Library Manual
-@c %**end of header
-
 @include version.texi
+@settitle AdPlug Core Library @value{VERSION} Manual
+@c %**end of header
 
 @copying
 This manual documents the AdPlug core library, version
@@ -13,19 +12,23 @@ This manual documents the AdPlug core library, version
 Copyright @copyright{} 2002 Simon Peter <dn.tlp@@gmx.net>
 
 @quotation
-Permission is granted to copy, distribute and/or modify this
-document under the terms of the GNU Free Documentation License,
-Version 1.1 or any later version published by the Free Software
-Foundation; with no Invariant Sections, with the Front-Cover texts
-being "A GNU Manual," and with the Back-Cover Texts as in (a)
-below.  A copy of the license is included in the section entitled
-"GNU Free Documentation License."
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover texts being ``A GNU Manual,''
+and with the Back-Cover Texts as in (a) below.  A copy of the license is
+included in the section entitled ``GNU Free Documentation License.''
 
-(a) The FSF's Back-Cover Text is: "You have freedom to copy and
-modify this GNU Manual, like GNU software.  Copies published by
-the Free Software Foundation raise funds for GNU development."
+(a) The FSF's Back-Cover Text is: ``You have freedom to copy and modify
+this GNU Manual, like GNU software.  Copies published by the Free
+Software Foundation raise funds for GNU development.''
 @end quotation
 @end copying
+
+@dircategory GNU Libraries
+@direntry
+* AdPlug Core Library: (libadplug).     AdPlug Core Library @value{VERSION}
+@end direntry
 
 @titlepage
 @title AdPlug Core Library Manual
@@ -55,8 +58,7 @@ the Free Software Foundation raise funds for GNU development."
 * Hacking::                     How to hack around in AdPlug.
 * Player development::          How to write new replayers for AdPlug.
 * Protracker based players::    How to write Protracker based players.
-
-* Copying::                     Your rights and freedoms.
+* Copying This Manual::         Your rights and freedoms.
 * Variable Index::
 @end menu
 
@@ -68,6 +70,102 @@ player library, mainly written in C++. AdPlug plays sound data,
 originally created for the AdLib (OPL2) audio board, on top of an OPL2
 emulator or by using the real hardware. No OPL2 chip is required for
 playback.
+
+@menu
+* Supported Formats::
+@end menu
+
+@node Supported Formats
+@section Supported Formats
+
+AdPlug implements unique file replayers for each supported format in
+order to achieve the best possible replay quality. Below is a list of
+all currently supported file formats along with information about
+possible replay issues. Players marked as "preliminary" aren't
+considered final by the author(s) and may contain many replay issues,
+but are included for testing purposes anyway.
+
+@itemize @bullet
+@item @file{A2M}: AdLib Tracker 2 by subz3ro
+@itemize @bullet
+@item Unimplemented commands (version 1-4): @code{FF1 - FF9, FAx - FEx}
+@item Unimplemented commands (version 5-8): @code{Gxy, Hxy, Kxy - &xy}
+@item In version 5-8 files, instrument panning & the flags byte is ignored
+@item Only SixPack compressed and uncompressed files are supported
+@item All OPL3 functionality is absent (not possible with AdLib)
+@end itemize
+@item @file{AMD}: AMUSIC Adlib Tracker by Elyssis
+@item @file{BAM}: Bob's Adlib Music Format by Bob
+@item @file{CFF}: BoomTracker 4.0 by CUD
+@item @file{CMF}: Creative Music File Format by Creative Technology
+@itemize @bullet
+@item Unimplemented: AdLib rhythm mode
+@end itemize
+@item @file{D00}: EdLib by Vibrants
+@itemize @bullet
+@item Bugs: Hard restart SR sometimes sound wrong
+@end itemize
+@item @file{DFM}: Digital-FM by R.Verhaag
+@item @file{DMO}: Twin TrackPlayer by TwinTeam
+@item @file{DTM}: DeFy Adlib Tracker by DeFy
+@item @file{HSC}: HSC Adlib Composer by Hannes Seifert, HSC-Tracker by Electronic Rats
+@item @file{HSP}: HSC Packed by Number Six / Aegis Corp.
+@item @file{IMF}: Apogee IMF File Format by Apogee
+@item @file{KSM}: Ken Silverman's Adlib Music Format by Ken Silverman
+@itemize @bullet
+@item Needs file @file{insts.dat} in the same directory as loaded file
+@end itemize
+@item @file{LAA}: LucasArts AdLib Audio File Format by LucasArts
+@itemize @bullet
+@item Bugs: Some volumes are a bit off
+@end itemize
+@item @file{LDS}: LOUDNESS Music Format @strong{(preliminary)}
+@itemize @bullet
+@item Bugs: Undocumented format, more to come.
+@end itemize
+@item @file{M}: Ultima 6 Music Format by Origin
+@item @file{MAD}: Mlat Adlib Tracker
+@item @file{MID}: MIDI Audio File Format
+@item @file{MKJ}: MKJamz by M \ K Productions @strong{(preliminary)}
+@item @file{MTK}: MPU-401 Trakker by SuBZeR0
+@item @file{RAD}: Reality ADlib Tracker by Reality
+@item @file{RAW}: RdosPlay RAW file format by RDOS
+@itemize @bullet
+@item Unimplemented: OPL3 register writes (not possible with AdLib)
+@end itemize
+@item @file{ROL}: AdLib Visual Composer by AdLib Inc. @strong{(preliminary)}
+@itemize @bullet
+@item Needs file @file{standard.bnk} in the same directory as loaded file
+@end itemize
+@item @file{S3M}: Scream Tracker 3 by Future Crew
+@itemize @bullet
+@item Bugs: Extra Fine Slides (@code{EEx, FEx}) & Fine Vibrato
+(@code{Uxy}) are inaccurate
+@end itemize
+@item @file{SA2}: Surprise! Adlib Tracker 2 by Surprise! Productions
+@item @file{SAT}: Surprise! Adlib Tracker by Surprise! Productions
+@item @file{SCI}: Sierra's AdLib Audio File Format by Sierra On-Line Inc.
+@itemize @bullet
+@item Needs file @file{@var{???}patch.003} in the same directory as
+loaded file, while @var{???} are the first 3 characters of the loaded
+file's filename
+@item Bugs: Some instruments are messed up
+@end itemize
+@item @file{SNG}: SNGPlay by BUGSY of OBSESSION
+@item @file{SNG}: Faust Music Creator by FAUST
+@item @file{SNG}: Adlib Tracker 1.0 by TJ
+@itemize @bullet
+@item Needs file @file{@var{songname}.ins} in the same directory as
+loaded file, while @var{songname} is the song's filename without
+@file{.sng} extension.
+@end itemize
+@item @file{XAD}: eXotic ADlib Format by Riven the Mage
+@item @file{XMS}: XMS-Tracker by MaDoKaN/E.S.G
+@end itemize
+
+Whenever a player requires more files to be present in a given
+directory, be especially careful under UNIX systems, because all file
+names are case-sensitive.
 
 @node Basic Usage
 @chapter Basic Usage
@@ -651,10 +749,14 @@ the meantime. The following table summarizes the special commands.]
 @item @samp{255} @tab End of special arpeggio
 @end multitable
 
-@node Copying
-@chapter Copying
+@node Copying This Manual
+@appendix Copying This Manual
 
-Blah.
+@menu
+* GNU Free Documentation License::  License for copying this manual.
+@end menu
+
+@include fdl.texi
 
 @node Variable Index
 @unnumbered Variable Index

@@ -1,5 +1,5 @@
 /*
- * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
+ * Adplug - Replayer for many OPL2/OPL3 audio file formats.
  * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
@@ -16,37 +16,27 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * adplug.h - AdPlug main header file, by Simon Peter <dn.tlp@gmx.net>
+ * fprovide.h - File provider class framework, by Simon Peter <dn.tlp@gmx.net>
  */
 
-#ifndef H_ADPLUG_ADPLUG
-#define H_ADPLUG_ADPLUG
+#ifndef H_ADPLUG_FILEPROVIDER
+#define H_ADPLUG_FILEPROVIDER
 
 #include <string>
+#include <binio.h>
 
-#include "player.h"
-#include "opl.h"
-#include "fprovide.h"
-#include "players.h"
-#include "database.h"
-
-class CAdPlug
+class CFileProvider
 {
-  friend CPlayer::CPlayer(Copl *newopl);
-
 public:
-  static const CPlayers players;
+  virtual binistream *open(std::string) const = 0;
+  virtual void close(binistream *) const = 0;
+};
 
-  static CPlayer *factory(const std::string &fn, Copl *opl,
-			  const CPlayers &pl = players,
-			  const CFileProvider &fp = CProvider_Filesystem());
-
-  static void set_database(CAdPlugDatabase *db);
-  static std::string get_version();
-  static void debug_output(const std::string &filename);
-
-private:
-  static CAdPlugDatabase *database;
+class CProvider_Filesystem: public CFileProvider
+{
+public:
+  virtual binistream *open(std::string filename) const;
+  virtual void close(binistream *f) const;
 };
 
 #endif

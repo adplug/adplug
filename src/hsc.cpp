@@ -28,41 +28,36 @@
 
 CPlayer *ChscPlayer::factory(Copl *newopl)
 {
-  ChscPlayer *p = new ChscPlayer(newopl);
-  return p;
+  return new ChscPlayer(newopl);
 }
 
-bool ChscPlayer::load(istream &f, const char *filename)
+bool ChscPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
-	int i;
+  binistream *f = fp.open(filename);
+  int i;
 
-	// file validation section
-	if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".hsc")) {
-          AdPlug_LogWrite("ChscPlayer::load(,\"%s\"): Not a HSC file! (strlen(filename)"
-		   " == %d) < 4 and/or filename does not end in \".hsc\"\n",
-		   filename,strlen(filename));
-	  return false;
-	}
-	f.seekg(0,ios::end);
-	if(f.tellg() > 59187) {
-          AdPlug_LogWrite("ChscPlayer::load(,\"%s\"): Not a HSC file! (filesize == %u) > 59187\n",filename,f.tellg());
-	  return false;
-	}
+  // file validation section
+  if(!f || !extension(filename, ".hsc") || filesize(f) > 59187) {
+    AdPlug_LogWrite("ChscPlayer::load(\"%s\"): Not a HSC file!\n", filename.c_str());
+    fp.close(f);
+    return false;
+  }
 
-	// load section
-        AdPlug_LogWrite("ChscPlayer::load(,\"%s\"): Loading...\n",filename);
-	f.seekg(0);
-	f.read((char *)instr,128*12);	// load instruments
-	for (i=0;i<128;i++) {			// correct instruments
-		instr[i][2] ^= (instr[i][2] & 0x40) << 1;
-		instr[i][3] ^= (instr[i][3] & 0x40) << 1;
-		instr[i][11] >>= 4;			// slide
-	}
-	f.read((char *)song,51);			// load tracklist
-	f.read((char *)patterns,sizeof(patterns));	// load patterns
+  // load section
+  for(i=0;i<128*12;i++)		// load instruments
+    *((unsigned char *)instr + i) = f->readInt(1);
+  for (i=0;i<128;i++) {			// correct instruments
+    instr[i][2] ^= (instr[i][2] & 0x40) << 1;
+    instr[i][3] ^= (instr[i][3] & 0x40) << 1;
+    instr[i][11] >>= 4;			// slide
+  }
+  for(i=0;i<51;i++) song[i] = f->readInt(1);	// load tracklist
+  for(i=0;i<50*64*9;i++)			// load patterns
+    *((char *)patterns + i) = f->readInt(1);
 
-	rewind(0);					// rewind module
-	return true;
+  fp.close(f);
+  rewind(0);					// rewind module
+  return true;
 }
 
 bool ChscPlayer::update()
@@ -221,12 +216,12 @@ bool ChscPlayer::update()
 	return !songend;		// still playing
 }
 
-void ChscPlayer::rewind(unsigned int subsong)
+void ChscPlayer::rewind(int subsong)
 {
 	int i;								// counter
 
 	// rewind HSC player
-    pattpos = 0; songpos = 0; pattbreak = 0; speed = 2;
+	pattpos = 0; songpos = 0; pattbreak = 0; speed = 2;
 	del = 1; songend = 0; mode6 = 0; bd = 0; fadein = 0;
 
 	opl->init();						// reset OPL chip

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * a2m.cpp - A2M Loader by Simon Peter (dn.tlp@gmx.net)
+ * a2m.cpp - A2M Loader by Simon Peter <dn.tlp@gmx.net>
  *
  * NOTES:
  * This loader detects and loads version 1, 4, 5 & 8 files.
@@ -34,185 +33,200 @@
 
 #include "a2m.h"
 
-static const unsigned short bitvalue[14] = {1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192};	// warning: this was a 1-based array!
-static const signed short copybits[COPYRANGES] = {4,6,8,10,12,14}, copymin[COPYRANGES] = {0,16,80,336,1360,5456};
+const unsigned short Ca2mLoader::bitvalue[14] =
+  {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192};
 
-/*** public methods *************************************/
+const signed short Ca2mLoader::copybits[COPYRANGES] =
+  {4, 6, 8, 10, 12, 14};
+
+const signed short Ca2mLoader::copymin[COPYRANGES] =
+  {0, 16, 80, 336, 1360, 5456};
 
 CPlayer *Ca2mLoader::factory(Copl *newopl)
 {
-  Ca2mLoader *p = new Ca2mLoader(newopl);
-  return p;
+  return new Ca2mLoader(newopl);
 }
 
-bool Ca2mLoader::load(istream &f, const char *filename)
+bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-#pragma pack(1)
-	struct {
-		char id[10];
-		unsigned long crc;
-		unsigned char version,numpats;
-	} ch;
-#pragma pack()
-	int i,j,k,t;
-	unsigned char *secdata,*org,*secptr,*orgptr;
-	unsigned long alength;
-	unsigned short len[9];
-	const unsigned char convfx[16] = {0,1,2,23,24,3,5,4,6,9,17,13,11,19,7,14};
-	const unsigned char convinf1[16] = {0,1,2,6,7,8,9,4,5,3,10,11,12,13,14,15};
-	const unsigned char newconvfx[] = {0,1,2,3,4,5,6,23,24,21,10,11,17,13,7,19,255,255,22,25,255,15,255,255,255,255,255,255,255,255,255,255,255,255,255,14,255};
+  binistream *f = fp.open(filename); if(!f) return false;
+  struct {
+    char id[10];
+    unsigned long crc;
+    unsigned char version,numpats;
+  } ch;
+  int i,j,k,t;
+  unsigned int l;
+  unsigned char *org, *orgptr;
+  unsigned long alength;
+  unsigned short len[9], *secdata, *secptr;
+  const unsigned char convfx[16] = {0,1,2,23,24,3,5,4,6,9,17,13,11,19,7,14};
+  const unsigned char convinf1[16] = {0,1,2,6,7,8,9,4,5,3,10,11,12,13,14,15};
+  const unsigned char newconvfx[] = {0,1,2,3,4,5,6,23,24,21,10,11,17,13,7,19,
+				     255,255,22,25,255,15,255,255,255,255,255,
+				     255,255,255,255,255,255,255,255,14,255};
 
-	// file validation section
-	f.read((char *)&ch,sizeof(ch));
+  // read header
+  f->readString(ch.id, 10); ch.crc = f->readInt(4);
+  ch.version = f->readInt(1); ch.numpats = f->readInt(1);
 
-	if(strncmp(ch.id,"_A2module_",10) || (ch.version != 1 && ch.version != 5 && ch.version != 4 && ch.version != 8))
-		return false;
+  // file validation section
+  if(strncmp(ch.id,"_A2module_",10) || (ch.version != 1 && ch.version != 5 &&
+					ch.version != 4 && ch.version != 8)) {
+    fp.close(f);
+    return false;
+  }
 
-	// load, depack & convert section
-	nop = ch.numpats; length = 128; restartpos = 0; activechan = 0xffff;
-	if(ch.version == 1 || ch.version == 4) {
-		f.read((char *)len,10);
-		t = 9;
-	} else {
-		f.read((char *)len,18);
-		t = 18;
+  // load, depack & convert section
+  nop = ch.numpats; length = 128; restartpos = 0; activechan = 0xffff;
+  if(ch.version == 1 || ch.version == 4) {
+    for(i=0;i<5;i++) len[i] = f->readInt(2);
+    t = 9;
+  } else {
+    for(i=0;i<9;i++) len[i] = f->readInt(2);
+    t = 18;
+  }
+
+  // block 0
+  secdata = new unsigned short [len[0] / 2];
+  if(ch.version == 1 || ch.version == 5) {
+    for(i=0;i<len[0]/2;i++) secdata[i] = f->readInt(2);
+    org = new unsigned char [MAXBUF]; orgptr = org;
+    sixdepak(secdata,org,len[0]);
+  } else {
+    orgptr = (unsigned char *)secdata;
+    for(i=0;i<len[0];i++) orgptr[i] = f->readInt(1);
+  }
+  memcpy(songname,orgptr,43); orgptr += 43;
+  memcpy(author,orgptr,43); orgptr += 43;
+  memcpy(instname,orgptr,250*33); orgptr += 250*33;
+  for(i=0;i<250;i++) {	// instruments
+    inst[i].data[0] = *(orgptr+i*13+10);
+    inst[i].data[1] = *(orgptr+i*13);
+    inst[i].data[2] = *(orgptr+i*13+1);
+    inst[i].data[3] = *(orgptr+i*13+4);
+    inst[i].data[4] = *(orgptr+i*13+5);
+    inst[i].data[5] = *(orgptr+i*13+6);
+    inst[i].data[6] = *(orgptr+i*13+7);
+    inst[i].data[7] = *(orgptr+i*13+8);
+    inst[i].data[8] = *(orgptr+i*13+9);
+    inst[i].data[9] = *(orgptr+i*13+2);
+    inst[i].data[10] = *(orgptr+i*13+3);
+    if(ch.version == 1 || ch.version == 4)
+      inst[i].misc = *(orgptr+i*13+11);
+    else
+      inst[i].misc = 0;
+    inst[i].slide = *(orgptr+i*13+12);
+  }
+
+  orgptr += 250*13;
+  memcpy(order,orgptr,128); orgptr += 128;
+  bpm = *orgptr; orgptr += 1;
+  initspeed = *orgptr;
+  // v5-8 files have an additional flag byte here
+  if(ch.version == 1 || ch.version == 5)
+    delete [] org;
+  delete [] secdata;
+
+  // blocks 1-4 or 1-8
+  alength = len[1];
+  for(i=0;i<(ch.version == 1 || ch.version == 4 ? ch.numpats/16 : ch.numpats/8);i++)
+    alength += len[i+2];
+
+  secdata = new unsigned short [alength / 2];
+  if(ch.version == 1 || ch.version == 5) {
+    for(l=0;l<alength/2;l++) secdata[l] = f->readInt(2);
+    org = new unsigned char [MAXBUF * (ch.numpats / (ch.version == 1 ? 16 : 8) + 1)];
+    orgptr = org; secptr = secdata;
+    orgptr += sixdepak(secptr,orgptr,len[1]); secptr += len[1] / 2;
+    if(ch.version == 1) {
+      if(ch.numpats > 16)
+	orgptr += sixdepak(secptr,orgptr,len[2]); secptr += len[2] / 2;
+      if(ch.numpats > 32)
+	orgptr += sixdepak(secptr,orgptr,len[3]); secptr += len[3] / 2;
+      if(ch.numpats > 48)
+	sixdepak(secptr,orgptr,len[4]);
+    } else {
+      if(ch.numpats > 8)
+	orgptr += sixdepak(secptr,orgptr,len[2]); secptr += len[2] / 2;
+      if(ch.numpats > 16)
+	orgptr += sixdepak(secptr,orgptr,len[3]); secptr += len[3] / 2;
+      if(ch.numpats > 24)
+	orgptr += sixdepak(secptr,orgptr,len[4]); secptr += len[4] / 2;
+      if(ch.numpats > 32)
+	orgptr += sixdepak(secptr,orgptr,len[5]); secptr += len[5] / 2;
+      if(ch.numpats > 40)
+	orgptr += sixdepak(secptr,orgptr,len[6]); secptr += len[6] / 2;
+      if(ch.numpats > 48)
+	orgptr += sixdepak(secptr,orgptr,len[7]); secptr += len[7] / 2;
+      if(ch.numpats > 56)
+	sixdepak(secptr,orgptr,len[8]);
+    }
+    delete [] secdata;
+  } else {
+    org = (unsigned char *)secdata;
+    for(l=0;l<alength;l++) org[l] = f->readInt(1);
+  }
+
+  for(i=0;i<64*9;i++)		// patterns
+    trackord[i/9][i%9] = i+1;
+
+  if(ch.version == 1 || ch.version == 4) {
+    for(i=0;i<ch.numpats;i++)
+      for(j=0;j<64;j++)
+	for(k=0;k<9;k++) {
+	  tracks[i*9+k][j].note = org[i*64*t*4+j*t*4+k*4] == 255 ? 127 : org[i*64*t*4+j*t*4+k*4];
+	  tracks[i*9+k][j].inst = org[i*64*t*4+j*t*4+k*4+1];
+	  tracks[i*9+k][j].command = convfx[org[i*64*t*4+j*t*4+k*4+2]];
+	  tracks[i*9+k][j].param2 = org[i*64*t*4+j*t*4+k*4+3] & 0x0f;
+	  if(tracks[i*9+k][j].command != 14)
+	    tracks[i*9+k][j].param1 = org[i*64*t*4+j*t*4+k*4+3] >> 4;
+	  else {
+	    tracks[i*9+k][j].param1 = convinf1[org[i*64*t*4+j*t*4+k*4+3] >> 4];
+	    if(tracks[i*9+k][j].param1 == 15 && !tracks[i*9+k][j].param2) {	// convert key-off
+	      tracks[i*9+k][j].command = 8;
+	      tracks[i*9+k][j].param1 = 0;
+	      tracks[i*9+k][j].param2 = 0;
+	    }
+	  }
+	  if(tracks[i*9+k][j].command == 14) {
+	    switch(tracks[i*9+k][j].param1) {
+	    case 2: // convert define waveform
+	      tracks[i*9+k][j].command = 25;
+	      tracks[i*9+k][j].param1 = tracks[i*9+k][j].param2;
+	      tracks[i*9+k][j].param2 = 0xf;
+	      break;
+	    case 8: // convert volume slide up
+	      tracks[i*9+k][j].command = 26;
+	      tracks[i*9+k][j].param1 = tracks[i*9+k][j].param2;
+	      tracks[i*9+k][j].param2 = 0;
+	      break;
+	    case 9: // convert volume slide down
+	      tracks[i*9+k][j].command = 26;
+	      tracks[i*9+k][j].param1 = 0;
+	      break;
+	    }
+	  }
 	}
-
-	// block 0
-	secdata = new unsigned char [len[0]];
-	f.read((char *)secdata,len[0]);
-	if(ch.version == 1 || ch.version == 5) {
-		org = new unsigned char [MAXBUF]; orgptr = org;
-		sixdepak((unsigned short *)secdata,org,len[0]);
-	} else
-		orgptr = secdata;
-	memcpy(songname,orgptr,43); orgptr += 43;
-	memcpy(author,orgptr,43); orgptr += 43;
-	memcpy(instname,orgptr,250*33); orgptr += 250*33;
-	for(i=0;i<250;i++) {	// instruments
-		inst[i].data[0] = *(orgptr+i*13+10);
-		inst[i].data[1] = *(orgptr+i*13);
-		inst[i].data[2] = *(orgptr+i*13+1);
-		inst[i].data[3] = *(orgptr+i*13+4);
-		inst[i].data[4] = *(orgptr+i*13+5);
-		inst[i].data[5] = *(orgptr+i*13+6);
-		inst[i].data[6] = *(orgptr+i*13+7);
-		inst[i].data[7] = *(orgptr+i*13+8);
-		inst[i].data[8] = *(orgptr+i*13+9);
-		inst[i].data[9] = *(orgptr+i*13+2);
-		inst[i].data[10] = *(orgptr+i*13+3);
-		if(ch.version == 1 || ch.version == 4)
-			inst[i].misc = *(orgptr+i*13+11);
-		else
-			inst[i].misc = 0;
-		inst[i].slide = *(orgptr+i*13+12);
+  } else {
+    for(i=0;i<ch.numpats;i++)
+      for(j=0;j<9;j++)
+	for(k=0;k<64;k++) {
+	  tracks[i*9+j][k].note = org[i*64*t*4+j*64*4+k*4] == 255 ? 127 : org[i*64*t*4+j*64*4+k*4];
+	  tracks[i*9+j][k].inst = org[i*64*t*4+j*64*4+k*4+1];
+	  tracks[i*9+j][k].command = newconvfx[org[i*64*t*4+j*64*4+k*4+2]];
+	  tracks[i*9+j][k].param1 = org[i*64*t*4+j*64*4+k*4+3] >> 4;
+	  tracks[i*9+j][k].param2 = org[i*64*t*4+j*64*4+k*4+3] & 0x0f;
 	}
+  }
 
-	orgptr += 250*13;
-	memcpy(order,orgptr,128); orgptr += 128;
-	bpm = *orgptr; orgptr += 1;
-	initspeed = *orgptr;
-	// v5-8 files have an additional flag byte here
-	if(ch.version == 1 || ch.version == 5)
-		delete [] org;
-	delete [] secdata;
-
-	// blocks 1-4 or 1-8
-	alength = len[1];
-	for(i=0;i<(ch.version == 1 || ch.version == 4 ? ch.numpats/16 : ch.numpats/8);i++)
-		alength += len[i+2];
-
-	secdata = new unsigned char [alength];
-	f.read((char *)secdata,alength);
-	if(ch.version == 1 || ch.version == 5) {
-		org = new unsigned char [MAXBUF * (ch.numpats / (ch.version == 1 ? 16 : 8) + 1)];
-		orgptr = org; secptr = secdata;
-		orgptr += sixdepak((unsigned short *)secptr,orgptr,len[1]); secptr += len[1];
-		if(ch.version == 1) {
-			if(ch.numpats > 16)
-				orgptr += sixdepak((unsigned short *)secptr,orgptr,len[2]); secptr += len[2];
-			if(ch.numpats > 32)
-				orgptr += sixdepak((unsigned short *)secptr,orgptr,len[3]); secptr += len[3];
-			if(ch.numpats > 48)
-				sixdepak((unsigned short *)secptr,orgptr,len[4]);
-		} else {
-			if(ch.numpats > 8)
-				orgptr += sixdepak((unsigned short *)secptr,orgptr,len[2]); secptr += len[2];
-			if(ch.numpats > 16)
-				orgptr += sixdepak((unsigned short *)secptr,orgptr,len[3]); secptr += len[3];
-			if(ch.numpats > 24)
-				orgptr += sixdepak((unsigned short *)secptr,orgptr,len[4]); secptr += len[4];
-			if(ch.numpats > 32)
-				orgptr += sixdepak((unsigned short *)secptr,orgptr,len[5]); secptr += len[5];
-			if(ch.numpats > 40)
-				orgptr += sixdepak((unsigned short *)secptr,orgptr,len[6]); secptr += len[6];
-			if(ch.numpats > 48)
-				orgptr += sixdepak((unsigned short *)secptr,orgptr,len[7]); secptr += len[7];
-			if(ch.numpats > 56)
-				sixdepak((unsigned short *)secptr,orgptr,len[8]);
-		}
-		delete [] secdata;
-	} else
-		org = secdata;
-
-	for(i=0;i<64*9;i++)		// patterns
-		trackord[i/9][i%9] = i+1;
-
-	if(ch.version == 1 || ch.version == 4) {
-		for(i=0;i<ch.numpats;i++)
-			for(j=0;j<64;j++)
-				for(k=0;k<9;k++) {
-					tracks[i*9+k][j].note = org[i*64*t*4+j*t*4+k*4] == 255 ? 127 : org[i*64*t*4+j*t*4+k*4];
-					tracks[i*9+k][j].inst = org[i*64*t*4+j*t*4+k*4+1];
-					tracks[i*9+k][j].command = convfx[org[i*64*t*4+j*t*4+k*4+2]];
-					tracks[i*9+k][j].param2 = org[i*64*t*4+j*t*4+k*4+3] & 0x0f;
-					if(tracks[i*9+k][j].command != 14)
-						tracks[i*9+k][j].param1 = org[i*64*t*4+j*t*4+k*4+3] >> 4;
-					else {
-						tracks[i*9+k][j].param1 = convinf1[org[i*64*t*4+j*t*4+k*4+3] >> 4];
-						if(tracks[i*9+k][j].param1 == 15 && !tracks[i*9+k][j].param2) {	// convert key-off
-							tracks[i*9+k][j].command = 8;
-							tracks[i*9+k][j].param1 = 0;
-							tracks[i*9+k][j].param2 = 0;
-						}
-					}
-					if(tracks[i*9+k][j].command == 14) {
-						switch(tracks[i*9+k][j].param1) {
-						case 2: // convert define waveform
-							tracks[i*9+k][j].command = 25;
-							tracks[i*9+k][j].param1 = tracks[i*9+k][j].param2;
-							tracks[i*9+k][j].param2 = 0xf;
-							break;
-						case 8: // convert volume slide up
-							tracks[i*9+k][j].command = 26;
-							tracks[i*9+k][j].param1 = tracks[i*9+k][j].param2;
-							tracks[i*9+k][j].param2 = 0;
-							break;
-						case 9: // convert volume slide down
-							tracks[i*9+k][j].command = 26;
-							tracks[i*9+k][j].param1 = 0;
-							break;
-						}
-					}
-				}
-	} else {
-		for(i=0;i<ch.numpats;i++)
-			for(j=0;j<9;j++)
-				for(k=0;k<64;k++) {
-					tracks[i*9+j][k].note = org[i*64*t*4+j*64*4+k*4] == 255 ? 127 : org[i*64*t*4+j*64*4+k*4];
-					tracks[i*9+j][k].inst = org[i*64*t*4+j*64*4+k*4+1];
-					tracks[i*9+j][k].command = newconvfx[org[i*64*t*4+j*64*4+k*4+2]];
-					tracks[i*9+j][k].param1 = org[i*64*t*4+j*64*4+k*4+3] >> 4;
-					tracks[i*9+j][k].param2 = org[i*64*t*4+j*64*4+k*4+3] & 0x0f;
-				}
-	}
-
-	if(ch.version == 1 || ch.version == 5)
-		delete [] org;
-	else
-		delete [] secdata;
-	rewind(0);
-	return true;
+  if(ch.version == 1 || ch.version == 5)
+    delete [] org;
+  else
+    delete [] secdata;
+  fp.close(f);
+  rewind(0);
+  return true;
 }
 
 float Ca2mLoader::getrefresh()
@@ -404,9 +418,10 @@ void Ca2mLoader::decode()
 	output_size = obufcount;
 }
 
-unsigned short Ca2mLoader::sixdepak(unsigned short *source,unsigned char *dest,unsigned short size)
+unsigned short Ca2mLoader::sixdepak(unsigned short *source, unsigned char *dest,
+				    unsigned short size)
 {
-	if(size + 4096 > MAXBUF)
+	if((unsigned int)size + 4096 > MAXBUF)
 		return 0;
 
 	buf = new unsigned char [MAXSIZE];

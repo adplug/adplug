@@ -25,8 +25,7 @@
 
 CPlayer *Cu6mPlayer::factory(Copl *newopl)
 {
-  Cu6mPlayer *p = new Cu6mPlayer(newopl);
-  return p;
+  return new Cu6mPlayer(newopl);
 }
 
 bool Cu6mPlayer::load(istream &f, const char *filename)

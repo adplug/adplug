@@ -1,7 +1,10 @@
 This is a brief overview of user-visible changes in AdPlug.
 
 Changes for version 1.4:
-	- None
+	- Documentation changed into Texinfo format.
+	- New, modularized file loading framework.
+	- Now using 'libbinio' for platform-independant binary I/O.
+	- Added database framework for storing music file information.
 
 Changes for version 1.3:
 	- Completely new build system for DOS and Windows.

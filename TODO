@@ -28,4 +28,7 @@ AdPlug To Do List:
 - Move struct allplayers[] and VERSION #define out of adplug.cpp and inside
   a new file players.h or similar. [dynamite]
 
-- Make it compile under gcc 3.2. [dynamite]
+- Implement 'autoproject', an automake-like program that generates a MSVC6
+  .dsp file from Makefile.am. [dynamite]
+
+- Write user documentation. [dynamite]

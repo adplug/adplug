@@ -30,12 +30,11 @@ public:
   static CPlayer *factory(Copl *newopl);
 
         CxadPlayer(Copl * newopl);
-
         ~CxadPlayer();
 
-        bool            load(istream &f, const char *filename);
+        bool            load(std::string filename, const CFileProvider &fp);
         bool            update();
-        void            rewind(unsigned int subsong);
+        void            rewind(int subsong);
         float           getrefresh();
 
         std::string     gettype();

@@ -16,16 +16,11 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * adplug.cpp - CAdPlug helper class implementation, by Simon Peter <dn.tlp@gmx.net>
+ * adplug.cpp - CAdPlug utility class, by Simon Peter <dn.tlp@gmx.net>
  */
 
-/***** Includes *****/
-
-#include <fstream.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include <string>
+#include <binfile.h>
 
 #include "adplug.h"
 #include "debug.h"
@@ -33,19 +28,19 @@
 /***** Replayer includes *****/
 
 #include "hsc.h"
-#include "mtk.h"
+/*#include "mtk.h"
 #include "hsp.h"
 #include "s3m.h"
 #include "raw.h"
 #include "d00.h"
 #include "sa2.h"
 #include "amd.h"
-#include "rad.h"
+#include "rad.h" */
 #include "a2m.h"
-#include "mid.h"
+//#include "mid.h"
 #include "imf.h"
 #include "sng.h"
-#include "ksm.h"
+/*#include "ksm.h"
 #include "mkj.h"
 #include "dfm.h"
 #include "lds.h"
@@ -63,24 +58,86 @@
 #include "dtm.h"
 #include "dmo.h"
 #include "u6m.h"
-#include "rol.h"
+#include "rol.h" */
 
 /***** Defines *****/
 
 #define VERSION		"1.4"		// AdPlug library version string
 
-/***** Static variables initializers *****/
+/***** Static stuff *****/
 
-const unsigned short CPlayer::note_table[12] = {363,385,408,432,458,485,514,544,577,611,647,686};
-const unsigned char CPlayer::op_table[9] = {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 0x10, 0x11, 0x12};
+// List of all players that come with the standard AdPlug distribution
+static const CPlayerDesc allplayers[] = {
+  CPlayerDesc(ChscPlayer::factory, "HSC-Tracker", ".hsc"),
+  CPlayerDesc(CsngPlayer::factory, "SNGPlay", ".sng"),
+  CPlayerDesc(CimfPlayer::factory, "IMF", ".imf"),
+  CPlayerDesc(Ca2mLoader::factory, "Adlib Tracker 2", ".a2m"),
+  CPlayerDesc()
+};
 
-/***** List of all players that come in the standard AdPlug distribution *****/
+static const CPlayers &init_players(const CPlayerDesc pd[])
+{
+  static CPlayers	initplayers;
+  unsigned int		i;
+
+  for(i = 0; pd[i].factory; i++)
+    initplayers.push_back(&pd[i]);
+
+  return initplayers;
+}
+
+/***** CAdPlug *****/
+
+const CPlayers CAdPlug::players = init_players(allplayers);
+CAdPlugDatabase *CAdPlug::database = 0;
+
+CPlayer *CAdPlug::factory(const std::string &fn, Copl *opl, const CPlayers &pl,
+			  const CFileProvider &fp)
+{
+  CPlayer			*p;
+  CPlayers::const_iterator	i;
+
+  AdPlug_LogWrite("*** CAdPlug::factory(\"%s\",opl,fp) ***\n", fn.c_str());
+
+  for(i = pl.begin(); i != pl.end(); i++) {
+    AdPlug_LogWrite("Trying: %s\n", (*i)->filetype.c_str());
+    if((p = (*i)->factory(opl)))
+      if(p->load(fn, fp)) {
+        AdPlug_LogWrite("got it!\n");
+        AdPlug_LogWrite("--- CAdPlug::factory ---\n");
+	return p;
+      } else
+	delete p;
+  }
+
+  AdPlug_LogWrite("End of list!\n");
+  AdPlug_LogWrite("--- CAdPlug::factory ---\n");
+  return 0;
+}
+
+void CAdPlug::set_database(CAdPlugDatabase *db)
+{
+  database = db;
+}
+
+std::string CAdPlug::get_version()
+{
+  return std::string(VERSION);
+}
+
+void CAdPlug::debug_output(const std::string &filename)
+{
+  AdPlug_LogFile(filename.c_str());
+  AdPlug_LogWrite("CAdPlug::debug_output(\"%s\"): Redirected.\n",filename.c_str());
+}
+
+/**************************/
 
 // WARNING: The order of this list is on purpose! AdPlug tries the players in
 // this order, which is to be preserved, because some players take precedence
 // above other players.
 // The list is terminated with an all-NULL element.
-const CAdPlug::Players CAdPlug::allplayers[] = {
+/*const CAdPlug::Players CAdPlug::allplayers[] = {
   {CmidPlayer::factory}, {CksmPlayer::factory}, {CrolPlayer::factory},
   {CsngPlayer::factory}, {Ca2mLoader::factory}, {CradLoader::factory},
   {CamdLoader::factory}, {Csa2Loader::factory}, {CrawPlayer::factory},
@@ -92,77 +149,9 @@ const CAdPlug::Players CAdPlug::allplayers[] = {
   {CdmoLoader::factory}, {Cu6mPlayer::factory}, {Cd00Player::factory},
   {ChspLoader::factory}, {ChscPlayer::factory}, {CimfPlayer::factory},
   {CldsLoader::factory}, {CadtrackLoader::factory},
+
+  {ChscPlayer::factory, CFileType::HSCTracker, ".hsc", "HSC-Tracker", true},
+  {CsngPlayer::factory, CFileType::SNGPlay, ".sng", "SNGPlay", true},
+  {CimfPlayer::factory, CFileType::IMF, ".imf", "Apogee IMF", true},
   {0}
-};
-
-/***** Public methods *****/
-
-CPlayer *CAdPlug::factory(const char *fn, Copl *opl)
-{
-	ifstream f(fn, ios::in | ios::binary);
-
-        if(!f.is_open()) {
-                AdPlug_LogWrite("CAdPlug::factory(\"%s\",opl): File could not be "
-                        "opened!\n",fn);
-                return 0;
-        }
-	return factory(f,opl,fn);
-}
-
-CPlayer *CAdPlug::factory(istream &f, Copl *opl, const char *fn)
-{
-  CPlayer *p;
-  unsigned int i;
-
-  AdPlug_LogWrite("*** CAdPlug::factory(f,opl,\"%s\") ***\n",fn);
-
-  for(i=0;allplayers[i].factory;i++) {
-    AdPlug_LogWrite("Trying: %d\n",i);
-    if((p = allplayers[i].factory(opl)))
-      if(p->load(f,fn)) {
-        AdPlug_LogWrite("got it!\n");
-        AdPlug_LogWrite("--- CAdPlug::factory ---\n");
-	return p;
-      } else {
-	delete p;
-	f.seekg(0);
-      }
-  }
-
-  AdPlug_LogWrite("End of list!\n");
-  AdPlug_LogWrite("--- CAdPlug::factory ---\n");
-  return 0;
-}
-
-unsigned long CAdPlug::songlength(CPlayer *p, unsigned int subsong)
-{
-	float	slength = 0.0f;
-
-	// get song length
-	p->rewind(subsong);
-	while(p->update() && slength < 600000)	// song length limit: 10 minutes
-		slength += 1000/p->getrefresh();
-	p->rewind(subsong);
-
-	return (unsigned long)slength;
-}
-
-void CAdPlug::seek(CPlayer *p, unsigned long ms)
-{
-	float pos = 0.0f;
-
-	p->rewind();
-	while(pos < ms && p->update())		// seek to new position
-		pos += 1000/p->getrefresh();
-}
-
-std::string CAdPlug::get_version()
-{
-  return std::string(VERSION);
-}
-
-void CAdPlug::debug_output(std::string filename)
-{
-  AdPlug_LogFile(filename.c_str());
-  AdPlug_LogWrite("CAdPlug::debug_output(\"%s\"): Redirected.\n",filename.c_str());
-}
+}; */

@@ -31,7 +31,7 @@ public:
 	virtual ~CmodPlayer();
 
 	bool update();
-	void rewind(unsigned int subsong);
+	void rewind(int subsong);
 	float getrefresh();
 
 	unsigned int getpatterns()
