@@ -24,14 +24,6 @@
 
 #include "player.h"
 
-/*
- * Use of the MOD_FLAGS_* defines is deprecated!
- * Use the 'enum Flags' below instead.
- */
-#define MOD_FLAGS_STANDARD	0
-#define MOD_FLAGS_DECIMAL	1
-#define MOD_FLAGS_FAUST		2
-
 class CmodPlayer: public CPlayer
 {
 public:
@@ -80,16 +72,17 @@ protected:
 
 	void dealloc();
 
-private:
-	static const unsigned short sa2_notetable[12];
-	static const unsigned char vibratotab[32];
-
+protected:
 	struct Channel {
 	  unsigned short freq,nextfreq;
 	  unsigned char oct,vol1,vol2,inst,fx,info1,info2,key,nextoct,
 	    note,portainfo,vibinfo1,vibinfo2,arppos,arpspdcnt;
 	  signed char trigger;
 	} *channel;
+
+private:
+	static const unsigned short sa2_notetable[12];
+	static const unsigned char vibratotab[32];
 
 	unsigned char speed, del, songend, regbd;
 	unsigned short rows, notetable[12];
