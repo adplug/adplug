@@ -10,6 +10,7 @@ Changes for version 1.5:
 	  file for details.
 	- Added Ken Silverman's YM3812 emulator again. The portability
 	  issues have been fixed.
+	- Added a test-suite.
 
 Changes for version 1.4:
 	- Documentation changed into Texinfo format.
