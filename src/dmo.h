@@ -45,28 +45,4 @@ class CdmoLoader: public Cs3mPlayer
     short unpack_block(unsigned char *ibuf, long ilen, unsigned char *obuf);
     unsigned long bseed;
   };
-
-#pragma pack(1)
-  struct dmo_header {
-    char		id[22];
-    char		title[28];
-    unsigned short	_unk_1;
-    unsigned short	numord;
-    unsigned short	numinst;
-    unsigned short	numpat;
-    unsigned short	_unk_2;
-    unsigned short	speed;
-    unsigned short	tempo;
-    unsigned char	panning[32];
-  };
-
-  struct dmo_instrument {
-    char		name[28];
-    unsigned char	vol;
-    unsigned char	dsk;
-    unsigned long	c2spd;
-    unsigned char	type;
-    unsigned char	data[12];
-  };
-#pragma pack()
 };
