@@ -1,3 +1,13 @@
+2003-03-18 12:41  dynamite
+
+	* Makefile.bt: DOS build fixes. Release Candidate #3.
+
+2003-03-17 22:11  dynamite
+
+	* ChangeLog, Makefile.am, adplugdb/Makefile.am,
+	adplugdb/adplugdb.cpp, doc/Makefile.am, src/Makefile.am: UNIX build
+	fixes. Added missing files to distribution. Release Candidate #2.
+
 2003-03-17 15:00  dynamite
 
 	* AUTHORS, COPYING, TODO, adplug_mdk.spec, src/adplug.cpp: Fixed
