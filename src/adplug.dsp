@@ -165,6 +165,10 @@ SOURCE=.\dtm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\emuopl.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\flash.cpp
 # End Source File
 # Begin Source File
