@@ -14,7 +14,7 @@ CXXFLAGS =
 CPPFLAGS =
 LDFLAGS =
 LIBFLAGS = -n -b
-MAKEFLAGS = $(__MAKEOPTS__)
+MAKEFLAGS = /h $+$(__MAKEOPTS__)$-
 ZIPFLAGS = -P
 
 #SUBDIRS =
@@ -85,11 +85,12 @@ all: all.recursive $(OUTPUT) .symbolic
 $(Recursive_Targets): $(__MAKEFILES__) .symbolic
 !ifdef CurrentSubdir
         cd $(CurrentSubdir)
-        $(MAKE) /f ..\$[@ $(MAKEFLAGS) configfile=..\$(configfile) $*
+        $(MAKE) /f ..\$[@ $(MAKEFLAGS) MAKEFLAGS=$(MAKEFLAGS) &
+                configfile=..\$(configfile) $*
 !else
         for %d in ($(SUBDIRS)) do &
-                $(MAKE) /f $[@ $(MAKEFLAGS) configfile=$(configfile) &
-                CurrentSubdir=%d $@
+                $(MAKE) /f $[@ $(MAKEFLAGS) MAKEFLAGS=$(MAKEFLAGS) &
+                        configfile=$(configfile) CurrentSubdir=%d $@
 !endif
 
 !ifdef OUTPUT
