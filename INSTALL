@@ -4,7 +4,7 @@ AdPlug depends upon the following libraries:
 
 Library:	Version:
 --------	--------
-libbinio	>= 1.1
+libbinio	>= 1.3
 
 libbinio can be obtained from http://libbinio.sourceforge.net.
 

@@ -167,7 +167,7 @@ bool CldsPlayer::update()
 
   // handle fading
   if(fadeonoff)
-    if(fadeonoff <= 127)
+    if(fadeonoff <= 128) {
       if(allvolume > fadeonoff || allvolume == 0)
 	allvolume -= fadeonoff;
       else {
@@ -179,8 +179,12 @@ bool CldsPlayer::update()
 	  for(i = 0; i < 9; i++)
 	    channel[i].keycount = 1;
 	}
-      } else {
-	allvolume = 0;
+      }
+    } else
+      if((allvolume + (0x100 - fadeonoff)) & 0xff <= mainvolume)
+	allvolume += 0x100 - fadeonoff;
+      else {
+	allvolume = mainvolume;
 	fadeonoff = 0;
       }
 
@@ -198,18 +202,21 @@ bool CldsPlayer::update()
     for(chan = 0; chan < 9; chan++) {
       c = &channel[chan];
       if(!c->packwait) {
-	comword = patterns[positions[posplay * 9 + chan].patnum + c->packpos];
+	unsigned short	patnum = positions[posplay * 9 + chan].patnum;
+	unsigned char	transpose = positions[posplay * 9 + chan].transpose;
+
+	comword = patterns[patnum + c->packpos];
 	comhi = comword >> 8; comlo = comword & 0xff;
 	if(comword)
 	  if(comhi == 0x80)
 	    c->packwait = comlo;
 	  else
-	    if(comword >= 0x8000) {
+	    if(comhi >= 0x80) {
 	      switch(comhi) {
 	      case 0xff:
-		c->volcar = ((c->volcar & 0x3f) * (comlo >> 6)) & 0x3f;
-		if(fmchip[0xc0 + chan] & 1 == 1)
-		  c->volmod = ((c->volmod & 0x3f) * (comlo >> 6)) & 0x3f;
+		c->volcar = (((c->volcar & 0x3f) * comlo) >> 6) & 0x3f;
+		if(fmchip[0xc0 + chan] & 1)
+		  c->volmod = (((c->volmod & 0x3f) * comlo) >> 6) & 0x3f;
 		break;
 	      case 0xfe:
 		tempo = comword & 0x3f;
@@ -219,6 +226,7 @@ bool CldsPlayer::update()
 		break;
 	      case 0xfc:
 		playing = false;
+		// in real player there's also full keyoff here, but we don't need it
 		break;
 	      case 0xfb:
 		c->keycount = 1;
@@ -230,6 +238,7 @@ bool CldsPlayer::update()
 	      case 0xf9:
 		vbreak = true;
 		jumppos = comlo & maxpos;
+		jumping = 1;
 		if(jumppos < posplay) songlooped = true;
 		break;
 	      case 0xf8:
@@ -237,8 +246,9 @@ bool CldsPlayer::update()
 		break;
 	      case 0xf7:
 		c->vibwait = 0;
-		c->vibspeed = ((comlo >> 4) & 15) + 2;
-		c->vibrate = (comword & 15) + 1;
+		// PASCAL: c->vibspeed = ((comlo >> 4) & 15) + 2;
+		c->vibspeed = (comlo >> 4) + 2;
+		c->vibrate = (comlo & 15) + 1;
 		break;
 	      case 0xf6:
 		c->glideto = comlo;
@@ -248,7 +258,7 @@ bool CldsPlayer::update()
 		break;
 	      case 0xf4:
 		if(!hardfade) {
-		  allvolume = comlo;
+		  allvolume = mainvolume = comlo;
 		  fadeonoff = 0;
 		}
 		break;
@@ -261,30 +271,45 @@ bool CldsPlayer::update()
 	      case 0xf1:	// panorama
 	      case 0xf0:	// progch
 		// MIDI commands (unhandled)
+		AdPlug_LogWrite("CldsPlayer(): not handling MIDI command 0x%x, "
+				"value = 0x%x\n", comhi);
 		break;
 	      default:
 		if(comhi < 0xa0)
 		  c->glideto = comhi & 0x1f;
 		else
-		  AdPlug_LogWrite("CldsPlayer(): unknown command %d encountered!"
-				  " value = %d\n", comhi, comlo);
+		  AdPlug_LogWrite("CldsPlayer(): unknown command 0x%x encountered!"
+				  " value = 0x%x\n", comhi, comlo);
 		break;
 	      }
 	    } else {
 	      unsigned char	sound;
 	      unsigned short	high;
+	      signed char	transp = transpose & 127;
 
-	      if(positions[posplay * 9 +chan].transpose & 128) {
-		sound = (comlo + (positions[posplay * 9 + chan].transpose & 127)) & maxsound;
+	      /*
+	       * Originally, in assembler code, the player first shifted
+	       * logically left the transpose byte by 1 and then shifted
+	       * arithmetically right the same byte to achieve the final,
+	       * signed transpose value. Since we can't do arithmetic shifts
+	       * in C, we just duplicate the 7th bit into the 8th one and
+	       * discard the 8th one completely.
+	       */
+
+	      if(transpose & 64) transp |= 128;
+
+	      if(transpose & 128) {
+		sound = (comlo + transp) & maxsound;
 		high = comhi << 4;
 	      } else {
 		sound = comlo & maxsound;
-		high = (comhi + (positions[posplay * 9 + chan].transpose & 127)) << 4;
+		high = (comhi + transp) << 4;
 	      }
 
 	      /*
+		PASCAL:
 	      sound = comlo & maxsound;
-	      high = (comhi + (((positions[posplay * 9 + chan].transpose + 0x24) & 0xff) - 0x24)) << 4;
+	      high = (comhi + (((transpose + 0x24) & 0xff) - 0x24)) << 4;
 	      */
 
 	      if(!chandelay[chan])
@@ -302,6 +327,18 @@ bool CldsPlayer::update()
     }
 
     tempo_now = tempo;
+    /*
+      The continue table is updated here, but this is only used in the
+      original player, which can be paused in the middle of a song and then
+      unpaused. Since AdPlug does all this for us automatically, we don't
+      have a continue table here. The continue table update code is noted
+      here for reference only.
+
+      if(!pattplay) {
+        conttab[speed & maxcont].position = posplay & 0xff;
+        conttab[speed & maxcont].tempo = tempo;
+      }
+    */
     pattplay++;
     if(vbreak) {
       pattplay = 0;
@@ -331,7 +368,7 @@ bool CldsPlayer::update()
       arpreg = 0;
     else {
       arpreg = c->arp_tab[c->arp_pos] << 4;
-      if(arpreg == 0xf800) {
+      if(arpreg == 0x800) {
 	if(c->arp_pos > 0) c->arp_tab[0] = c->arp_tab[c->arp_pos - 1];
 	c->arp_size = 1; c->arp_pos = 0;
 	arpreg = c->arp_tab[0] << 4;
@@ -339,7 +376,7 @@ bool CldsPlayer::update()
 
       if(c->arp_count == c->arp_speed) {
 	c->arp_pos++;
-	if(c->arp_pos == c->arp_size) c->arp_pos = 0;
+	if(c->arp_pos >= c->arp_size) c->arp_pos = 0;
 	c->arp_count = 0;
       } else
 	c->arp_count++;
@@ -371,7 +408,7 @@ bool CldsPlayer::update()
     } else {
       // vibrato
       if(!c->vibwait) {
-	if(c->vibrate > 0) {
+	if(c->vibrate) {
 	  wibc = vibtab[c->vibcount & 0x3f] * c->vibrate;
 
 	  if((c->vibcount & 0x40) == 0)
@@ -390,7 +427,7 @@ bool CldsPlayer::update()
 	  setregs_adv(0xb0 + chan, 0x20, ((octave << 2) + (freq >> 8)) & 0xdf);
 	  c->vibcount += c->vibspeed;
 	} else
-	  if(c->arp_size != 0) {
+	  if(c->arp_size != 0) {	// no vibrato, just arpeggio
 	    if(arpreg >= 0x800)
 	      tune = c->lasttune - (arpreg ^ 0xff0) - 16;
 	    else
@@ -420,33 +457,33 @@ bool CldsPlayer::update()
 
     // tremolo (modulator)
     if(!c->trmwait) {
-      if(c->trmrate > 0) {
+      if(c->trmrate) {
 	tremc = tremtab[c->trmcount & 0x7f] * c->trmrate;
 	if((tremc >> 8) <= (c->volmod & 0x3f))
 	  level = (c->volmod & 0x3f) - (tremc >> 8);
 	else
 	  level = 0;
 
-	if(allvolume != 0 && (fmchip[0xc0 + chan] & 1) == 1)
-	  setregs_adv(0x40 + regnum, 0xc0, (level * (allvolume >> 8)) ^ 0x3f);
+	if(allvolume != 0 && (fmchip[0xc0 + chan] & 1))
+	  setregs_adv(0x40 + regnum, 0xc0, ((level * allvolume) >> 8) ^ 0x3f);
 	else
 	  setregs_adv(0x40 + regnum, 0xc0, level ^ 0x3f);
 
 	c->trmcount += c->trmspeed;
       } else
-	if(allvolume != 0 && (fmchip[0xc0 + chan] & 1) == 1)
-	  setregs_adv(0x40 + regnum, 0xc0, ((c->volmod & 0x3f) * (allvolume >> 8)) ^ 0x3f);
+	if(allvolume != 0 && (fmchip[0xc0 + chan] & 1))
+	  setregs_adv(0x40 + regnum, 0xc0, ((((c->volmod & 0x3f) * allvolume) >> 8) ^ 0x3f) & 0x3f);
 	else
 	  setregs_adv(0x40 + regnum, 0xc0, (c->volmod ^ 0x3f) & 0x3f);
     } else {
       c->trmwait--;
-      if(allvolume != 0 && (fmchip[0xc0 + chan] & 1) == 1)
-	setregs_adv(0x40 + regnum, 0xc0, ((c->volmod & 0x3f) * (allvolume >> 8)) ^ 0x3f);
+      if(allvolume != 0 && (fmchip[0xc0 + chan] & 1))
+	setregs_adv(0x40 + regnum, 0xc0, ((((c->volmod & 0x3f) * allvolume) >> 8) ^ 0x3f) & 0x3f);
     }
 
     // tremolo (carrier)
     if(!c->trcwait) {
-      if(c->trcrate > 0) {
+      if(c->trcrate) {
 	tremc = tremtab[c->trccount & 0x7f] * c->trcrate;
 	if((tremc >> 8) <= (c->volcar & 0x3f))
 	  level = (c->volcar & 0x3f) - (tremc >> 8);
@@ -454,19 +491,19 @@ bool CldsPlayer::update()
 	  level = 0;
 
 	if(allvolume != 0)
-	  setregs_adv(0x43 + regnum, 0xc0, (level * (allvolume >> 8)) ^ 0x3f);
+	  setregs_adv(0x43 + regnum, 0xc0, ((level * allvolume) >> 8) ^ 0x3f);
 	else
 	  setregs_adv(0x43 + regnum, 0xc0, level ^ 0x3f);
 	c->trccount += c->trcspeed;
       } else
 	if(allvolume != 0)
-	  setregs_adv(0x43 + regnum, 0xc0, ((c->volcar & 0x3f) * (allvolume >> 8)) ^ 0x3f);
+	  setregs_adv(0x43 + regnum, 0xc0, ((((c->volcar & 0x3f) * allvolume) >> 8) ^ 0x3f) & 0x3f);
 	else
 	  setregs_adv(0x43 + regnum, 0xc0, (c->volcar ^ 0x3f) & 0x3f);
     } else {
       c->trcwait--;
       if(allvolume != 0)
-	setregs_adv(0x43 + regnum, 0xc0, ((c->volcar & 0x3f) * (allvolume >> 8)) ^ 0x3f);
+	setregs_adv(0x43 + regnum, 0xc0, ((((c->volcar & 0x3f) * allvolume) >> 8) ^ 0x3f) & 0x3f);
     }
   }
 
@@ -479,7 +516,8 @@ void CldsPlayer::rewind(int subsong)
 
   // init all with 0
   tempo_now = 3; playing = true; songlooped = false;
-  jumping = fadeonoff = allvolume = hardfade = pattplay = posplay = jumppos = 0;
+  jumping = fadeonoff = allvolume = hardfade = pattplay = posplay = jumppos =
+    mainvolume = 0;
   memset(channel, 0, sizeof(channel));
   memset(fmchip, 0, sizeof(fmchip));
 
@@ -530,7 +568,7 @@ void CldsPlayer::playsound(int inst_number, int channel_number, int tunehigh)
   }
 
   // glide handling
-  if(c->glideto) {
+  if(c->glideto != 0) {
     c->gototune = tunehigh;
     c->portspeed = c->glideto;
     c->glideto = c->finetune = 0;
@@ -543,15 +581,15 @@ void CldsPlayer::playsound(int inst_number, int channel_number, int tunehigh)
   if(!c->nextvol || !(i->feedback & 1))
     c->volmod = volcalc;
   else
-    c->volmod = (volcalc & 0xc0) | (((volcalc & 0x3f) * c->nextvol >> 6));
+    c->volmod = (volcalc & 0xc0) | ((((volcalc & 0x3f) * c->nextvol) >> 6));
 
-  if((i->feedback & 1) == 1 && allvolume)
-    setregs(0x40 + regnum, (c->volmod & 0xc0) | ((c->volmod & 0x3f) * (allvolume >> 8)) ^ 0x3f);
+  if((i->feedback & 1) == 1 && allvolume != 0)
+    setregs(0x40 + regnum, ((c->volmod & 0xc0) | (((c->volmod & 0x3f) * allvolume) >> 8)) ^ 0x3f);
   else
     setregs(0x40 + regnum, c->volmod ^ 0x3f);
   setregs(0x60 + regnum, i->mod_ad);
   setregs(0x80 + regnum, i->mod_sr);
-  opl->write(0xe0 + regnum, i->mod_wave);
+  setregs(0xe0 + regnum, i->mod_wave);
 
   // Set carrier registers
   setregs(0x23 + regnum, i->car_misc);
@@ -562,12 +600,12 @@ void CldsPlayer::playsound(int inst_number, int channel_number, int tunehigh)
     c->volcar = (volcalc & 0xc0) | ((((volcalc & 0x3f) * c->nextvol) >> 6));
 
   if(allvolume)
-    setregs(0x43 + regnum, (c->volcar & 0xc0) | ((c->volcar & 0x3f) * (allvolume >> 8)) ^ 0x3f);
+    setregs(0x43 + regnum, ((c->volcar & 0xc0) | (((c->volcar & 0x3f) * allvolume) >> 8)) ^ 0x3f);
   else
     setregs(0x43 + regnum, c->volcar ^ 0x3f);
   setregs(0x63 + regnum, i->car_ad);
   setregs(0x83 + regnum, i->car_sr);
-  opl->write(0xe3 + regnum, i->car_wave);
+  setregs(0xe3 + regnum, i->car_wave);
   setregs(0xc0 + channel_number, i->feedback);
   setregs_adv(0xb0 + channel_number, 0xdf, 0);		// key off
 
@@ -595,20 +633,23 @@ void CldsPlayer::playsound(int inst_number, int channel_number, int tunehigh)
     c->vibwait = c->vibspeed = c->vibrate = 0;
   else {
     c->vibwait = i->vibdelay;
-    c->vibspeed = ((i->vibrato >> 4) & 15) + 2;
+    // PASCAL:    c->vibspeed = ((i->vibrato >> 4) & 15) + 1;
+    c->vibspeed = (i->vibrato >> 4) + 2;
     c->vibrate = (i->vibrato & 15) + 1;
   }
 
   if(!(c->trmstay & 0xf0)) {
     c->trmwait = (i->tremwait & 0xf0) >> 3;
-    c->trmspeed = (i->mod_trem >> 4) & 15;
+    // PASCAL:    c->trmspeed = (i->mod_trem >> 4) & 15;
+    c->trmspeed = i->mod_trem >> 4;
     c->trmrate = i->mod_trem & 15;
     c->trmcount = 0;
   }
 
   if(!(c->trmstay & 0x0f)) {
     c->trcwait = (i->tremwait & 15) << 1;
-    c->trcspeed = (i->car_trem >> 4) & 15;
+    // PASCAL:    c->trcspeed = (i->car_trem >> 4) & 15;
+    c->trcspeed = i->car_trem >> 4;
     c->trcrate = i->car_trem & 15;
     c->trccount = 0;
   }

@@ -68,7 +68,7 @@ class CldsPlayer: public CPlayer
 
   typedef struct {
     unsigned short	patnum;
-    unsigned char	transpose;
+    signed char		transpose;
   } Position;
 
   static const unsigned short	frequency[];
@@ -82,7 +82,7 @@ class CldsPlayer: public CPlayer
     tempo_now, pattplay, tempo, regbd, chandelay[9], mode, pattlen;
   unsigned short	posplay, jumppos, *patterns, speed;
   bool			playing, songlooped;
-  unsigned int		numpatch, numposi, patterns_size;
+  unsigned int		numpatch, numposi, patterns_size, mainvolume;
 
   void		playsound(int inst_number, int channel_number, int tunehigh);
   inline void	setregs(unsigned char reg, unsigned char val);
