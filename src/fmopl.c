@@ -55,9 +55,13 @@ Revision History:
 #define PI 3.14159265358979323846
 #endif
 
+#ifdef _MSC_VER			// Microsoft Visual C++
+#define INLINE __inline
+#elif defined __GNUC__	// GNU gcc
 #define INLINE inline
-
-
+#else
+#define INLINE
+#endif
 
 /* output final shift */
 #if (OPL_SAMPLE_BITS==16)

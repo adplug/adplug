@@ -41,13 +41,14 @@ The library builds as dynamic and/or static link library, depending on
 the facilities provided by the host OS. These are autodetected. On Windows,
 using VC6, only a static link library is built right now.
 
-CVS and UNIX
-------------
+CVS and UNIX:
+-------------
 If you checked out from CVS and use UNIX, first run:
 
 ./autogen.sh
 
-to generate the build cruft and get the configure script.
+to generate the build cruft and get the configure script. Oh, and did i
+mention you need recent versions of autoconf, automake and libtool?
 
 Supported formats:
 ------------------
