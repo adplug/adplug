@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2004 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2005 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -61,6 +61,7 @@
 #include "rol.h"
 #include "xsm.h"
 #include "dro.h"
+#include "msc.h"
 
 /***** Defines *****/
 
@@ -104,6 +105,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CrolPlayer::factory, "Adlib Visual Composer", ".rol\0"),
   CPlayerDesc(CxsmPlayer::factory, "eXtra Simple Music", ".xsm\0"),
   CPlayerDesc(CdroPlayer::factory, "DOSBox Raw OPL", ".dro\0"),
+  CPlayerDesc(CmscPlayer::factory, "Adlib MSC Player", ".msc\0"),
   CPlayerDesc()
 };
 

@@ -29,19 +29,19 @@ extern "C" {
 
 class CTemuopl: public Copl
 {
-public:
-	CTemuopl(int rate, bool bit16, bool usestereo);	// rate = sample rate
-	virtual ~CTemuopl();
+ public:
+  CTemuopl(int rate, bool bit16, bool usestereo);	// rate = sample rate
+  virtual ~CTemuopl();
 
-	void update(short *buf, int samples);	// fill buffer
+  void update(short *buf, int samples);	// fill buffer
 
-	// template methods
-	void write(int reg, int val);
-	void init();
+  // template methods
+  void write(int reg, int val);
+  void init();
 
-private:
-	bool	use16bit,stereo;
-	FM_OPL	*opl;				// holds emulator data
+ private:
+  bool		use16bit,stereo;
+  FM_OPL	*opl;			// holds emulator data
 };
 
 #endif

@@ -25,7 +25,6 @@
 #include "opl.h"
 extern "C" {
 #include "fmopl.h"
-#include "ymf262.h"
 }
 
 class CEmuopl: public Copl
@@ -43,9 +42,8 @@ class CEmuopl: public Copl
   void settype(ChipType type);
 
  private:
-  bool		use16bit,stereo;
+  bool		use16bit, stereo;
   FM_OPL	*opl[2];				// OPL2 emulator data
-  YMF262::Class *opl3;					// OPL3 emulator
   short		*mixbuf0, *mixbuf1;
   int		mixbufSamples, currChip;
   ChipType	currType;

@@ -19,8 +19,6 @@
  * emuopl.cpp - Emulated OPL, by Simon Peter <dn.tlp@gmx.net>
  */
 
-//#include <stdlib.h>
-
 #include "emuopl.h"
 
 CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
@@ -28,8 +26,6 @@ CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
 {
   opl[0] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
   opl[1] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
-  opl3 = new YMF262::Class();
-  opl3->YMF262Init(1, 14400000, rate);
 
   mixbufSamples = 0;
 
@@ -39,7 +35,6 @@ CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
 CEmuopl::~CEmuopl()
 {
   OPLDestroy(opl[0]); OPLDestroy(opl[1]);
-  opl3->YMF262Shutdown(); delete opl3;
 
   if(mixbufSamples) {
     delete [] mixbuf0;
@@ -79,7 +74,8 @@ void CEmuopl::update(short *buf, int samples)
 
   //all of the following rendering code produces 16bit output
 
-  if(currType==0){
+  switch(currType) {
+  case TYPE_OPL2:
     //for opl2 mode:
     //render chip0 to the output buffer
     YM3812UpdateOne(opl[0],outbuf,samples);
@@ -91,27 +87,14 @@ void CEmuopl::update(short *buf, int samples)
 	outbuf[i*2] = outbuf[i];
 	outbuf[i*2+1] = outbuf[i];
       }
+    break;
 
-  } else if(currType==1){
-    //for opl3 mode:
-    //if we are to render in stereo, render straight to outbuf
-    if(stereo)
-      {
-	opl3->YMF262UpdateOne(0,outbuf,samples);
-      }
-    //otherwise, render to a tempbuf and then we will combine the channels
-    else{
-      opl3->YMF262UpdateOne(0,tempbuf,samples);
-
-      for(i=0;i<samples;i++)
-	outbuf[i] = (tempbuf[i*2]>>1) + (tempbuf[i*2+1]>>1);
-    }
-  } else if(currType==2){
+  case TYPE_DUAL_OPL2:
     //for dual opl2 mode:
     //render each chip to a different tempbuffer
     YM3812UpdateOne(opl[0],tempbuf2,samples);
     YM3812UpdateOne(opl[1],tempbuf,samples);
-		
+
     //output stereo:
     //then we need to interleave the two buffers
     if(stereo){
@@ -121,20 +104,21 @@ void CEmuopl::update(short *buf, int samples)
 	outbuf[i*2] = tempbuf2[i];
       //next, insert the samples from tempbuf2 into right channel
       for(i=0;i<samples;i++)
-	outbuf[i*2+1] = tempbuf[i];			
-    }
-    else
+	outbuf[i*2+1] = tempbuf[i];
+    } else
       //output mono:
       //then we need to mix the two buffers into buf
       for(i=0;i<samples;i++)
 	outbuf[i] = (tempbuf[i]>>1) + (tempbuf2[i]>>1);
+
+  case TYPE_OPL3:	// unsupported
+    break;
   }
 
   //now reduce to 8bit if we need to
   if(!use16bit)
     for(i=0;i<(stereo ? samples*2 : samples);i++)
       ((char *)buf)[i] = (outbuf[i] >> 8) ^ 0x80;
-
 }
 
 void CEmuopl::write(int reg, int val)
@@ -144,9 +128,7 @@ void CEmuopl::write(int reg, int val)
     OPLWrite(opl[0], 0, reg);
     OPLWrite(opl[0], 1, val);
     break;
-  case TYPE_OPL3:
-    opl3->YMF262Write(0, currChip * 2 + 0, reg);
-    opl3->YMF262Write(0, currChip * 2 + 1, val);
+  case TYPE_OPL3:	// unsupported
     break;
   case TYPE_DUAL_OPL2:
     OPLWrite(opl[currChip], 0, reg);
@@ -158,7 +140,6 @@ void CEmuopl::write(int reg, int val)
 void CEmuopl::init()
 {
   OPLResetChip(opl[0]); OPLResetChip(opl[1]);
-  opl3->YMF262ResetChip(0);
   currChip = 0; currType = TYPE_OPL2;
 }
 

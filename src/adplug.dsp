@@ -226,6 +226,10 @@ SOURCE=.\mkj.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\msc.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\mtk.cpp
 # End Source File
 # Begin Source File
@@ -431,6 +435,10 @@ SOURCE=.\mididata.h
 # Begin Source File
 
 SOURCE=.\mkj.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\msc.h
 # End Source File
 # Begin Source File
 
