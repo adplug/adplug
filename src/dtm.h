@@ -1,6 +1,3 @@
-//
-// alpha version. do not compile.
-//
 /*
   Adplug - Replayer for many OPL2/OPL3 audio file formats.
   Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
@@ -25,39 +22,49 @@
 
 #include "protrack.h"
 
-class CfmcLoader: public CmodPlayer
+class CdtmLoader: public CmodPlayer
 {
-public:
-        CdtmLoader(Copl *newopl) : CmodPlayer(newopl) { };
+	public:
 
-        bool            load(istream &f);
-        float           getrefresh();
+		static CPlayer *factory(Copl *newopl);
 
-        std::string     gettype();
-        std::string     gettitle();
-        std::string     getauthor();
-        std::string     getdesc();
-        std::string     getinstrument(unsigned int n);
-        unsigned int    getinstruments();
+		CdtmLoader(Copl *newopl) : CmodPlayer(newopl) { };
 
-private:
-        struct dtm_header
-        {
-                char            id[12];
-                unsigned char   version;
-                char            title[20];
-                char            author[20];
-                unsigned char   numpat;
-                unsigned char   numinst;
-        } header;
+		bool			load(istream &f, const char *filename);
+		float			getrefresh();
 
-        char            desc[80*16];
+		std::string     gettype();
+		std::string     gettitle();
+		std::string     getauthor();
+		std::string     getdesc();
+		std::string     getinstrument(unsigned int n);
+		unsigned int    getinstruments();
 
-        struct dtm_instrument
-        {
-                char            name[13];
-                unsigned char   data[12];
-        } instruments[128];
+	private:
 
-        void            unpackpat(BYTE *inbuf, DWORD inbuflen, BYTE *outbuf);
+		struct dtm_header
+		{
+			char            id[12];
+			unsigned char   version;
+			char            title[20];
+			char            author[20];
+			unsigned char   numpat;
+			unsigned char   numinst;
+		} header;
+
+		char desc[80*16];
+
+		struct dtm_instrument
+		{
+			char            name[13];
+			unsigned char   data[12];
+		} instruments[128];
+
+		struct dtm_event
+		{
+			unsigned char	byte0;
+			unsigned char	byte1;
+		};
+
+		long unpack_pattern(unsigned char *ibuf, long ilen, unsigned char *obuf);
 };
