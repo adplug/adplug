@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * debug.h - AdPlug Debug Logger
- * Copyright (c) 2002 RtM <riven@ok.ru>
+ * Copyright (c) 2002 Riven the Mage <riven@ok.ru>
  * Copyright (c) 2002 Simon Peter <dn.tlp@gmx.net>
  */
 
