@@ -257,6 +257,10 @@ Faust:
 Treat the files like Faust Music Creator does.
 [TODO: riven, could you please explain what this is about?]
 
+NoKeyOn:
+This prevents the OPL2 key off/on toggle on every newly played note. Some
+trackers require it that way...
+
 These flags can be set and unset at any time. To set a flag, just binary OR
 it with the 'flags' variable. Use the 'enum Flags' data type, defined in the
 CmodPlayer class for this purpose.

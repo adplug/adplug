@@ -26,7 +26,7 @@ All you have to do now is to inherit the CPlayer class into your own player clas
 and fill the abstract methods with code. You at least have to fill in the
 following methods:
 
-bool load(istream &f);				// load file
+bool load(istream &f, const char *filename);	// load file
 bool update();					// execute replay code
 void rewind(unsigned int subsong);		// rewind to specified subsong
 float getrefresh();				// return needed timer refresh rate
