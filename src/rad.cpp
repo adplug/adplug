@@ -108,7 +108,7 @@ bool CradLoader::load(istream &f, const char *filename)
 			tracks[i][j].command = convfx[tracks[i][j].command];
 		}
 	restartpos = 0; activechan = 0xffff; initspeed = radflags & 31;
-	bpm = radflags & 64 ? 0 : 50; flags = MOD_FLAGS_DECIMAL;
+	bpm = radflags & 64 ? 0 : 50; flags = Decimal;
 
 	rewind(0);
 	return true;

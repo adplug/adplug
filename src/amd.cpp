@@ -124,7 +124,7 @@ bool CamdLoader::load(istream &f, const char *filename)
 	}
 
 	// convert to protracker replay data
-	bpm = 50; restartpos = 0; activechan = 0xffff; flags = MOD_FLAGS_DECIMAL;
+	bpm = 50; restartpos = 0; activechan = 0xffff; flags = Decimal;
 	for(i=0;i<26;i++) {	// convert instruments
 		buf = inst[i].data[0];
 		buf2 = inst[i].data[1];
