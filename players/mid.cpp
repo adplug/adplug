@@ -120,11 +120,14 @@ unsigned long CmidPlayer::getval()
 #define ADLIB_MELODIC 0
 #define ADLIB_RYTHM	1
 
-void CmidPlayer::load_sierra_ins()
+bool CmidPlayer::load_sierra_ins()
 {
     long i,j,k,l;
     unsigned char ins[28];
 	ifstream f(insfile, ios::in | ios::nocreate | ios::binary);
+
+	if(!f.is_open())
+		return false;
 
 	f.ignore(2);
 	tins = 0;
@@ -166,6 +169,7 @@ void CmidPlayer::load_sierra_ins()
             }
 		f.ignore(2);
         }
+	return true;
 }
 
 void CmidPlayer::sierra_next_section()
@@ -242,7 +246,7 @@ bool CmidPlayer::load(istream &f)
             if (s[1]=='T' && s[2]=='M' && s[3]=='F') good=FILE_CMF;
             break;
         case 0x84:
-            if (s[1]==0x00)
+            if (s[1]==0x00 && load_sierra_ins())
                 if (s[2]==0xf0)
                     good=FILE_ADVSIERRA;
                     else

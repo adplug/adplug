@@ -78,7 +78,7 @@ protected:
     int type,tins;
 
 private:
-	void load_sierra_ins();
+	bool load_sierra_ins();
 	void midiprintf(char *format, ...);
 	unsigned char datalook(long pos);
 	unsigned long getnexti(unsigned long num);
