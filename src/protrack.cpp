@@ -24,6 +24,19 @@
  * derivatives. It is derived from the original SA2 player by me. If you got a
  * Protracker-like format, this is most certainly the player you want to use.
  *
+ * USAGE:
+ * Read the file 'Protracker.txt' in the 'doc' subdirectory.
+ *
+ * LIMITS:
+ * - Maximum of 9 channels per pattern (and max. 9 voice polyphony).
+ * - Maximum of 250 instruments.
+ * - Maximum orderlist length is 128 entries.
+ * - Fixed track length of 64 rows.
+ * - Maximum 576 tracks, regardless of patterns.
+ * - Maximum of 64 patterns.
+ *
+ * Most of these limits could easily be expanded, if there is the need for it.
+ *
  * Effect commands:
  * ----------------
  *   0xy	Arpeggio				xy=1st note,2nd note		[0-F]
