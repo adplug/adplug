@@ -11,7 +11,7 @@ bool CdfmLoader::load(istream &f)
 {
 	unsigned char		tmpins[11],npats,n,note,fx,c,r,param;
 	unsigned int		i;
-	const unsigned char	convfx[8] = {255,255,17,19,1,2,255,13};
+	const unsigned char	convfx[8] = {255,255,17,19,23,24,255,13};
 
 	// file validation
 	f.read((char *)&header,6);
