@@ -17,3 +17,5 @@ AdPlug To Do List:
 - Write user documentation. [dynamite]
 
 - Add 'merge' feature to adplugdb to merge two databases together. [dynamite]
+
+- Add load(void *mem, unsigned long length) method to CAdPlug. [dynamite]

@@ -9,7 +9,7 @@
 This manual documents the AdPlug core library, version
 @value{VERSION}.
 
-Copyright @copyright{} 2002 Simon Peter <dn.tlp@@gmx.net>
+Copyright @copyright{} 2002, 2003 Simon Peter <dn.tlp@@gmx.net>
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -54,11 +54,11 @@ Software Foundation raise funds for GNU development.''
 * Introduction::                What is AdPlug?
 * Basic Usage::                 Using AdPlug in your programs the easy way.
 * Advanced Usage::              Using AdPlug in your programs the hard way.
-* Linking::                     Linking your program with AdPlug.
 * Hacking::                     How to hack around in AdPlug.
 * Player development::          How to write new replayers for AdPlug.
 * Protracker based players::    How to write Protracker based players.
 * Copying This Manual::         Your rights and freedoms.
+* Method Index::
 * Variable Index::
 @end menu
 
@@ -73,6 +73,7 @@ playback.
 
 @menu
 * Supported Formats::
+* Concepts::
 @end menu
 
 @node Supported Formats
@@ -167,20 +168,744 @@ Whenever a player requires more files to be present in a given
 directory, be especially careful under UNIX systems, because all file
 names are case-sensitive.
 
+@node Concepts
+@section Concepts
+
+All of AdPlug's header files are installed under the directory
+@file{adplug} inside your specified include path. Whenever i refer to
+a specific header file in this manual, i mean the filename with the
+path @file{adplug/} prepended.
+
+AdPlug can be divided into 2 sections and 3 layers of
+functionality. These are the @dfn{Playback} and @dfn{Sound
+generation} sections and the @dfn{Frontend}, @dfn{Mid-End} and
+@dfn{Backend} layers.
+
+The Frontend layer is simply your application itself, using AdPlug. It
+is above of it all and does not belong to any particular
+section. Anything that provides the user-interface to AdPlug or an
+interface to another application is in the Frontend layer.
+
+@menu
+* Playback section::
+* Sound generation section::
+@end menu
+
+@node Playback section
+@subsection Playback section
+
+The Playback section is divided into the Mid-End and the Backend
+layers. As a whole, it is responsible for making the sound files play
+back.
+
+The Mid-End layer provides the glue between the Frontend and the
+Backend layers. It provides methods and classes for these layers to
+communicate. The headers @file{adplug.h}, @file{fprovide.h},
+@file{players.h} and @file{database.h} belong to the Mid-End
+layer. From your application's point of view, you only have to include
+the file @file{adplug.h} in your source files, which automatically
+includes all the other Mid-End headers.
+
+The Backend layer is responsible for reading and decoding the sound
+files into OPL2 command data. It then passes this data to the sound
+generation section, which generates the final audio data. The header
+@file{player.h} and all player header files belong to the Backend
+layer.
+
+@node Sound generation section
+@subsection Sound generation section
+
+The Sound generation section is responsible for generating the OPL2's
+sound, according to the input of the Playback section. This sound is
+either routed back to the application for it to do something with it
+or routed directly to a specific audio hardware.
+
+The following headers provide the interface to the sound generation
+section: @file{emuopl.h}, @file{realopl.h}, @file{silentopl.h} and
+@file{analopl.h}. All classes inside these headers are derived from
+the abstract base class @code{Copl}, declared inside the file
+@file{opl.h}, which provides the common interface for the Backend
+layer of the Playback section. This interface is not meant for the
+Frontend layer (i.e. your application). Your application, however, has
+to call special methods of these classes in order to route the data
+back, if there is any.
+
+@file{emuopl.h} provides the class @code{CEmuopl}, which is a wrapper
+class around Tatsuyuki Satoh's fmopl OPL2 emulator, which generates
+wave audio data to be routed back to the application.
+
+@file{realopl.h} provides the class @code{CRealopl}, which outputs to
+a real hardware OPL2 chip. No data is routed back to the
+application. This class is currently only working on x86 hardware.
+
+@file{silentopl.h} provides the class @code{CSilentopl}, which is a
+dummy OPL2, which generates nothing. All data sent to it is forgotten
+immediately. No data is routed back to the application.
+
+@file{analopl.h} provides the class @code{CAnalopl}, which is the same
+as @code{CRealopl}, but also provides a 9-channel loudness
+pseudo-analyzer interface for the application. The loudness data is
+the only data routed back to the application.
+
 @node Basic Usage
 @chapter Basic Usage
 
-This chapter still needs to be written.
+AdPlug provides convenience methods and classes inside its Mid-End
+layer that make generic usage in your applications pretty easy. This
+is most probably all that you need. For very advanced usage of
+particular features of AdPlug, please refer to @ref{Advanced Usage}.
+
+For basic usage, you need to include the header @file{adplug.h} inside
+your application's source code. In addition, you need one of the
+headers from the sound generation section, if you want sound output.
+
+@file{adplug.h} provides the class @code{CAdPlug}, which in turn
+provides the load and playback facilities for the song
+files. @code{CAdPlug} is a static class, you do not need to
+instantiate an object of it.
+
+@menu
+* Loading::
+* Playback::
+* Audio output::
+* Getting Playback Information::
+* Example::
+@end menu
+
+@node Loading
+@section Loading
+
+To load a supported file for playback, you use the method
+@code{CAdPlug::factory(const std::string &@var{filename}, Copl *@var{opl},
+...)}. The method takes more arguments, but we don't need them for
+basic usage. They are explained in @ref{Advanced Usage}.
+
+The first argument, @var{filename}, is a string object, containing the
+filename of the sound file to be loaded with AdPlug. The second
+argument, @var{opl}, is a pointer to an already initialized object
+from the sound generation section of the library.
+
+The method returns a pointer to an initialized player object from the
+Backend layer, or the NULL pointer if the file couldn't be loaded for
+any reason.
+
+I guess @var{filename} does not need any more explanation, so i will
+just explain how to get an instance of a @code{Copl} derived class:
+
+If you want to use the OPL2 emulator class @code{CEmuopl}, you have to
+include the header @file{emuopl.h} inside your application's source
+code. @code{CEmuopl}'s constructor looks like this:
+@code{CEmuopl::CEmuopl(int @var{rate}, bool @var{bit16}, bool
+@var{usestereo})}. The @var{rate} argument specifies the playback
+frequency rate in Hz. The @var{bit16} argument specifies whether to
+create 8 bit or 16 bit wave audio data. If it is set, 16 bit data is
+created. The @var{usestereo} argument specifies whether to create
+stereo or mono audio data. If it is set, stereo data is created.
+
+If you want to use real hardware OPL2 output, you have to include the
+header @file{realopl.h} inside your application and use the class
+@code{CRealopl}. Its constructor just takes one optional argument,
+specifying the hardware OPL2's base port, which is @samp{0x388} by
+default. As an option, you can include @file{analopl.h} instead, using
+the class @code{CAnalopl}, and also use the analyzer interface
+instead. This is explained in @ref{Audio output}.
+
+For no audio generation at all, include the header @file{silentopl.h}
+inside your application and use the class @code{CSilentopl}. Its
+constructor does not take any arguments.
+
+@node Playback
+@section Playback
+
+On successful operation, @code{CAdPlug}'s @code{factory()} method
+returns a pointer to an initialized player object from the Backend
+layer. You use this object to do the main song playback. The important
+methods for song playback are:
+
+@ftable @code
+@item void seek(unsigned long ms)
+Use this to seek inside the song. The only argument specifies the
+number of milliseconds to seek from the beginning of the song.
+
+@item bool update()
+The most important method of them all. You have to call this method in
+a loop. As long as it returns @samp{true}, the song has not ended
+yet. At some point, it will start to always return @samp{false}. When
+it does this, the song has ended. The song will play on (and is maybe
+already automatically rewound by the player itself), but you should
+use the @code{rewind()} method to rewind it or stop playing.
+
+@item void rewind(int subsong = -1)
+This method rewinds the song to the beginning of the subsong,
+specified by the only argument. If no argument or @samp{-1} is given,
+the currently selected subsong will be rewound. If the player does not
+support subsongs, just don't provide an argument.
+
+@item float getrefresh()
+Returns a float containing the player object's idea of with what
+frequency its @code{update()} method should be called, in Hz. This can
+change at any time, so you have to poll it before every call to
+@code{update()}.
+
+@item unsigned int getsubsongs()
+Returns the number of subsongs of the currently loaded song. If the
+player doesn't support subsongs, @samp{1} is returned, representing
+the only ``subsong''.
+@end ftable
+
+@node Audio output
+@section Audio output
+
+To actually generate some sound, you probably additionally have to
+make some calls to the OPL object. While the two hardware OPL2 output
+and the silent OPL2 classes do not need any additional calls, the
+@code{CEmuopl} class provides methods for your application's readback
+of the generated wave audio data.
+
+To get a buffer of wave audio data from the emulator, you have to call
+the @code{void CEmuopl::update(short *@var{buf}, int @var{samples})}
+method. The @var{buf} argument is a pointer to a previously allocated
+memory block of the size specified by the @var{samples} argument, in
+samples. The method will fill the specified amount of samples into the
+buffer.
+
+The volume analyzing hardware OPL2 class @code{CAnalopl} also has some
+data readback methods:
+
+@ftable @code
+@item int getcarriervol(unsigned int v)
+Returns the carrier's current volume of the OPL2 channel given as the
+only argument.
+@item int getmodulatorvol(unsigned int v)
+Returns the modulator's current volume of the OPL2 channel given as
+the only argument.
+@item bool getkeyon(unsigned int v)
+Returns whether a key-on event just happened on the OPL2 channel given
+as the only argument.
+@end ftable
+
+@node Getting Playback Information
+@section Getting Playback Information
+
+During playback, it is possible to gain some replay statistics with
+some players. The following methods are for getting playback
+informations:
+
+@ftable @code
+@item std::string gettype()
+Returns a descriptive string containing the current file's format
+type. This is for user information only and cannot be interpreted by
+software.
+
+@item std::string gettitle()
+Returns a string holding the current song's title. An empty string is
+returned if the song's format does not support title information.
+
+@item std::string getauthor()
+Returns a string containing the current song's author name. An empty
+string is returned if the song's format doesn't support author
+information.
+
+@item std::string getdesc()
+Returns a string with the current song's description. An empty string
+is returned if the song's format doesn't support a description.
+
+@item unsigned int getpatterns()
+Returns the number of patterns in the current song. @samp{0} is
+returned if the format isn't pattern-based.
+
+@item unsigned int getpattern()
+Returns the number of the currently playing pattern. @samp{0} is
+returned if the format isn't pattern-based.
+
+@item unsigned int getorders()
+Returns the length of the order list of the current song. @samp{0} is
+returned if the format doesn't have an order list.
+
+@item unsigned int getorder()
+Returns the number of the currently playing order list entry. @samp{0}
+is returned if the format doesn't have an order list.
+
+@item unsigned int getrow()
+Returns the number of the currently playing row inside the current
+pattern. @samp{0} is returned if the format isn't pattern-based.
+
+@item unsigned int getspeed()
+Returns the current speed setting of the song. @samp{0} is returned if
+the format doesn't support Protracker-based speed settings.
+
+@item unsinged int getinstruments()
+Returns the number of defined instruments in the song. This does not
+necessarily mean that any of the defined instruments has an instrument
+name attached to it. @samp{0} is returned if the format doesn't define
+any instruments.
+
+@item std::string getinstrument(unsigned int n)
+Returns a string with the name of the instrument, specified by the
+only argument. If the specified instrument doesn't have a name, an
+empty string is returned instead.
+@end ftable
+
+These methods may be called at any time on an initialized player
+object (i.e. a file has already been loaded). If a player or song does
+not support any of the above methods, or their values are not
+meaningful for a format, reasonable bogus values are returned
+instead.
+
+Some informational methods may not be called while the song itself is
+playing because they change the internal replay state and will
+destroy the running playback. These are:
+
+@ftable @code
+@item unsigned long songlength(int subsong = -1)
+This method returns the total length in milliseconds of the subsong
+given as the only argument. If it is omitted or @samp{-1}, the
+currently selected subsong's length will be returned.
+@end ftable
+
+@node Example
+@section Example
+
+This is an example of a minimal playback utility that reads the
+filename to be played from the commandline, uses the emulator to
+generate the sound and writes the raw wave audio data back to disk:
+
+@verbatim
+#include <stdlib.h>
+#include <stdio.h>
+#include <adplug/adplug.h>
+#include <adplug/emuopl.h>
+
+#define RATE	44100   // Output frequency in Hz
+#define BIT16	true    // true when 16bit samples should be used
+#define STEREO	false   // true when stereo samples should be used
+#define BUFSIZE	512     // Sound buffer size in samples
+
+bool play(const char *filename, const char *output)
+/*
+ * Main playback function. Returns true on successful playback.
+ * false is returned otherwise.
+ */
+{
+  CEmuopl	opl(RATE, BIT16, STEREO);
+  CPlayer	*p = CAdPlug::factory(filename, &opl);
+  FILE		*f;
+  short		buf[BUFSIZE];
+  unsigned long	towrite, write;
+
+  if(!p) return false;		// File couldn't be loaded
+
+  f = fopen(output, "wb");
+  while(p->update())
+    for(towrite = RATE / p->getrefresh(); towrite; towrite -= write) {
+      write = (towrite > BUFSIZE ? BUFSIZE : towrite);
+      opl.update(buf, write);
+      fwrite(buf, write, 2, f);
+    }
+
+  fclose(f);
+  return true;
+}
+
+int main(int argc, char **argv)
+{
+  if(argc < 3) {
+    cout << "usage: " << argv[0] << " <filename> <output>" << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  if(play(argv[1], argv[2]))
+    exit(EXIT_SUCCESS);
+  else
+    exit(EXIT_FAILURE);
+}
+@end verbatim
 
 @node Advanced Usage
 @chapter Advanced Usage
 
-This chapter still needs to be written.
+This chapter explains very advanced usage of AdPlug. You do not
+normally need to read this if you just want to write a usual frontend
+application for AdPlug.
 
-@node Linking
-@chapter Linking
+@menu
+* Player Lists::
+* File Providers::
+* Using the Database::
+* Without CAdPlug::
+@end menu
 
-This chapter still needs to be written.
+@node Player Lists
+@section Player Lists
+
+There is another argument to the @code{CAdPlug::factory(const
+std::string &fn, Copl *opl, const CPlayers &@var{pl} = players, ...)}
+method. The argument @var{pl} is a reference to an object holding a
+@dfn{Player List}.
+
+A player list object is an instance of the @code{CPlayers} class (not
+to be confused with the @code{CPlayer} class). The object can be
+constant and even static (so it is possible to pass a temporary
+object, created on the fly).
+
+The @code{CPlayers} class itself is not much more than a specialized
+@code{std::list} from the @acronym{STL}, holding pointers to objects
+of type @code{CPlayerDesc}, which are explained below. Look into the
+@acronym{STL} documentation for more information on @code{std::list}
+functionality.
+
+The @code{CPlayerDesc} class is essentially an information-holder,
+describing all needed characteristics of a player class, to create an
+instance and load a supported file with it. It has two public
+attributes:
+
+@vtable @code
+@item Factory factory
+The @code{Factory} type defines a pointer to a static method inside a
+class, inherited from @code{CPlayer}, taking a pointer to a
+@code{Copl}-derived object as the sole argument. The meaning of this
+attribute is to provide a pointer to the factory method of the player
+class, which takes a pointer to an initialized @code{Copl}-derived
+object and returns a pointer to an initialized instance of the same
+player class, this @code{CPlayerDesc} object describes.
+
+@item std::string filetype
+This is a string containing the unique file type identifier of the
+player class, this @code{CPlayerDesc} object describes. The string
+normally contains the name of the file format, which the belonging
+player class handles. This string should be unique.
+@end vtable
+
+In addition, @code{CPlayerDesc} has the following methods:
+
+@ftable @code
+@item CPlayerDesc(Factory f, const std::string &type, const char *ext)
+A specialized constructor, which initializes the whole object at
+once. The first argument is the pointer to the factory method of the
+accompanying player class. The second argument is a string with the
+unique file type description, this player class handles. The last
+argument is a pseudo @acronym{ASCIIZ} string, holding many
+@acronym{ASCIIZ} strings with all file extensions to be associated
+with the accompanying player class. To create such a string, include
+the leading @samp{.} with all file extensions and terminate any file
+extension entry with a @samp{\0} character. Concatenate all entries
+one after the other, forming a string of strings. Terminate the last
+entry with another @samp{\0} character, so the final string is doubly
+terminated.
+
+@item void add_extension(const std::string &ext)
+Adds the single file extension, passed as the only argument, to the
+list of file extensions, the accompanying player class handles.
+
+@item const char *get_extension(unsigned int n)
+Returns a pointer to the @var{n}-th file extension string in the file
+extension list. If @var{n} is out of range, a @samp{NULL}-pointer is
+returned instead.
+@end ftable
+
+The @code{CPlayers} class itself adds two more methods to the
+inherited @code{std::list} interface:
+
+@ftable @code
+@item const CPlayerDesc *lookup_filetype(const std::string &ftype)
+Returns a pointer to the first occurence of a @code{CPlayerDesc}
+object with a file type of @var{ftype}, passed as the only
+argument. This should also be the only object with that file type in
+the list. If an object with the given file type is not found, a
+@samp{NULL}-pointer if returned instead.
+
+@item const CPlayerDesc *lookup_extension(const std::string &extension)
+Returns a pointer to the first occurence of a @code{CPlayerDesc}
+object, defining a file extension of @var{extension}, passed as the
+only argument. Since file extensions are not necessarily unique in a
+@code{CPlayers} list, it is often much more efficient to use the
+search facilities provided by the @acronym{STL}. If no object,
+specifying the given file extension, could be found, a
+@samp{NULL}-pointer is returned instead.
+@end ftable
+
+Thus, the @code{CPlayers} class holds a list of player
+descriptions. This list is used by the @code{CAdPlug::factory()}
+method for the list of players to try out on a given filename. If no
+list is passed to the method, it is @code{CAdPlug::players} by
+default. This list always holds all players compiled into the AdPlug
+library and is also your starting point for generating lists of your
+own.
+
+@node File Providers
+@section File Providers
+
+@dfn{File Providers} are special classes that provide abstracted
+access to files. AdPlug's player classes request files using a file
+provider, in their @code{load()} methods. This system is necessary
+because some players require multiple files in their load stage and
+these files cannot all be passed to their @code{load()} method
+because the application's programmer would have to be aware of each of
+the player's characteristics to know which files to pass.
+
+A file provider class is derived from the abstract base class
+@code{CFileProvider}, which is declared in the header
+@file{fprovide.h}. This class defines the following methods:
+
+@ftable @code
+@item binistream *open(std::string) const
+An abstract virtual method that takes a string containing a filename
+as the only argument and returns an initialized input-only binary
+stream to that file. The stream is always created with x86
+capabilities (i.e. Little-Endian, @acronym{IEEE-754} floating-point
+numbers). If the file could not be opened, the @samp{NULL}-pointer is
+returned instead.
+
+@item void close(binistream *) const
+An abstract virtual method that takes an input-only binary stream,
+which was formerly created with the @code{open()} method, and closes
+this stream.
+
+@item bool extension(const std::string &filename, const std::string &extension)
+This static method takes a string holding a filename as its first and
+another string holding a file extension as its last argument. It does
+a caseless compare of the given file extension to the extension of the
+given filename and returns @samp{true} if they match. @samp{false} is
+returned otherwise.
+
+@item unsigned long filesize(binistream *f)
+This static method takes an input-only binary stream, previously
+returned by the @code{open()} method, and returns the total size, in
+bytes, of the associated file. The stream's state is not altered.
+@end ftable
+
+If you like to create your own file provider, you have to inherit from
+this class and implement the methods @code{open()} and
+@code{close()}. Remember to open the stream with x86 capabilites! One
+situation in which you would have to create your own file provider is
+when your application doesn't load the files from the machine's local
+filesystem. For example, when it supports reading from archives, you
+would use your file provider to fetch and depack the file from the
+archive first, before passing it to AdPlug.
+
+One derived file provider class is already defined in
+@file{fprovide.h}: @code{CProvider_Filesystem}. This file provider
+supports loading from the machine's local filesystem. File names are
+normal paths in the operating system's common notation.
+
+A file provider object can also be passed to the
+@code{CAdPlug::factory()} method as last argument. If it is not
+provided, it is a temporary instance of @code{CProvider_Filesystem} by
+default. The method passes this object on to all player objects'
+@code{load()} methods, it tries to open the file with. The player
+objects' @code{load()} methods also take the file provider object as
+their last argument and default to @code{CProvider_Filesystem} if none
+is given.
+
+@node Using the Database
+@section Using the Database
+
+AdPlug recently features a full-blown database, specialized for
+storing information relevant to the replay of AdLib-specific music
+data.
+
+The database can be maintained by using the @command{adplugdb}
+command. Usage of this command is explained in its own manual page.
+
+The application's interface to the database is defined through the
+@code{CAdPlugDatabase} class, residing in the header file
+@file{database.h}.
+
+@menu
+* Records::
+* Keys::
+* Usage::
+@end menu
+
+@node Records
+@subsection Records
+
+@dfn{Records} are the primary data containers in the database. A
+record is a very flexible object. It can store virtually any number of
+different data types, you can think of.
+
+All record classes are derived from the common abstract base class
+@code{CAdPlugDatabase::CRecord}. All records have at least three
+common attributes:
+
+@vtable @code
+@item RecordType type
+Specifies what type of data this record holds. @code{RecordType} is an
+enumeration variable with the following values:
+
+@vtable @code
+@item Plain
+This record doesn't store any more information than the three standard
+attributes.
+@item SongInfo
+This record additionally stores song name and author information.
+@item ClockSpeed
+This record additionally stores timer clock speed information.
+@end vtable
+
+@item CKey key
+This is the unique key, allocated for any record in the
+database. @xref{Keys}.
+
+@item std::string filetype
+Holds the unique file type of the file associated with the
+record. This value is taken from the player list (see @ref{Player
+Lists}).
+@end vtable
+
+The common base class @code{CAdPlugDatabase::CRecord} defines a
+static method @code{factory(RecordType type)} for application usage
+that returns a pointer to a newly allocated @code{CRecord} object, or
+the @samp{NULL}-pointer if an error occured. You pass the type of the
+record to be created as the only argument.
+
+All other public methods are meant for internal use of the database
+only and should not be called from an application. They are explained
+here anyway, for informational purposes:
+
+@ftable @code
+@item CRecord *factory(binistream &in)
+Another factory method that takes a reference to an input-only binary
+stream as the only argument. It tries to extract a record from the
+stream's current position, initializes a new record object with the
+data and returns a pointer to that record object. The
+@samp{NULL}-pointer is returned if the record type couldn't be
+determined from the stream's data.
+
+@item void write(binostream &out)
+Writes the record's contents to the output-only binary stream,
+referenced by the only argument.
+
+@item bool user_read(std::istream &in, std::ostream &out)
+Attaches to the input and output streams, referenced by the first and
+second arguments and tries to prompt an apparent user for the relevant
+data input.
+
+@item bool user_write(std::ostream &out)
+Attaches to the output stream, referenced by the only argument and
+writes the record's contents in human-readable form to it.
+
+@item void read_own(binistream &in)
+@itemx void write_own(binostream &out)
+@itemx bool user_read_own(std::istream &in, std::ostream &out)
+@itemx bool user_write_own(std::ostream &out)
+Abstract virtual base methods to be inherited by the real record
+classes to read and write their own data, in both binary and
+human-readable ways.
+
+@item unsigned long get_size()
+Abstract virtual base method to be inherited by the real record
+classes to report the size of the extra data defined by them.
+@end ftable
+
+@node Keys
+@subsection Keys
+
+@dfn{Keys} are @acronym{CRC32}:@acronym{CRC16} pairs that uniquely
+identify a file's contents and are used to associate a record with a
+file. Only if the file's key match with the record key, that record is
+actually used for that file.
+
+Keys are stored in key objects, which are instances of the
+@code{CAdPlugDatabase::CKey} class. The class has two attributes,
+@code{crc16} and @code{crc32} which store the two @acronym{CRC}
+values, respectively. It also has the following methods:
+
+@ftable @code
+@item CKey()
+A constructor that creates an empty key object.
+@item CKey(binistream &in)
+A constructor that creates a key from the contents of the input-only
+binary stream, referenced by the only argument.
+
+@item bool operator==(const CKey &key)
+Operator that compares two key objects and returns @samp{true} when
+they are equal. @samp{false} is returned otherwise.
+@end ftable
+
+@node Usage
+@subsection Usage
+
+The following methods are for application usage of the database:
+
+@ftable @code
+@item bool load(std::string db_name)
+@itemx bool load(binistream &f)
+Two versions to load a database. The first method takes a string
+containing a file name of a file from which the database is
+loaded. The second method takes a reference to an input-only binary
+stream to load the database from.
+
+@item bool save(std::string db_name)
+@itemx bool save(binostream &f)
+Two versions to save the database. These work analogous to the
+@code{load()} methods, above.
+
+@item bool insert(CRecord *record)
+Inserts the record object, pointed to by the only argument, into the
+database and returns @samp{true} on successful operation. @samp{false}
+is returned otherwise. Duplicate record entries (i.e. records that
+have the same key) cannot be inserted into the database and old ones
+will not automatically be overwritten by the new ones with this
+method. @samp{false} is returned in this case.
+
+@item void wipe(CRecord *record)
+@itemx void wipe()
+Two versions of a method to remove (wipe) a record from the
+database. The first version takes a pointer to a record object as the
+only argument and removes exactly this record from the database. The
+record object itself is deallocated, too. Do not reference it again!
+If the record object is not in the database, nothing is done. The
+second version removes the record at the current position in the
+database.
+
+@item CRecord *search(CKey const &key)
+Takes a reference to a key object, searches for a record with the same
+key value in the database and returns a pointer to this record. The
+@samp{NULL}-pointer is returned if the record could not be found.
+
+@item bool lookup(CKey const &key)
+The same as @code{search()}, but instead of returning a pointer to the
+record, it just positions the internal database pointer to the
+corresponding record. Returns @samp{true} if the record could be found
+and @samp{false} otherwise.
+
+@item CRecord *get_record()
+Returns a pointer to the record at the current position in the
+database. The @samp{NULL}-pointer is returned if an error occured.
+
+@item bool go_forward()
+Advances the internal position in the database by one record. Returns
+@samp{true} on success, @samp{false} otherwise.
+@item bool go_backward()
+The same as @code{go_forward()}, but goes backward by one record.
+@item void goto_begin()
+Goes to the beginning (i.e. the first record) of the database.
+@item void goto_end()
+Goes to the end (i.e. the last record) of the database.
+@end ftable
+
+@node Without CAdPlug
+@section Without CAdPlug
+
+It is also possible to only use specific players from the AdPlug
+library, without using the @code{CAdPlug} class to cycle through them
+all.
+
+If you just want to use a single player class from the library, you
+only include that player's header file in your application's source
+code.
+
+You can construct an instance of that player by either using its
+constructor or by using the @code{factory()} method of that
+class. Both have the same syntax and take a pointer to an initialized
+@code{Copl}-derived object.
+
+Use the player's @code{load()} method to load a file. It takes a
+filename as the first argument and, optionally, a file provider class
+as its last argument.
+
+All other methods have already been explained in the text above.
 
 @node Hacking
 @chapter Hacking
@@ -265,20 +990,20 @@ You don't need the @code{***} and @code{---} beginning and end markers
 then.
 
 @item
-For asynchronous threads, there is no way but to prefix any line with
-the function name, because these messages will be sprayed throughout
-the logfile.
+For threads, there is no way but to prefix any line with the function
+name, because these messages will be sprayed throughout the logfile.
 @end itemize
 
 @node Player development
 @chapter Player development
 
 Before you try to write a new player for AdPlug, be sure to also read
-through the @ref{Hacking} chapter of this manual.
+through @ref{Hacking}.
 
 @menu
 * Before the work::
 * Main work::
+* Loading and File Providers::
 @end menu
 
 @node Before the work
@@ -309,9 +1034,9 @@ your own player class and fill the abstract methods with code. You at
 least have to fill in the following methods:
 
 @example
-bool load(istream &f, const char *filename);
+bool load(const std::string &filename, const CFileProvider &fp);
 bool update();
-void rewind(unsigned int subsong);
+void rewind(int subsong);
 float getrefresh();
 std::string gettype();
 @end example
@@ -330,31 +1055,34 @@ static CPlayer *factory(Copl *newopl);
 
 Since it is static, it isn't already virtually defined in the
 @code{CPlayer} class and you have to add it manually. This method
-should return a freshly initialized object of your player class.  If
-any errors occured (e.g. not enough memory), return @samp{0} instead.
+should return a pointer to a freshly initialized object of your player
+class. If any errors occured (e.g. not enough memory), return @samp{0}
+instead.
 
 Return true from your @code{load()} method, if the file was loaded
-successfully, or false if it couldn't be loaded for any reason (will
-mostly be wrong file type errors, since AdPlug tries its files with
-any replayer, it is linked to). Your @code{update()} method will be
-called with the frequency, you return from your @code{getrefresh()}
-method, in Hz. Return true from @code{update()} if your module hasn't
-ended yet. If it looped or ended, return false from that point, but
-play further for any subsequent calls to @code{update()}. AdPlug will
-rewind your player by itself, using the @code{rewind()} method, when
-necessary.
+successfully, or false if it couldn't be loaded for any reason (e.g.
+because AdPlug passed a wrong file to your player). Your
+@code{update()} method will be called with the frequency, you return
+from your @code{getrefresh()} method, in Hz. Return true from
+@code{update()} if your module hasn't ended yet. If it looped or
+ended, return false from that point, but play further for any
+subsequent calls to @code{update()}. AdPlug will rewind or stop your
+player by itself, using the @code{rewind()} method, when necessary.
 
 AdPlug passes the number of the subsong, it wants to play next, to the
 @code{rewind()} method of your player. This can be any value from
 @samp{0} to the value returned by @code{getsubsongs()}. If you haven't
 provided your own @code{getsubsongs()}, AdPlug will presume your
 player doesn't have support for subsongs. In that case, AdPlug will
-always @code{rewind(0)}. Please ignore any value passed with
+always @code{rewind(0)}. Please ignore any value passed to
 @code{rewind()} that is out of spec for your player. This should
-virtually never happen, but who knows...
+virtually never happen, but who knows. If a value of @samp{-1} is
+given as an argument, you should rewind the currently playing
+subsong.
 
-After initializing your player, AdPlug normally first calls
-@code{load()}, and then @code{getrefresh()} and @code{update()} in a
+After initializing your player (either by a call to @code{factory()}
+or by creating an instance by itself), AdPlug normally first calls
+@code{load()} and then @code{getrefresh()} and @code{update()} in a
 loop until something happens (i.e. the user stops playback or the song
 ends). @code{rewind()} and all the informational methods can be called
 anytime in between the other calls, but of course only after
@@ -362,6 +1090,54 @@ anytime in between the other calls, but of course only after
 
 You can add your own constructors, destructors and methods to your
 player object, as you like. AdPlug won't care in any way.
+
+@node Loading and File Providers
+@section Loading and File Providers
+
+The @code{load(const std::string &filename, const CFileProvider &fp)}
+method needs some special explanation. This method takes two
+arguments. The first is a reference to a string containing the
+filename of the main file for your player to load. This is the
+filename the user selected in the frontend (maybe altered by the
+frontend, but not by AdPlug) and does not need to have any meaning to
+your player.
+
+To finally load your files to get to their data, you have to request
+them. This is done through a @dfn{File Provider}. A reference to a
+file provider is always passed as the second argument to your
+@code{load()} method. You will most likely want to load the file,
+using the filename passed as the first argument. To do this, you
+simply call @code{binistream *f = fp.open(filename)}. This method
+returns a pointer to an open, input-only binary stream of the
+requested file. You can now operate on this stream, using its standard
+interface (refer to the manual of the binary I/O stream class library
+for further information). When you're done loading your file, don't
+forget to call @code{fp.close(f)} to close it again. It is very
+important to do this anytime you leave your @code{load()} method! Any
+streams not closed will be left open for the whole lifetime of the
+controlling process!
+
+Don't worry about the passed filename. It normally doesn't need to
+have any meaning to your player. The file provider will know how and
+from where to open the file.
+
+@code{fp.open()} returns a null-pointer if something went wrong
+(e.g. file not found or access denied, etc.). If this happens, return
+@samp{false} from your @code{load()} method immediately. You do not
+have to call @code{fp.close()} in this case.
+
+The @code{CFileProvider} class offers two convenience methods. These
+are @code{unsigned long filesize(binistream *f)} and @code{bool
+extension(const std::string &filename, const std::string
+&extension)}.
+
+@code{filesize()} returns the size in bytes of the stream, pointed to
+by @code{f}, without altering it otherwise. @code{extension()} does a
+filename extension check as follows: The first argument is a reference
+to a string containing a filename. The second argument is a reference
+to a string containing a file extension to check for. If the passed
+filename has got exactly this extension (caselessly), the method
+returns @samp{true}. @code{false} is returned otherwise.
 
 @node Protracker based players
 @chapter Protracker based players
@@ -446,7 +1222,7 @@ the missing methods with code. These are now:
 
 @example
 static CPlayer *factory(Copl *newopl);
-bool load(istream &f, const char *filename);
+bool load(const std::string &filename, const CFileProvider &fp);
 float getrefresh();
 std::string gettype();
 @end example
@@ -461,8 +1237,7 @@ see what the above methods are about.
 File validation and initial loading is the same as it would be with
 any other player. One speciality is that you have to call
 @code{rewind(0)} whenever you completely loaded a valid file. Don't
-call it when you just exit your loader because the file was invalid,
-etc...
+call it when you just exit your loader because the file was invalid!
 
 The Protracker player needs at least an orderlist, the patterns and
 the instruments to function. Most of the time, you have to convert
@@ -746,6 +1521,11 @@ the meantime. The following table summarizes the special commands.]
 @end menu
 
 @include fdl.texi
+
+@node Method Index
+@unnumbered Method Index
+
+@printindex fn
 
 @node Variable Index
 @unnumbered Variable Index

@@ -1,6 +1,6 @@
 /*
  * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (c) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (c) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
  *
  * adplugdb.cpp - AdPlug database maintenance utility
  * Copyright (c) 2002 Riven the Mage <riven@ok.ru>
- * Copyright (c) 2002 Simon Peter <dn.tlp@gmx.net>
+ * Copyright (c) 2002, 2003 Simon Peter <dn.tlp@gmx.net>
  */
 
 #include <memory.h>

@@ -4,7 +4,7 @@ libadplug.aux
 libadplug.cp
 libadplug.dvi
 libadplug.fn
-libadplug.info
+libadplug.info*
 libadplug.ky
 libadplug.log
 libadplug.pg
@@ -13,6 +13,7 @@ libadplug.tp
 libadplug.vr
 libadplug.cps
 libadplug.vrs
+libadplug.fns
 mdate-sh
 stamp-vti
 texinfo.tex

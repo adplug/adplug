@@ -1,3 +1,13 @@
+Prerequisites:
+--------------
+AdPlug depends upon the following libraries:
+
+Library:	Version:
+--------	--------
+libbinio	>= 1.1
+
+libbinio can be obtained from http://libbinio.sourceforge.net.
+
 Installation:
 -------------
 Refer to the appropriate INSTALL files for your build system:
