@@ -19,8 +19,7 @@
   dmo.cpp - TwinTeam loader by Riven the Mage <riven@ok.ru>
 */
 /*
-  NOTE: Panning is ignored. Some darkness still exist (extra channels,
-  instruments of type 0xff).
+  NOTE: Panning is ignored.
 */
 
 #include "dmo.h"
