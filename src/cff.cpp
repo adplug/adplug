@@ -20,7 +20,7 @@
 */
 /*
   NOTE: Conversion of slides is not 100% accurate. Original volume slides
-  have effect on carrier volume only. Also, original frequency & volume
+  have effect on carrier volume only. Also, original arpeggio, frequency & volume
   slides use previous effect data instead of current.
 */
 
@@ -38,19 +38,13 @@ CPlayer *CcffLoader::factory(Copl *newopl)
 
 bool CcffLoader::load(istream &f, const char *filename)
 {
-	cff_unpacker unpacker;
-
 	const unsigned char conv_inst[11] = { 2,1,10,9,4,3,6,5,0,8,7 };
 	const unsigned short conv_note[12] = { 0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287, 0x2AE };
 
 	int i,j,k,t=0;
 
-	unsigned char old_event_byte2[9] = {0};
-
-	// read header
-	f.read((char *)&header,sizeof(header));
-
 	// '<CUD-FM-File>' - signed ?
+	f.read((char *)&header,sizeof(cff_header));
 	if (memcmp(header.id,"<CUD-FM-File>""\x1A\xDE\xE0",16))
 		return false;
 
@@ -59,19 +53,23 @@ bool CcffLoader::load(istream &f, const char *filename)
 	// packed ?
 	if (header.packed)
 	{
+		cff_unpacker *unpacker = new cff_unpacker;
+
 		unsigned char *packed_module = new unsigned char [header.size + 4];
 
 		memset(packed_module,0,header.size + 4);
 
 		f.read((char *)packed_module,header.size);
 
-		if (!unpacker.unpack(packed_module,module))
+		if (!unpacker->unpack(packed_module,module))
 		{
+			delete unpacker;
 			delete packed_module;
 			delete module;
 			return false;
 		}
 
+		delete unpacker;
 		delete packed_module;
 	}
 	else
@@ -111,6 +109,10 @@ bool CcffLoader::load(istream &f, const char *filename)
 	// load tracks
 	for (i=0;i<nop;i++)
 	{
+		unsigned char old_event_byte2[9];
+
+		memset(old_event_byte2,0,9);
+
 		for (j=0;j<9;j++)
 		{
 			for (k=0;k<64;k++)
@@ -264,12 +266,10 @@ void CcffLoader::rewind(unsigned int subsong)
 
 std::string CcffLoader::gettype()
 {
-	std::string xstr = "BoomTracker 4";
-
 	if (header.packed)
-		xstr += ", packed";
-
-	return std::string(xstr);
+		return std::string("BoomTracker 4, packed");
+	else
+		return std::string("BoomTracker 4");
 }
 
 std::string CcffLoader::gettitle()
@@ -302,7 +302,7 @@ unsigned int CcffLoader::getinstruments()
 /*
   Lempel-Ziv-Tyr ;-)
 */
-unsigned int CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
+long CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
 {
 	if (memcmp(ibuf,"YsComp""\x07""CUD1997""\x1A\x04",16))
 		return 0;

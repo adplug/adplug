@@ -43,7 +43,7 @@ class CcffLoader: public CmodPlayer
 		{
 			public:
 
-				unsigned int unpack(unsigned char *ibuf, unsigned char *obuf);
+				long unpack(unsigned char *ibuf, unsigned char *obuf);
 
 			private:
 
@@ -58,7 +58,7 @@ class CcffLoader: public CmodPlayer
 				unsigned char *input;
 				unsigned char *output;
 
-				unsigned int output_length;
+				long output_length;
 
 				unsigned char code_length;
 
