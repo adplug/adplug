@@ -63,6 +63,13 @@ protected:
 	unsigned short tempo, activechan, **trackord, bpm, flags, nop;
 	unsigned long length, restartpos;
 
+	struct Channel {
+	  unsigned short freq,nextfreq;
+	  unsigned char oct,vol1,vol2,inst,fx,info1,info2,key,nextoct,
+	    note,portainfo,vibinfo1,vibinfo2,arppos,arpspdcnt;
+	  signed char trigger;
+	} *channel;
+
 	void init_trackord();
 	bool init_specialarp();
 	void init_notetable(const unsigned short *newnotetable);
@@ -71,14 +78,6 @@ protected:
 	bool realloc_instruments(unsigned long len);
 
 	void dealloc();
-
-protected:
-	struct Channel {
-	  unsigned short freq,nextfreq;
-	  unsigned char oct,vol1,vol2,inst,fx,info1,info2,key,nextoct,
-	    note,portainfo,vibinfo1,vibinfo2,arppos,arpspdcnt;
-	  signed char trigger;
-	} *channel;
 
 private:
 	static const unsigned short sa2_notetable[12];
