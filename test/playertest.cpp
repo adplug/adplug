@@ -163,7 +163,7 @@ static bool testplayer(const std::string filename)
   delete p;
   delete opl;
 
-  if(diff(fn + ".orig", filename + ".test")) {
+  if(diff(fn + ".ref", filename + ".test")) {
     std::cout << "OK\n";
     remove(std::string(filename + ".test").c_str());
     return true;
