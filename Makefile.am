@@ -1,4 +1,4 @@
-SUBDIRS = src doc adplugdb
+SUBDIRS = src doc adplugdb test
 
 EXTRA_DIST = INSTALL.unix INSTALL.win32 INSTALL.dos Makefile.wat \
 	Makefile.bt adplug.spec adplug.qpg README.dos BUGS
