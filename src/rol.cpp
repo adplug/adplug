@@ -112,8 +112,8 @@ bool CrolPlayer::load(const std::string &filename, const CFileProvider &fp)
     rol_header = new SRolHeader;
     memset( rol_header, 0, sizeof(SRolHeader) );
 
-    rol_header->version_major = f->readInt( sizeof(int16) );
-    rol_header->version_minor = f->readInt( sizeof(int16) );
+    rol_header->version_major = f->readInt( 2 );
+    rol_header->version_minor = f->readInt( 2 );
 
     // Version check
     if(rol_header->version_major != 0 || rol_header->version_minor != 4) {
@@ -126,14 +126,14 @@ bool CrolPlayer::load(const std::string &filename, const CFileProvider &fp)
 
     f->seek( 40, binio::Add );
 
-    rol_header->ticks_per_beat    = f->readInt( sizeof(int16) );
-    rol_header->beats_per_measure = f->readInt( sizeof(int16) );
-    rol_header->edit_scale_y      = f->readInt( sizeof(int16) );
-    rol_header->edit_scale_x      = f->readInt( sizeof(int16) );
+    rol_header->ticks_per_beat    = f->readInt( 2 );
+    rol_header->beats_per_measure = f->readInt( 2 );
+    rol_header->edit_scale_y      = f->readInt( 2 );
+    rol_header->edit_scale_x      = f->readInt( 2 );
 
     f->seek( 1, binio::Add );
 
-    f->readString( (char *)&rol_header->mode, sizeof(char) );
+    rol_header->mode = f->readInt(1);
 
     f->seek( 90+38+15, binio::Add );
 
@@ -451,7 +451,7 @@ void CrolPlayer::send_operator( int const voice, SOPL2Op const &modulator,  SOPL
 //---------------------------------------------------------
 void CrolPlayer::load_tempo_events( binistream *f )
 {
-    int16 const num_tempo_events = f->readInt( sizeof(int16) );
+    int16 const num_tempo_events = f->readInt( 2 );
 
     mTempoEvents.reserve( num_tempo_events );
 
@@ -459,7 +459,7 @@ void CrolPlayer::load_tempo_events( binistream *f )
     {
         STempoEvent event;
 
-        event.time       = f->readInt( sizeof(int16) );
+        event.time       = f->readInt( 2 );
         event.multiplier = f->readFloat( binio::Single );
         mTempoEvents.push_back( event );
     }
@@ -501,7 +501,7 @@ void CrolPlayer::load_note_events( binistream *f, CVoiceData &voice )
 {
     f->seek( 15, binio::Add );
 
-    int16 const time_of_last_note = f->readInt( sizeof(int16) );
+    int16 const time_of_last_note = f->readInt( 2 );
 
     if( time_of_last_note != 0 )
     {
@@ -512,8 +512,8 @@ void CrolPlayer::load_note_events( binistream *f, CVoiceData &voice )
         {
             SNoteEvent event;
 
-            event.number   = f->readInt( sizeof(int16) );
-            event.duration = f->readInt( sizeof(int16) );
+            event.number   = f->readInt( 2 );
+            event.duration = f->readInt( 2 );
 
             event.number += kSilenceNote; // adding -12
 
@@ -534,7 +534,7 @@ void CrolPlayer::load_note_events( binistream *f, CVoiceData &voice )
 void CrolPlayer::load_instrument_events( binistream *f, CVoiceData &voice,
                                          binistream *bnk_file, SBnkHeader const &bnk_header )
 {
-    int16 const number_of_instrument_events = f->readInt( sizeof(int16) );
+    int16 const number_of_instrument_events = f->readInt( 2 );
 
     TInstrumentEvents &instrument_events = voice.instrument_events;
 
@@ -543,8 +543,8 @@ void CrolPlayer::load_instrument_events( binistream *f, CVoiceData &voice,
     for(int i=0; i<number_of_instrument_events; ++i)
     {
         SInstrumentEvent event;
-        event.time = f->readInt( sizeof(int16) );
-        f->readString( (char *)&event.name, 9 );
+        event.time = f->readInt( 2 );
+        f->readString( event.name, 9 );
 
 	    std::string event_name = event.name;
         event.ins_index = load_rol_instrument( bnk_file, bnk_header, event_name );
@@ -559,7 +559,7 @@ void CrolPlayer::load_instrument_events( binistream *f, CVoiceData &voice,
 //---------------------------------------------------------
 void CrolPlayer::load_volume_events( binistream *f, CVoiceData &voice )
 {
-    int16 const number_of_volume_events = f->readInt( sizeof(int16) );
+    int16 const number_of_volume_events = f->readInt( 2 );
 
     TVolumeEvents &volume_events = voice.volume_events;
 
@@ -568,7 +568,7 @@ void CrolPlayer::load_volume_events( binistream *f, CVoiceData &voice )
     for(int i=0; i<number_of_volume_events; ++i)
     {
         SVolumeEvent event;
-        event.time       = f->readInt( sizeof(int16) );
+        event.time       = f->readInt( 2 );
         event.multiplier = f->readFloat( binio::Single );
 
         volume_events.push_back( event );
@@ -579,7 +579,7 @@ void CrolPlayer::load_volume_events( binistream *f, CVoiceData &voice )
 //---------------------------------------------------------
 void CrolPlayer::load_pitch_events( binistream *f, CVoiceData &voice )
 {
-    int16 const number_of_pitch_events = f->readInt( sizeof(int16) );
+    int16 const number_of_pitch_events = f->readInt( 2 );
 
     TPitchEvents &pitch_events = voice.pitch_events;
 
@@ -588,7 +588,7 @@ void CrolPlayer::load_pitch_events( binistream *f, CVoiceData &voice )
     for(int i=0; i<number_of_pitch_events; ++i)
     {
         SPitchEvent event;
-        event.time      = f->readInt( sizeof(int16) );
+        event.time      = f->readInt( 2 );
         event.variation = f->readFloat( binio::Single );
 
         pitch_events.push_back( event );
@@ -597,37 +597,37 @@ void CrolPlayer::load_pitch_events( binistream *f, CVoiceData &voice )
 //---------------------------------------------------------
 bool CrolPlayer::load_bnk_info( binistream *f, SBnkHeader &header )
 {
-    f->readString( (char *)&header.version_major, sizeof(char) );
-    f->readString( (char *)&header.version_minor, sizeof(char) );
-    f->readString( (char *)&header.signature,     6 );
+  header.version_major = f->readInt(1);
+  header.version_minor = f->readInt(1);
+  f->readString( header.signature, 6 );
 
-    header.number_of_list_entries_used  = f->readInt( sizeof(uint16) );
-    header.total_number_of_list_entries = f->readInt( sizeof(uint16) );
+  header.number_of_list_entries_used  = f->readInt( 2 );
+  header.total_number_of_list_entries = f->readInt( 2 );
 
-    header.abs_offset_of_name_list = f->readInt( sizeof(int32) );
-    header.abs_offset_of_data      = f->readInt( sizeof(int32) );
+  header.abs_offset_of_name_list = f->readInt( 4 );
+  header.abs_offset_of_data      = f->readInt( 4 );
 
-    f->seek( header.abs_offset_of_name_list, binio::Set );
+  f->seek( header.abs_offset_of_name_list, binio::Set );
 
-    TInstrumentNames &ins_name_list = header.ins_name_list;
-    ins_name_list.reserve( header.number_of_list_entries_used );
+  TInstrumentNames &ins_name_list = header.ins_name_list;
+  ins_name_list.reserve( header.number_of_list_entries_used );
 
-    for(int i=0; i<header.number_of_list_entries_used; ++i)
+  for(int i=0; i<header.number_of_list_entries_used; ++i)
     {
-        SInstrumentName instrument;
+      SInstrumentName instrument;
 
-        instrument.index = f->readInt( sizeof(uint16) );
-        f->readString( (char *)&instrument.record_used, sizeof(char) );
-        f->readString( (char *)&instrument.name, 9 );
+      instrument.index = f->readInt( 2 );
+      instrument.record_used = f->readInt(1);
+      f->readString( instrument.name, 9 );
 
-       // printf("%s = #%d\n", instrument.name, i );
+      // printf("%s = #%d\n", instrument.name, i );
 
-        ins_name_list.push_back( instrument );
+      ins_name_list.push_back( instrument );
     }
 
-    //std::sort( ins_name_list.begin(), ins_name_list.end(), StringCompare() );
+  //std::sort( ins_name_list.begin(), ins_name_list.end(), StringCompare() );
 
-    return true;
+  return true;
 }
 //---------------------------------------------------------
 int CrolPlayer::load_rol_instrument( binistream *f, SBnkHeader const &header, std::string &name )
@@ -687,37 +687,37 @@ int CrolPlayer::get_ins_index( std::string const &name ) const
 //---------------------------------------------------------
 void CrolPlayer::read_rol_instrument( binistream *f, SRolInstrument &ins )
 {
-    f->readString( &ins.mode,         sizeof(char) );
-    f->readString( &ins.voice_number, sizeof(char) );
+  ins.mode = f->readInt(1);
+  ins.voice_number = f->readInt(1);
 
-    read_fm_operator( f, ins.modulator );
-    read_fm_operator( f, ins.carrier );
+  read_fm_operator( f, ins.modulator );
+  read_fm_operator( f, ins.carrier );
 
-    f->readString( &ins.modulator.waveform, sizeof(char) );
-    f->readString( &ins.carrier.waveform,   sizeof(char) );
+  ins.modulator.waveform = f->readInt(1);
+  ins.carrier.waveform = f->readInt(1);
 }
 //---------------------------------------------------------
 void CrolPlayer::read_fm_operator( binistream *f, SOPL2Op &opl2_op )
 {
-    SFMOperator fm_op;
+  SFMOperator fm_op;
 
-    f->readString( &fm_op.key_scale_level,   sizeof(char) );
-    f->readString( &fm_op.freq_multiplier,   sizeof(char) );
-    f->readString( &fm_op.feed_back,         sizeof(char) );
-    f->readString( &fm_op.attack_rate,       sizeof(char) );
-    f->readString( &fm_op.sustain_level,     sizeof(char) );
-    f->readString( &fm_op.sustaining_sound,  sizeof(char) );
-    f->readString( &fm_op.decay_rate,        sizeof(char) );
-    f->readString( &fm_op.release_rate,      sizeof(char) );
-    f->readString( &fm_op.output_level,      sizeof(char) );
-    f->readString( &fm_op.amplitude_vibrato, sizeof(char) );
-    f->readString( &fm_op.frequency_vibrato, sizeof(char) );
-    f->readString( &fm_op.envelope_scaling,  sizeof(char) );
-    f->readString( &fm_op.fm_type,           sizeof(char) );
+  fm_op.key_scale_level = f->readInt(1);
+  fm_op.freq_multiplier = f->readInt(1);
+  fm_op.feed_back = f->readInt(1);
+  fm_op.attack_rate = f->readInt(1);
+  fm_op.sustain_level = f->readInt(1);
+  fm_op.sustaining_sound = f->readInt(1);
+  fm_op.decay_rate = f->readInt(1);
+  fm_op.release_rate = f->readInt(1);
+  fm_op.output_level = f->readInt(1);
+  fm_op.amplitude_vibrato = f->readInt(1);
+  fm_op.frequency_vibrato = f->readInt(1);
+  fm_op.envelope_scaling = f->readInt(1);
+  fm_op.fm_type = f->readInt(1);
 
-    opl2_op.ammulti = fm_op.amplitude_vibrato << 7 | fm_op.frequency_vibrato << 6 | fm_op.sustaining_sound << 5 | fm_op.envelope_scaling << 4 | fm_op.freq_multiplier;
-    opl2_op.ksltl   = fm_op.key_scale_level   << 6 | fm_op.output_level;
-    opl2_op.ardr    = fm_op.attack_rate       << 4 | fm_op.decay_rate;
-    opl2_op.slrr    = fm_op.sustain_level     << 4 | fm_op.release_rate;
-    opl2_op.fbc     = fm_op.feed_back         << 1 | (fm_op.fm_type ^ 1);
+  opl2_op.ammulti = fm_op.amplitude_vibrato << 7 | fm_op.frequency_vibrato << 6 | fm_op.sustaining_sound << 5 | fm_op.envelope_scaling << 4 | fm_op.freq_multiplier;
+  opl2_op.ksltl   = fm_op.key_scale_level   << 6 | fm_op.output_level;
+  opl2_op.ardr    = fm_op.attack_rate       << 4 | fm_op.decay_rate;
+  opl2_op.slrr    = fm_op.sustain_level     << 4 | fm_op.release_rate;
+  opl2_op.fbc     = fm_op.feed_back         << 1 | (fm_op.fm_type ^ 1);
 }

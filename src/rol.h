@@ -185,29 +185,29 @@ private:
 
     typedef struct
     {
-        char key_scale_level;
-        char freq_multiplier;
-        char feed_back;
-        char attack_rate;
-        char sustain_level;
-        char sustaining_sound;
-        char decay_rate;
-        char release_rate;
-        char output_level;
-        char amplitude_vibrato;
-        char frequency_vibrato;
-        char envelope_scaling;
-        char fm_type;
+        unsigned char key_scale_level;
+        unsigned char freq_multiplier;
+        unsigned char feed_back;
+        unsigned char attack_rate;
+        unsigned char sustain_level;
+        unsigned char sustaining_sound;
+        unsigned char decay_rate;
+        unsigned char release_rate;
+        unsigned char output_level;
+        unsigned char amplitude_vibrato;
+        unsigned char frequency_vibrato;
+        unsigned char envelope_scaling;
+        unsigned char fm_type;
     } SFMOperator;
 
     typedef struct
     {
-        char ammulti;
-        char ksltl;
-        char ardr;  
-        char slrr;
-        char fbc;
-        char waveform;
+        unsigned char ammulti;
+        unsigned char ksltl;
+        unsigned char ardr;  
+        unsigned char slrr;
+        unsigned char fbc;
+        unsigned char waveform;
     } SOPL2Op;
 
     typedef struct
@@ -284,9 +284,9 @@ private:
     int                         mCurrTick;
     int                         mTimeOfLastNote;
     float                       mRefresh;
-    char                        bdRegister;
-    char                        bxRegister[9];
-    char                        volumeCache[11];
+    unsigned char               bdRegister;
+    unsigned char               bxRegister[9];
+    unsigned char               volumeCache[11];
     uint16			freqCache[11];
     real32                      pitchCache[11];
 

@@ -95,7 +95,7 @@ public:
   // template methods
   void write(int reg, int val)
   {
-    if(reg > 255 || val > 255)
+    if(reg > 255 || val > 255 || reg < 0 || val < 0)
       std::cerr << "Warning: The player is writing data out of range! (reg = "
 		<< std::hex << reg << ", val = " << val << ")\n";
     if(!f) return;
@@ -186,8 +186,8 @@ static bool testplayer(const std::string filename)
 
 int main(int argc, char *argv[])
 {
-  unsigned int	i;
-  bool		retval = true;
+  int	i;
+  bool	retval = true;
 
   // Set path to source directory
   srcdir = getenv("srcdir");
