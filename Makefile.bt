@@ -4,8 +4,9 @@
 SUBDIRS = src adplugdb
 
 AUX = README AUTHORS NEWS COPYING TODO BUGS ChangeLog INSTALL README.dos
-DIST = src\*.c src\*.cpp src\*.h src\Makefile.bt $(AUX)
-BINARYDIST = src\*.h src\adplug.lib $(AUX)
+DIST = src\*.c src\*.cpp src\*.h src\Makefile.bt adplugdb\*.cpp adplugdb\*.c &
+adplugdb\*.h adplugdb\Makefile.bt $(AUX)
+BINARYDIST = src\*.h src\adplug.lib adplugdb\adplugdb.exe $(AUX)
 
 distfile = adplg14s.zip
 binarydistfile = adplug14.zip
