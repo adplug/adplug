@@ -91,6 +91,7 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
 		sat_type = HAS_ARPEGIO | HAS_ARPEGIOLIST | HAS_TRACKORDER | HAS_ACTIVECHANNELS;
 		break;
 	default:	/* unknown */
+	        fp.close(f);
 		return false;
 	}
 

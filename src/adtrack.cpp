@@ -104,7 +104,12 @@ bool CadtrackLoader::load(const std::string &filename, const CFileProvider &fp)
       case 'A': if(note[1] == '#') pnote = 11; else pnote = 10; break;
       case 'B': pnote = 12; break;
       case '\0':
-	if(note[1] == '\0') tracks[chp][rwp].note = 127; else return false;
+	if(note[1] == '\0')
+	  tracks[chp][rwp].note = 127;
+	else {
+	  fp.close(f);
+	  return false;
+	}
 	break;
       default: fp.close(f); return false;
       }

@@ -8,6 +8,6 @@ DIST = src\*.c src\*.cpp src\*.h src\Makefile.bt adplugdb\*.cpp adplugdb\*.c &
 adplugdb\*.h adplugdb\Makefile.bt $(AUX)
 BINARYDIST = src\*.h src\adplug.lib adplugdb\adplugdb.exe $(AUX)
 
-distfile = adplg14s.zip
-binarydistfile = adplug14.zip
+distfile = adpl141s.zip
+binarydistfile = adplg141.zip
 installfile = INSTALL.dos

@@ -62,7 +62,7 @@
 
 /***** Defines *****/
 
-#define VERSION		"1.4"		// AdPlug library version string
+#define VERSION		"1.4.1"		// AdPlug library version string
 
 /***** CAdPlug *****/
 
