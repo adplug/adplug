@@ -58,6 +58,8 @@ contain many replay issues, but are included for testing purposes anyway.
 - KSM: Ken Silverman's Adlib Music Format
 - LAA: LucasArts AdLib Audio File Format by LucasArts
   - Bugs: Some volumes are a bit off
+- LDS: LOUDNESS Music Format (preliminary)
+  - Bugs: Undocumented format, more to come.
 - M: Ultima 6 Music Format
 - MID: MIDI Audio File Format
 - MKJ: MKJamz by M \ K Productions (preliminary)
@@ -68,6 +70,7 @@ contain many replay issues, but are included for testing purposes anyway.
   - Unimplemented: OPL3 register writes (not possible with AdLib)
 - S3M: Screamtracker 3 by Future Crew
   - Bugs: Extra Fine Slides (EEx, FEx) & Fine Vibrato (Uxy) are inaccurate
+- SAT: Surprise! Adlib Tracker by Surprise Productions 
 - SA2: Surprise! Adlib Tracker 2 by Surprise! Productions
   - Unimplemented: Version 7 files (i don't have any)
 - SCI: Sierra's AdLib Audio File Format
