@@ -1,5 +1,5 @@
 /*
- * ksm.h - KSM Player by Simon Peter (dn.tlp@gmx.net)
+ * ksm.h - KSM Player for AdPlug by Simon Peter (dn.tlp@gmx.net)
  */
 
 #include "player.h"

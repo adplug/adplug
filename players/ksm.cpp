@@ -1,5 +1,5 @@
 /*
- * ksm.cpp - KSM Player by Simon Peter (dn.tlp@gmx.net)
+ * ksm.cpp - KSM Player for AdPlug by Simon Peter (dn.tlp@gmx.net)
  *
  * NOTES:
  * This is a nearly direct adaption of the original playksm
