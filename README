@@ -43,6 +43,7 @@ may contain many replay issues, but are included for testing purposes anyway.
   - All OPL3 functionality is absent (not possible with AdLib)
 - AMD: AMUSIC Adlib Tracker by Elyssis
 - BAM: Bob's Adlib Music Format by Bob
+- CFF: BoomTracker 4.0 by CUD
 - CMF: Creative Music File Format by Creative Technology
   - Unimplemented: AdLib rhythm mode
 - D00: EdLib by Vibrants
@@ -85,7 +86,7 @@ may contain many replay issues, but are included for testing purposes anyway.
 
 Known bugs and problems:
 ------------------------
-Some files (especially SA2) will sound distorted through the emulator. This is
+Some files (especially SA2) may sound distorted through the emulator. This is
 a well-known "problem" with software mixing, hearable when the composer plays
 the same sound on multiple channels. Hardware mixing is unaffected by this
 issue.

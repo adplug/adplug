@@ -4,12 +4,16 @@ All library code is written by Simon Peter, except the parts listed below.
 Additional Credits:
 -------------------
 Phil Hassey <philhassey@hotmail.com>:
-	- MIDI, CMF, LAA and SCI player development
+	- Player development for the following formats:
+		- MID: MIDI Audio File Format
+		- CMF: Creative Music File Format
+		- SCI: Sierra's AdLib Audio File Format
+		- LAA: LucasArts AdLib Audio File Format
 
 Marc Winterrowd <nodling@yahoo.com>:
-	- Origin Music player development
+	- Origin Music (.M) player development
 
-Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>, Jarek Burczynski:
+Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>:
 	- YM3812 emulator development (used by permission)
 
 Death Adder <death-adder@juno.com>:
@@ -20,10 +24,13 @@ Mamiya <mamiya@users.sourceforge.net>:
 	- support for .SAT (early Surprise! Adlib Tracker) files
 
 Akintunde Omitowoju <oplx@yahoo.com>:
-	- ROL player development
+	- AdLib Visual Composer (.ROL) player development
 
 Nikita V. Kalaganov <riven@ok.ru>:
-	- SNG, MAD, CFF loader development
-	- XAD player development
-	- Custom XAD players development
-	- XMS detection support in AMD loader
+	- Player development for the following formats:
+		- SNG: Faust Music Creator
+		- CFF: BoomTracker 4.0
+		- XAD: Custom modules
+		- MAD: ???
+	- XAD module shell player development
+	- XMS-Tracker detection support in AMD loader

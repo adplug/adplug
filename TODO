@@ -10,16 +10,11 @@ AdPlug To Do List:
 ------------------
 - Add missing features to A2M loader and/or Protracker player.
 
-- Get LOUDNESS support to work.
-
 - Add rhythm mode support to CMF player (inside mid.cpp)
 
 - Add new Protracker loaders:
 	- DTM: DeFy Adlib Tracker [riven-mage]
 	- MTR: Arkham Master Tracker [riven-mage]
+	- LDS: Loudness
 
-- Convert the documentation in the 'doc' subdir to a better format.
-  [dynamite]
-
-- Make UNIX builds get VERSION define from adplug.cpp, instead of
-  configure.in. [dynamite]
+- Make documentation build target on UNIX builds. [dynamite]

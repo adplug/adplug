@@ -4,6 +4,7 @@ Changes for version 1.3:
 	- Completely new build system for DOS and Windows.
 	- Centralized debug management.
 	- Added a whole bunch of new developer documentation.
+	- Developer documentation is now using troff formatting language.
 	- Much more flexible Protracker player.
 	- New or corrected IMF timer rates for the following games:
 		- Duke Nukem 2
