@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,12 +16,13 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * raw.c - RAW Player by Simon Peter (dn.tlp@gmx.net)
+ * raw.c - RAW Player by Simon Peter <dn.tlp@gmx.net>
  *
  * NOTES:
  * OPL3 register writes are ignored (not possible with AdLib).
  */
+
+#include <assert.h>
 
 #include "raw.h"
 
@@ -34,72 +35,71 @@ CPlayer *CrawPlayer::factory(Copl *newopl)
 
 bool CrawPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
-        binistream *f = fp.open(filename); if(!f) return false;
-	char id[8];
-	unsigned long i;
+  binistream *f = fp.open(filename); if(!f) return false;
+  char id[8];
+  unsigned long i;
 
-	// file validation section
-	f->readString(id, 8);
-	if(strncmp(id,"RAWADATA",8)) { fp.close (f); return false; }
+  // file validation section
+  f->readString(id, 8);
+  if(strncmp(id,"RAWADATA",8)) { fp.close (f); return false; }
 
-	// load section
-	clock = f->readInt(2);	// clock speed
-	length = (fp.filesize(f) - 10) / 2;
-	data = new Tdata [length];
-	for(i = 0; i < length; i++) {
-	  data[i].param = f->readInt(1);
-	  data[i].command = f->readInt(1);
-	}
+  // load section
+  clock = f->readInt(2);	// clock speed
+  length = (fp.filesize(f) - 10) / 2;
+  data = new Tdata [length];
+  for(i = 0; i < length; i++) {
+    data[i].param = f->readInt(1);
+    data[i].command = f->readInt(1);
+  }
 
-	fp.close(f);
-	rewind(0);
-	return true;
+  fp.close(f);
+  rewind(0);
+  return true;
 }
 
 bool CrawPlayer::update()
 {
-	if(pos > length) return false;
+  if(pos >= length) return false;
 
-	if(del) {
-		del--;
-		return !songend;
-	}
+  if(del) {
+    del--;
+    return !songend;
+  }
 
-	do {
-		switch(data[pos].command) {
-		case 0: del = data[pos].param - 1; break;
-		case 2:
-		  if(!data[pos].param) {
-		    pos++; speed = data[pos].param + (data[pos].command << 8);
-		  } else
-		    opl3 = data[pos].param - 1;
-		  break;
-		case 0xff:
-		  if(data[pos].param == 0xff) {
-		    rewind(0);		// auto-rewind song
-		    songend = true;
-		    return !songend;
-		  }
-		  break;
-		default:
-		  if(!opl3)
-		    opl->write(data[pos].command,data[pos].param);
-		  break;
-		}
-
-		pos++;
-	} while(data[pos-1].command);
-
+  do {
+    assert(pos < length);
+    switch(data[pos].command) {
+    case 0: del = data[pos].param - 1; break;
+    case 2:
+      if(!data[pos].param) {
+	pos++; speed = data[pos].param + (data[pos].command << 8);
+      } else
+	opl3 = data[pos].param - 1;
+      break;
+    case 0xff:
+      if(data[pos].param == 0xff) {
+	rewind(0);		// auto-rewind song
+	songend = true;
 	return !songend;
+      }
+      break;
+    default:
+      if(!opl3)
+	opl->write(data[pos].command,data[pos].param);
+      break;
+    }
+  } while(data[pos++].command);
+
+  return !songend;
 }
 
 void CrawPlayer::rewind(int subsong)
 {
-	pos = del = opl3 = 0; speed = clock; songend = false;
-	opl->init(); opl->write(1,32);	// go to OPL2 mode
+  pos = del = opl3 = 0; speed = clock; songend = false;
+  opl->init(); opl->write(1,32);	// go to OPL2 mode
 }
 
 float CrawPlayer::getrefresh()
 {
-	return 1193180 / (float)(speed ? speed : 0xffff);	// timer oscillator speed / wait register = clock frequency
+  return 1193180 / (float)(speed ? speed : 0xffff);	// timer oscillator speed / wait register = clock frequency
 }

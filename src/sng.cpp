@@ -41,13 +41,13 @@ bool CsngPlayer::load(const std::string &filename, const CFileProvider &fp)
   if(strncmp(header.id,"ObsM",4)) { fp.close(f); return false; }
 
   // load section
-  data = new Sdata [header.length / 2];
-  for(i = 0; i < header.length / 2; i++) {
+  header.length /= 2; header.start /= 2; header.loop /= 2;
+  data = new Sdata [header.length];
+  for(i = 0; i < header.length; i++) {
     data[i].val = f->readInt(1);
     data[i].reg = f->readInt(1);
   }
 
-  header.length /= 2; header.start /= 2; header.loop /= 2;
   rewind(0);
   fp.close(f);
   return true;
@@ -55,30 +55,30 @@ bool CsngPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 bool CsngPlayer::update()
 {
-	if(header.compressed && del) {
-		del--;
-		return !songend;
-	}
+  if(header.compressed && del) {
+    del--;
+    return !songend;
+  }
 
-	while(data[pos].reg) {
-		if(pos < header.length) {
-			opl->write(data[pos].reg,data[pos].val);
-			pos++;
-		} else {
-			songend = true;
-			pos = header.loop;
-		}
-	}
+  while(data[pos].reg) {
+    opl->write(data[pos].reg, data[pos].val);
+    pos++;
+    if(pos >= header.length) {
+      songend = true;
+      pos = header.loop;
+    }
+  }
 
-	if(!header.compressed)
-		opl->write(data[pos].reg,data[pos].val);
+  if(!header.compressed)
+    opl->write(data[pos].reg, data[pos].val);
 
-	if(data[pos].val) del = data[pos].val - 1; pos++;
-	return !songend;
+  if(data[pos].val) del = data[pos].val - 1; pos++;
+  if(pos >= header.length) { songend = true; pos = header.loop; }
+  return !songend;
 }
 
 void CsngPlayer::rewind(int subsong)
 {
-	pos = header.start; del = header.delay; songend = false;
-	opl->init(); opl->write(1,32);	// go to OPL2 mode
+  pos = header.start; del = header.delay; songend = false;
+  opl->init(); opl->write(1,32);	// go to OPL2 mode
 }

@@ -323,7 +323,7 @@ bool CmodPlayer::update()
 		case 15: // SA2 set speed
 			if(info <= 0x1f)
 				speed = info;
-			if(info >= 0x32 && info <= 0xff)
+			if(info >= 0x32)
 				tempo = info;
 			if(!info)
 				songend = 1;
@@ -398,10 +398,13 @@ bool CmodPlayer::update()
 			ord++;
 		}
 	}
-	if(order[ord] >= JUMPMARKER) {	// jump to order
-		ord = order[ord] - JUMPMARKER;
-		songend = 1;
-	}
+	if(ord < length) {
+	  if(order[ord] >= JUMPMARKER) {	// jump to order
+	    ord = order[ord] - JUMPMARKER;
+	    songend = 1;
+	  }
+	} else
+	  songend = 1;
 
         AdPlug_LogWrite("\n");
 	return !songend;

@@ -41,7 +41,7 @@ static const char *filelist[] = {
   "CHILD1.XSM",		// eXtra Simple Music
   "DTM-TRK1.DTM",	// DeFy Adlib Tracker
   "fdance03.dmo",	// TwinTrack
-  "ice_think.sci",	// Sierra
+  "ice_think.sci",	// Sierra */
   "inc.raw",		// RAW
   //  "loudness.lds",	// Loudness
   "MARIO.A2M",		// AdLib Tracker 2

@@ -84,7 +84,7 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
 	}
 
 	delete unpacker;
-	delete packed_module;
+	delete [] packed_module;
 
 	// "TwinTeam" - signed ?
 	if (memcmp(module,"TwinTeam Module File""\x0D\x0A",22))
@@ -200,7 +200,7 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
 		ibuf += my_patlen[i];
 	}
 
-	delete module;
+	delete [] module;
 
 	rewind(0);
 

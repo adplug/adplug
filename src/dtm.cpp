@@ -123,7 +123,7 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 
 		long unpacked_length = unpack_pattern(packed_pattern,packed_length,pattern,0x480);
 
-		delete packed_pattern;
+		delete [] packed_pattern;
 
 		if (!unpacked_length)
 		{
@@ -200,7 +200,7 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 		}
 	}
 
-	delete pattern;
+	delete [] pattern;
 	fp.close(f);
 
 	// order length

@@ -236,7 +236,7 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
 		}
 	}
 
-	delete module;
+	delete [] module;
 
 	// order loop
 	restartpos = 0;
