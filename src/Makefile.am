@@ -7,7 +7,7 @@ sng.cpp u6m.cpp fmc.cpp mad.cpp xad.cpp bmf.cpp flash.cpp hyp.cpp psi.cpp \
 rat.cpp hybrid.cpp rol.cpp debug.c debug.h mididata.h imfcrc.h adtrack.cpp \
 cff.cpp
 
-libadplug_la_LDFLAGS = -version-info 1:3
+libadplug_la_LDFLAGS = -release @VERSION@
 
 AM_CPPFLAGS = -Dstricmp=strcasecmp
 AM_CFLAGS = -Wall

@@ -20,3 +20,5 @@ AdPlug To Do List:
 - Maybe change docs again into texinfo format... [dynamite]
 
 - Get cff.[cpp,h] to work on linux. [dynamite]
+
+- Add an AM_PATH_ADPLUG aclocal defun to the UNIX build. [dynamite]

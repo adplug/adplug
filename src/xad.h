@@ -1,6 +1,6 @@
 /*
-  Adplug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+  AdPlug - Replayer for many OPL2/OPL3 audio file formats.
+  Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,9 @@
 
   xad.h - XAD shell player by Riven the Mage <riven@ok.ru>
 */
+
+#ifndef H_XAD
+#define H_XAD
 
 #include "player.h"
 
@@ -91,3 +94,5 @@ protected:
 
         void opl_write(int reg, int val);
 };
+
+#endif
