@@ -48,5 +48,6 @@ private:
 	struct {
 		unsigned long	target;
 		bool			defined;
+		unsigned char	count;
 	} label[16];
 };

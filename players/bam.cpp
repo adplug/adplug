@@ -18,6 +18,33 @@
  *
  *
  * bam.cpp - Bob's Adlib Music Player, by Simon Peter (dn.tlp@gmx.net)
+ *
+ * NOTES:
+ * The loop counter is stored with the label. This can be dangerous for some
+ * situations (see below), but there shouldn't be any BAM files containing it.
+ *
+ * From SourceForge Bug #476088:
+ * -----------------------------
+ * Using just one loop counter for each label, my player can't
+ * handle files that loop twice to the same label (if that's at
+ * all possible with BAM). Imagine the following situation:
+ * 
+ * ... [*] ---- [<- *] ---- [<- *] ...
+ *  ^   ^    ^     ^     ^     ^    ^
+ *  |   |    |     |     |     |    |
+ *  +---|----+-----|-----+-----|----+--- normal song data
+ *      +----------|-----------|-------- label 1
+ *                 +-----------+-------- loop points to label 1
+ * 
+ * both loop points loop to the same label. Storing the loop 
+ * count with the label would cause chaos with the counter, 
+ * when the player executes the inner jump.
+ * ------------------
+ * Not to worry. my reference implementation of BAM does not
+ * support the multiple loop situation you describe, and
+ * neither do any BAM-creation programs. Then both loops point
+ * to the same label, the inner loop's counter is just allowed
+ * to clobber the outer loop's counter. No stack is neccisary.
  */
 
 #include <string.h>
@@ -124,7 +151,15 @@ bool CbamPlayer::update()
 					pos += 2;
 					break;
 				default:	// finite loop
-					song[pos+1]--;
+					if(!label[c].count) {	// loop elapsed
+						label[c].count = 255;
+						pos += 2;
+						break;
+					}
+					if(label[c].count < 255)	// loop defined
+						label[c].count--;
+					else						// loop undefined
+						label[c].count = song[pos+1] - 1;
 					pos = label[c].target;
 					break;
 				}
@@ -152,5 +187,6 @@ void CbamPlayer::rewind(unsigned int subsong)
 {
 	pos = 0; songend = false; del = 0; gosub = 0; chorus = false;
 	memset(label,0,sizeof(label)); label[0].defined = true;
+	for(int i=0;i<16;i++) label[i].count = 255;		// 255 = undefined
 	opl->init(); opl->write(1,32);
 }
