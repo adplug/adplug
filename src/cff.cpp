@@ -20,9 +20,8 @@
   cff.cpp - BoomTracker loader by Riven the Mage <riven@ok.ru>
 */
 /*
-  - bug: key-off isn't working
-  - bug: bad arpeggio handling
-  - FINAL TEST
+  NOTE: Volume slides in the original player have effect on carrier volume
+  only. So my volume slides slightly different from them.
 */
 
 #include "cff.h"
@@ -123,10 +122,6 @@ bool CcffLoader::load(istream &f, const char *filename)
 					if (event->byte0)
 						tracks[t][k].note = event->byte0;
 
-				// convert parameters
-        		tracks[t][k].param1  = event->byte2 >> 4;
-        		tracks[t][k].param2  = event->byte2 & 0x0F;
-
 				if (event->byte2)
 					old_event_byte2[j] = event->byte2;
 
@@ -135,59 +130,91 @@ bool CcffLoader::load(istream &f, const char *filename)
 				{
 					case 'I': // set instrument
 						tracks[t][k].inst = event->byte2 + 1;
-        				tracks[t][k].param1 = tracks[t][k].param2 = 0;
+						tracks[t][k].param1 = tracks[t][k].param2 = 0;
 						break;
+
 					case 'H': // set tempo
 						tracks[t][k].command = 7;
-						if (event->byte2 < 0x16)
+						if (event->byte2 < 16)
 						{
-        					tracks[t][k].param1 = 0x07;
-			        		tracks[t][k].param2 = 0x0D;
+							tracks[t][k].param1 = 0x07;
+	  						tracks[t][k].param2 = 0x0D;
 						}
 						break;
+
 					case 'A': // set speed
 						tracks[t][k].command = 19;
+						tracks[t][k].param1  = event->byte2 >> 4;
+						tracks[t][k].param2  = event->byte2 & 15;
 						break;
+
 					case 'L': // pattern break
 						tracks[t][k].command = 13;
+						tracks[t][k].param1  = event->byte2 >> 4;
+						tracks[t][k].param2  = event->byte2 & 15;
 						break;
+
 					case 'K': // order jump
 						tracks[t][k].command = 11;
+						tracks[t][k].param1  = event->byte2 >> 4;
+						tracks[t][k].param2  = event->byte2 & 15;
 						break;
+
 					case 'M': // set vibrato/tremolo
 						tracks[t][k].command = 27;
+						tracks[t][k].param1  = event->byte2 >> 4;
+						tracks[t][k].param2  = event->byte2 & 15;
 						break;
+
 					case 'C': // set modulator volume
-					case 'G': // set carrier volume
-						if (event->byte1 == 'C')
-							tracks[t][k].command = 21;
-						else
-							tracks[t][k].command = 22;
+						tracks[t][k].command = 21;
 						tracks[t][k].param1 = (0x3F - event->byte2) >> 4;
-						tracks[t][k].param2 = (0x3F - event->byte2) & 0x0F;
+						tracks[t][k].param2 = (0x3F - event->byte2) & 15;
 						break;
+
+					case 'G': // set carrier volume
+						tracks[t][k].command = 22;
+						tracks[t][k].param1 = (0x3F - event->byte2) >> 4;
+						tracks[t][k].param2 = (0x3F - event->byte2) & 15;
+						break;
+
 					case 'B': // set carrier waveform
 						tracks[t][k].command = 25;
-						tracks[t][k].param1 = event->byte2;
-						tracks[t][k].param2 = 0x0F;
+						tracks[t][k].param1  = event->byte2;
+						tracks[t][k].param2  = 0x0F;
 						break;
-					case 'E': // frequency slide down
-						tracks[t][k].command = 2;
+
+					case 'E': // fine frequency slide down
+						tracks[t][k].command = 24;
+						tracks[t][k].param1  = old_event_byte2[j] >> 4;
+						tracks[t][k].param2  = old_event_byte2[j] & 15;
 						break;
-					case 'F': // frequency slide up
-						tracks[t][k].command = 1;
+
+					case 'F': // fine frequency slide up
+						tracks[t][k].command = 23;
+						tracks[t][k].param1  = old_event_byte2[j] >> 4;
+						tracks[t][k].param2  = old_event_byte2[j] & 15;
 						break;
-					case 'D': // volume slide
-						tracks[t][k].command = 26;
-        				tracks[t][k].param1  = event->byte2 & 0x0F;
-        				tracks[t][k].param2  = event->byte2 >> 4;
-						break;
-					case 'J': // arpeggio
-						if (!event->byte2)
+
+					case 'D': // fine volume slide
+						tracks[t][k].command = 14;
+						if (old_event_byte2[j] & 15)
 						{
-							tracks[t][k].param1  = old_event_byte2[j] >> 4;
-							tracks[t][k].param2  = old_event_byte2[j] & 0x0F;
+							// slide down
+							tracks[t][k].param1 = 5;
+							tracks[t][k].param2 = old_event_byte2[j] & 15;
 						}
+						else
+						{
+							// slide up
+							tracks[t][k].param1 = 4;
+							tracks[t][k].param2 = old_event_byte2[j] >> 4;
+						}
+						break;
+
+					case 'J': // arpeggio
+						tracks[t][k].param1  = old_event_byte2[j] >> 4;
+						tracks[t][k].param2  = old_event_byte2[j] & 15;
 						break;
 				}
 			}
@@ -198,7 +225,7 @@ bool CcffLoader::load(istream &f, const char *filename)
 
 	delete module;
 
-    // default instruments
+	// default instruments
 	for (i=0;i<9;i++)
 	{
 		if (!tracks[i][0].inst)
