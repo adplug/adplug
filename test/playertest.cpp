@@ -50,14 +50,15 @@ long read_file(char **mem, const std::string filename)
 
 bool testplayer(const std::string filename)
 {
+  std::string	fn = std::string(getenv("srcdir")) + "/" + filename;
   CDiskopl	*opl = new CDiskopl(filename + ".test.raw");
-  CPlayer	*p = CAdPlug::factory(filename, opl);
+  CPlayer	*p = CAdPlug::factory(fn, opl);
   bool		retval = true;
 
   if(!p) { delete opl; return false; }
 
   // Output file information
-  std::cout << "Testing format: " << p->gettype() << std::endl;
+  std::cout << "Testing format: " << p->gettype() << " - ";
 
   // Write whole file to disk
   while(p->update())
@@ -68,7 +69,7 @@ bool testplayer(const std::string filename)
 
   // Compare with original
   char	*f1, *f2;
-  long	fsize1 = read_file(&f1, filename + ".orig.raw");
+  long	fsize1 = read_file(&f1, fn + ".orig.raw");
   long	fsize2 = read_file(&f2, filename + ".test.raw");
 
   if(fsize1 == fsize2) {
@@ -83,6 +84,7 @@ bool testplayer(const std::string filename)
   if(fsize1 != -1) free(f1);
   if(fsize2 != -1) free(f2);
   remove(std::string(filename + ".test.raw").c_str());
+  if(retval) std::cout << "OK\n"; else std::cout << "FAIL\n";
   return retval;
 }
 
