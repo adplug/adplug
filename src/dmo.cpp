@@ -19,7 +19,8 @@
   dmo.cpp - TwinTeam loader by Riven the Mage <riven@ok.ru>
 */
 /*
-  NOTE: Panning is ignored. Drum channels are ignored.
+  NOTE: Panning is ignored. Some darkness still exist (extra channels,
+  instruments of type 0xff).
 */
 
 #include "dmo.h"
@@ -113,7 +114,14 @@ bool CdmoLoader::load(istream &f, const char *filename)
 	// load order
 	memcpy(orders,ibuf,256);
 
+	orders[header.ordnum] = 0xFF;
+
 	ibuf += 256;
+
+	// load pattern lengths
+	unsigned short *my_patlen = (unsigned short *)ibuf;
+
+	ibuf += 200;
 
 	// load instruments
 	for (i=0;i<my_hdr->numinst;i++)
@@ -134,6 +142,7 @@ bool CdmoLoader::load(istream &f, const char *filename)
 		inst[i].d08    = my_ins->data[8];
 		inst[i].d09    = my_ins->data[9];
 		inst[i].d0a    = my_ins->data[10];
+		inst[i].d0b    = my_ins->data[10];
 		inst[i].volume = my_ins->vol;
 		inst[i].dsk    = my_ins->dsk;
 		inst[i].c2spd  = my_ins->c2spd;
@@ -146,11 +155,13 @@ bool CdmoLoader::load(istream &f, const char *filename)
 	// load patterns
 	for (i=0;i<my_hdr->numpat;i++)
 	{
+		unsigned char *cur_pat = ibuf;
+
 		for (j=0;j<64;j++)
 		{
 			while (1)
 			{
-				unsigned char token = *ibuf++;
+				unsigned char token = *cur_pat++;
 
 				if (!token)
 					break;
@@ -160,27 +171,29 @@ bool CdmoLoader::load(istream &f, const char *filename)
 				// note + instrument ?
 				if (token & 32)
 				{
-					unsigned char bufbyte = *ibuf++;
+					unsigned char bufbyte = *cur_pat++;
 
 					pattern[i][j][chan].note = bufbyte & 15;
 					pattern[i][j][chan].oct = bufbyte >> 4;
-					pattern[i][j][chan].instrument = *ibuf++;
+					pattern[i][j][chan].instrument = *cur_pat++;
 				}
 
 				// volume ?
 				if (token & 64)
 				{
-					pattern[i][j][chan].volume = *ibuf++;
+					pattern[i][j][chan].volume = *cur_pat++;
 				}
 
 				// command ?
 				if (token & 128)
 				{
-					pattern[i][j][chan].command = *ibuf++;
-					pattern[i][j][chan].info = *ibuf++;
+					pattern[i][j][chan].command = *cur_pat++;
+					pattern[i][j][chan].info = *cur_pat++;
 				}
 			}
 		}
+
+		ibuf += my_patlen[i];
 	}
 
 	delete module;
@@ -193,6 +206,16 @@ bool CdmoLoader::load(istream &f, const char *filename)
 std::string CdmoLoader::gettype()
 {
 	return std::string("TwinTeam (packed S3M)");
+}
+
+std::string CdmoLoader::getauthor()
+{
+/*
+  All available .DMO modules written by one composer. And because all .DMO
+  stuff was lost due to hd crash (TwinTeam guys said this), there are
+  never(?) be another.
+*/
+	return std::string("Benjamin GERARDIN");
 }
 
 /* -------- Private Methods ------------------------------- */

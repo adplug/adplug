@@ -31,6 +31,7 @@ class CdmoLoader: public Cs3mPlayer
 		bool			load(istream &f, const char *filename);
 
 		std::string		gettype();
+		std::string		getauthor();
 
 	private:
 
@@ -63,7 +64,7 @@ class CdmoLoader: public Cs3mPlayer
 			unsigned short	speed;
 			unsigned short	tempo;
 			unsigned char	panning[32];
-		} my_hdr;
+		};
 
 		struct dmo_instrument
 		{
@@ -72,6 +73,6 @@ class CdmoLoader: public Cs3mPlayer
 			unsigned char	dsk;
 			unsigned long	c2spd;
 			unsigned char	type;
-			unsigned char	data[11];
-		} my_ins;
+			unsigned char	data[12];
+		};
 };

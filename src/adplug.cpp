@@ -61,6 +61,7 @@
 #include "adtrack.h"
 #include "cff.h"
 #include "dtm.h"
+#include "dmo.h"
 
 // These players use C++ templates, which aren't supported by WATCOM C++
 #ifndef __WATCOMC__
@@ -97,6 +98,7 @@ static const struct Players {
   {CxadflashPlayer::factory}, {CxadhypPlayer::factory}, {CxadpsiPlayer::factory},
   {CxadratPlayer::factory}, {CxadhybridPlayer::factory}, {CfmcLoader::factory},
   {CmadLoader::factory}, {CcffLoader::factory}, {CdtmLoader::factory},
+  {CdmoLoader::factory},
 #ifndef __WATCOMC__
   {Cu6mPlayer::factory},
 #endif
