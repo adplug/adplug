@@ -47,7 +47,7 @@
 #endif
 #include "mkj.h"
 #include "dfm.h"
-#include "lds.h"
+//#include "lds.h"
 #include "bam.h"
 
 CPlayer *CAdPlug::load_sci(istream &f, char *fn, Copl *opl)
@@ -133,9 +133,9 @@ CPlayer *CAdPlug::factory(char *fn, Copl *opl)
 		if(!stricmp(strrchr(fn,'.')+1,"KSM")) {
 			p = new CksmPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
-		if(!stricmp(strrchr(fn,'.')+1,"LDS")) {
+/*		if(!stricmp(strrchr(fn,'.')+1,"LDS")) {
 			p = new CldsLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
-		}
+		} */
 	};
 
 	return 0;

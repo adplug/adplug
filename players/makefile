@@ -2,8 +2,7 @@ CXX             = c++
 CXXFLAGS        = -Wall
 CPPFLAGS        = -Dstricmp=strcasecmp
 PLAYERS		= protrack.o a2m.o amd.o d00.o dfm.o hsc.o hsp.o imf.o ksm.o \
-			mid.o mkj.o mtk.o rad.o raw.o s3m.o sa2.o sng.o u6m.o \
-			lds.o bam.o
+			mid.o mkj.o mtk.o rad.o raw.o s3m.o sa2.o sng.o u6m.o bam.o
 
 all: $(PLAYERS)
 
@@ -23,7 +22,7 @@ hsc.o: hsc.cpp hsc.h
 hsp.o: hsp.cpp hsp.h hsc.h
 imf.o: imf.cpp imf.h imfcrc.h
 ksm.o: ksm.cpp ksm.h
-lds.o: lds.cpp lds.h protrack.h
+#lds.o: lds.cpp lds.h protrack.h
 mid.o: mid.cpp mid.h mididata.h
 mkj.o: mkj.cpp mkj.h
 mtk.o: mtk.cpp mtk.h hsc.h

@@ -4,7 +4,7 @@ CXX = wpp386
 CXXFLAGS = -oneatx -oh -oi+ -ei -zp8 -5 -fpi87 -fp5 -zq
 CPPFLAGS = -dstd= -dstring=String
 
-PLAYERS = protrack.obj a2m.obj amd.obj d00.obj dfm.obj hsc.obj hsp.obj imf.obj ksm.obj mid.obj mkj.obj mtk.obj rad.obj raw.obj s3m.obj sa2.obj sng.obj lds.obj bam.obj
+PLAYERS = protrack.obj a2m.obj amd.obj d00.obj dfm.obj hsc.obj hsp.obj imf.obj ksm.obj mid.obj mkj.obj mtk.obj rad.obj raw.obj s3m.obj sa2.obj sng.obj bam.obj
 
 .cpp.obj:
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $[.
@@ -29,7 +29,7 @@ hsc.obj: hsc.cpp hsc.h
 hsp.obj: hsp.cpp hsp.h hsc.h
 imf.obj: imf.cpp imf.h imfcrc.h
 ksm.obj: ksm.cpp ksm.h
-lds.obj: lds.cpp lds.h protrack.h
+#lds.obj: lds.cpp lds.h protrack.h
 mid.obj: mid.cpp mid.h mididata.h
 mkj.obj: mkj.cpp mkj.h
 mtk.obj: mtk.cpp mtk.h hsc.h

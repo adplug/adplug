@@ -11,11 +11,33 @@ library, mainly written in C++. AdPlug plays sound data, originally created
 for the AdLib (OPL2) audio board, on top of an OPL2 emulator or by using the
 real hardware. No OPL chip is required for playback.
 
+Supported platforms:
+--------------------
+AdPlug currently is tested and compiles well under the following platforms and
+compilers:
+
+Platform		Compiler(s)
+--------		-----------
+Windows		Visual C++ 6.0
+MS-DOS		WATCOM C/C++ 11.0
+Linux			gcc 2.95.2
+
+The library builds either as dynamic or as static link library, depending on
+the host OS. The following defaults apply:
+
+Host OS	Library
+-------	-------
+Linux		dynamic
+Windows	static
+DOS		static
+
 Supported formats:
 ------------------
 AdPlug implements unique file replayers for each supported format in order to
 achieve the best possible replay quality. Below is a list of all currently
 supported file formats along with information about possible replay issues.
+Players marked as "preliminary" aren't considered final by the author and may
+contain many replay issues, but are included for testing purposes anyway.
 
 - A2M: AdLib Tracker 2 by subz3ro
   - Unimplemented commands (version 1-4): FF1 - FF9, FAx - FEx
@@ -23,7 +45,7 @@ supported file formats along with information about possible replay issues.
   - In version 5-8 files, instrument panning & the flags byte is ignored
   - Only SixPack compressed or uncompressed files are supported
 - AMD: AMUSIC Adlib Tracker by Elyssis
-- BAM: Bob's Adlib Music Format
+- BAM: Bob's Adlib Music Format (preliminary)
   - Unimplemented: Recursive choruses
 - CMF: Creative Music File Format by Creative Technology
   - Unimplemented: AdLib rhythm mode
@@ -36,10 +58,10 @@ supported file formats along with information about possible replay issues.
 - KSM: Ken Silverman's Adlib Music Format
 - LAA: LucasArts AdLib Audio File Format by LucasArts
   - Bugs: Some volumes are a bit off
-- LDS: LOUDNESS Sound System
 - M: Ultima 6 Music Format
 - MID: MIDI Audio File Format
-- MKJ: MKJamz by M \ K Productions
+- MKJ: MKJamz by M \ K Productions (preliminary)
+  - Bugs: Still many replay flaws
 - MTK: MPU-401 Trakker by SuBZeR0
 - RAD: Reality ADlib Tracker by Reality
 - RAW: RdosPlay RAW file format by RDOS
@@ -51,3 +73,10 @@ supported file formats along with information about possible replay issues.
 - SCI: Sierra's AdLib Audio File Format
   - Bugs: Some instruments are messed up
 - SNG: SNGPlay by BUGSY of OBSESSION
+
+Known problems
+--------------
+Some files (especially SA2) will sound distorted through the emulator. This is
+a well-known "problem" with software mixing, hearable when the composer plays
+the same sound on multiple channels. Hardware mixing is unaffected by this
+issue.

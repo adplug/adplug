@@ -10,7 +10,7 @@ CPPFLAGS = -Dstricmp=strcasecmp
 LDFLAGS = -shared
 
 OBJS = adplug.o emuopl.o fmopl.o
-AUX = makefile COPYING CREDITS INSTALL README PLAYER_SDK
+AUX = makefile makefile.wat adplug.dsp COPYING CREDITS INSTALL README PLAYER_SDK CHANGES
 
 prefix = /usr/local
 libdir = $(prefix)/lib
@@ -30,8 +30,8 @@ dist:
 	mkdir $(distname)
 	mkdir $(distname)/players
 	cp *.cpp *.c *.h $(AUX) $(distname)
-	cp players/*.cpp players/*.h $(distname)/players
-	tar cfz $(distname).tar.gz $(distname)
+	cp players/*.cpp players/*.h players/makefile players/makefile.wat $(distname)/players
+	tar cfj $(distname).tar.bz2 $(distname)
 	rm -rf $(distname)
 
 install: all

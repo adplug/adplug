@@ -1,27 +1,43 @@
-Installation:
--------------
-After extraction, do as normal user:
+Installation (Windows):
+-----------------------
+After extraction, load the project file "adplug.dsp" into the Visual C++ GUI
+and build the project as usual with either Debug or Release configuration.
+
+Installation (MS-DOS):
+----------------------
+After extraction, do in the extraction directory:
+
+wmake /f makefile.wat
+
+This should create the library. Copy it and all headers to your default
+library and header locations and then do in the extraction directory:
+
+make clean
+
+or even:
+
+make distclean
+
+to remove all files created at compile time or even all eventually
+additional created files.
+
+Installation (Linux):
+---------------------
+After extraction, do in the extraction directory as normal user:
 
 make
 
-This should create the library in either dynamically or statically linkable
-form, depending on the host OS.
+This should create the library in dynamically linkable form. If you prefer it
+to be a static library, do as normal user:
 
-The following defaults apply:
+make static
 
-Host OS			Library
--------			-------
-Linux			dynamic
-Windows			dynamic
-DOS			static
-
-Under Linux, you can then do as superuser:
+You can then do as superuser:
 
 make install
 
 to install the library and headers to the right paths. The library will
-go to /usr/local/lib and the headers to /usr/include/adplug, by default. For
-other OSes, you have to install the files manually.
+go to /usr/local/lib and the headers to /usr/include/adplug, by default.
 
 After installing the files, you can additionally do as normal user:
 
@@ -34,8 +50,8 @@ make distclean
 to remove all files created at compile time or even all eventually
 additional created files.
 
-Uninstallation:
----------------
+Uninstallation (Linux):
+-----------------------
 Under Linux, it is possible to remove the library and headers from the
 system, by doing as superuser:
 

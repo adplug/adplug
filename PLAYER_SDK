@@ -1,8 +1,7 @@
-AdPlug Player mini SDK, by Simon Peter (dn.tlp@gmx.net)
+AdPlug Player mini-SDK, (c) 2001 Simon Peter <dn.tlp@gmx.net>
 
 Precautions:
 ------------
-
 Your player normally consists of two files (the .h & .cpp files) and you normally
 name them by the file extensions, your player handles. For example, the HSC player
 consists of the files hsc.cpp & hsc.h, because it handles .hsc files. This is the
@@ -16,7 +15,6 @@ and initialization work. These methods are declared inside opl.h.
 
 Main Work:
 ----------
-
 All you have to do now is to inherit the CPlayer class into your own player class
 and fill the now undone methods with code. You at least have to fill in the
 following methods:
