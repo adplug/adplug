@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -47,29 +47,39 @@
 #include "lds.h"
 #include "bam.h"
 #include "fmc.h"
-//#include "xad.h"
+#include "bmf.h"
+#include "flash.h"
+#include "hyp.h"
+#include "psi.h"
+#include "rat.h"
+#include "hybrid.h"
 #include "mad.h"
 #ifndef __WATCOMC__
 	#include "u6m.h"
-//	#include "rol.h"
+	#include "rol.h"
 #endif
 
-const unsigned short	CPlayer::note_table[12]	= {363,385,408,432,458,485,514,544,577,611,647,686};
-const unsigned char		CPlayer::op_table[9]	= {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 0x10, 0x11, 0x12};
+const unsigned short CPlayer::note_table[12] = {363,385,408,432,458,485,514,544,577,611,647,686};
+const unsigned char CPlayer::op_table[9] = {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 0x10, 0x11, 0x12};
+
+int CAdPlug::get_basepath_index(char *fn)
+{
+  int i;
+
+  for (i=strlen(fn)-1; i>=0; i--)
+    if (fn[i] == '/' || fn[i] == '\\')
+      break;
+
+  return ++i;
+}
 
 CPlayer *CAdPlug::load_sci(istream &f, char *fn, Copl *opl)
 {
 	CmidPlayer *mp = new CmidPlayer(opl);
 	char *pfn = new char [strlen(fn)+9];
-	int j=0;
 
 	strcpy(pfn,fn);
-	for (int i=strlen(pfn)-1; i>=0; i--)
-		if (pfn[i]=='/' || pfn[i]=='\\') {
-			j=i+1;
-			i=-1;
-		}
-	strcpy(pfn+j+3,"patch.003");
+	strcpy(pfn+get_basepath_index(fn)+3,"patch.003");
 	mp->set_sierra_insfile(pfn);
 	delete [] pfn;
 
@@ -84,20 +94,30 @@ CPlayer *CAdPlug::load_ksm(istream &f, char *fn, Copl *opl)
 {
 	CksmPlayer	*mp = new CksmPlayer(opl);
 	char		*pfn = new char [strlen(fn)+9];
-	int			j=0;
 
 	strcpy(pfn,fn);
-	for (int i=strlen(pfn)-1; i>=0; i--)
-		if (pfn[i]=='/' || pfn[i]=='\\') {
-			j=i+1;
-			i=-1;
-		}
-	strcpy(pfn+j,"insts.dat");
+	strcpy(pfn+get_basepath_index(fn),"insts.dat");
 	ifstream insf(pfn, ios::in | ios::binary);
 	delete [] pfn;
 	if(!insf.is_open())
 		return 0;
 	mp->loadinsts(insf);
+	if(mp->load(f))
+		return mp;
+	delete mp;
+	f.seekg(0);
+	return 0;
+}
+
+CPlayer *CAdPlug::load_rol(istream &f, char *fn, Copl *opl)
+{
+	CrolPlayer	*mp = new CrolPlayer(opl);
+	char		*pfn = new char [strlen(fn)+9];
+
+	strcpy(pfn,fn);
+	strcpy(pfn+get_basepath_index(fn),"standard.bnk");
+	mp->get_bnk_filename(std::string(pfn));
+	delete [] pfn;
 	if(mp->load(f))
 		return mp;
 	delete mp;
@@ -116,6 +136,11 @@ CPlayer *CAdPlug::factory(char *fn, Copl *opl)
 
 		if(!stricmp(strrchr(fn,'.')+1,"KSM"))
 			return load_ksm(f,fn,opl);
+
+#ifndef __WATCOMC__
+		if(!stricmp(strrchr(fn,'.')+1,"ROL"))
+			return load_rol(f,fn,opl);
+#endif
 
 		if((p = factory(f,opl)))
 			return p;
@@ -143,11 +168,6 @@ CPlayer *CAdPlug::factory(char *fn, Copl *opl)
 		if(!stricmp(strrchr(fn,'.')+1,"LDS")) {
 			p = new CldsLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
-#ifndef __WATCOMC__
-/*		if(!stricmp(strrchr(fn,'.')+1,"ROL")) {
-			p = new CrolPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
-		} */
-#endif
 	};
 
 	return 0;
@@ -169,7 +189,12 @@ CPlayer *CAdPlug::factory(istream &f, Copl *opl)
 	p = new CmkjPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 	p = new CdfmLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 	p = new CbamPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
-//	p = new CxadPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
+	p = new CxadbmfPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
+	p = new CxadflashPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
+	p = new CxadhypPlayer(opl);  if(p->load(f)) return p; delete p; f.seekg(0);
+	p = new CxadpsiPlayer(opl);  if(p->load(f)) return p; delete p; f.seekg(0);
+	p = new CxadratPlayer(opl);  if(p->load(f)) return p; delete p; f.seekg(0);
+	p = new CxadhybridPlayer(opl);  if(p->load(f)) return p; delete p; f.seekg(0);
 	p = new CfmcLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 	p = new CmadLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 

@@ -45,8 +45,8 @@ void CDiskopl::update(CPlayer *p)
 
 	if(p->getrefresh() != old_freq) {
 		old_freq = p->getrefresh();
-		del = wait = 18.2f / old_freq;
-		clock = 1192737/(old_freq*(wait+1));
+		del = wait = (unsigned int)(18.2f / old_freq);
+		clock = (unsigned short)(1192737/(old_freq*(wait+1)));
 		fputc(0,f); fputc(2,f);
 		fwrite(&clock,2,1,f);
 	}

@@ -38,7 +38,7 @@ bool CfmcLoader::load(istream &f)
     return false;
 
   // load order
-  f.read(order,256);
+  f.read((char *)order,256);
 
   f.ignore(2);
 

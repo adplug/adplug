@@ -186,7 +186,7 @@ void CrolPlayer::UpdateVoice( int const voice, CVoiceData &voiceData )
 
         if(  voiceData.next_volume_event < vEvents.size() )
         {
-            int const volume = 64.0f*(1.0f - volumeEvent.multiplier);
+            int const volume = (int)(64.0f*(1.0f - volumeEvent.multiplier));
 
             SetVolume( voice, volume );
 
@@ -381,9 +381,7 @@ bool CrolPlayer::load_voice_data( istream &f )
 {
     SBnkHeader bnk_header;
 
-//#error Hard code the standard.bnk path here...
-
-	ifstream   bnk_file("c:/standard.bnk", ios::in | ios::nocreate | ios::binary);
+    ifstream bnk_file(bnk_filename.c_str(), ios::in | ios::binary );
 
     if( bnk_file.is_open() )
     {
@@ -462,7 +460,8 @@ void CrolPlayer::load_instrument_events( istream &f, CVoiceData &voice,
         f.read( (char *)&event.time, sizeof(int16) );
         f.read( (char *)&event.name, 9 );
 
-        event.ins_index = load_rol_instrument( bnk_file, bnk_header, std::string(event.name) );
+	std::string event_name = event.name;
+        event.ins_index = load_rol_instrument( bnk_file, bnk_header, event_name );
 
         instrument_events.push_back( event );
 
@@ -570,7 +569,7 @@ int CrolPlayer::load_rol_instrument( istream &f, SBnkHeader const &header, std::
 
     if( range.first != range.second )
     {
-        streamoff const seekOffs = header.abs_offset_of_data + (range.first->index*kSizeofDataRecord);
+        int const seekOffs = header.abs_offset_of_data + (range.first->index*kSizeofDataRecord);
         f.seekg( seekOffs, ios::beg );
     }
 
@@ -593,7 +592,7 @@ int CrolPlayer::load_rol_instrument( istream &f, SBnkHeader const &header, std::
 
 int CrolPlayer::get_ins_index( std::string const &name ) const
 {
-    for(int i=0; i<ins_list.size(); ++i)
+    for(unsigned int i=0; i<ins_list.size(); ++i)
     {
         if( stricmp(ins_list[i].name.c_str(), name.c_str()) == 0 )
         {

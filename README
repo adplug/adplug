@@ -1,37 +1,54 @@
-AdPlug - Replayer for many OPL2/OPL3 audio file formats.
-Copyright (C) 1999, 2000, 2001 Simon Peter <dn.tlp@gmx.net>, et al.
+AdPlug - Replayer for many OPL2/OPL3 audio file formats
+
+  Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, et al.
+
+  adplay is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Website       : http://adplug.sourceforge.net
 Module Archive: http://www.chiptune.de
 
 Description:
 ------------
-AdPlug is a free, cross-platform, hardware independent AdLib sound player
+AdPlug is a free, multi-platform, hardware independent AdLib sound player
 library, mainly written in C++. AdPlug plays sound data, originally created
 for the AdLib (OPL2) audio board, on top of an OPL2 emulator or by using the
 real hardware. No OPL chip is required for playback.
 
 Supported platforms:
 --------------------
-AdPlug currently is tested and compiles well under the following platforms and
-compilers:
+AdPlug currently is tested to compile and run well under the following
+platforms and compilers:
 
 Platform     Compiler(s)
 --------     -----------
 Windows      Visual C++ 6.0, cygwin
 MS-DOS       WATCOM C/C++ 11.0
 Linux        GCC 2.x, GCC 3.x
-FreeBSD      GCC 3.x
+FreeBSD      GCC 2.x, GCC 3.x
 
-The library builds either as dynamic or as static link library, depending on
-the host OS. The following defaults apply:
+The library builds as dynamic and/or static link library, depending on
+the facilities provided by the host OS. These are autodetected. On Windows,
+using VC6, only a static link library is built right now.
 
-Host OS     Library
--------     -------
-FreeBSD     dynamic
-Linux       dynamic
-Windows     static
-DOS         static
+CVS and UNIX
+------------
+If you checked out from CVS and use UNIX, first run:
+
+./autogen.sh
+
+to generate the build cruft and get the configure script.
 
 Supported formats:
 ------------------
@@ -45,9 +62,10 @@ may contain many replay issues, but are included for testing purposes anyway.
   - Unimplemented commands (version 1-4): FF1 - FF9, FAx - FEx
   - Unimplemented commands (version 5-8): Gxy, Hxy, Kxy - &xy
   - In version 5-8 files, instrument panning & the flags byte is ignored
-  - Only SixPack compressed or uncompressed files are supported
+  - Only SixPack compressed and uncompressed files are supported
+  - All OPL3 functionality is absent (not possible with AdLib)
 - AMD: AMUSIC Adlib Tracker by Elyssis
-- BAM: Bob's Adlib Music Format
+- BAM: Bob's Adlib Music Format by Bob
 - CMF: Creative Music File Format by Creative Technology
   - Unimplemented: AdLib rhythm mode
 - D00: EdLib by Vibrants
@@ -55,13 +73,15 @@ may contain many replay issues, but are included for testing purposes anyway.
 - DFM: Digital-FM by R.Verhaag
 - HSC: HSC Adlib Composer by Hannes Seifert, HSC-Tracker by Electronic Rats
 - HSP: HSC Packed by Number Six / Aegis Corp.
-- IMF: Apogee IMF File Format
-- KSM: Ken Silverman's Adlib Music Format
+- IMF: Apogee IMF File Format by Apogee
+- KSM: Ken Silverman's Adlib Music Format by Ken Silverman
+  - Needs file 'insts.dat' in the same directory as loaded file
 - LAA: LucasArts AdLib Audio File Format by LucasArts
   - Bugs: Some volumes are a bit off
 - LDS: LOUDNESS Music Format (preliminary)
   - Bugs: Undocumented format, more to come.
-- M: Ultima 6 Music Format
+- M: Ultima 6 Music Format by Origin
+- MAD: Mlat Adlib Tracker
 - MID: MIDI Audio File Format
 - MKJ: MKJamz by M \ K Productions (preliminary)
   - Bugs: Still many replay flaws
@@ -69,18 +89,28 @@ may contain many replay issues, but are included for testing purposes anyway.
 - RAD: Reality ADlib Tracker by Reality
 - RAW: RdosPlay RAW file format by RDOS
   - Unimplemented: OPL3 register writes (not possible with AdLib)
+- ROL: AdLib Visual Composer by AdLib Inc. (preliminary)
+  - Needs file 'standard.bnk' in the same directory as loaded file
+  - Bugs: Severe replay issues with Tatsuyuki's OPL2 emulator
+    (can anybody help me out with this?! please!!)
 - S3M: Screamtracker 3 by Future Crew
   - Bugs: Extra Fine Slides (EEx, FEx) & Fine Vibrato (Uxy) are inaccurate
-- SAT: Surprise! Adlib Tracker by Surprise! Productions
 - SA2: Surprise! Adlib Tracker 2 by Surprise! Productions
-  - Unimplemented: Version 7 files (i don't have any)
-- SCI: Sierra's AdLib Audio File Format
+- SAT: Surprise! Adlib Tracker by Surprise! Productions
+- SCI: Sierra's AdLib Audio File Format by Sierra On-Line Inc.
+  - Needs file '???patch.003' in the same directory as loaded file, where
+    '???' are the first 3 characters of the loaded file
   - Bugs: Some instruments are messed up
 - SNG: SNGPlay by BUGSY of OBSESSION
+- SNG: Faust Music Creator by FAUST
+- XAD: eXotic ADlib Format by Riven the Mage
+- XMS: XMS-Tracker by MaDoKaN/E.S.G
 
-Known problems
---------------
+Known bugs and problems:
+------------------------
 Some files (especially SA2) will sound distorted through the emulator. This is
 a well-known "problem" with software mixing, hearable when the composer plays
 the same sound on multiple channels. Hardware mixing is unaffected by this
 issue.
+
+	- Simon Peter <dn.tlp@gmx.net>

@@ -20,8 +20,10 @@ Death Adder <death-adder@juno.com>:
 Mamiya <mamiya@users.sourceforge.net>:
 	- support for .SAT (early Surprise! Adlib Tracker) files
 
-Ken Silverman <kjs@lems.brown.edu>:
-	- YM3812 emulator development
-
 Akintunde Omitowoju <oplx@yahoo.com>:
 	- ROL player development
+
+Nikita V. Kalaganov <riven@ok.ru>:
+	- SNG, XAD and MAD player/loader development
+	- Custom XAD players development
+	- XMS detection support in AMD loader

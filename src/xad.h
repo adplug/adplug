@@ -48,10 +48,7 @@ public:
 
 protected:
 	virtual void xadplayer_rewind(unsigned int subsong) = 0;
-	virtual bool xadplayer_load(istream &f)
-	  {
-	    return true;
-	  }
+	virtual bool xadplayer_load(istream &f) = 0;
 	virtual void xadplayer_update() = 0;
 	virtual float xadplayer_getrefresh() = 0;
 	virtual std::string xadplayer_gettype() = 0;

@@ -88,7 +88,7 @@ bool CmadLoader::load(istream &f)
   }
 
   // load order
-  f.read(order,length);
+  f.read((char *)order,length);
 
   // fix order
   for(i=0;i<length;i++)

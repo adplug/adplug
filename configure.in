@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(adplug.cpp)
+AC_INIT(src/adplug.cpp)
 AM_INIT_AUTOMAKE(adplug, 1.2)
 AM_CONFIG_HEADER(config.h)
 AC_SUBST(VERSION)
@@ -31,4 +31,4 @@ AC_C_INLINE
 # Checks for library functions.
 AC_CHECK_FUNCS([memset pow select sqrt strchr strrchr strstr])
 
-AC_OUTPUT([Makefile])
+AC_OUTPUT([Makefile src/Makefile])

@@ -7,6 +7,7 @@
 #define H_ROLPLAYER
 
 #include <vector>
+#include <string>
 
 #include "player.h"
 
@@ -28,9 +29,14 @@ public:
     virtual bool  load(istream &f);
     virtual bool  update();
     virtual void  rewind(unsigned int subsong);	 // rewinds to specified subsong
-	virtual float getrefresh();			         // returns needed timer refresh rate
+    virtual float getrefresh();			         // returns needed timer refresh rate
 
     virtual std::string gettype() { return std::string("Adlib Visual Composer"); }
+
+    void get_bnk_filename(std::string fn)
+      {
+	bnk_filename = fn;
+      }
 
 private:
     typedef unsigned short    uint16;
@@ -137,12 +143,12 @@ private:
 
         bool              mForceNote : 1;
         int               mEventStatus;
-        int               current_note;
+        unsigned int      current_note;
         int               current_note_duration;
         int               mNoteDuration;
-        int               next_instrument_event;
-        int               next_volume_event;
-        int               next_pitch_event;
+        unsigned int      next_instrument_event;
+        unsigned int      next_volume_event;
+        unsigned int      next_pitch_event;
     };
 
     typedef struct
@@ -262,10 +268,11 @@ private:
     TVoiceData                  voice_data;
     std::vector<SUsedList>      ins_list;
 
-    int                         mNextTempoEvent;
+    unsigned int                mNextTempoEvent;
     int                         mCurrTick;
     int                         mTimeOfLastNote;
     float                       mRefresh;
+    std::string			bnk_filename;
 
     static char         bdRegister;
     static char         bxRegister[9];

@@ -17,31 +17,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * diskopl.h - Disk Writer OPL, by Simon Peter <dn.tlp@gmx.net>
+ * adplug.h - CAdPlug helper class declaration, by Simon Peter <dn.tlp@gmx.net>
  */
 
-#include <string>
-#include <stdio.h>
-#include "opl.h"
-#include "players/player.h"
+#include <iostream.h>
 
-class CDiskopl: public Copl
+#include "player.h"
+#include "opl.h"
+
+class CAdPlug
 {
 public:
-	CDiskopl(std::string filename);
-	~CDiskopl();
+	static CPlayer *factory(char *fn, Copl *opl);
+	static CPlayer *factory(istream &f, Copl *opl);
 
-	void update(CPlayer *p);
-
-	// template methods
-	void write(int reg, int val);
-	void init();
+	static unsigned long songlength(CPlayer *p, unsigned int subsong = 0xffff);
+	static void seek(CPlayer *p, unsigned long ms);
 
 private:
-	void diskwrite(int reg, int val);
+	static CPlayer *load_sci(istream &f, char *fn, Copl *opl);	// special loader for Sierra SCI file format
+	static CPlayer *load_ksm(istream &f, char *fn, Copl *opl);	// special loader for Ken Silverman's music format
+	static CPlayer *load_rol(istream &f, char *fn, Copl *opl);	// special loader for ROL file format
 
-	FILE			*f;
-	float			old_freq;
-	bool			touched;
-	unsigned char	del;
+	static int get_basepath_index(char *fn);
 };
