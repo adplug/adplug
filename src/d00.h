@@ -20,6 +20,9 @@
  * d00.h - D00 Player by Simon Peter (dn.tlp@gmx.net)
  */
 
+#ifndef H_D00
+#define H_D00
+
 #include "player.h"
 
 class Cd00Player: public CPlayer
@@ -101,3 +104,5 @@ private:
 	void playnote(unsigned char chan);
 	void vibrato(unsigned char chan);
 };
+
+#endif

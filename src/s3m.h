@@ -20,6 +20,9 @@
  * s3m.h - AdLib S3M Player by Simon Peter (dn.tlp@gmx.net)
  */
 
+#ifndef H_S3M
+#define H_S3M
+
 #include "player.h"
 
 class Cs3mPlayer: public CPlayer
@@ -96,3 +99,5 @@ private:
 	void vibrato(unsigned char chan, unsigned char info);
 	void tone_portamento(unsigned char chan, unsigned char info);
 };
+
+#endif
