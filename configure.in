@@ -1,5 +1,5 @@
 # Tell autoconf we're compiling a C++ library, using automake & libtool
-AC_INIT(adplug,1.4)
+AC_INIT(adplug,1.5)
 AC_CONFIG_SRCDIR(src/adplug.cpp)
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile adplugdb/Makefile])
 AM_INIT_AUTOMAKE

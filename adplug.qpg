@@ -24,8 +24,8 @@
    <QPG:Values>
       <QPG:Files>
          <QPG:Add file="./COPYING" install="LicenseUrl/" handling="repdata"/>
-         <QPG:Add permissions="0755" file="./src/.libs/libadplug-1.4.so" install="/opt/lib/"/>
-         <QPG:Add filetype="symlink" file="libadplug.so" install="/opt/lib/" linkto="libadplug-1.4.so"/>
+         <QPG:Add permissions="0755" file="./src/.libs/libadplug-1.5.so" install="/opt/lib/"/>
+         <QPG:Add filetype="symlink" file="libadplug.so" install="/opt/lib/" linkto="libadplug-1.5.so"/>
          <QPG:Add permissions="0644" file="./src/.libs/libadplug.a" install="/opt/lib/"/>
          <QPG:Add permissions="0644" file="./AUTHORS" install="/usr/doc/libadplug/"/>
          <QPG:Add permissions="0644" file="./BUGS" install="/usr/doc/libadplug/"/>
@@ -121,7 +121,7 @@
                <QPM:ProductDescriptionEmbedURL/>
             </QPM:ProductDescription>
             <QPM:ReleaseDescription>
-               <QPM:ReleaseVersion>1.4</QPM:ReleaseVersion>
+               <QPM:ReleaseVersion>1.5</QPM:ReleaseVersion>
                <QPM:ReleaseUrgency>Medium</QPM:ReleaseUrgency>
                <QPM:ReleaseStability>Stable</QPM:ReleaseStability>
                <QPM:ReleaseNoteMinor/>

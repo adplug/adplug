@@ -1,5 +1,8 @@
 This is a brief overview of user-visible changes in AdPlug.
 
+Changes for version 1.5:
+	- None yet.
+
 Changes for version 1.4:
 	- Documentation changed into Texinfo format.
 	- New, modularized file loading framework.
