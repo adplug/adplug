@@ -29,10 +29,10 @@
  * GNU textutils package.
  *
  * DISCLAIMER:
- * These refresh rates and filenames in the comments are by no means meant
- * to be exact or complete. They were determined mostly by listening to the
- * original game's music and then guessing the right values. Contributions
- * to this list are always welcome!
+ * These refresh rates and the filenames in the comments are meant to be as
+ * exact and complete as possible, but i can't guarantee this. They were
+ * determined mostly by listening to the original game's music and then
+ * guessing the right values. Contributions to this list are always welcome!
  */
 
 static const struct {
@@ -62,7 +62,26 @@ static const struct {
 	// Duke Nukem 2
 	{144795658u,24804,280.0f},	// dn2_1.imf
 	{2588111802u,34768,280.0f},	// dn2_2.imf
-	{3609219510u,8736,280.0f},	// Dukeiia.imf
+	{3609219510u,8736,280.0f},	// DUKEIIA.IMF
+	{2783522222u,29092,280.0f},	// BEGONEA.IMF
+	{999679620u,3664,280.0f},	// CALM.IMF
+	{3831015646u,29368,280.0f},	// DEPTHSA.IMF
+	{104476740u,24704,280.0f},	// DUKINA.IMF
+	{469972485u,3028,280.0f},	// FANFAREA.IMF
+	{2780917854u,34928,280.0f},	// FIGHTA.IMF
+	{1080121157u,28000,280.0f},	// HESBACKA.IMF
+	{3770231366u,27548,280.0f},	// KICKBUTA.IMF
+	{1941023526u,14632,280.0f},	// KINGDUKA.IMF
+	{4264957580u,36968,280.0f},	// KISGIRLA.IMF
+	{3863630130u,2084,280.0f},	// MENUSNG2.IMF
+	{4057699634u,11720,280.0f},	// NEVRENDA.IMF
+	{2087274631u,34668,280.0f},	// NUKEMANA.IMF
+	{1556209704u,8724,280.0f},	// OPNGATEA.IMF
+	{1901621754u,27116,280.0f},	// PROWLA.IMF
+	{3358704029u,10028,280.0f},	// RANGEA.IMF
+	{3398203899u,29508,280.0f},	// SQUEAKA.IMF
+	{3306298101u,16724,280.0f},	// UBDEADA.IMF
+	{159655716u,24432,280.0f},	// WINNINGA.IMF
 
 	// Commander Keen 4-6
 	{3682452985u,6324,560.44f},	// 2FUTURE.IMF
