@@ -16,3 +16,6 @@ AdPlug To Do List:
 - Add some index entries to documentation. [dynamite]
 
 - Implement OPL3 support using YMF262 emulator from MAME. [dynamite]
+
+- Split out endian-unclean players of the main test case and make them
+  another one. [dynamite]

@@ -11,10 +11,9 @@ Phil Hassey <philhassey@hotmail.com>:
     - LAA: LucasArts AdLib Audio File Format
 
 Marc Winterrowd <nodling@yahoo.com>:
-  - Origin Music (.M) player development
+  - M: Origin Music player development
 
-Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>,
-Jarek Burczynski <bujar@mame.net>:
+Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>:
   - First YM3812 emulator development
 
 Ken Silverman <kjs@lems.brown.edu>:
@@ -28,7 +27,7 @@ Mamiya <mamiya@users.sourceforge.net>:
   - support for .SAT (early Surprise! Adlib Tracker) files
 
 Akintunde Omitowoju <oplx@yahoo.com>:
-  - AdLib Visual Composer (.ROL) player development
+  - ROL: AdLib Visual Composer player development
 
 Nikita V. Kalaganov <riven@ok.ru>:
   - Player development:
@@ -39,7 +38,7 @@ Nikita V. Kalaganov <riven@ok.ru>:
     - CFF: BoomTracker 4.0
     - DTM: DeFy Adlib Tracker
   - Scream Tracker 3 loader development:
-    - DMO: Twin TrackPlayer
+    - DMO: TwinTrack
   - XMS-Tracker detection support in AMD loader
 
 Sjoerd van der Berg <harekiet@zophar.net>:
@@ -52,3 +51,11 @@ Goetz Waschk <waschk@informatik.uni-rostock.de>:
 Mike Gorchak <mike@malva.ua>:
   - QNX packages
   - QNX qpg file
+
+Tyler Montbriand <tsm@accesscomm.ca>:
+  - AMD64 (x86_64) fixes
+  - ROL: Added pitch handling
+
+Borg No. One <borg_no.one@gmx.de>:
+  - Many thanks for digging out the original author (Andras Molnar) of the
+    LOUDNESS Sound System and managing to get the sources from him.
