@@ -1,0 +1,12 @@
+# AdPlug Makefile for WATCOM C/C++ 11.x
+# Copyright (c) 2002 Simon Peter <dn.tlp@gmx.net>
+
+SUBDIRS = src
+
+AUX = doc\*.* README AUTHORS NEWS COPYING TODO ChangeLog
+DIST = src\*.c src\*.cpp src\*.h src\Makefile.bt $(AUX) INSTALL
+BINARYDIST = src\*.h src\adplug.lib $(AUX)
+
+distfile = adplg12s.zip
+binarydistfile = adplug12.zip
+installfile = INSTALL.dos

@@ -21,6 +21,12 @@
   xad.cpp - XAD shell player by Riven the Mage <riven@ok.ru>
 */
 
+// Redefine this, if you want the debug output to go elsewhere.
+// Under DOS/Windows, using "CON:" as filename will log to the (debug) console.
+#ifdef _DEBUG
+#define XAD_DEBUG_FILE	"xad.log"
+#endif
+
 #include "xad.h"
 #include "debug.h"
 
@@ -29,7 +35,7 @@
 CxadPlayer::CxadPlayer(Copl * newopl) : CPlayer(newopl)
 {
 #ifdef _DEBUG
-  LogOpen("xad.log");
+  LogOpen(XAD_DEBUG_FILE);
 #endif
 
   tune = 0;

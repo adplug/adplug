@@ -1,0 +1,7 @@
+Installation:
+-------------
+Refer to the appropriate INSTALL files for your build system:
+
+INSTALL.unix    All UNIX builds, including cygwin
+INSTALL.win32   Microsoft Visual C++ builds
+INSTALL.dos     WATCOM C/C++ builds

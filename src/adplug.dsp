@@ -51,6 +51,11 @@ BSC32=bscmake.exe
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PostBuild_Desc=Installing library and headers...
+PostBuild_Cmds=call vc6inst l "Release\adplug.lib"	call vc6inst i *.h adplug
+# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "adplug - Win32 Debug"
 
@@ -75,6 +80,11 @@ BSC32=bscmake.exe
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"Debug\adplugd.lib"
+# Begin Special Build Tool
+SOURCE="$(InputPath)"
+PostBuild_Desc=Installing library and headers...
+PostBuild_Cmds=call vc6inst l "Debug\adplugd.lib"	call vc6inst i *.h adplug
+# End Special Build Tool
 
 !ENDIF 
 
