@@ -39,6 +39,10 @@
 #  endif
 #endif
 
+#ifndef HAVE_MKDIR
+#  define HAVE_MKDIR  0
+#endif
+
 #include "../src/adplug.h"
 #include "../src/silentopl.h"
 #include "../src/database.h"
@@ -82,7 +86,7 @@ static const struct {
 };
 
 static struct {
-  std::string				db_file;
+  char				*db_file;
   CAdPlugDatabase::CRecord::RecordType	rtype;
   int					message_level;
   bool					usedefaultdb, usercomment;
@@ -239,7 +243,7 @@ static void db_error(bool dbokay)
 /* Checks if database is open. Exits program otherwise */
 {
   if(!dbokay) {	// Database could not be opened
-    message(MSG_ERROR, "database could not be opened -- %s", cfg.db_file.c_str());
+    message(MSG_ERROR, "database could not be opened -- %s", cfg.db_file);
     exit(EXIT_FAILURE);
   }
 }
@@ -247,16 +251,26 @@ static void db_error(bool dbokay)
 static void db_save(void)
 /* Saves database to file, making path if it doesn't exist yet. */
 {
+#if HAVE_MKDIR
   std::string savedir;
+#endif
 
   if(!mydb.save(cfg.db_file)) {
+#if HAVE_MKDIR
     if(cfg.homedir) {
       savedir = cfg.homedir; savedir += "/" ADPLUG_CONFDIR;
       mkdir(savedir.c_str(), 0755);
       if(mydb.save(cfg.db_file)) return;
     }
-    message(MSG_ERROR, "could not save database -- %s", cfg.db_file.c_str());
+#endif
+    message(MSG_ERROR, "could not save database -- %s", cfg.db_file);
   }
+}
+
+static void shutdown(void)
+{
+  // Free userdb variable, if applicable
+  if(cfg.homedir && !cfg.usedefaultdb) free(cfg.db_file);
 }
 
 /***** Main program *****/
@@ -267,8 +281,10 @@ int main(int argc, char *argv[])
   bool		dbokay;
   unsigned int	i;
 
-  // Extract program name from argv[0]
-  program_name = strrchr(argv[0], '/') ? strrchr(argv[0], '/') + 1 : argv[0];
+  // Init
+  program_name = strrchr(argv[0], '/') ? strrchr(argv[0], '/') + 1 :
+	(strrchr(argv[0], '\\') ? strrchr(argv[0], '\\') + 1 : argv[0]);
+  atexit(shutdown);
 
   // Parse options
   while((opt = getopt(argc, argv, "d:t:qvhVsc")) != -1)
@@ -311,12 +327,15 @@ int main(int argc, char *argv[])
   // Try user's home directory first, before trying the default location.
   cfg.homedir = getenv("HOME");
   if(cfg.homedir && !cfg.usedefaultdb) {
-    cfg.db_file = cfg.homedir; cfg.db_file += "/" ADPLUG_CONFDIR "/";
-    cfg.db_file += ADPLUGDB_FILE;
+    cfg.db_file = (char *)malloc(strlen(cfg.homedir) + strlen(ADPLUG_CONFDIR) +
+			 					 strlen(ADPLUGDB_FILE) + 3);
+    strcpy(cfg.db_file, cfg.homedir);
+	strcat(cfg.db_file, "/" ADPLUG_CONFDIR "/");
+	strcat(cfg.db_file, ADPLUGDB_FILE);
   }
 
   // Load database file
-  message(MSG_DEBUG, "using database -- %s", cfg.db_file.c_str());
+  message(MSG_DEBUG, "using database -- %s", cfg.db_file);
   dbokay = mydb.load(cfg.db_file);
 
   // Parse commands
@@ -373,4 +392,6 @@ int main(int argc, char *argv[])
     message(MSG_ERROR, "unknown command -- %s", argv[optind]);
     exit(EXIT_FAILURE);
   }
+
+  return EXIT_SUCCESS;
 }

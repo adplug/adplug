@@ -149,6 +149,22 @@ extern int _getopt_internal (int __argc, char *const *__argv,
 		             const struct option *__longopts, int *__longind,
 			     int __long_only);
 # endif
+#elif defined(_MSC_VER) && _MSC_VER /* using MS Visual C++ */
+extern int getopt (int, char **, const char *);
+
+# ifndef __need_getopt
+extern int getopt_long (int, char **, const char *,
+		        const struct option *, int *);
+extern int getopt_long_only (int, char **,
+			     const char *,
+		             const struct option *, int *);
+
+/* Internal only.  Users should not call this directly.  */
+extern int _getopt_internal (int, char **,
+			     const char *,
+		             const struct option *, int *,
+			     int);
+# endif
 #else /* not __STDC__ */
 extern int getopt ();
 # ifndef __need_getopt

@@ -118,22 +118,18 @@ SOURCE=.\analopl.cpp
 # Begin Source File
 
 SOURCE=.\bam.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\bmf.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\cff.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\d00.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -146,7 +142,6 @@ SOURCE=.\debug.c
 # Begin Source File
 
 SOURCE=.\dfm.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -155,12 +150,10 @@ SOURCE=.\diskopl.cpp
 # Begin Source File
 
 SOURCE=.\dmo.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\dtm.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -169,12 +162,10 @@ SOURCE=.\emuopl.cpp
 # Begin Source File
 
 SOURCE=.\flash.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\fmc.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -192,17 +183,14 @@ SOURCE=.\hsc.cpp
 # Begin Source File
 
 SOURCE=.\hsp.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\hybrid.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\hyp.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -211,32 +199,26 @@ SOURCE=.\imf.cpp
 # Begin Source File
 
 SOURCE=.\ksm.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\lds.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\mad.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\mid.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\mkj.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\mtk.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -253,22 +235,18 @@ SOURCE=.\protrack.cpp
 # Begin Source File
 
 SOURCE=.\psi.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\rad.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\rat.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\raw.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -282,12 +260,10 @@ SOURCE=.\rol.cpp
 # Begin Source File
 
 SOURCE=.\s3m.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\sa2.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -296,12 +272,10 @@ SOURCE=.\sng.cpp
 # Begin Source File
 
 SOURCE=.\u6m.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\xad.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # End Group
 # Begin Group "Header-Dateien"
@@ -385,6 +359,10 @@ SOURCE=.\fmopl.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\fprovide.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\hsc.h
 # End Source File
 # Begin Source File
@@ -442,6 +420,10 @@ SOURCE=.\opl.h
 # Begin Source File
 
 SOURCE=.\player.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\players.h
 # End Source File
 # Begin Source File
 
