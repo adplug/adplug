@@ -3,10 +3,10 @@
 
 SUBDIRS = src
 
-AUX = doc\*.* README AUTHORS NEWS COPYING TODO ChangeLog
+AUX = doc\*.ms README AUTHORS NEWS COPYING TODO ChangeLog
 DIST = src\*.c src\*.cpp src\*.h src\Makefile.bt $(AUX) INSTALL
 BINARYDIST = src\*.h src\adplug.lib $(AUX)
 
-distfile = adplg12s.zip
-binarydistfile = adplug12.zip
+distfile = adplg13s.zip
+binarydistfile = adplug13.zip
 installfile = INSTALL.dos
