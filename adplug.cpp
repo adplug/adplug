@@ -42,7 +42,7 @@
 #include "imf.h"
 #include "sng.h"
 #include "ksm.h"
-#ifndef ADPLAY
+#ifndef __WATCOMC__
 	#include "u6m.h"
 #endif
 #include "mkj.h"
@@ -113,7 +113,7 @@ CPlayer *CAdPlug::factory(char *fn, Copl *opl)
 		if((p = factory(f,opl)))
 			return p;
 
-#ifndef ADPLAY
+#ifndef __WATCOMC__
 		if(!stricmp(strrchr(fn,'.')+1,"M")) {
 			p = new Cu6mPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}

@@ -1,0 +1,9 @@
+This is just a brief overview of changes in AdPlug. For a complete list of
+changes, look into the file ChangeLog.
+
+Changes for version 1.1:
+	Added MKJ, DFM, LDS and BAM players.
+	Removed Ken Silverman's YM3812 emulator due to portability issues.
+	Fixed memory leak in SNG player.
+	Made AdPlug a real library.
+	Added lots of documentation.

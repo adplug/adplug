@@ -2,18 +2,13 @@ AdPlug is copyright (C) 1999, 2000, 2001 Simon Peter <dn.tlp@gmx.net>, et al.
 
 Additional Credits:
 -------------------
-
 Phil Hassey <philhassey@hotmail.com>:
 	- mid.cpp development
-	- much help with the interface design
 
 Marc Winterrowd <nodling@yahoo.com>:
 	- u6m.cpp development
 
 Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>:
-	- ym3812 emulator development
-
-Ken Silverman <kjs@lems.brown.edu>:
 	- ym3812 emulator development
 
 Death Adder <death-adder@juno.com>:

@@ -21,8 +21,10 @@ supported file formats along with information about possible replay issues.
   - Unimplemented commands (version 1-4): FF1 - FF9, FAx - FEx
   - Unimplemented commands (version 5-8): Gxy, Hxy, Kxy - &xy
   - In version 5-8 files, instrument panning & the flags byte is ignored
-  - Only SixPack or uncompressed files are supported
+  - Only SixPack compressed or uncompressed files are supported
 - AMD: AMUSIC Adlib Tracker by Elyssis
+- BAM: Bob's Adlib Music Format
+  - Unimplemented: Recursive choruses
 - CMF: Creative Music File Format by Creative Technology
   - Unimplemented: AdLib rhythm mode
 - D00: EdLib by Vibrants
@@ -31,10 +33,10 @@ supported file formats along with information about possible replay issues.
 - HSC: HSC Adlib Composer by Hannes Seifert, HSC-Tracker by Electronic Rats
 - HSP: HSC Packed by Number Six / Aegis Corp.
 - IMF: Apogee IMF File Format
-- KSM: Ken Silverman's Music Format
+- KSM: Ken Silverman's Adlib Music Format
 - LAA: LucasArts AdLib Audio File Format by LucasArts
   - Bugs: Some volumes are a bit off
-- LDS: Loudness Music System
+- LDS: LOUDNESS Sound System
 - M: Ultima 6 Music Format
 - MID: MIDI Audio File Format
 - MKJ: MKJamz by M \ K Productions

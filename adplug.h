@@ -22,7 +22,7 @@
 
 #include <iostream.h>
 
-#include "./players/player.h"
+#include "players/player.h"
 #include "opl.h"
 
 #define DFLSUBSONG		0					// default subsong to start with

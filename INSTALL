@@ -1,0 +1,47 @@
+Installation:
+-------------
+After extraction, do as normal user:
+
+make
+
+This should create the library in either dynamically or statically linkable
+form, depending on the host OS.
+
+The following defaults apply:
+
+Host OS			Library
+-------			-------
+Linux			dynamic
+Windows			dynamic
+DOS			static
+
+Under Linux, you can then do as superuser:
+
+make install
+
+to install the library and headers to the right paths. The library will
+go to /usr/local/lib and the headers to /usr/include/adplug, by default. For
+other OSes, you have to install the files manually.
+
+After installing the files, you can additionally do as normal user:
+
+make clean
+
+or even:
+
+make distclean
+
+to remove all files created at compile time or even all eventually
+additional created files.
+
+Uninstallation:
+---------------
+Under Linux, it is possible to remove the library and headers from the
+system, by doing as superuser:
+
+make uninstall
+
+This will remove the files from the default paths (/usr/local/lib and
+/usr/include/adplug).
+
+For other OSes, you have to remove the files manually.
