@@ -90,33 +90,33 @@ int main(int argc, char *argv[])
 {
   if(!testplayer("SONG1.sng")) return EXIT_FAILURE;	// Adlib Tracker
   if(!testplayer("2001.MKJ")) return EXIT_FAILURE;	// MK-Jamz
-  if(!testplayer("ADAGIO.DFM")) return EXIT_FAILURE;	// 
-  if(!testplayer("adlibsp.s3m")) return EXIT_FAILURE;	// 
-  if(!testplayer("ALLOYRUN.RAD")) return EXIT_FAILURE;	// 
-  if(!testplayer("ARAB.BAM")) return EXIT_FAILURE;	// 
-  if(!testplayer("BEGIN.KSM")) return EXIT_FAILURE;	// 
-  if(!testplayer("BOOTUP.M")) return EXIT_FAILURE;	// 
-  if(!testplayer("CHILD1.XSM")) return EXIT_FAILURE;	// 
-  if(!testplayer("DTM-TRK1.DTM")) return EXIT_FAILURE;	// 
-  if(!testplayer("fdance03.dmo")) return EXIT_FAILURE;	// 
-  if(!testplayer("ice_think.sci")) return EXIT_FAILURE;	// 
-  if(!testplayer("inc.raw")) return EXIT_FAILURE;	// 
-  //  if(!testplayer("loudness.lds")) return EXIT_FAILURE;	// 
-  if(!testplayer("MARIO.A2M")) return EXIT_FAILURE;	// 
-  if(!testplayer("mi2_big_tree1.laa")) return EXIT_FAILURE;	// 
-  if(!testplayer("michaeld.cmf")) return EXIT_FAILURE;	// 
-  if(!testplayer("PLAYMUS1.SNG")) return EXIT_FAILURE;	// 
-  if(!testplayer("rat.xad")) return EXIT_FAILURE;	// 
-  if(!testplayer("REVELAT.SNG")) return EXIT_FAILURE;	// 
-  if(!testplayer("SAILOR.CFF")) return EXIT_FAILURE;	// 
-  if(!testplayer("samurai.dro")) return EXIT_FAILURE;	// 
-  if(!testplayer("SCALES.SA2")) return EXIT_FAILURE;	// 
-  if(!testplayer("SMKEREM.HSC")) return EXIT_FAILURE;	// 
-  if(!testplayer("TOCCATA.MAD")) return EXIT_FAILURE;	// 
-  if(!testplayer("TUBES.SAT")) return EXIT_FAILURE;	// 
-  if(!testplayer("TU_BLESS.AMD")) return EXIT_FAILURE;	// 
-  if(!testplayer("VIB_VOL3.D00")) return EXIT_FAILURE;	// 
-  if(!testplayer("WONDERIN.IMF")) return EXIT_FAILURE;	// 
+  if(!testplayer("ADAGIO.DFM")) return EXIT_FAILURE;	// Digital-FM
+  if(!testplayer("adlibsp.s3m")) return EXIT_FAILURE;	// Scream Tracker 3
+  if(!testplayer("ALLOYRUN.RAD")) return EXIT_FAILURE;	// Reality AdLib Tracker
+  if(!testplayer("ARAB.BAM")) return EXIT_FAILURE;	// Bob's AdLib Music
+  if(!testplayer("BEGIN.KSM")) return EXIT_FAILURE;	// Ken Silverman
+  if(!testplayer("BOOTUP.M")) return EXIT_FAILURE;	// Ultima 6
+  if(!testplayer("CHILD1.XSM")) return EXIT_FAILURE;	// eXtra Simple Music
+  if(!testplayer("DTM-TRK1.DTM")) return EXIT_FAILURE;	// DeFy Adlib Tracker
+  if(!testplayer("fdance03.dmo")) return EXIT_FAILURE;	// TwinTrack
+  if(!testplayer("ice_think.sci")) return EXIT_FAILURE;	// Sierra
+  if(!testplayer("inc.raw")) return EXIT_FAILURE;	// RAW
+  //  if(!testplayer("loudness.lds")) return EXIT_FAILURE;	// Loudness
+  if(!testplayer("MARIO.A2M")) return EXIT_FAILURE;	// AdLib Tracker 2
+  if(!testplayer("mi2_big_tree1.laa")) return EXIT_FAILURE;	// LucasArts
+  if(!testplayer("michaeld.cmf")) return EXIT_FAILURE;	// Creative Music Format
+  if(!testplayer("PLAYMUS1.SNG")) return EXIT_FAILURE;	// SNGPlay
+  if(!testplayer("rat.xad")) return EXIT_FAILURE;	// XAD
+  if(!testplayer("REVELAT.SNG")) return EXIT_FAILURE;	// Faust Music Creator
+  if(!testplayer("SAILOR.CFF")) return EXIT_FAILURE;	// Boomtracker
+  if(!testplayer("samurai.dro")) return EXIT_FAILURE;	// DOSBox
+  if(!testplayer("SCALES.SA2")) return EXIT_FAILURE;	// Surprise! Adlib Tracker 2
+  if(!testplayer("SMKEREM.HSC")) return EXIT_FAILURE;	// HSC-Tracker
+  if(!testplayer("TOCCATA.MAD")) return EXIT_FAILURE;	// Mlat Adlib Tracker
+  if(!testplayer("TUBES.SAT")) return EXIT_FAILURE;	// Surprise! Adlib Tracker
+  if(!testplayer("TU_BLESS.AMD")) return EXIT_FAILURE;	// AMUSIC
+  if(!testplayer("VIB_VOL3.D00")) return EXIT_FAILURE;	// EdLib Packed
+  if(!testplayer("WONDERIN.IMF")) return EXIT_FAILURE;	// Apogee
 
   return EXIT_SUCCESS;
 }
