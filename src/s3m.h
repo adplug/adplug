@@ -69,7 +69,7 @@ protected:
 		unsigned char chanset[32];
 	};
 
-	struct {
+	struct s3minst {
 		unsigned char type;
 		char filename[15];
 		unsigned char d00,d01,d02,d03,d04,d05,d06,d07,d08,d09,d0a,d0b,volume,dsk,dummy[2];
