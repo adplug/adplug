@@ -171,6 +171,15 @@ bool CmodPlayer::update()
 				vol_down(chan,info2);
 			setvolume(chan);
 			break;
+		case 28:
+			if (info1) {
+				slide_up(chan,1); channel[chan].info1--;
+			}
+			if (info2) {
+				slide_down(chan,1); channel[chan].info2--;
+			}
+			setfreq(chan);
+			break;
 		}
 	}
 
@@ -204,7 +213,7 @@ bool CmodPlayer::update()
 
                 AdPlug_LogWrite("%3d%3d%2X%2X%2X|", tracks[track][row].note,
 			 tracks[track][row].inst, tracks[track][row].command,
-			 tracks[track][row].param2, tracks[track][row].param1);
+			 tracks[track][row].param1, tracks[track][row].param2);
 
 		donote = 0;
 		if(tracks[track][row].inst) {
@@ -406,6 +415,9 @@ void CmodPlayer::rewind(unsigned int subsong)
   songend = del = ord = rw = regbd = 0;
   tempo = bpm; speed = initspeed;
 
+  // Reset channel data
+  memset(channel,0,sizeof(Channel)*nchans);
+
   // Compute number of patterns, if needed
   if(!nop)
     for(i=0;i<length;i++)
@@ -463,7 +475,6 @@ bool CmodPlayer::realloc_patterns(unsigned long pats, unsigned long rows, unsign
   trackord = new unsigned short *[pats];
   for(i=0;i<pats;i++) trackord[i] = new unsigned short[chans];
   channel = new Channel[chans];
-  memset(channel,0,sizeof(Channel)*chans);
 
   // initialize new patterns
   for(i=0;i<pats*chans;i++) memset(tracks[i],0,sizeof(Tracks)*rows);
