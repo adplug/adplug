@@ -10,8 +10,6 @@ cff.cpp dtm.cpp dmo.cpp
 libadplug_la_LDFLAGS = -release @VERSION@
 
 AM_CPPFLAGS = -Dstricmp=strcasecmp
-AM_CFLAGS = -Wall
-AM_CXXFLAGS = -Wall
 
 pkginclude_HEADERS = adplug.h emuopl.h fmopl.h silentopl.h opl.h diskopl.h \
 a2m.h amd.h bam.h d00.h dfm.h hsc.h hsp.h imf.h ksm.h lds.h mid.h mkj.h \

@@ -3,6 +3,7 @@ AC_INIT(adplug,1.3)
 AC_CONFIG_SRCDIR(src/adplug.cpp)
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile])
 AM_INIT_AUTOMAKE
+AM_MAINTAINER_MODE
 AM_PROG_LIBTOOL
 AC_LANG(C++)
 

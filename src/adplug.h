@@ -1,6 +1,6 @@
 /*
- * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  *
  * adplug.h - CAdPlug helper class declaration, by Simon Peter <dn.tlp@gmx.net>
  */
@@ -37,4 +36,9 @@ public:
 	static std::string get_version();
 
 	static void debug_output(std::string filename);
+
+private:
+	static const struct Players {
+	  CPlayer *(*factory) (Copl *newopl);
+	} allplayers[];
 };

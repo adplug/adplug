@@ -248,10 +248,11 @@ unsigned short CdmoLoader::dmo_unpacker::brand(unsigned short range)
 bool CdmoLoader::dmo_unpacker::decrypt(unsigned char *buf, long len)
 {
 	unsigned long seed = 0;
+	int i;
 
 	bseed = *(unsigned long *)&buf[0];
 
-	for (int i=0;i<(*(unsigned short *)&buf[4]+1);i++)
+	for (i=0;i<(*(unsigned short *)&buf[4]+1);i++)
 		seed += brand(0xffff);
 
 	bseed = seed ^ *(unsigned long *)&buf[6];
@@ -308,13 +309,15 @@ short CdmoLoader::dmo_unpacker::unpack_block(unsigned char *ibuf, long ilen, uns
 		// 10xxxxxx xyyyzzzz: copy (Y + 3) bytes from (X + 1); copy Z bytes
 		if ((code >> 6) == 2)
 		{
+		  int i;
+
 			par1 = *ipos++;
 
 			ax = ((code & 0x3F) << 1) + (par1 >> 7) + 1;
 			cx = ((par1 & 0x70) >> 4) + 3;
 			bx = par1 & 0x0F;
 
-			for(int i=0;i<cx;i++)
+			for(i=0;i<cx;i++)
 				*opos++ = *(opos - ax);
 
 			for (i=0;i<bx;i++)
@@ -326,6 +329,8 @@ short CdmoLoader::dmo_unpacker::unpack_block(unsigned char *ibuf, long ilen, uns
 		// 11xxxxxx xxxxxxxy yyyyzzzz: copy (Y + 4) from X; copy Z bytes
 		if ((code >> 6) == 3)
 		{
+		  int i;
+
 			par1 = *ipos++;
 			par2 = *ipos++;
 
@@ -333,7 +338,7 @@ short CdmoLoader::dmo_unpacker::unpack_block(unsigned char *ibuf, long ilen, uns
 			cx = ((par1 & 0x01) << 4) + (par2 >> 4) + 4;
 			ax = par2 & 0x0F;
 
-			for(int i=0;i<cx;i++)
+			for(i=0;i<cx;i++)
 				*opos++ = *(opos - bx);
 
 			for (i=0;i<ax;i++)

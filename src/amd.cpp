@@ -40,8 +40,7 @@ bool CamdLoader::load(istream &f, const char *filename)
 
 	// file validation section
 	f.seekg(0,ios::end);
-	if(f.tellg() < 1062)
-		return false;
+	if(f.tellg() < 1062 + sizeof(header)) return false;
 	f.seekg(1062);
 	f.read((char *)&header,sizeof(header));
 	if(strncmp(header.id,"<o\xefQU\xeeRoR",9) && strncmp(header.id,"MaDoKaN96",9))

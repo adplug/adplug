@@ -244,9 +244,6 @@ orders its note data, in the
 struct, the following way:
 
 .PP
-.I "[TODO: make dformat view of Tracks struct here.]"
-
-.PP
 .I \%note
 holds the note value. A value of 0 means no note. A value of 127 means
 "key off". Values from 1 to 96 are actual notes to be
@@ -317,7 +314,7 @@ n | l | l | l .
 25xy	Set carrier/modulator waveform	xy=carr wav|mod wav	[0-3,F]
 26xy	Volume slide	xy=vol up|vol down	[0-F]
 27xy	Set chip tremolo/vibrato	xy=tr depth|vb depth	[0-1]
-28xy	DTM frequency slide	x=up, frames|y=down, frames	[0-F]
+28xy	DTM frequency slide	xy=frames up|down	[0-F]
 255--	No operation (NOP)
 .TE
 .B "Table 1."
@@ -437,11 +434,19 @@ Faust:
 .PP
 Treat the files like
 .B "Faust Music Creator"
-does, this tracker uses different volume handling scheme.
-In standard Protracker:
-.B final volume = channel volume = instrument volume
-In FMC:
-.B final volume = (channel volume + instrument volume) / 2
+does. This tracker uses a different volume handling scheme. In standard
+Protracker, the volume is computed as follows:
+.DS I
+.CW
+final volume = channel volume = instrument volume
+.DE
+In
+.B "Faust Music Creator" ,
+it is done like this:
+.DS I
+.CW
+final volume = (channel volume + instrument volume) / 2
+.DE
 
 .SH
 NoKeyOn:

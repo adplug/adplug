@@ -21,3 +21,7 @@ AdPlug To Do List:
 - Get cff.[cpp,h] to work on linux. [dynamite]
 
 - Add an AM_PATH_ADPLUG aclocal defun to the UNIX build. [dynamite]
+
+- Add file extension and description to allplayers[] struct. [dynamite]
+
+- Move allplayers[] struct and VERSION define out of adplug.cpp. [dynamite]

@@ -1,6 +1,6 @@
 /*
- * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999, 2000, 2001 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,11 +16,21 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * emuopl.cpp - Emulated OPL, by Simon Peter (dn.tlp@gmx.net)
+ * emuopl.cpp - Emulated OPL, by Simon Peter <dn.tlp@gmx.net>
  */
 
 #include "emuopl.h"
+
+CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
+  : use16bit(bit16), stereo(usestereo)
+{
+  opl = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
+}
+
+CEmuopl::~CEmuopl()
+{
+  OPLDestroy(opl);
+}
 
 void CEmuopl::update(short *buf, int samples)
 {
@@ -51,4 +61,15 @@ void CEmuopl::update(short *buf, int samples)
 
 		delete [] tempbuf;
 	}
+}
+
+void CEmuopl::write(int reg, int val)
+{
+  OPLWrite(opl,0,reg);
+  OPLWrite(opl,1,val);
+}
+
+void CEmuopl::init()
+{
+  OPLResetChip(opl);
 }

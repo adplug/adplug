@@ -63,7 +63,7 @@
 #include "dtm.h"
 #include "dmo.h"
 
-// These players use C++ templates, which aren't supported by WATCOM C++
+// These players use the C++ STL, which isn't supported by WATCOM C++
 #ifndef __WATCOMC__
 #include "u6m.h"
 #include "rol.h"
@@ -84,9 +84,7 @@ const unsigned char CPlayer::op_table[9] = {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 
 // this order, which is to be preserved, because some players take precedence
 // above other players.
 // The list is terminated with an all-NULL element.
-static const struct Players {
-  CPlayer *(*factory) (Copl *newopl);
-} allplayers[] = {
+const CAdPlug::Players CAdPlug::allplayers[] = {
   {CmidPlayer::factory}, {CksmPlayer::factory},
 #ifndef __WATCOMC__
   {CrolPlayer::factory},

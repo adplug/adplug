@@ -28,8 +28,10 @@
  * Hard restart SR is sometimes wrong
  */
 
+#include <string.h>
 #include <stdio.h>
 
+#include "debug.h"
 #include "d00.h"
 
 #define HIBYTE(val)	(val >> 8)
@@ -42,8 +44,7 @@ static const unsigned short notetable[12] =	// D00 note table
 
 CPlayer *Cd00Player::factory(Copl *newopl)
 {
-  Cd00Player *p = new Cd00Player(newopl);
-  return p;
+  return new Cd00Player(newopl);
 }
 
 bool Cd00Player::load(istream &f, const char *filename)
@@ -57,8 +58,14 @@ bool Cd00Player::load(istream &f, const char *filename)
 	// file validation section
 	checkhead = new d00header;
 	f.read((char *)checkhead,sizeof(d00header));
-	if(strncmp(checkhead->id,"JCH\x26\x02\x66",6) || checkhead->type || !checkhead->subsongs || checkhead->soundcard) {
+
+	// Check for version 2-4 header
+	if(strncmp(checkhead->id,"JCH\x26\x02\x66",6) || checkhead->type ||
+	   !checkhead->subsongs || checkhead->soundcard) {
+	  // Check for version 0 or 1 header (and .d00 file extension)
 		delete checkhead;
+		if(strlen(filename) < 4 || stricmp(filename+strlen(filename)-4,".d00"))
+		  return false;
 		ch = new d00header1;
 		f.seekg(0); f.read((char *)ch,sizeof(d00header1));
 		if(ch->version > 1 || !ch->subsongs) {
@@ -69,6 +76,9 @@ bool Cd00Player::load(istream &f, const char *filename)
 		ver1 = 1;
 	} else
 		delete checkhead;
+
+	AdPlug_LogWrite("Cd00Player::load(f,\"%s\"): %s format D00 file detected!\n",
+			filename, ver1 ? "Old" : "New");
 
 	// load section
 	f.seekg(0,ios::end); filesize = f.tellg(); f.seekg(0);

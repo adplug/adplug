@@ -1,27 +1,36 @@
 AdPlug - A free AdLib sound player library
 Copyright (C) 1999, 2000, 2001, 2002 Simon Peter, et al.
 
-Website       : http://adplug.sourceforge.net
-Module Archive: http://www.chiptune.de
+Website       : http://adplug.sourceforge.net/
+Module Archive: http://www.chiptune.de/
 
 Description:
 ------------
 AdPlug is a free, multi-platform, hardware independent AdLib sound player
 library, mainly written in C++. AdPlug plays sound data, originally created
 for the AdLib (OPL2) audio board, on top of an OPL2 emulator or by using the
-real hardware. No OPL chip is required for playback.
+real hardware. No OPL2 chip is required for playback.
 
 Supported platforms:
 --------------------
 AdPlug currently is tested to compile and run well under the following
 platforms and compilers:
 
-Platform     Compiler(s)
---------     -----------
-Windows      Visual C++ 6.0, cygwin
-MS-DOS       WATCOM C/C++ 11.x
-Linux        GCC 2.x, GCC 3.x
-FreeBSD      GCC 2.x, GCC 3.x
+Hardware		Platform		Compiler
+--------		--------		--------
+IBM-PC			Win32			MS Visual C++ 6.0
+						cygwin
+			MS-DOS			Watcom C/C++ 11.x
+			Linux 2.2		GCC 2.x
+			Linux 2.4		GCC 2.x
+						GCC 3.x
+			FreeBSD 4.7-RC		GCC 2.x
+						GCC 3.x
+PPC - G4		MacOS X			GCC 2.x
+PPC - RS/6000		Linux 2.2		GCC 2.x
+Alpha			Linux 2.4		GCC 2.x
+Sparc - Ultra60		Linux 2.4		GCC 2.x
+Sparc - R220		SunOS 5.8		GCC 2.x
 
 The library builds as dynamic and/or static link library, depending on
 the facilities provided by the host OS. These are autodetected. On Windows,
@@ -92,21 +101,5 @@ Some files (especially SA2) may sound distorted through the emulator. This is
 a well-known "problem" with software mixing, hearable when the composer plays
 the same sound on multiple channels. Hardware mixing is unaffected by this
 issue.
-
-Legal:
-------
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 	- Simon Peter <dn.tlp@gmx.net>
