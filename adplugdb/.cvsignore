@@ -6,3 +6,4 @@ adplugdb
 Debug
 Release
 *.plg
+config.bat
