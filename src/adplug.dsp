@@ -106,12 +106,10 @@ SOURCE=.\adplug.cpp
 # Begin Source File
 
 SOURCE=.\adtrack.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\amd.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 

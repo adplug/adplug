@@ -35,7 +35,7 @@ bool CsngPlayer::load(const std::string &filename, const CFileProvider &fp)
   f->readString(header.id, 4);
   header.length = f->readInt(2); header.start = f->readInt(2);
   header.loop = f->readInt(2); header.delay = f->readInt(1);
-  header.compressed = f->readInt(1);
+  header.compressed = f->readInt(1) ? true : false;
 
   // file validation section
   if(strncmp(header.id,"ObsM",4)) { fp.close(f); return false; }
