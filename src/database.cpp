@@ -31,11 +31,13 @@
 
 /***** CAdPlugDatabase *****/
 
-const unsigned short CAdPlugDatabase::hash_radix = ADPLUGDB_HASH_RADIX;
+const unsigned short CAdPlugDatabase::hash_radix = 0xfff1;	// should be prime
 
 CAdPlugDatabase::CAdPlugDatabase()
   : linear_index(0), linear_logic_length(0), linear_length(0)
 {
+  db_linear = new DB_Bucket * [hash_radix];
+  db_hashed = new DB_Bucket * [hash_radix];
   memset(db_linear, 0, sizeof(DB_Bucket *) * hash_radix);
   memset(db_hashed, 0, sizeof(DB_Bucket *) * hash_radix);
 }
@@ -46,6 +48,9 @@ CAdPlugDatabase::~CAdPlugDatabase()
 
   for(i = 0; i < linear_length; i++)
     delete db_linear[i];
+
+  delete [] db_linear;
+  delete [] db_hashed;
 }
 
 bool CAdPlugDatabase::load(std::string db_name)

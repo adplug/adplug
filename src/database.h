@@ -99,11 +99,6 @@ public:
   void	goto_end();
 
 private:
-
-// Workaround for MSVC6's inability to handle compiler-determinable constants
-// in variable declarations (which is standard C++).
-#define ADPLUGDB_HASH_RADIX	0xfff1	// should be prime
-
   static const unsigned short hash_radix;
 
   class DB_Bucket
@@ -119,8 +114,8 @@ private:
     ~DB_Bucket();
   };
 
-  DB_Bucket	*db_linear[ADPLUGDB_HASH_RADIX];
-  DB_Bucket	*db_hashed[ADPLUGDB_HASH_RADIX];
+  DB_Bucket	**db_linear;
+  DB_Bucket	**db_hashed;
 
   unsigned long	linear_index, linear_logic_length, linear_length;
 
