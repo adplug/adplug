@@ -15,3 +15,5 @@ AdPlug To Do List:
 	- LDS: Loudness
 
 - Add some index entries to documentation. [dynamite]
+
+- Implement OPL3 support using YMF262 emulator from MAME. [dynamite]

@@ -15,7 +15,7 @@ Marc Winterrowd <nodling@yahoo.com>:
 
 Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>,
 Jarek Burczynski:
-  - YM3812 emulator development (used by permission)
+  - YM3812 emulator development (MAME license!)
 
 Death Adder <death-adder@juno.com>:
   - provided many file format specifications
@@ -41,7 +41,7 @@ Nikita V. Kalaganov <riven@ok.ru>:
 
 Goetz Waschk <waschk@informatik.uni-rostock.de>:
   - Mandrake Linux packages
-  - Red Hat & Mandrake RPM spec files
+  - Red Hat RPM spec files
 
 Mike Gorchak <mike@malva.ua>:
   - QNX packages
