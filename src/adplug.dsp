@@ -255,7 +255,6 @@ SOURCE=.\realopl.cpp
 # Begin Source File
 
 SOURCE=.\rol.cpp
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
