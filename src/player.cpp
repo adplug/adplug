@@ -52,7 +52,7 @@ unsigned long CPlayer::songlength(int subsong)
   // get song length
   rewind(subsong);
   while(update() && slength < 600000)	// song length limit: 10 minutes
-    slength += 1000/getrefresh();
+    slength += 1000.0f / getrefresh();
   rewind(subsong);
 
   // restore original OPL and return
