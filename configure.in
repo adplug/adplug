@@ -21,7 +21,7 @@ AC_CHECK_LIB(binio,main,,AC_MSG_ERROR([libbinio not installed]))
 AC_C_CONST
 AC_C_INLINE
 
-# Enable debugging on user request
+# Enable debugging on user request.
 AC_ARG_ENABLE([debug],AC_HELP_STRING([--enable-debug],
 [Compile with debug logging support (default is to disable debug logging)]),
 	AC_DEFINE(DEBUG))

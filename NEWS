@@ -5,6 +5,7 @@ Changes for version 1.4:
 	- New, modularized file loading framework.
 	- Now using 'libbinio' for platform-independant binary I/O.
 	- Added database framework for storing music file information.
+	- Uses newest fmopl OPL2 emulator version 0.60 from MAME 0.65.
 
 Changes for version 1.3:
 	- Completely new build system for DOS and Windows.

@@ -22,10 +22,21 @@
  */
 
 #include <memory.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <binfile.h>
+#include <string>
+
+#if defined(HAVE_SYS_TYPES_H) && defined(HAVE_SYS_STAT_H)
+#  if HAVE_SYS_TYPES_H
+#    include <sys/types.h>
+#  endif
+#  if HAVE_SYS_STAT_H
+#    include <sys/stat.h>
+#  endif
+#endif
 
 #include "../src/adplug.h"
 #include "../src/silentopl.h"
@@ -34,10 +45,24 @@
 
 /***** Defines *****/
 
+// Default file name of AdPlug's database file
+#define ADPLUGDB_FILE		"adplug.db"
+
+// Default AdPlug user's configuration subdirectory
+#define ADPLUG_CONFDIR		".adplug"
+
+// Default path to AdPlug's system-wide database file
+#ifdef ADPLUG_DATA_DIR
+#  define ADPLUGDB_PATH		ADPLUG_DATA_DIR "/" ADPLUGDB_FILE
+#else
+#  define ADPLUGDB_PATH		ADPLUGDB_FILE
+#endif
+
+// Unknown filetype indicator
 #define UNKNOWN_FILETYPE	"*** Unknown ***"
 
 // Message urgency levels
-#define MSG_PANIC	0
+#define MSG_PANIC	0	// Unmaskable
 #define MSG_ERROR	1
 #define MSG_WARN	2
 #define MSG_NOTE	3
@@ -56,13 +81,17 @@ static const struct {
 };
 
 static struct {
-  const char *db_file;
-  CAdPlugDatabase::CRecord::RecordType rtype;
-  int message_level;
+  std::string				db_file;
+  CAdPlugDatabase::CRecord::RecordType	rtype;
+  int					message_level;
+  bool					usedefaultdb;
+  const char				*homedir;
 } cfg = {
-  "adplug.db",
+  ADPLUGDB_PATH,
   CAdPlugDatabase::CRecord::Plain,
-  MSG_NOTE
+  MSG_NOTE,
+  false,
+  NULL
 };
 
 static CAdPlugDatabase	mydb;
@@ -105,6 +134,7 @@ static void usage()
 	 "\n"
 	 "Database options:\n"
 	 "  -d <file>        Use different database file\n"
+	 "  -s               Use system-wide database file (" ADPLUGDB_PATH ")\n"
 	 "  -t <type>        Add as different record type\n"
 	 "\n"
 	 "Generic options:\n"
@@ -169,6 +199,7 @@ static bool db_resolve(const char *filename)
 /* Resolves and lists one entry from the database */
 {
   if(mydb.lookup(file2key(filename))) {
+    message(MSG_NOTE, "viewing entry -- %s", filename);
     mydb.get_record()->user_write(std::cout);
     return true;
   } else {
@@ -192,15 +223,30 @@ static void copyright()
 {
   printf("AdPlug database maintenance utility %s\n", CAdPlug::get_version().c_str());
   printf("Copyright (c) 2002 Riven the Mage <riven@ok.ru>\n"
-	 "Copyright (c) 2002 Simon Peter <dn.tlp@gmx.net>\n");
+	 "Copyright (c) 2002, 2003 Simon Peter <dn.tlp@gmx.net>\n");
 }
 
 static void db_error(bool dbokay)
 /* Checks if database is open. Exits program otherwise */
 {
   if(!dbokay) {	// Database could not be opened
-    message(MSG_ERROR, "database could not be opened -- %s", cfg.db_file);
+    message(MSG_ERROR, "database could not be opened -- %s", cfg.db_file.c_str());
     exit(EXIT_FAILURE);
+  }
+}
+
+static void db_save(void)
+/* Saves database to file, making path if it doesn't exist yet. */
+{
+  std::string savedir;
+
+  if(!mydb.save(cfg.db_file)) {
+    if(cfg.homedir) {
+      savedir = cfg.homedir; savedir += "/" ADPLUG_CONFDIR;
+      mkdir(savedir.c_str(), 0755);
+      if(mydb.save(cfg.db_file)) return;
+    }
+    message(MSG_ERROR, "could not save database -- %s", cfg.db_file.c_str());
   }
 }
 
@@ -216,7 +262,7 @@ int main(int argc, char *argv[])
   program_name = strrchr(argv[0], '/') ? strrchr(argv[0], '/') + 1 : argv[0];
 
   // Parse options
-  while((opt = getopt(argc, argv, "d:t:qvhV")) != -1)
+  while((opt = getopt(argc, argv, "d:t:qvhVs")) != -1)
     switch(opt) {
     case 'd': cfg.db_file = optarg; break;		// Set database file
     case 't': // Different record type
@@ -235,10 +281,19 @@ int main(int argc, char *argv[])
     case 'v': cfg.message_level++; break;	       	// Be more verbose
     case 'h': usage(); exit(EXIT_SUCCESS); break;	// Display help
     case 'V': copyright(); exit(EXIT_SUCCESS); break;	// Display version
+    case 's': cfg.usedefaultdb = true; break;		// Use system-wide database
     case '?': exit(EXIT_FAILURE);
     }
 
+  // Try user's home directory first, before trying the default location.
+  cfg.homedir = getenv("HOME");
+  if(cfg.homedir && !cfg.usedefaultdb) {
+    cfg.db_file = cfg.homedir; cfg.db_file += "/" ADPLUG_CONFDIR "/";
+    cfg.db_file += ADPLUGDB_FILE;
+  }
+
   // Load database file
+  message(MSG_DEBUG, "using database -- %s", cfg.db_file.c_str());
   dbokay = mydb.load(cfg.db_file);
 
   // Check for commands
@@ -253,7 +308,7 @@ int main(int argc, char *argv[])
     if(++optind < argc) {
       for(;optind < argc; optind++)
 	db_add(argv[optind]);
-      mydb.save(cfg.db_file);
+      db_save();
     } else {
       message(MSG_ERROR, "add -- missing file argument");
       exit(EXIT_FAILURE);
@@ -262,8 +317,10 @@ int main(int argc, char *argv[])
   if(!strcmp(argv[optind], "list")) {	// List (files from) database
     db_error(dbokay);
     if(++optind < argc) {
-      for(;optind < argc; optind++)
+      for(;optind < argc; optind++) {
 	db_resolve(argv[optind]);
+	printf("\n");
+      }
     } else {
       mydb.goto_begin();
       do {
@@ -277,7 +334,7 @@ int main(int argc, char *argv[])
     if(++optind < argc) {
       for(;optind < argc; optind++)
 	db_remove(argv[optind]);
-      mydb.save(cfg.db_file);
+      db_save();
     } else {
       message(MSG_ERROR, "remove -- missing file argument");
       exit(EXIT_FAILURE);

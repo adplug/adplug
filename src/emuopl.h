@@ -42,7 +42,6 @@ public:
 
 private:
 	bool	use16bit,stereo;
-	FM_OPL	*opl;				// holds emulator data
 };
 
 #endif

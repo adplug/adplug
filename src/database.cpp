@@ -295,7 +295,14 @@ bool CAdPlugDatabase::CRecord::user_read(std::istream &in, std::ostream &out)
 
 bool CAdPlugDatabase::CRecord::user_write(std::ostream &out)
 {
-  out << "Record type: " << type << std::endl;
+  out << "Record type: ";
+  switch(type) {
+  case Plain: out << "Plain"; break;
+  case SongInfo: out << "SongInfo"; break;
+  case ClockSpeed: out << "ClockSpeed"; break;
+  default: out << "*** Unknown ***"; break;
+  }
+  out << std::endl;
   out << "Key: " << std::hex << key.crc16 << ":" << key.crc32 << std::dec << std::endl;
   out << "File type: " << filetype << std::endl;
 

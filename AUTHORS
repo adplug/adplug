@@ -1,4 +1,4 @@
-AdPlug is copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
+AdPlug is copyright (C) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
 All library code is written by Simon Peter, except the parts listed below.
 
 Additional Credits:
@@ -13,7 +13,8 @@ Phil Hassey <philhassey@hotmail.com>:
 Marc Winterrowd <nodling@yahoo.com>:
   - Origin Music (.M) player development
 
-Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>:
+Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>,
+Jarek Burczynski:
   - YM3812 emulator development (used by permission)
 
 Death Adder <death-adder@juno.com>:

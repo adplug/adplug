@@ -14,8 +14,6 @@ AdPlug To Do List:
 	- MTR: Arkham Master Tracker [riven-mage]
 	- LDS: Loudness
 
-- Write user documentation. [dynamite]
-
-- Add 'merge' feature to adplugdb to merge two databases together. [dynamite]
-
 - Add load(void *mem, unsigned long length) method to CAdPlug. [dynamite]
+
+- adplugdb should open database in user's home directory first. [dynamite]
