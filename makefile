@@ -1,13 +1,13 @@
 # AdPlug Makefile, (c) 2001 Simon Peter <dn.tlp@gmx.net>
 
-CC = gcc-3.0
-CXX = gcc-3.0
+CC = cc
+CXX = gcc
 INSTALL = install
 
 CFLAGS = -Wall
 CXXFLAGS = -Wall
 CPPFLAGS = -Dstricmp=strcasecmp
-LDFLAGS = -shared
+LDFLAGS = -lstdc++ -shared
 
 OBJS = adplug.o emuopl.o fmopl.o
 AUX = makefile makefile.wat adplug.dsp COPYING CREDITS INSTALL README PLAYER_SDK CHANGES

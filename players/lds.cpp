@@ -32,18 +32,18 @@ bool CldsLoader::load(istream &f)
 	const char		ixlt[11] = {1,4,2,5,9,6,10,7,3,8,0};	// instrument translation map
 
 	f.ignore(15);			// ignore header
-	f.get(insts);			// get number of instruments
+	f.get((char)insts);		// get number of instruments
 	for(i=0;i<insts;i++) {	// load instruments
-		f.read(ldsinst,46);
+		f.read((char *)ldsinst,46);
 		for(j=0;j<11;j++)	// convert instrument
 			inst[i].data[j] = ldsinst[ixlt[j]+1];
 	}
 	f.read((char *)&nop,2);
 	ldspat = new unsigned char [nop*9*3];
-	f.read(ldspat,nop*9*3);
+	f.read((char *)ldspat,nop*9*3);
 	f.read((char *)&mlen,2);
 	ldsm = new unsigned char [mlen];
-	f.read(ldsm,mlen);
+	f.read((char *)ldsm,mlen);
 
 	for(i=0;i<nop;i++)
 		order[i] = i;

@@ -48,7 +48,7 @@
 #include "bam.h"
 #ifndef __WATCOMC__
 	#include "u6m.h"
-	#include "rol.h"
+//	#include "rol.h"
 #endif
 
 const unsigned short	CPlayer::note_table[12]	= {363,385,408,432,458,485,514,544,577,611,647,686};
@@ -141,9 +141,9 @@ CPlayer *CAdPlug::factory(char *fn, Copl *opl)
 			p = new CldsLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
 #ifndef __WATCOMC__
-		if(!stricmp(strrchr(fn,'.')+1,"ROL")) {
+/*		if(!stricmp(strrchr(fn,'.')+1,"ROL")) {
 			p = new CrolPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
-		}
+		} */
 #endif
 	};
 
