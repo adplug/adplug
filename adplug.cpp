@@ -48,6 +48,7 @@
 #include "mkj.h"
 #include "dfm.h"
 #include "lds.h"
+#include "bam.h"
 
 CPlayer *CAdPlug::load_sci(istream &f, char *fn, Copl *opl)
 {
@@ -155,6 +156,7 @@ CPlayer *CAdPlug::factory(istream &f, Copl *opl)
 	p = new CmtkLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 	p = new CmkjPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 	p = new CdfmLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
+	p = new CbamPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 
 	return 0;
 }

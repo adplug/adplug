@@ -1,17 +1,51 @@
 AdPlug - Replayer for many OPL2/OPL3 audio file formats.
 Copyright (C) 1999, 2000, 2001 Simon Peter <dn.tlp@gmx.net>, et al.
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+Website       : http://adplug.sourceforge.net
+Module Archive: http://www.chiptune.de
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+Description:
+------------
+AdPlug is a free, cross-platform, hardware independent AdLib sound player
+library, mainly written in C++. AdPlug plays sound data, originally created
+for the AdLib (OPL2) audio board, on top of an OPL2 emulator or by using the
+real hardware. No OPL chip is required for playback.
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+Supported formats:
+------------------
+AdPlug implements unique file replayers for each supported format in order to
+achieve the best possible replay quality. Below is a list of all currently
+supported file formats along with information about possible replay issues.
 
+- A2M: AdLib Tracker 2 by subz3ro
+  - Unimplemented commands (version 1-4): FF1 - FF9, FAx - FEx
+  - Unimplemented commands (version 5-8): Gxy, Hxy, Kxy - &xy
+  - In version 5-8 files, instrument panning & the flags byte is ignored
+  - Only SixPack or uncompressed files are supported
+- AMD: AMUSIC Adlib Tracker by Elyssis
+- CMF: Creative Music File Format by Creative Technology
+  - Unimplemented: AdLib rhythm mode
+- D00: EdLib by Vibrants
+  - Bugs: Hard restart SR sometimes sound wrong
+- DFM: Digital-FM by R.Verhaag
+- HSC: HSC Adlib Composer by Hannes Seifert, HSC-Tracker by Electronic Rats
+- HSP: HSC Packed by Number Six / Aegis Corp.
+- IMF: Apogee IMF File Format
+- KSM: Ken Silverman's Music Format
+- LAA: LucasArts AdLib Audio File Format by LucasArts
+  - Bugs: Some volumes are a bit off
+- LDS: Loudness Music System
+- M: Ultima 6 Music Format
+- MID: MIDI Audio File Format
+- MKJ: MKJamz by M \ K Productions
+- MTK: MPU-401 Trakker by SuBZeR0
+- RAD: Reality ADlib Tracker by Reality
+- RAW: RdosPlay RAW file format by RDOS
+  - Unimplemented: OPL3 register writes (not possible with AdLib)
+- S3M: Screamtracker 3 by Future Crew
+  - Bugs: Extra Fine Slides (EEx, FEx) & Fine Vibrato (Uxy) are inaccurate
+- SA2: Surprise! Adlib Tracker 2 by Surprise! Productions
+  - Unimplemented: Version 7 files (i don't have any)
+- SCI: Sierra's AdLib Audio File Format
+  - Bugs: Some instruments are messed up
+- SNG: SNGPlay by BUGSY of OBSESSION

@@ -26,19 +26,56 @@
 
 bool CldsLoader::load(istream &f)
 {
-	int i;
-	unsigned char ldsinst[46];
+	int				i,j,k,l,dnum[9][2];
+	unsigned char	ldsinst[46],*ldspat,*ldsm;
+	unsigned short	mlen;									// length of music data
+	const char		ixlt[11] = {1,4,2,5,9,6,10,7,3,8,0};	// instrument translation map
 
 	f.ignore(15);			// ignore header
 	f.get(insts);			// get number of instruments
 	for(i=0;i<insts;i++) {	// load instruments
 		f.read(ldsinst,46);
-		// convert instruments here...
+		for(j=0;j<11;j++)	// convert instrument
+			inst[i].data[j] = ldsinst[ixlt[j]+1];
 	}
 	f.read((char *)&nop,2);
-	// read patterns here...
+	ldspat = new unsigned char [nop*9*3];
+	f.read(ldspat,nop*9*3);
+	f.read((char *)&mlen,2);
+	ldsm = new unsigned char [mlen];
+	f.read(ldsm,mlen);
 
-	return false;
+	for(i=0;i<nop;i++)
+		order[i] = i;
+	memset(tracks,0,576*64);
+	length = nop; restartpos = 0; activechan = 0xffff;
+	initspeed = 6; bpm = 18; flags = MOD_FLAGS_STANDARD;
+	for(i=0;i<64*9;i++)		// patterns
+		trackord[i/9][i%9] = i+1;
+	for(i=0;i<9;i++) {
+		dnum[i][0] = -1;
+		dnum[i][1] = 1;
+	}
+	for(i=0;i<nop;i++)
+		for(j=0;j<24;j++)
+			for(k=0;k<9;k++) {
+				l = ((ldspat[i*9*3+k*3+1]+j*4) << 8) + (ldspat[i*9*3+k*3]+j*4);
+				if(dnum[k][0] < 24) {
+					dnum[k][1] = 1;
+					if(ldsm[l+2])
+						dnum[k][0] += dnum[k][1];
+					if(dnum[k][0] >= 0 && dnum[k][0] < 24) {
+						tracks[i*9+k][dnum[j][0]].note = ldsm[l+1];
+						tracks[i*9+k][dnum[j][0]].inst = ldsm[l];
+						tracks[i*9+k][dnum[j][0]].param1 = ldsm[l+3];
+						tracks[i*9+k][dnum[j][0]].command = 17;
+					}
+				}
+			}
+
+	delete [] ldspat;
+	delete [] ldsm;
+	return true;
 }
 
 /*** private methods *************************************/
