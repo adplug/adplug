@@ -28,6 +28,7 @@
 	#include "u6m.h"
 #endif
 #include "mkj.h"
+#include "dfm.h"
 
 char *CAdPlug::upstr(char *str)
 {
@@ -141,6 +142,7 @@ CPlayer *CAdPlug::factory(istream &f, Copl *opl)
 	p = new Cs3mPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 	p = new CmtkLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 	p = new CmkjPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
+	p = new CdfmLoader(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 
 	return 0;
 }

@@ -7,6 +7,7 @@
 
 #include "player.h"
 
+#define MOD_FLAGS_STANDARD	0
 #define MOD_FLAGS_DECIMAL	1
 
 class CmodPlayer: public CPlayer

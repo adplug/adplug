@@ -18,7 +18,14 @@
  *  11xx	Position jump					xx=new position			[0-FF]
  *  12xx	Set carr. & mod. volume			xx=new volume			[0-3F]
  *  13xx	Pattern break					xx=new row				[0-FF]
- *  14??	Extended command				??=see extended commands
+ *  14??	Extended command:
+ *    0x		Set chip tremolo				x=new depth		[0-1]
+ *    1x		Set chip vibrato				x=new depth		[0-1]
+ *    3x		Retrig note						x=retrig speed	[0-F]
+ *    4x		Fine volume slide up			x=vol up		[0-F]
+ *    5x		Fine volume slide down			x=vol down		[0-F]
+ *    6x		Fine frequency slide up			x=freq up		[0-F]
+ *    7x		Fine frequency slide down		x=freq down		[0-F]
  *  15xx	SA2 set speed					xx=new speed			[0-FF]
  *  16xy	AMD volume slide				xy=vol up|vol down		[0-F]
  *  17xx	Set instrument volume			xx=new volume			[0-3F]
@@ -33,22 +40,26 @@
  *  26xy	Volume slide					xy=vol up|vol down		[0-F]
  * 255--	No operation (NOP)
  *
- * Extended (effect 14) commands:
- * ------------------------------
- * 0x	Set chip tremolo			x=new depth		[0-1]
- * 1x	Set chip vibrato			x=new depth		[0-1]
- * 3x	Retrig note					x=retrig speed	[0-F]
- * 4x	Fine volume slide up		x=vol up		[0-F]
- * 5x	Fine volume slide down		x=vol down		[0-F]
- * 6x	Fine frequency slide up		x=freq up		[0-F]
- * 7x	Fine frequency slide down	x=freq down		[0-F]
- *
  * Special arpeggio commands:
  * --------------------------
  * 252: Set carr. & mod. volume
  * 253: Release sustaining note
  * 254: Arpeggio loop
  * 255: End of special arpeggio
+ *
+ * Instrument data (inst[].data[11]) values:
+ * -----------------------------------------
+ *  0 = (Channel)	Feedback strength / Connection type						(reg 0xc0)
+ *  1 = (Modulator)	Amp Mod / Vibrato / EG type / Key Scaling / Multiple	(reg 0x20)
+ *  2 = (Carrier)	Amp Mod / Vibrato / EG type / Key Scaling / Multiple	(reg 0x23)
+ *  3 = (Modulator)	Attack Rate / Decay Rate								(reg 0x60)
+ *  4 = (Carrier)	Attack Rate / Decay Rate								(reg 0x63)
+ *  5 = (Modulator)	Sustain Level / Release Rate							(reg 0x80)
+ *  6 = (Carrier)	Sustain Level / Release Rate							(reg 0x83)
+ *  7 = (Modulator)	Wave Select												(reg 0xe0)
+ *  8 = (Carrier)	Wave Select												(reg 0xe3)
+ *  9 = (Modulator)	Key scaling level / Operator output level				(reg 0x40)
+ * 10 = (Carrier)	Key scaling level / Operator output level				(reg 0x43)
  */
 
 #include "protrack.h"
