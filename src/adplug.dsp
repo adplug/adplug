@@ -101,6 +101,10 @@ SOURCE=.\a2m.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\adlibemu.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\adplug.cpp
 # End Source File
 # Begin Source File
@@ -158,10 +162,6 @@ SOURCE=.\dro.cpp
 # Begin Source File
 
 SOURCE=.\dtm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\emuopl.cpp
 # End Source File
 # Begin Source File
 
@@ -263,13 +263,6 @@ SOURCE=.\rol.cpp
 # Begin Source File
 
 SOURCE=.\s3m.cpp
-
-!IF  "$(CFG)" == "adplug - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "adplug - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -298,6 +291,10 @@ SOURCE=.\xsm.cpp
 # Begin Source File
 
 SOURCE=.\a2m.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\adlibemu.h
 # End Source File
 # Begin Source File
 
@@ -402,6 +399,10 @@ SOURCE=.\imf.h
 # Begin Source File
 
 SOURCE=.\imfcrc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\kemuopl.h
 # End Source File
 # Begin Source File
 

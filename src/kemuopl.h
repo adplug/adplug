@@ -23,12 +23,12 @@
 #ifndef H_ADPLUG_KEMUOPL
 #define H_ADPLUG_KEMUOPL
 
-#include "opl.h"
+#include "emuopl.h"
 extern "C" {
 #include "adlibemu.h"
 }
 
-class CKemuopl: public Copl
+class CKemuopl: public CEmuopl
 {
 public:
   CKemuopl(int rate, bool bit16, bool usestereo)
