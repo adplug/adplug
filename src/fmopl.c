@@ -681,7 +681,7 @@ INLINE void advance_lfo(FM_OPL *OPL)
 }
 
 /* advance to next sample */
-INLINE void advance(FM_OPL *OPL)
+INLINE void advancex(FM_OPL *OPL)
 {
 	OPL_CH *CH;
 	OPL_SLOT *op;
@@ -2087,7 +2087,7 @@ void YM3812UpdateOne(int which, INT16 *buffer, int length)
 		/* store to sound buffer */
 		buf[i] = lt;
 
-		advance(OPL);
+		advancex(OPL);
 	}
 
 }

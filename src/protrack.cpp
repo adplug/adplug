@@ -346,7 +346,7 @@ bool CmodPlayer::update()
 				tempo = info;
 			break;
 		case 19: // RAD/A2M set speed
-			speed = info ? info : info + 1;
+			speed = (info ? info : info + 1);
 			break;
 		case 21: // set modulator volume
 			if(info <= 63)
