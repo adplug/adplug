@@ -301,6 +301,13 @@ int main(int argc, char *argv[])
     case '?': exit(EXIT_FAILURE);
     }
 
+  // Check for commands
+  if(argc == optind) {
+    fprintf(stderr, "%s: need a command\n", program_name);
+    fprintf(stderr, "Try '%s -h' for more information.\n", program_name);
+    exit(EXIT_FAILURE);
+  }
+
   // Try user's home directory first, before trying the default location.
   cfg.homedir = getenv("HOME");
   if(cfg.homedir && !cfg.usedefaultdb) {
@@ -311,13 +318,6 @@ int main(int argc, char *argv[])
   // Load database file
   message(MSG_DEBUG, "using database -- %s", cfg.db_file.c_str());
   dbokay = mydb.load(cfg.db_file);
-
-  // Check for commands
-  if(argc == optind) {
-    fprintf(stderr, "%s: need a command\n", program_name);
-    fprintf(stderr, "Try '%s -h' for more information.\n", program_name);
-    exit(EXIT_FAILURE);
-  }
 
   // Parse commands
   if(!strcmp(argv[optind], "add")) {	// Add file to database

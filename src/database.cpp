@@ -1,6 +1,6 @@
 /*
  * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (c) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (c) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
  *
  * database.cpp - AdPlug database class
  * Copyright (c) 2002 Riven the Mage <riven@ok.ru>
- * Copyright (c) 2002 Simon Peter <dn.tlp@gmx.net>
+ * Copyright (c) 2002, 2003 Simon Peter <dn.tlp@gmx.net>
  */
 
 #include <binio.h>
@@ -27,22 +27,24 @@
 
 #include "database.h"
 
-#define DB_FILEID	"AdPlug Module Information Database 1.0\x10"
+#define DB_FILEID_V10	"AdPlug Module Information Database 1.0\x10"
 
 /***** CAdPlugDatabase *****/
 
 const unsigned short CAdPlugDatabase::hash_radix = ADPLUGDB_HASH_RADIX;
 
 CAdPlugDatabase::CAdPlugDatabase()
-  : linear_index(0), linear_logic_length(0)
+  : linear_index(0), linear_logic_length(0), linear_length(0)
 {
-  memset(db_linear,0,sizeof(DB_Bucket *) * hash_radix);
-  memset(db_hashed,0,sizeof(DB_Bucket *) * hash_radix);
+  memset(db_linear, 0, sizeof(DB_Bucket *) * hash_radix);
+  memset(db_hashed, 0, sizeof(DB_Bucket *) * hash_radix);
 }
 
 CAdPlugDatabase::~CAdPlugDatabase()
 {
-  for(unsigned long i=0;i<DB_Bucket::linear_length();i++)
+  unsigned long i;
+
+  for(i = 0; i < linear_length; i++)
     delete db_linear[i];
 }
 
@@ -55,7 +57,7 @@ bool CAdPlugDatabase::load(std::string db_name)
 
 bool CAdPlugDatabase::load(binistream &f)
 {
-  unsigned int idlen = strlen(DB_FILEID);
+  unsigned int idlen = strlen(DB_FILEID_V10);
   char *id = new char [idlen];
   unsigned long length;
 
@@ -63,7 +65,7 @@ bool CAdPlugDatabase::load(binistream &f)
   f.setFlag(binio::BigEndian, false); f.setFlag(binio::FloatIEEE);
 
   f.readString(id,idlen);
-  if(memcmp(id,DB_FILEID,idlen)) {
+  if(memcmp(id,DB_FILEID_V10,idlen)) {
     delete [] id;
     return false;
   }
@@ -71,7 +73,7 @@ bool CAdPlugDatabase::load(binistream &f)
   length = f.readInt(4);
 
   // read records
-  for (unsigned long i=0;i<length;i++)
+  for(unsigned long i = 0; i < length; i++)
     insert(CRecord::factory(f));
 
   return true;
@@ -86,11 +88,13 @@ bool CAdPlugDatabase::save(std::string db_name)
 
 bool CAdPlugDatabase::save(binostream &f)
 {
-  f.writeString(DB_FILEID);
+  unsigned long i;
+
+  f.writeString(DB_FILEID_V10);
   f.writeInt(linear_logic_length, 4);
 
   // write records
-  for(unsigned long i=0;i<DB_Bucket::linear_length();i++)
+  for(i = 0; i < linear_length; i++)
     if(!db_linear[i]->deleted)
       db_linear[i]->record->write(f);
 
@@ -99,10 +103,7 @@ bool CAdPlugDatabase::save(binostream &f)
 
 CAdPlugDatabase::CRecord *CAdPlugDatabase::search(CKey const &key)
 {
-  if(lookup(key))
-    return get_record();
-  else
-    return 0;
+  if(lookup(key)) return get_record(); else return 0;
 }
 
 bool CAdPlugDatabase::lookup(CKey const &key)
@@ -113,59 +114,54 @@ bool CAdPlugDatabase::lookup(CKey const &key)
   // immediate hit ?
   DB_Bucket *bucket = db_hashed[index];
 
-  if(!bucket->deleted && bucket->record->key == key)
-    {
-      linear_index = bucket->index;
-      return true;
-    }
+  if(!bucket->deleted && bucket->record->key == key) {
+    linear_index = bucket->index;
+    return true;
+  }
 
   // in-chain hit ?
   bucket = db_hashed[index]->chain;
 
-  while (bucket)
-    {
-      if(!bucket->deleted && bucket->record->key == key)
-	{
-	  linear_index = bucket->index;
-	  return true;
-	}
-
-      bucket = bucket->chain;
+  while(bucket) {
+    if(!bucket->deleted && bucket->record->key == key) {
+      linear_index = bucket->index;
+      return true;
     }
+
+    bucket = bucket->chain;
+  }
 
   return false;
 }
 
 bool CAdPlugDatabase::insert(CRecord *record)
 {
-  unsigned long linear_length = DB_Bucket::linear_length();
+  long index;
 
+  // sanity checks
   if(!record) return false;			// null-pointer given
-  if(DB_Bucket::linear_length() == hash_radix) return false;	// max. db size exceeded
+  if(linear_length == hash_radix) return false;	// max. db size exceeded
   if(lookup(record->key)) return false;		// record already in db
 
   // make bucket
-  DB_Bucket *bucket = new DB_Bucket(record);
+  DB_Bucket *bucket = new DB_Bucket(linear_length, record);
   if(!bucket) return false;
 
   // add to linear list
   db_linear[linear_length] = bucket;
-  linear_logic_length++;
+  linear_logic_length++; linear_length++;
 
   // add to hashed list
-  long index = make_hash(record->key);
+  index = make_hash(record->key);
 
-  if (!db_hashed[index])
+  if(!db_hashed[index])	// First entry in hashtable
     db_hashed[index] = bucket;
-  else
-    {
-      DB_Bucket *chain = db_hashed[index];
+  else {		// Add entry in chained list
+    DB_Bucket *chain = db_hashed[index];
 
-      while (chain->chain)
-	chain = chain->chain;
-
-      chain->chain = bucket;
-    }
+    while(chain->chain) chain = chain->chain;
+    chain->chain = bucket;
+  }
 
   return true;
 }
@@ -178,11 +174,11 @@ void CAdPlugDatabase::wipe(CRecord *record)
 
 void CAdPlugDatabase::wipe()
 {
-  if (!DB_Bucket::linear_length()) return;
+  if(!linear_length) return;
 
   DB_Bucket *bucket = db_linear[linear_index];
 
-  if (!bucket->deleted) {
+  if(!bucket->deleted) {
     delete bucket->record;
     linear_logic_length--;
     bucket->deleted = true;
@@ -191,13 +187,13 @@ void CAdPlugDatabase::wipe()
 
 CAdPlugDatabase::CRecord *CAdPlugDatabase::get_record()
 {
-  if(!DB_Bucket::linear_length()) return 0;
+  if(!linear_length) return 0;
   return db_linear[linear_index]->record;
 }
 
 bool CAdPlugDatabase::go_forward()
 {
-  if(linear_index + 1 < DB_Bucket::linear_length()) {
+  if(linear_index + 1 < linear_length) {
     linear_index++;
     return true;
   } else
@@ -213,39 +209,29 @@ bool CAdPlugDatabase::go_backward()
 
 void CAdPlugDatabase::goto_begin()
 {	
-  if(DB_Bucket::linear_length())
-    linear_index = 0;
+  if(linear_length) linear_index = 0;
 }
 
 void CAdPlugDatabase::goto_end()
 {
-  if (DB_Bucket::linear_length())
-    linear_index = DB_Bucket::linear_length() - 1;
+  if(linear_length) linear_index = linear_length - 1;
 }
 
-unsigned long CAdPlugDatabase::make_hash(CKey const &key)
+inline unsigned long CAdPlugDatabase::make_hash(CKey const &key)
 {
-	return (key.crc32 + key.crc16) % hash_radix;
+  return (key.crc32 + key.crc16) % hash_radix;
 }
 
 /***** CAdPlugDatabase::DB_Bucket *****/
 
-unsigned long CAdPlugDatabase::DB_Bucket::mainindex = 0;
-
-CAdPlugDatabase::DB_Bucket::DB_Bucket(CRecord *newrecord, DB_Bucket *newchain)
-  : index(mainindex), deleted(false), chain(newchain), record(newrecord)
+CAdPlugDatabase::DB_Bucket::DB_Bucket(unsigned long nindex, CRecord *newrecord, DB_Bucket *newchain)
+  : index(nindex), deleted(false), chain(newchain), record(newrecord)
 {
-  mainindex++;
 }
 
 CAdPlugDatabase::DB_Bucket::~DB_Bucket()
 {
   if(!deleted) delete record;
-}
-
-unsigned long CAdPlugDatabase::DB_Bucket::linear_length()
-{
-  return mainindex;
 }
 
 /***** CAdPlugDatabase::CRecord *****/

@@ -367,7 +367,7 @@ the @code{void CEmuopl::update(short *@var{buf}, int @var{samples})}
 method. The @var{buf} argument is a pointer to a previously allocated
 memory block of the size specified by the @var{samples} argument, in
 samples. The method will fill the specified amount of samples into the
-buffer.
+buffer. Multibyte samples have the machine's byte ordering.
 
 The volume analyzing hardware OPL2 class @code{CAnalopl} also has some
 data readback methods:

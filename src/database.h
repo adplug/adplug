@@ -115,19 +115,14 @@ private:
 
     CRecord		*record;
 
-    DB_Bucket(CRecord *newrecord, DB_Bucket *newchain = 0);
+    DB_Bucket(unsigned long nindex, CRecord *newrecord, DB_Bucket *newchain = 0);
     ~DB_Bucket();
-
-    static unsigned long linear_length();
-
-  private:
-    static unsigned long mainindex;
   };
 
   DB_Bucket	*db_linear[ADPLUGDB_HASH_RADIX];
   DB_Bucket	*db_hashed[ADPLUGDB_HASH_RADIX];
 
-  unsigned long	linear_index, linear_logic_length;
+  unsigned long	linear_index, linear_logic_length, linear_length;
 
   unsigned long make_hash(CKey const &key);
 };
