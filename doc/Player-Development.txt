@@ -10,6 +10,8 @@ Your player normally consists of two files (the .h & .cpp files) and you normall
 name them by the file extensions, your player handles. For example, the HSC player
 consists of the files hsc.cpp & hsc.h, because it handles .hsc files. This is the
 same with your player class name. Thus, the HSC player's class is called ChscPlayer.
+If any of these names happens to be already taken for other purposes, just
+name your player something else, appropriately.
 
 player.h contains the abstract player interface. You have to include it in your
 player to communicate with AdPlug. It also contains some very helpful structures
@@ -34,6 +36,16 @@ The other methods from CPlayer just serve informational purposes (as does
 gettype(), but it's required anyway ;) ) for AdPlug's info box and needn't to be
 filled. It would be nice if you fill them anyway, if that's reasonable for
 your player.
+
+There's one more public method you have to define in your player class:
+
+static CPlayer *factory(Copl *newopl);		// return a new instance
+
+Since it is static, it isn't already virtually defined in the CPlayer class
+and you have to add in manually.
+
+This method should return a freshly initialized object of your player class.
+If any errors occured (e.g. not enough memory), return 0 instead.
 
 Return true from your load() method, if the file was loaded successfully, or false
 if it couldn't be loaded for any reason (will mostly be wrong file type
