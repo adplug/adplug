@@ -15,13 +15,15 @@ AdPlug To Do List:
 - Add rhythm mode support to CMF player (inside mid.cpp)
 
 - Add new Protracker loaders:
+	- CFF: CUD BoomTracker [riven-mage]
 	- DTM: DeFy Adlib Tracker [riven-mage]
 	- MTR: Arkham Master Tracker [riven-mage]
-	? DMO: TwinTeam packed S3M
 
-- Add new players:
-	- CFF: CUD BoomTracker [riven-mage]
-	? XAD: Custom player from Burial Grounds BBStro
+- Add new Screamtracker 3 loader:
+	- DMO: TwinTeam Packed S3M [riven-mage]
+
+- Add new player:
+	- XAD: Custom player from Burial Grounds BBStro [riven-mage]
 
 - Convert the documentation in the 'doc' subdir to a better format.
   [dynamite]
