@@ -41,17 +41,13 @@ static const signed short copybits[COPYRANGES] = {4,6,8,10,12,14}, copymin[COPYR
 
 bool Ca2mLoader::load(istream &f)
 {
-#if defined(_MSC_VER) || defined(__WATCOMC__)
-#pragma pack(1)		// following struct MUST be byte-aligned!
-#endif
+#pragma pack(1)
 	struct {
 		char id[10];
 		unsigned long crc;
 		unsigned char version,numpats;
 	} ch;
-#if defined(_MSC_VER) || defined(__WATCOMC__)
-#pragma pack()		// revert to old alignment
-#endif
+#pragma pack()
 	int i,j,k,t;
 	unsigned char *secdata,*org,*secptr,*orgptr;
 	unsigned long alength;

@@ -46,12 +46,7 @@ public:
 	unsigned int getsubsongs();
 
 protected:
-
-// MS C and WATCOM C both align their structs, i don't know about other compilers
-#if defined(_MSC_VER) || defined(__WATCOMC__)
-#pragma pack(1)		// following structs MUST be byte-aligned!
-#endif
-
+#pragma pack(1)
 	struct d00header {
 		char id[6];
 		unsigned char type,version,speed,subsongs,soundcard;
@@ -63,6 +58,7 @@ protected:
 		unsigned char version,speed,subsongs;
 		unsigned short tpoin,seqptr,instptr,infoptr,lpulptr,endmark;
 	};
+#pragma pack()
 
 	struct {
 		unsigned short	*order,ordpos,pattpos,del,speed,rhcnt,key,freq,inst,spfx,ispfx,irhcnt;
@@ -95,10 +91,6 @@ protected:
 	d00header *header;
 	d00header1 *header1;
 	char *filedata;
-
-#if defined(_MSC_VER) || defined(__WATCOMC__)
-#pragma pack()		// revert to old alignment
-#endif
 
 private:
 	void setvolume(unsigned char chan);
