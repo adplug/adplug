@@ -19,8 +19,9 @@
   cff.cpp - BoomTracker loader by Riven the Mage <riven@ok.ru>
 */
 /*
-  NOTE: Volume slides in the original player have effect on carrier volume
-  only. So my volume slides slightly different from them.
+  NOTE: Conversion of slides is not 100% accurate. Original volume slides
+  have effect on carrier volume only. Also, original frequency & volume
+  slides use previous effect data instead of current.
 */
 
 #include <stdlib.h>
