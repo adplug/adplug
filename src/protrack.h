@@ -65,10 +65,10 @@ protected:
 	  signed char trigger;
 	} *channel;
 
-	struct {
+	struct Instrument {
 		unsigned char data[11],arpstart,arpspeed,arppos,arpspdcnt,misc;
 		signed char slide;
-	} inst[250];
+	} *inst;
 
 	struct Tracks {
 		unsigned char note,command,inst,param2,param1;
@@ -82,6 +82,7 @@ protected:
 	bool init_specialarp();
 	bool realloc_order(unsigned long len);
 	bool realloc_patterns(unsigned long pats, unsigned long rows, unsigned long chans);
+	bool realloc_instruments(unsigned long len);
 
 	void dealloc();
 

@@ -5,7 +5,9 @@ $Id$
 Introduction
 ------------
 This document gives some coding guidelines for people wishing to hack around
-in AdPlug.
+in AdPlug. Be sure to also read the overall and system-specific INSTALL
+files in the distribution's base directory to learn more about the build
+systems.
 
 Coding Style
 ------------
@@ -13,6 +15,11 @@ I do not really enforce any coding style guidelines (i don't adhere to any
 style guidelines myself, so... ;) ), but it would be nice if you follow the
 overall coding style, used throughout most of AdPlug's source files. If you
 don't, that's perfectly okay, too.
+
+Most of today's "super-intelligent" editors, like MSVC's one or GNU Emacs'
+c-mode, have their own idea of what the code has to look like, anyway. And
+since most people tend to use these, there's no point in torturing them to
+always having to change anything their editor thinks it knows better. ;)
 
 Debug Logging
 -------------

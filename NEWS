@@ -2,7 +2,8 @@ This is a brief overview of user-visible changes in AdPlug.
 
 Changes for version 1.3:
 	- Completely new build system for DOS and Windows.
-	- Much improved YM3812 emulator!
+	- New format support:
+		- SNG: Adlib Tracker 1.0
 
 Changes for version 1.2:
 	- Added a whole bunch of new players:

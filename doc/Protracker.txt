@@ -13,31 +13,32 @@ When writing a player for a Protracker-derivative format, it is almost
 always better to use and extend the CmodPlayer class, instead of writing a
 whole new player.
 
-Features and Limitations
-------------------------
+Features
+--------
 In addition to handling your data just like the original Protracker would,
 AdPlug's generic Protracker player has the following extra features:
 
 - Special Arpeggio lists, just like in the SA2 format.
-- Extendable set of up to 256 commands.
-- Up to 16 behaviour changing flags.
+- Extendable set of up to 256 note commands.
+- 16 behaviour changing flags.
+- Arbitrary numbers of rows, patterns, tracks and orderlist entries.
 
-However, currently, it also imposes some limits. These are:
-
-- Fixed set of 9 channels per pattern (and max. 9 voice polyphony). Not
-  really a limitation, since OPL2 is also just 9 channels. ;)
-- Fixed set of 250 instruments.
-- Fixed track length of 64 rows.
-- Fixed set of 576 tracks, regardless of patterns.
-- Fixed set of 64 patterns.
-
-Most of these limits could easily be expanded, if there is the need for it.
+The only current limitation is that it has a maximum 9 voice polyphony,
+which isn't really a limitation, since the OPL2 is just 9 voices, anyway.
 
 Defaults
 --------
 For historical reasons, CmodPlayer sets defaults to some values that needn't
 be initialized by you. These are:
+
 - The orderlist is preallocated to 128 entries.
+- The patterndata is preinitialized to 64 patterns with 9 channels and 64
+  rows each.
+- The instruments array is preallocated to 250 instruments.
+
+These are mostly standard Protracker limits. They stem from the original SA2
+defaults, for which this was once the player. Look at the CmodPlayer
+constructor for info on which variables are involved.
 
 Protracker Loaders
 ------------------
@@ -64,7 +65,9 @@ methods are about.
 Designing your loader
 ---------------------
 File validation and initial loading is the same as it would be with any
-other player.
+other player. One speciality is that you have to call rewind(0) whenever you
+completely loaded a valid file. Don't call it when you just exit your loader
+because the file was invalid, etc...
 
 The Protracker player needs at least an orderlist, the patterns and the
 instruments to function. Most of the time, you have to convert these between
@@ -130,13 +133,107 @@ Basically, the 'trackord' array tells the player which track out of the
 the first dimension of this array stands for the corresponding pattern and
 the next dimension holds the entries for all the 9 tracks.
 
+CmodPlayer orders its note data, in the 'Tracks' struct, the following way:
+
+'note' holds the note value. A value of 0 means no note. A value of 127
+means "key off". Values from 1 to 96 are actual notes to be played.
+Everything else is ignored. The octaves are encoded with the actual note
+values. Thus, notes from 1 to 12 are the 12 halftone-steps of the first,
+lowest octave, 13 to 24 are those of the next lowest octave, and so on.
+Refer to the source code to see which frequencies are actually associated
+with the note values.
+
+'inst' holds the instrument to be played with this note. Again, a 0 value
+means no instrument is associated with this note and the last active
+instrument is taken instead. Otherwise, the instrument with the number
+'inst' minus 1 is fetched from the 'inst' array (it's 0 based).
+
+'command' holds the command to be issued with this note. All available
+commands are in the following table:
+
+Value | Command                               | Values               | Range
+------+---------------------------------------+----------------------+------
+  0xy | Arpeggio                              | xy=1st note,2nd note | [0-F]
+  1xx | Frequency slide up                    | xx=sliding speed     | [0-FF]
+  2xx | Frequency slide down                  | xx=sliding speed     | [0-FF]
+  3xx | Tone portamento                       | xx=sliding speed     | [0-FF]
+  4xy | Vibrato                               | xx=speed,depth       | [0-F]
+  5xy | Tone portamento & volume slide        | xy=vol up|vol down   | [0-FF]
+  6xy | Vibrato & volume slide                | xy=vol up|vol down   | [0-FF]
+  7xx | Set tempo                             | xx=new tempo         | [0-FF]
+  8-- | Release sustaining note
+  9xy | Set carrier/modulator volume          | xy=car vol|mod vol   | [0-F]
+ 10xy | SA2 volume slide                      | xy=vol up|vol down   | [0-F]
+ 11xx | Position jump                         | xx=new position      | [0-FF]
+ 12xx | Set carr. & mod. volume               | xx=new volume        | [0-3F]
+ 13xx | Pattern break                         | xx=new row           | [0-FF]
+ 14?? | Extended command:
+   0x | Set chip tremolo                      | x=new depth          | [0-1]
+   1x | Set chip vibrato                      | x=new depth          | [0-1]
+   3x | Retrig note                           | x=retrig speed       | [0-F]
+   4x | Fine volume slide up                  | x=vol up             | [0-F]
+   5x | Fine volume slide down                | x=vol down           | [0-F]
+   6x | Fine frequency slide up               | x=freq up            | [0-F]
+   7x | Fine frequency slide down             | x=freq down          | [0-F]
+ 15xx | SA2 set speed                         | xx=new speed         | [0-FF]
+ 16xy | AMD volume slide                      | xy=vol up|vol down   | [0-F]
+ 17xx | Set instrument volume                 | xx=new volume        | [0-3F]
+ 18xx | AMD set speed                         | xx=new speed         | [0-FF]
+ 19xx | RAD set speed                         | xx=new speed         | [0-FF]
+ 20xx | RAD volume slide                      | xx=vol up/down       | [0-FF]
+ 21xx | Set modulator volume                  | xx=new volume        | [0-3F]
+ 22xx | Set carrier volume                    | xx=new volume        | [0-3F]
+ 23xx | Fine frequency slide up               | xx=sliding speed     | [0-FF]
+ 24xx | Fine frequency slide down             | xx=sliding speed     | [0-FF]
+ 25xy | Set carrier/modulator waveform        | xy=carr wav|mod wav  | [0-3,F]
+ 26xy | Volume slide                          | xy=vol up|vol down   | [0-F]
+255-- | No operation (NOP)
+------+---------------------------------------+----------------------+------
+Table 1. Effect commands
+
+The 'param1' and 'param2' variables hold the command's parameters. These are
+command-dependant. Refer to the table above and to the source code to see
+what they do with each of the commands.
+
+Loading Instruments
+-------------------
+For the instrument data, CmodPlayer structures it in the following way:
+
+Index | Operator  | Description                                      | OPL2
+------+-----------+--------------------------------------------------+-----
+    0 | Channel   | Feedback strength / Connection type              | 0xc0
+    1 | Modulator | Amp Mod / Vib / EG type / Key Scaling / Multiple | 0x20
+    2 | Carrier   | Amp Mod / Vib / EG type / Key Scaling / Multiple | 0x23
+    3 | Modulator | Attack Rate / Decay Rate                         | 0x60
+    4 | Carrier   | Attack Rate / Decay Rate                         | 0x63
+    5 | Modulator | Sustain Level / Release Rate                     | 0x80
+    6 | Carrier   | Sustain Level / Release Rate                     | 0x83
+    7 | Modulator | Wave Select                                      | 0xe0
+    8 | Carrier   | Wave Select                                      | 0xe3
+    9 | Modulator | Key scaling level / Operator output level        | 0x40
+   10 | Carrier   | Key scaling level / Operator output level        | 0x43
+------+-----------+--------------------------------------------------+-----
+Table 2. Instrument data (inst[].data[]) values
+
+There are 3 extensions, CmodPlayer imposes to the standard instrument data:
+
+First, there's the Special Arpeggio. This is explained in the 'Special
+Arpeggio' section, below.
+
+Next we got the 'slide' variable. This is a pre-slide value that is always
+added to the frequency of the note, whenever this instrument is to be
+played.
+
+Finally, there's the 'misc' variable. This is just the holder for the value
+of the 0xbd register (i.e. the "drums'n'misc" register) of the OPL2.
+
 Special Flags
 -------------
 The 'flags' variable holds special flags to change the behaviour of the
 player. These are:
 
 Standard:
-Act like standard Protracker would.
+Act like standard Protracker would. This is the default.
 
 Decimal:
 Command parameters are decimal values, not hexadecimal. For split parameter
@@ -159,13 +256,29 @@ Deconstruction
 Be careful when specifying your own deconstructors! These will generally
 override CmodPlayer's deconstructor, because it is defined virtual. Since
 CmodPlayer's own deconstructor normally handles all deconstruction work
-automatically, you have to do this manually now. It is best to refer to the
-actual deconstructor's source to see what you probably have to do.
+automatically, you have to do this manually now.
+
+To ease this process, there's a method deallocate() that you inherited with
+your loader. Call this in your own deconstructor and it will handle the
+deconstruction of the CmodPlayer-internal objects automatically, as usual.
 
 Special Arpeggio
 ----------------
 To use the special arpeggio facility, you have to initalize it first. Use
 the init_specialarp() method for this purpose. CmodPlayer's deconstructor
-automatically handles the deinit for you.
+or dealloc() automatically handles the deinit for you.
 
-[TODO: write more. Refer to sa2.[cpp,h] for info in the meantime.]
+The special arpeggio uses the 4 variables 'arpstart', 'arpspeed', 'arppos'
+and 'arpspdcnt' of the Instrument struct.
+
+[TODO: actually explain. Refer to sa2.[cpp,h] and the original SA2 docs in
+the meantime. The following table summarizes the special commands.]
+
+Value | Command
+------+----------------------------------
+  252 | Set carr. & mod. volume
+  253 | Release sustaining note
+  254 | Arpeggio loop
+  255 | End of special arpeggio
+------+----------------------------------
+Table 3. Special arpeggio commands

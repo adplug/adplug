@@ -34,4 +34,5 @@ AdPlug To Do List:
 
 - Fix up SA2 player. [dynamite]
 
-- Fix up Player-development-HOWTO [dynamite]
+- Convert the documentation in the 'doc' subdir to a better format.
+  [dynamite]
