@@ -1,6 +1,6 @@
 /*
  * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2002 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,20 +31,27 @@
 class CPlayerDesc
 {
 public:
-  typedef CPlayer	*(*Factory)(Copl *);
+  typedef CPlayer *(*Factory)(Copl *);
 
   Factory	factory;
-  std::string	filetype, extension;
+  std::string	filetype;
 
   CPlayerDesc();
-  CPlayerDesc(Factory f, std::string type, std::string ext);
+  CPlayerDesc(Factory f, const std::string &type, const char *ext);
 
   ~CPlayerDesc();
+
+  void add_extension(const std::string &ext);
+  const char *get_extension(unsigned int n) const;
+
+private:
+  char *extensions;
 };
 
 class CPlayers: public std::list<const CPlayerDesc *>
 {
 public:
+  const CPlayerDesc *lookup_filetype(const std::string &ftype) const;
   const CPlayerDesc *lookup_extension(const std::string &extension) const;
 };
 

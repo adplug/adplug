@@ -64,10 +64,10 @@
 
 #define VERSION		"1.4"		// AdPlug library version string
 
-/***** Static variables and methods *****/
+/***** CAdPlug *****/
 
 // List of all players that come with the standard AdPlug distribution
-static const CPlayerDesc allplayers[] = {
+const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(ChscPlayer::factory, "HSC-Tracker", ".hsc\0"),
   CPlayerDesc(CsngPlayer::factory, "SNGPlay", ".sng\0"),
   CPlayerDesc(CimfPlayer::factory, "Apogee IMF", ".imf\0"),
@@ -98,12 +98,12 @@ static const CPlayerDesc allplayers[] = {
   CPlayerDesc(CxadpsiPlayer::factory, "PSI", ".xad\0"),
   CPlayerDesc(CxadratPlayer::factory, "rat", ".xad\0"),
   CPlayerDesc(CldsLoader::factory, "Loudness", ".lds\0"),
-  CPlayerDesc(Cu6mPlayer::factory, "Ultima 6 Music", ".u6m\0"),
+  CPlayerDesc(Cu6mPlayer::factory, "Ultima 6 Music", ".m\0"),
   //  CPlayerDesc(CrolPlayer::factory, "Adlib Visual Composer", ".rol\0"),
   CPlayerDesc()
 };
 
-static const CPlayers &init_players(const CPlayerDesc pd[])
+const CPlayers &CAdPlug::init_players(const CPlayerDesc pd[])
 {
   static CPlayers	initplayers;
   unsigned int		i;
@@ -114,9 +114,7 @@ static const CPlayers &init_players(const CPlayerDesc pd[])
   return initplayers;
 }
 
-/***** CAdPlug *****/
-
-const CPlayers CAdPlug::players = init_players(allplayers);
+const CPlayers CAdPlug::players = CAdPlug::init_players(CAdPlug::allplayers);
 CAdPlugDatabase *CAdPlug::database = 0;
 
 CPlayer *CAdPlug::factory(const std::string &fn, Copl *opl, const CPlayers &pl,
@@ -124,9 +122,25 @@ CPlayer *CAdPlug::factory(const std::string &fn, Copl *opl, const CPlayers &pl,
 {
   CPlayer			*p;
   CPlayers::const_iterator	i;
+  unsigned int			j;
 
   AdPlug_LogWrite("*** CAdPlug::factory(\"%s\",opl,fp) ***\n", fn.c_str());
 
+  // Try a direct hit by file extension
+  for(i = pl.begin(); i != pl.end(); i++)
+    for(j = 0; (*i)->get_extension(j); j++)
+      if(fp.extension(fn, (*i)->get_extension(j))) {
+	AdPlug_LogWrite("Trying direct hit: %s\n", (*i)->filetype.c_str());
+	if((p = (*i)->factory(opl)))
+	  if(p->load(fn, fp)) {
+	    AdPlug_LogWrite("got it!\n");
+	    AdPlug_LogWrite("--- CAdPlug::factory ---\n");
+	    return p;
+	  } else
+	    delete p;
+      }
+
+  // Try all players, one by one
   for(i = pl.begin(); i != pl.end(); i++) {
     AdPlug_LogWrite("Trying: %s\n", (*i)->filetype.c_str());
     if((p = (*i)->factory(opl)))
@@ -138,6 +152,7 @@ CPlayer *CAdPlug::factory(const std::string &fn, Copl *opl, const CPlayers &pl,
 	delete p;
   }
 
+  // Unknown file
   AdPlug_LogWrite("End of list!\n");
   AdPlug_LogWrite("--- CAdPlug::factory ---\n");
   return 0;
@@ -158,28 +173,3 @@ void CAdPlug::debug_output(const std::string &filename)
   AdPlug_LogFile(filename.c_str());
   AdPlug_LogWrite("CAdPlug::debug_output(\"%s\"): Redirected.\n",filename.c_str());
 }
-
-/**************************/
-
-// WARNING: The order of this list is on purpose! AdPlug tries the players in
-// this order, which is to be preserved, because some players take precedence
-// above other players.
-// The list is terminated with an all-NULL element.
-/*const CAdPlug::Players CAdPlug::allplayers[] = {
-  {CmidPlayer::factory}, {CksmPlayer::factory}, {CrolPlayer::factory},
-  {CsngPlayer::factory}, {Ca2mLoader::factory}, {CradLoader::factory},
-  {CamdLoader::factory}, {Csa2Loader::factory}, {CrawPlayer::factory},
-  {Cs3mPlayer::factory}, {CmtkLoader::factory}, {CmkjPlayer::factory},
-  {CdfmLoader::factory}, {CbamPlayer::factory}, {CxadbmfPlayer::factory},
-  {CxadflashPlayer::factory}, {CxadhypPlayer::factory}, {CxadpsiPlayer::factory},
-  {CxadratPlayer::factory}, {CxadhybridPlayer::factory}, {CfmcLoader::factory},
-  {CmadLoader::factory}, {CcffLoader::factory}, {CdtmLoader::factory},
-  {CdmoLoader::factory}, {Cu6mPlayer::factory}, {Cd00Player::factory},
-  {ChspLoader::factory}, {ChscPlayer::factory}, {CimfPlayer::factory},
-  {CldsLoader::factory}, {CadtrackLoader::factory},
-
-  {ChscPlayer::factory, CFileType::HSCTracker, ".hsc", "HSC-Tracker", true},
-  {CsngPlayer::factory, CFileType::SNGPlay, ".sng", "SNGPlay", true},
-  {CimfPlayer::factory, CFileType::IMF, ".imf", "Apogee IMF", true},
-  {0}
-}; */

@@ -47,6 +47,9 @@ public:
 
 private:
   static CAdPlugDatabase *database;
+  static const CPlayerDesc allplayers[];
+
+  static const CPlayers &init_players(const CPlayerDesc pd[]);
 };
 
 #endif
