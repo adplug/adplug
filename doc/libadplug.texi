@@ -9,7 +9,7 @@
 This manual documents the AdPlug core library, version
 @value{VERSION}.
 
-Copyright @copyright{} 2002, 2003 Simon Peter <dn.tlp@@gmx.net>
+Copyright @copyright{} 2002 - 2004 Simon Peter <dn.tlp@@gmx.net>
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -108,6 +108,7 @@ but are included for testing purposes anyway.
 @end itemize
 @item @file{DFM}: Digital-FM by R.Verhaag
 @item @file{DMO}: Twin TrackPlayer by TwinTeam
+@item @file{DRO}: DOSBox Raw OPL Format
 @item @file{DTM}: DeFy Adlib Tracker by DeFy
 @item @file{HSC}: HSC Adlib Composer by Hannes Seifert, HSC-Tracker by Electronic Rats
 @item @file{HSP}: HSC Packed by Number Six / Aegis Corp.
@@ -120,10 +121,7 @@ but are included for testing purposes anyway.
 @itemize @bullet
 @item Bugs: Some volumes are a bit off
 @end itemize
-@item @file{LDS}: LOUDNESS Music Format @strong{(preliminary)}
-@itemize @bullet
-@item Bugs: Undocumented format, more to come.
-@end itemize
+@item @file{LDS}: LOUDNESS Music Format by Andras Molnar
 @item @file{M}: Ultima 6 Music Format by Origin
 @item @file{MAD}: Mlat Adlib Tracker
 @item @file{MID}: MIDI Audio File Format
@@ -222,18 +220,22 @@ either routed back to the application for it to do something with it
 or routed directly to a specific audio hardware.
 
 The following headers provide the interface to the sound generation
-section: @file{emuopl.h}, @file{realopl.h}, @file{silentopl.h} and
-@file{analopl.h}. All classes inside these headers are derived from
-the abstract base class @code{Copl}, declared inside the file
-@file{opl.h}, which provides the common interface for the Backend
-layer of the Playback section. This interface is not meant for the
-Frontend layer (i.e. your application). Your application, however, has
-to call special methods of these classes in order to route the data
-back, if there is any.
+section: @file{emuopl.h}, @file{kemuopl.h}, @file{realopl.h},
+@file{silentopl.h} and @file{analopl.h}. All classes inside these
+headers are derived from the abstract base class @code{Copl}, declared
+inside the file @file{opl.h}, which provides the common interface for
+the Backend layer of the Playback section. This interface is not meant
+for the Frontend layer (i.e. your application). Your application,
+however, has to call special methods of these classes in order to
+route the data back, if there is any.
 
 @file{emuopl.h} provides the class @code{CEmuopl}, which is a wrapper
 class around Tatsuyuki Satoh's fmopl OPL2 emulator, which generates
 wave audio data to be routed back to the application.
+
+@file{kemuopl.h} provides the class @code{CKemuopl}, which is a
+wrapper class around Ken Silverman's adlibemu OPL2 emulator, which
+generates wave audio data to be routed back to the application.
 
 @file{realopl.h} provides the class @code{CRealopl}, which outputs to
 a real hardware OPL2 chip. No data is routed back to the
@@ -369,6 +371,11 @@ method. The @var{buf} argument is a pointer to a previously allocated
 memory block of the size specified by the @var{samples} argument, in
 samples. The method will fill the specified amount of samples into the
 buffer. Multibyte samples have the machine's byte ordering.
+
+For easier and more uniform handling of the different OPL classes, the
+@code{Copl} base class also provides the @code{update()} method. For
+subclasses that do not support read back of the audio data (and for
+which this is not necessary), the method is empty and does nothing.
 
 The volume analyzing hardware OPL2 class @code{CAnalopl} also has some
 data readback methods:
