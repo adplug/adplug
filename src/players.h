@@ -37,15 +37,17 @@ public:
   std::string	filetype;
 
   CPlayerDesc();
+  CPlayerDesc(const CPlayerDesc &pd);
   CPlayerDesc(Factory f, const std::string &type, const char *ext);
 
   ~CPlayerDesc();
 
-  void add_extension(const std::string &ext);
+  void add_extension(const char *ext);
   const char *get_extension(unsigned int n) const;
 
 private:
-  char *extensions;
+  char		*extensions;
+  unsigned long	extlength;
 };
 
 class CPlayers: public std::list<const CPlayerDesc *>

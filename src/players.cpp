@@ -1,6 +1,6 @@
 /*
  * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
  * players.h - Players enumeration, by Simon Peter <dn.tlp@gmx.net>
  */
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "players.h"
@@ -26,32 +27,46 @@
 /***** CPlayerDesc *****/
 
 CPlayerDesc::CPlayerDesc()
-  : factory(0), extensions(0)
+  : factory(0), extensions(0), extlength(0)
 {
+}
+
+CPlayerDesc::CPlayerDesc(const CPlayerDesc &pd)
+  : factory(pd.factory), filetype(pd.filetype), extlength(pd.extlength)
+{
+  if(pd.extensions) {
+    extensions = (char *)malloc(extlength);
+    memcpy(extensions, pd.extensions, extlength);
+  } else
+    extensions = 0;
 }
 
 CPlayerDesc::CPlayerDesc(Factory f, const std::string &type, const char *ext)
   : factory(f), filetype(type), extensions(0)
 {
   const char *i = ext;
-  unsigned long length;
 
   // Determine length of passed extensions list
   while(*i) i += strlen(i) + 1;
-  length = i - ext + 1;	// length = difference between last and first char + 1
+  extlength = i - ext + 1;	// length = difference between last and first char + 1
 
-  extensions = new char[length];
-  memcpy(extensions, ext, length);
+  extensions = (char *)malloc(extlength);
+  memcpy(extensions, ext, extlength);
 }
 
 CPlayerDesc::~CPlayerDesc()
 {
-  if(extensions) delete [] extensions;
+  if(extensions) free(extensions);
 }
 
-void CPlayerDesc::add_extension(const std::string &ext)
+void CPlayerDesc::add_extension(const char *ext)
 {
-  strcat(extensions, ext.c_str());
+  unsigned long newlength = extlength + strlen(ext) + 1;
+
+  extensions = (char *)realloc(extensions, newlength);
+  strcpy(extensions + extlength - 1, ext);
+  extensions[newlength - 1] = '\0';
+  extlength = newlength;
 }
 
 const char *CPlayerDesc::get_extension(unsigned int n) const
