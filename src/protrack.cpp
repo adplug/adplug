@@ -520,8 +520,12 @@ void CmodPlayer::dealloc()
 
 void CmodPlayer::setvolume(unsigned char chan)
 {
-	opl->write(0x40 + op_table[chan], 63-channel[chan].vol2 + (inst[channel[chan].inst].data[9] & 192));
-	opl->write(0x43 + op_table[chan], 63-channel[chan].vol1 + (inst[channel[chan].inst].data[10] & 192));
+	if (flags & Faust)
+        	setvolume_alt(chan);
+	else {
+		opl->write(0x40 + op_table[chan], 63-channel[chan].vol2 + (inst[channel[chan].inst].data[9] & 192));
+		opl->write(0x43 + op_table[chan], 63-channel[chan].vol1 + (inst[channel[chan].inst].data[10] & 192));
+	}
 }
 
 void CmodPlayer::setvolume_alt(unsigned char chan)
@@ -565,12 +569,11 @@ void CmodPlayer::playnote(unsigned char chan)
 	channel[chan].key = 1;
 	setfreq(chan);
 
-    if (flags & Faust) {
-        channel[chan].vol2 = 63;
-        channel[chan].vol1 = 63;
-        setvolume_alt(chan);
-    } else
-        setvolume(chan);
+	if (flags & Faust) {
+		channel[chan].vol2 = 63;
+		channel[chan].vol1 = 63;
+	}
+	setvolume(chan);
 }
 
 void CmodPlayer::setnote(unsigned char chan, int note)
