@@ -766,7 +766,7 @@ fwait=1.0f/(((float)iwait/(float)deltas)*((float)msqtr/(float)1000000));
 
 float CmidPlayer::getrefresh()
 {
-    return(fwait > 0.01f ? fwait : 0.01f);
+    return (fwait > 0.01f ? fwait : 0.01f);
 }
 
 void CmidPlayer::rewind(unsigned int subsong)
