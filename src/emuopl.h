@@ -25,9 +25,10 @@
 #include "opl.h"
 extern "C" {
 #include "fmopl.h"
+#include "ymf262.h"
 }
 
-class CEmuopl: public Copl
+class CEmuopl: public Copl_2
 {
 public:
 	CEmuopl(int rate, bool bit16, bool usestereo);	// rate = sample rate
@@ -39,9 +40,25 @@ public:
 	void write(int reg, int val);
 	void init();
 
+	//for Copl_2 interface
+	void setChip(int chip);
+	void setMode(int mode);
+
 private:
 	bool	use16bit,stereo;
-	FM_OPL	*opl;				// holds emulator data
+	FM_OPL	*opl[2];				// holds opl2 emulator data
+	YMF262::Class *opl3;			//opl3 emulator
+
+	short *mixbuf0;
+	short *mixbuf1;
+	int mixbufSamples;
+	
+	//specified by Copl_2 interface
+	int currChip; 
+	int currMode;
+	
+
+
 };
 
 #endif

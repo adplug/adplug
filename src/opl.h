@@ -29,6 +29,27 @@ public:
 	virtual void init(void) = 0;				// reinitialize OPL chip
 
 	virtual void update(short *buf, int samples) {};	// Emulation only: fill buffer
+
+	virtual void foo()
+};
+
+//a newer interface for OPL renderers--
+//provides a mechanism for specifying the 
+//chipset to be used for emulation, as well as
+//a destination chip for calls to Copl's write()
+class Copl_2 : public Copl
+{
+public:
+	//0 = low register set or opl2#0
+	//1 = high register set or opl2#1
+	//default chip should be 0 for compatibility with Copl interface
+	virtual void setChip(int chip) =0;
+
+	//0 = opl2
+	//1 = opl3
+	//2 = dual-opl2
+	//default mode should be 0 for compatibility with Copl interface
+	virtual void setMode(int mode) =0;
 };
 
 #endif

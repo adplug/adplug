@@ -18,11 +18,14 @@
  *
  * dro.c - DOSBox Raw OPL Player by Sjoerd van der Berg <harekiet@zophar.net>
  *
- * NOTES:
- * OPL3 and second opl2 writes are ignored
+ * upgraded by matthew gambrell <zeromus@zeromus.org>
+ * 
+ * NOTES: 3-oct-04: the DRO format is not yet finalized. beware.
+ *
   */
 
 #include "dro.h"
+#include <stdio.h>
 
 /*** public methods *************************************/
 
@@ -39,6 +42,7 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 	// file validation section
 	f->readString(id, 8);
 	if(strncmp(id,"DBRAWOPL",8)) { fp.close (f); return false; }
+	int version = f->readInt(4); //not very useful just yet
 
 	// load section
 	mstotal = f->readInt(4);	// Total milliseconds in file
@@ -71,14 +75,16 @@ bool CdroPlayer::update()
 			return true;
 		case 2:
 			index = 0;
+			if(opl_2) opl_2->setChip(0);
 			break;
 		case 3:
-			index = 0;
+			index = 1;
+			if(opl_2) opl_2->setChip(1);
 			break;
 		default:
-		  if(!index)
-		    opl->write(cmd,data[pos++]);
-		  break;
+			if(cmd==4) cmd = data[pos++]; //data override
+			opl->write(cmd,data[pos++]);
+			break;
 		}
 	}
 	return pos<length;
@@ -86,10 +92,29 @@ bool CdroPlayer::update()
 
 void CdroPlayer::rewind(int subsong)
 {
-	delay=1;
+	delay=1; 
 	pos = index = 0; 
 	opl->init(); 
-	opl->write(1,32);	// go to OPL2 mode
+
+	//dro assumes all registers are initialized to 0
+	//registers not initialized to 0 will be corrected
+	//in the data stream
+	for(int i=0;i<256;i++)
+		opl->write(i,0);
+	
+	if(opl_2){
+		opl_2->setChip(1);
+		for(int i=0;i<256;i++)
+			opl->write(i,0);
+		opl_2->setChip(0);
+
+		if(mode == ModeOPL2)
+			opl_2->setMode(0);
+		if(mode == ModeOPL3)
+			opl_2->setMode(1);
+		if(mode == ModeDUALOPL2)
+			opl_2->setMode(2);
+	}
 }
 
 float CdroPlayer::getrefresh()

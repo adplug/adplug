@@ -33,7 +33,13 @@ const unsigned char CPlayer::op_table[9] =
 
 CPlayer::CPlayer(Copl *newopl)
   : opl(newopl), db(CAdPlug::database)
-{
+{	
+	//attempt to get a Copl_2 interface
+	//TODO : should this not use RTTI?
+	//are there good reasons not to use RTTI on some platforms?
+	if(newopl)
+		opl_2 = dynamic_cast<Copl_2*>(newopl);
+	else opl_2 = 0;	
 }
 
 CPlayer::~CPlayer()
