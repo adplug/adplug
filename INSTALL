@@ -6,8 +6,8 @@ INSTALL.unix    All UNIX builds, including cygwin
 INSTALL.win32   Microsoft Visual C++ builds
 INSTALL.dos     WATCOM C/C++ builds
 
-Correction to 'INSTALL.dos':
-----------------------------
+Appendix to 'INSTALL.dos':
+--------------------------
 The build instructions of the WATCOM build are generic and generated
 automatically. They assume that the main Makefile would be called 'Makefile'.
 This isn't the case for AdPlug's WATCOM build! AdPlug's WATCOM Makefile is
