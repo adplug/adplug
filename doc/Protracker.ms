@@ -312,11 +312,12 @@ n | l | l | l .
 20xx	RAD volume slide	xx=vol up/down	[0-FF]
 21xx	Set modulator volume	xx=new volume	[0-3F]
 22xx	Set carrier volume	xx=new volume	[0-3F]
-23xx	Fine frequency slide up	xx=sliding speed	[0-FF]
-24xx	Fine frequency slide down	xx=sliding speed	[0-FF]
+23xx	Fine frequency slide up	xx=freq up	[0-FF]
+24xx	Fine frequency slide down	xx=freq down	[0-FF]
 25xy	Set carrier/modulator waveform	xy=carr wav|mod wav	[0-3,F]
 26xy	Volume slide	xy=vol up|vol down	[0-F]
 27xy	Set chip tremolo/vibrato	xy=tr depth|vb depth	[0-1]
+28xy	DTM frequency slide	x=up, frames|y=down, frames	[0-F]
 255--	No operation (NOP)
 .TE
 .B "Table 1."
@@ -436,10 +437,11 @@ Faust:
 .PP
 Treat the files like
 .B "Faust Music Creator"
-does.
-
-.PP
-.I "[TODO: riven, could you please explain what this is about?]"
+does, this tracker uses different volume handling scheme.
+In standard Protracker:
+.B final volume = channel volume = instrument volume
+In FMC:
+.B final volume = (channel volume + instrument volume) / 2
 
 .SH
 NoKeyOn:
