@@ -15,12 +15,13 @@
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
+
   dtm.cpp - DTM loader by Riven the Mage <riven@ok.ru>
 */
+/*
+  NOTE: Panning (Ex) effect is ignored.
+*/
 
-//#include <windows.h>
 #include "dtm.h"
 
 /* -------- Public Methods -------------------------------- */
@@ -33,9 +34,6 @@ CPlayer *CdtmLoader::factory(Copl *newopl)
 
 bool CdtmLoader::load(istream &f, const char *filename)
 {
-#ifdef _DEBUG
-	DebugBreak();
-#endif
 	const unsigned char conv_inst[11] = { 2,1,10,9,4,3,6,5,0,8,7 };
 	const unsigned short conv_note[12] = { 0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287, 0x2AE };
 
@@ -43,7 +41,7 @@ bool CdtmLoader::load(istream &f, const char *filename)
 
 	// signature exists ?
 	f.read((char *)&header,sizeof(dtm_header));
-	if (strncmp(header.id,"DeFy DTM ",9))
+	if (memcmp(header.id,"DeFy DTM ",9))
 		return false;
 
 	// good version ?
@@ -56,24 +54,26 @@ bool CdtmLoader::load(istream &f, const char *filename)
 	memset(desc,0,80*16);
 
 	char bufstr[80];
-	unsigned char bufstr_length;
 
 	for (i=0;i<16;i++)
 	{
 		// get line length
-		bufstr_length = f.get();
+		unsigned char bufstr_length = f.get();
 
 		// read line
-		f.read(bufstr,bufstr_length);
+		if (bufstr_length)
+		{
+			f.read(bufstr,bufstr_length);
 
-		// convert it
-		for(j=0;j<bufstr_length;j++)
-			if (!bufstr[j])
-				bufstr[j] = 0x20;
+			for (j=0;j<bufstr_length;j++)
+				if (!bufstr[j])
+					bufstr[j] = 0x20;
 
-		bufstr[bufstr_length] = 0;
+			bufstr[bufstr_length] = 0;
 
-		strcat(desc,bufstr);
+			strcat(desc,bufstr);
+		}
+
 		strcat(desc,"\n");
 	}
 
@@ -88,10 +88,16 @@ bool CdtmLoader::load(istream &f, const char *filename)
 	// load instruments
 	for (i=0;i<header.numinst;i++)
 	{
-		f.read(instruments[i].name, f.get());
+		unsigned char name_length = f.get();
+
+		if (name_length)
+			f.read(instruments[i].name, name_length);
+
+		instruments[i].name[name_length] = 0;
+
 		f.read(instruments[i].data,12);
 
-		for(j=0;j<11;j++)
+		for (j=0;j<11;j++)
 			inst[i].data[conv_inst[j]] = instruments[i].data[j];
 	}
 
@@ -105,23 +111,86 @@ bool CdtmLoader::load(istream &f, const char *filename)
 	// load tracks
 	for (i=0;i<nop;i++)
 	{
-		unsigned short packed_length = f.get() + (f.get() << 8);
+		unsigned short packed_length;
+
+		f.read((char *)&packed_length,2);
 
 		unsigned char *packed_pattern = new unsigned char [packed_length];
 
 		f.read((char *)packed_pattern,packed_length);
 
-		unpack_pattern(packed_pattern,packed_length,pattern);
+		long unpacked_length = unpack_pattern(packed_pattern,packed_length,pattern,0x480);
 
 		delete packed_pattern;
 
+		if (!unpacked_length)
+		{
+			delete pattern;
+			return false;
+		}
+
+		// convert pattern
 		for (j=0;j<9;j++)
 		{
 			for (k=0;k<64;k++)
 			{
-				dtm_event *event = &pattern[(k*9 + j)*2];
+				dtm_event *event = (dtm_event *)&pattern[(k*9+j)*2];
 
-				
+				// instrument
+				if (event->byte0 == 0x80)
+				{
+					if (event->byte1 <= 0x80)
+						tracks[t][k].inst = event->byte1 + 1;
+				}
+
+				// note + effect
+				else
+				{
+					tracks[t][k].note = event->byte0;
+
+					if ((event->byte0 != 0) && (event->byte0 != 127))
+							tracks[t][k].note++;
+
+					// convert effects
+					switch (event->byte1 >> 4)
+					{
+						case 0x0: // pattern break
+							if ((event->byte1 & 15) == 1)
+								tracks[t][k].command = 13;
+							break;
+
+						case 0x1: // freq. slide up
+							tracks[t][k].command = 28;
+							tracks[t][k].param1 = event->byte1 & 15;
+							break;
+
+						case 0x2: // freq. slide down
+							tracks[t][k].command = 28;
+							tracks[t][k].param2 = event->byte1 & 15;
+							break;
+
+						case 0xA: // set carrier volume
+						case 0xC: // set instrument volume
+							tracks[t][k].command = 22;
+							tracks[t][k].param1 = (0x3F - (event->byte1 & 15)) >> 4;
+							tracks[t][k].param2 = (0x3F - (event->byte1 & 15)) & 15;
+							break;
+
+						case 0xB: // set modulator volume
+							tracks[t][k].command = 21;
+							tracks[t][k].param1 = (0x3F - (event->byte1 & 15)) >> 4;
+							tracks[t][k].param2 = (0x3F - (event->byte1 & 15)) & 15;
+							break;
+
+						case 0xE: // set panning
+							break;
+
+						case 0xF: // set speed
+							tracks[t][k].command = 13;
+							tracks[t][k].param2 = event->byte1 & 15;
+							break;
+					}
+				}
 			}
 
 			t++;
@@ -129,13 +198,6 @@ bool CdtmLoader::load(istream &f, const char *filename)
 	}
 
 	delete pattern;
-
-	// default instruments
-	for (i=0;i<9;i++)
-	{
-		if (!tracks[i][0].inst)
-			tracks[i][0].inst = i + 1;
-	}
 
 	// order length
 	for (i=0;i<100;i++)
@@ -159,6 +221,20 @@ bool CdtmLoader::load(istream &f, const char *filename)
 	rewind(0);
 
 	return true;
+}
+
+void CdtmLoader::rewind(unsigned int subsong)
+{
+	CmodPlayer::rewind(subsong);
+
+	// default instruments
+	for (int i=0;i<9;i++)
+	{
+		channel[i].inst = i;
+
+		channel[i].vol1 = 63 - (inst[i].data[10] & 63);
+		channel[i].vol2 = 63 - (inst[i].data[9] & 63);
+	}
 }
 
 float CdtmLoader::getrefresh()
@@ -198,29 +274,35 @@ unsigned int CdtmLoader::getinstruments()
 
 /* -------- Private Methods ------------------------------- */
 
-long CdtmLoader::unpack_pattern(unsigned char *ibuf, long ilen, unsigned char *obuf)
+long CdtmLoader::unpack_pattern(unsigned char *ibuf, long ilen, unsigned char *obuf, long olen)
 {
 	unsigned char *input = ibuf;
 	unsigned char *output = obuf;
 
+	long input_length = 0;
+	long output_length = 0;
+
 	unsigned char repeat_byte, repeat_counter;
 
 	// RLE
-	while ((input - ibuf) < ilen)
+	while (input_length < ilen)
 	{
-		repeat_byte = *input++;
+		repeat_byte = input[input_length++];
 
 		if ((repeat_byte & 0xF0) == 0xD0)
 		{
 			repeat_counter = repeat_byte & 15;
-			repeat_byte = *input++;
+			repeat_byte = input[input_length++];
 		}
 		else
 			repeat_counter = 1;
 
 		for (int i=0;i<repeat_counter;i++)
-			*output++ = repeat_byte;
+		{
+			if (output_length < olen)
+				output[output_length++] = repeat_byte;
+		}
 	}
 
-	return (output - obuf);
+	return output_length;
 }

@@ -70,7 +70,7 @@ PostBuild_Cmds=call vc6inst l "Release\adplug.lib"	call vc6inst i *.h adplug
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "_DEBUG" /D "DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /FD /GZ /c
+# ADD CPP /nologo /Zp1 /MDd /W3 /Gm /GX /ZI /Od /D "_DEBUG" /D "DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
 # ADD RSC /l 0x407 /d "_DEBUG"
@@ -142,6 +142,10 @@ SOURCE=.\dfm.cpp
 # Begin Source File
 
 SOURCE=.\diskopl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dtm.cpp
 # End Source File
 # Begin Source File
 
@@ -303,6 +307,10 @@ SOURCE=.\dfm.h
 # Begin Source File
 
 SOURCE=.\diskopl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dtm.h
 # End Source File
 # Begin Source File
 

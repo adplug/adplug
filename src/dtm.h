@@ -15,8 +15,7 @@
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
+
   dtm.h - DTM loader by Riven the Mage <riven@ok.ru>
 */
 
@@ -25,12 +24,12 @@
 class CdtmLoader: public CmodPlayer
 {
 	public:
-
 		static CPlayer *factory(Copl *newopl);
 
 		CdtmLoader(Copl *newopl) : CmodPlayer(newopl) { };
 
 		bool			load(istream &f, const char *filename);
+		void			rewind(unsigned int subsong);
 		float			getrefresh();
 
 		std::string     gettype();
@@ -66,5 +65,5 @@ class CdtmLoader: public CmodPlayer
 			unsigned char	byte1;
 		};
 
-		long unpack_pattern(unsigned char *ibuf, long ilen, unsigned char *obuf);
+		long unpack_pattern(unsigned char *ibuf, long ilen, unsigned char *obuf, long olen);
 };
