@@ -2,6 +2,7 @@ This is a brief overview of user-visible changes in AdPlug.
 
 Changes for version 1.3:
 	- DOS/Windows build fixes.
+	- Much improved YM3812 emulator!
 
 Changes for version 1.2:
 	- Added a whole bunch of new players:

@@ -25,7 +25,7 @@
 static const unsigned short note_table[12] = {363,385,408,432,458,485,514,544,577,611,647,686};
 static const unsigned char op_table[9] = {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 0x10, 0x11, 0x12};
 
-CDiskopl::CDiskopl(std::string filename): old_freq(0.0f), touched(false), del(1)
+CDiskopl::CDiskopl(std::string filename): old_freq(0.0f), del(1), nowrite(false)
 {
 	unsigned short clock = 0xffff;
 	f = fopen(filename.c_str(),"wb");
@@ -50,30 +50,16 @@ void CDiskopl::update(CPlayer *p)
 		fputc(0,f); fputc(2,f);
 		fwrite(&clock,2,1,f);
 	}
-
-/*	if(touched) {
-		if(del) {
-			fputc(del,f); fputc(0,f);
-			del = 0;
-		} else {
-			fputc(1,f); fputc(0,f);
-		}
-		touched = false;
-	} else {
-		if(del < 255)
-			del++;
-		else {
-			fputc(del,f); fputc(0,f);
-			del = 0;
-		}
-	} */
-	fputc(del+1,f); fputc(0,f);
+	if(!nowrite) {
+		fputc(del+1,f);
+		fputc(0,f);
+	}
 }
 
 void CDiskopl::write(int reg, int val)
 {
-	diskwrite(reg,val);
-	touched = true;
+	if(!nowrite)
+		diskwrite(reg,val);
 }
 
 void CDiskopl::init()

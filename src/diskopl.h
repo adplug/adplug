@@ -31,7 +31,9 @@ public:
 	CDiskopl(std::string filename);
 	virtual ~CDiskopl();
 
-	void update(CPlayer *p);
+	void update(CPlayer *p);			// write to file
+	void setnowrite(bool nw = true)		// set file write status
+	{ nowrite = nw; };
 
 	// template methods
 	void write(int reg, int val);
@@ -42,6 +44,6 @@ private:
 
 	FILE			*f;
 	float			old_freq;
-	bool			touched;
 	unsigned char	del;
+	bool			nowrite;			// don't write to file, if true
 };

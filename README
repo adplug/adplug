@@ -88,10 +88,9 @@ may contain many replay issues, but are included for testing purposes anyway.
 - RAD: Reality ADlib Tracker by Reality
 - RAW: RdosPlay RAW file format by RDOS
   - Unimplemented: OPL3 register writes (not possible with AdLib)
-- ROL: AdLib Visual Composer by AdLib Inc. (preliminary)
+- ROL: AdLib Visual Composer by AdLib Inc.
   - Needs file 'standard.bnk' in the same directory as loaded file
-  - Bugs: Severe replay issues with Tatsuyuki's OPL2 emulator
-    (can anybody help me out with this?! please!!)
+    (be careful under UNIX - it's case sensitive!)
 - S3M: Screamtracker 3 by Future Crew
   - Bugs: Extra Fine Slides (EEx, FEx) & Fine Vibrato (Uxy) are inaccurate
 - SA2: Surprise! Adlib Tracker 2 by Surprise! Productions
