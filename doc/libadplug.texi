@@ -25,7 +25,7 @@ Software Foundation raise funds for GNU development.''
 @end quotation
 @end copying
 
-@dircategory GNU Libraries
+@dircategory Software Libraries
 @direntry
 * AdPlug Core Library: (libadplug).     AdPlug Core Library @value{VERSION}
 @end direntry
