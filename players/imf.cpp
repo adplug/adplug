@@ -40,8 +40,10 @@ bool CimfPlayer::update()
 		pos++;
 	} while(!del && pos < size);
 
-	if(pos >= size)
+	if(pos >= size) {
+		pos = 0;
 		songend = true;
+	}
 
 	return !songend;
 }

@@ -115,7 +115,7 @@ CPlayer *CAdPlug::factory(char *fn, Copl *opl)
 		if(!strcmp(upstr(strrchr(fn,'.')+1),"HSC")) {
 			p = new ChscPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
-		if(!strcmp(upstr(strrchr(fn,'.')+1),"IMF")) {
+		if(!strcmp(upstr(strrchr(fn,'.')+1),"IMF") || !strcmp(upstr(strrchr(fn,'.')+1),"WLF")) {
 			p = new CimfPlayer(opl); if(p->load(f)) return p; delete p; f.seekg(0);
 		}
 		if(!strcmp(upstr(strrchr(fn,'.')+1),"KSM")) {
