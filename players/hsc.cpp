@@ -39,12 +39,12 @@ bool ChscPlayer::load(istream &f)
 	for (i=0;i<128;i++) {			// correct instruments
 		instr[i][2] ^= (instr[i][2] & 0x40) << 1;
 		instr[i][3] ^= (instr[i][3] & 0x40) << 1;
-		instr[i][11] >>= 4;				// slide
+		instr[i][11] >>= 4;			// slide
 	}
-	f.read(song,51);							// load tracklist
+	f.read((char *)song,51);			// load tracklist
 	f.read((char *)patterns,sizeof(patterns));	// load patterns
 
-	rewind(0);							// rewind module
+	rewind(0);					// rewind module
 	return true;
 }
 

@@ -38,7 +38,7 @@ bool ChspLoader::load(istream &f)
 
 	// load section
 	cmp = new unsigned char[filesize];
-	f.read(cmp,orgsize);
+	f.read((char *)cmp,orgsize);
 
 	org = new unsigned char[orgsize];
 	for(i=0,j=0;i<filesize;j+=cmp[i],i+=2)	// decompress

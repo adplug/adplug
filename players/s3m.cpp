@@ -86,7 +86,7 @@ bool Cs3mPlayer::load(istream &f)
 	// load section
 	f.seekg(0);	// rewind for load
 	f.read((char *)&header,sizeof(header));		// read header
-	f.read(orders,header.ordnum);				// read orders
+	f.read((char *)orders,header.ordnum);		// read orders
 	f.read((char *)insptr,header.insnum*2);		// instrument parapointers
 	f.read((char *)pattptr,header.patnum*2);	// pattern parapointers
 
@@ -98,20 +98,21 @@ bool Cs3mPlayer::load(istream &f)
 	for(i=0;i<header.patnum;i++) {	// depack patterns
 		f.seekg(pattptr[i]*16);
 		f.read((char *)&ppatlen,sizeof(ppatlen));
-		for(row=0;(row<64) && (f.tellg()-pattptr[i]*16<=ppatlen);row++)
+		unsigned long pattpos = f.tellg();
+		for(row=0;(row<64) && (pattpos-pattptr[i]*16<=ppatlen);row++)
 			do {
-				f.read(&bufval,1);
+				f.read((char *)&bufval,1);
 				if(bufval & 32) {
-					f.read(&bufval2,1);
+					f.read((char *)&bufval2,1);
 					pattern[i][row][bufval & 31].note = bufval2 & 15;
 					pattern[i][row][bufval & 31].oct = (bufval2 & 240) >> 4;
-					f.read(&pattern[i][row][bufval & 31].instrument,1);
+					f.read((char *)&pattern[i][row][bufval & 31].instrument,1);
 				}
 				if(bufval & 64)
-					f.read(&pattern[i][row][bufval & 31].volume,1);
+					f.read((char *)&pattern[i][row][bufval & 31].volume,1);
 				if(bufval & 128) {
-					f.read(&pattern[i][row][bufval & 31].command,1);
-					f.read(&pattern[i][row][bufval & 31].info,1);
+					f.read((char *)&pattern[i][row][bufval & 31].command,1);
+					f.read((char *)&pattern[i][row][bufval & 31].info,1);
 				}
 			} while(bufval);
 	}

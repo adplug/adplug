@@ -32,11 +32,12 @@ public:
 		: use16bit(bit16), stereo(usestereo)
 	{
 		opl = OPLCreate(OPL_TYPE_YM3812,3579545,rate);
-	};
-	~CEmuopl()
+	}
+
+	virtual ~CEmuopl()
 	{
 		OPLDestroy(opl);
-	};
+	}
 
 	void update(short *buf, int samples);	// fill buffer
 
@@ -45,12 +46,12 @@ public:
 	{
 		OPLWrite(opl,0,reg);
 		OPLWrite(opl,1,val);
-	};
+	}
+
 	void init()
-	{ };
+	{ }
 
 private:
-	bool use16bit,stereo;
-
-	FM_OPL	*opl;			// holds emulator data
+	bool	use16bit,stereo;
+	FM_OPL	*opl;				// holds emulator data
 };

@@ -44,11 +44,11 @@ bool CksmPlayer::load(istream &f)
 	int i;
 	char instbuf[11];
 
-	f.read(trinst,16);
-	f.read(trquant,16);
-	f.read(trchan,16);
+	f.read((char *)trinst,16);
+	f.read((char *)trquant,16);
+	f.read((char *)trchan,16);
 	f.ignore(16);
-	f.read(trvol,16);
+	f.read((char *)trvol,16);
 	f.read((char *)&numnotes,2);
 	note = new unsigned long [numnotes];
 	f.read((char *)note,numnotes << 2);
@@ -269,7 +269,7 @@ void CksmPlayer::loadinsts(istream &f)
 
 	for(i=0;i<256;i++) {
 		f.read(instname[i],20);
-		f.read(inst[i],11);
+		f.read((char *)inst[i],11);
 		f.ignore(2);
 	}
 }

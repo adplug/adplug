@@ -14,8 +14,8 @@
 	note:
 */
 
-#define INLINE __inline
-#define HAS_YM3812 1
+#define INLINE		__inline
+#define HAS_YM3812	1
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -219,7 +219,8 @@ static INT32 feedback2;		/* connect for SLOT 2 */
 #define LOG_WAR  2      /* WARNING     */
 #define LOG_INF  1      /* INFORMATION */
 
-#define LOG_LEVEL LOG_INF
+//#define LOG_LEVEL LOG_INF
+#define LOG_LEVEL	LOG_ERR
 
 //#define LOG(n,x) if( (n)>=LOG_LEVEL ) logerror x
 #define LOG(n,x)

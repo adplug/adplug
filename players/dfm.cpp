@@ -44,7 +44,7 @@ bool CdfmLoader::load(istream &f)
 	initspeed = f.get();
 	f.read((char *)instname,32*12);
 	for(i=0;i<32;i++) {
-		f.read(tmpins,11);
+		f.read((char *)tmpins,11);
 		inst[i].data[0] = tmpins[10];
 		inst[i].data[1] = tmpins[0];
 		inst[i].data[2] = tmpins[1];
@@ -57,7 +57,7 @@ bool CdfmLoader::load(istream &f)
 		inst[i].data[9] = tmpins[2];
 		inst[i].data[10] = tmpins[3];
 	}
-	f.read(order,128);
+	f.read((char *)order,128);
 	for(i=0;i<128 && order[i] != 128;i++) ;
 	length = i;
 	npats = f.get();

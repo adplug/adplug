@@ -45,11 +45,11 @@ bool CmtkLoader::load(istream &f)
 
 	// load section
 	f.seekg(0,ios::end);
-	cmpsize = f.tellg()-sizeof(header);
+	cmpsize = f.tellg(); cmpsize -= sizeof(header);
 	f.seekg(sizeof(header));
 	cmp = new unsigned char[cmpsize];
 	org = new unsigned char[header.size];
-	f.read(cmp,cmpsize);
+	f.read((char *)cmp,cmpsize);
 
 	while(cmpptr < cmpsize) {	// decompress
 		ctrlmask >>= 1;

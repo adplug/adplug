@@ -36,7 +36,7 @@ bool Cu6mPlayer::load(istream &f)
         unsigned char pseudo_header[6];
         fpos = f.tellg();
         f.seekg(0);
-        f.read(pseudo_header,sizeof(pseudo_header));
+        f.read((char *)pseudo_header,sizeof(pseudo_header));
         f.seekg(fpos);
         decompressed_filesize = pseudo_header[0] + (pseudo_header[1] << 8);
 
@@ -58,7 +58,7 @@ bool Cu6mPlayer::load(istream &f)
 
     fpos = f.tellg();
     f.seekg(4);
-    f.read(compressed_song_data,filesize-4);
+    f.read((char *)compressed_song_data,filesize-4);
     f.seekg(fpos);
 
     // attempt to decompress the song data

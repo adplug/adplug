@@ -1,4 +1,4 @@
-CXX             = c++
+CXX             = gcc-3.0
 CXXFLAGS        = -Wall
 CPPFLAGS        = -Dstricmp=strcasecmp
 PLAYERS		= protrack.o a2m.o amd.o d00.o dfm.o hsc.o hsp.o imf.o ksm.o \

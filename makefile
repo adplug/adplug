@@ -1,7 +1,7 @@
 # AdPlug Makefile, (c) 2001 Simon Peter <dn.tlp@gmx.net>
 
-CC = cc
-CXX = c++
+CC = gcc-3.0
+CXX = gcc-3.0
 INSTALL = install
 
 CFLAGS = -Wall
@@ -14,13 +14,13 @@ AUX = makefile makefile.wat adplug.dsp COPYING CREDITS INSTALL README PLAYER_SDK
 
 prefix = /usr/local
 libdir = $(prefix)/lib
-includedir = /usr/include/adplug
+includedir = $(prefix)/include/adplug
 distname = adplug-1.1
 
 all: libadplug.so
 
 clean:
-	make -C players clean
+	$(MAKE) -C players clean
 	rm -f $(OBJS) libadplug.so
 
 distclean: clean
@@ -45,7 +45,7 @@ uninstall:
 	rm -f $(libdir)/libadplug.so
 
 libadplug.so: $(OBJS)
-	make -C players
+	$(MAKE) -C players
 	$(CXX) $(LDFLAGS) -o libadplug.so $(OBJS) players/*.o
 
 adplug.o: adplug.cpp adplug.h players/*.h
@@ -53,4 +53,4 @@ adplug.o: adplug.cpp adplug.h players/*.h
 
 emuopl.o: emuopl.cpp emuopl.h fmopl.o opl.h
 
-fmopl.o: fmopl.c fmopl.h fm.h
+fmopl.o: fmopl.c fmopl.h

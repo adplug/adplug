@@ -64,12 +64,12 @@ bool CbamPlayer::load(istream &f)
 {
 	char			id[4];
 
-	f.seekg(0,ios::end); size = f.tellg() - 4; f.seekg(0);
+	f.seekg(0,ios::end); size = f.tellg(); size -= 4; f.seekg(0);
 	f.read(id,4);
 	if(strncmp(id,"CBMF",4))
 		return false;
 	song = new unsigned char [size];
-	f.read(song,size);
+	f.read((char *)song,size);
 	rewind(0);
 	return true;
 }

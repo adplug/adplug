@@ -73,7 +73,7 @@ bool Ca2mLoader::load(istream &f)
 
 	// block 0
 	secdata = new unsigned char [len[0]];
-	f.read(secdata,len[0]);
+	f.read((char *)secdata,len[0]);
 	if(ch.version == 1 || ch.version == 5) {
 		org = new unsigned char [MAXBUF]; orgptr = org;
 		sixdepak((unsigned short *)secdata,org,len[0]);
@@ -115,7 +115,7 @@ bool Ca2mLoader::load(istream &f)
 		alength += len[i+2];
 
 	secdata = new unsigned char [alength];
-	f.read(secdata,alength);
+	f.read((char *)secdata,alength);
 	if(ch.version == 1 || ch.version == 5) {
 		org = new unsigned char [MAXBUF * (ch.numpats / (ch.version == 1 ? 16 : 8) + 1)];
 		orgptr = org; secptr = secdata;

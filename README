@@ -16,28 +16,30 @@ Supported platforms:
 AdPlug currently is tested and compiles well under the following platforms and
 compilers:
 
-Platform		Compiler(s)
---------		-----------
-Windows		Visual C++ 6.0
-MS-DOS		WATCOM C/C++ 11.0
-Linux			gcc 2.95.2
+Platform     Compiler(s)
+--------     -----------
+Windows      Visual C++ 6.0, cygwin
+MS-DOS       WATCOM C/C++ 11.0
+Linux        GCC 2.x, GCC 3.x
+FreeBSD      GCC 3.x
 
 The library builds either as dynamic or as static link library, depending on
 the host OS. The following defaults apply:
 
-Host OS	Library
--------	-------
-Linux		dynamic
-Windows	static
-DOS		static
+Host OS     Library
+-------     -------
+FreeBSD     dynamic
+Linux       dynamic
+Windows     static
+DOS         static
 
 Supported formats:
 ------------------
 AdPlug implements unique file replayers for each supported format in order to
 achieve the best possible replay quality. Below is a list of all currently
 supported file formats along with information about possible replay issues.
-Players marked as "preliminary" aren't considered final by the author and may
-contain many replay issues, but are included for testing purposes anyway.
+Players marked as "preliminary" aren't considered final by the author(s) and
+may contain many replay issues, but are included for testing purposes anyway.
 
 - A2M: AdLib Tracker 2 by subz3ro
   - Unimplemented commands (version 1-4): FF1 - FF9, FAx - FEx
@@ -45,8 +47,7 @@ contain many replay issues, but are included for testing purposes anyway.
   - In version 5-8 files, instrument panning & the flags byte is ignored
   - Only SixPack compressed or uncompressed files are supported
 - AMD: AMUSIC Adlib Tracker by Elyssis
-- BAM: Bob's Adlib Music Format (preliminary)
-  - Unimplemented: Recursive choruses
+- BAM: Bob's Adlib Music Format
 - CMF: Creative Music File Format by Creative Technology
   - Unimplemented: AdLib rhythm mode
 - D00: EdLib by Vibrants

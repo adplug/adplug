@@ -91,6 +91,10 @@ SOURCE=.\players\a2m.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\adlibemu.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\adplug.cpp
 # ADD CPP /I "players"
 # End Source File
@@ -109,6 +113,10 @@ SOURCE=.\players\d00.cpp
 # Begin Source File
 
 SOURCE=.\players\dfm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\diskopl.cpp
 # End Source File
 # Begin Source File
 
@@ -170,6 +178,15 @@ SOURCE=.\realopl.cpp
 # Begin Source File
 
 SOURCE=.\players\rol.cpp
+
+!IF  "$(CFG)" == "adplug - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "adplug - Win32 Debug"
+
+# ADD CPP /Zp8
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -197,6 +214,10 @@ SOURCE=.\players\a2m.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\adlibemu.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\adplug.h
 # End Source File
 # Begin Source File
@@ -217,11 +238,11 @@ SOURCE=.\players\dfm.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\emuopl.h
+SOURCE=.\diskopl.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\fm.h
+SOURCE=.\emuopl.h
 # End Source File
 # Begin Source File
 
@@ -245,18 +266,15 @@ SOURCE=.\players\imfcrc.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\kemuopl.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\players\ksm.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\players\lds.h
-
-!IF  "$(CFG)" == "adplug - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "adplug - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 

@@ -39,4 +39,4 @@ realopl.obj: realopl.cpp realopl.h
 
 analopl.obj: analopl.cpp analopl.h
 
-fmopl.obj: fmopl.c fmopl.h fm.h
+fmopl.obj: fmopl.c fmopl.h

@@ -142,7 +142,7 @@ bool CmidPlayer::load_sierra_ins()
 {
     long i,j,k,l;
     unsigned char ins[28];
-	ifstream f(insfile, ios::in | ios::nocreate | ios::binary);
+	ifstream f(insfile, ios::in | ios::binary);
 
 	if(!f.is_open())
 		return false;
@@ -249,7 +249,7 @@ bool CmidPlayer::load(istream &f)
     int good;
     unsigned char s[6];
 
-    f.read(s,6);
+    f.read((char *)s,6);
     good=0;
     subsongs=0;
     switch(s[0])
@@ -284,7 +284,7 @@ bool CmidPlayer::load(istream &f)
 	f.seekg(0);
     flen=filelength(f);
 	data = new unsigned char [flen];
-    f.read(data,flen);
+    f.read((char *)data,flen);
     rewind(0);
 
     return true;

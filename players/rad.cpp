@@ -65,7 +65,7 @@ bool CradLoader::load(istream &f)
 		inst[buf].data[8] = f.get(); inst[buf].data[7] = f.get();
 	}
 	length = f.get();
-	f.read(order,length);	// orderlist
+	f.read((char *)order,length);	// orderlist
 	f.read((char *)patofs,32*2);	// pattern offset table
 	for(i=0;i<64*9;i++)		// patterns
 		trackord[i/9][i%9] = i+1;

@@ -107,12 +107,12 @@ bool Csa2Loader::load(istream &f)
 		inst[i].slide = 0;
 	}
 	f.read((char *)instname,29*17);				// instrument names
-	f.ignore(3);								// dummy bytes
-	f.read(order,128);							// pattern orders
+	f.ignore(3);						// dummy bytes
+	f.read((char *)order,128);				// pattern orders
 	if (sat_type & HAS_UNKNOWN127) f.ignore(127);
 
 	// infos
-	f.read((char *)&nop,2); f.read(&length,1); f.read(&restartpos,1);
+	f.read((char *)&nop,2); f.read((char *)&length,1); f.read((char *)&restartpos,1);
 
 	// bpm
 	f.read((char *)&bpm,2);
@@ -121,11 +121,11 @@ bool Csa2Loader::load(istream &f)
 	}
 
 	if(sat_type & HAS_ARPEGIOLIST) {
-		f.read(arplist,sizeof(arplist));		// arpeggio list
-		f.read(arpcmd,sizeof(arpcmd));			// arpeggio commands
+		f.read((char *)arplist,sizeof(arplist));	// arpeggio list
+		f.read((char *)arpcmd,sizeof(arpcmd));		// arpeggio commands
 	}
 
-	for(i=0;i<64;i++) {							// track orders
+	for(i=0;i<64;i++) {					// track orders
 		for(j=0;j<9;j++) {
 			if(sat_type & HAS_TRACKORDER)
 				f.read((char *)&trackord[i][j],1);

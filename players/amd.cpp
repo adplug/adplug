@@ -49,11 +49,11 @@ bool CamdLoader::load(istream &f)
 	f.read(author,sizeof(author));
 	for(i=0;i<26;i++) {
 		f.read(instname[i],23);
-		f.read(inst[i].data,11);
+		f.read((char *)inst[i].data,11);
 	}
 	length = f.get();
 	nop = f.get() + 1;	// convert to 16bit
-	f.read(order,128);
+	f.read((char *)order,128);
 	f.read((char *)&header,sizeof(header));
 	if(header.version == 0x10) {	// unpacked module
 		for(i=0;i<64*9;i++)
