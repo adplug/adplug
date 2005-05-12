@@ -17,8 +17,8 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* This copy is modified for use with Microsoft Visual C++, Watcom C/C++ and
- * OpenWatcom compilers, 2003 by Simon Peter <dn.tlp@gmx.net>.
+/* This copy is modified for use with Microsoft Visual C++, Watcom C/C++,
+ * OpenWatcom and MinGW compilers, 2003, 2004 by Simon Peter <dn.tlp@gmx.net>.
  */
 
 #ifndef _GETOPT_H
@@ -136,6 +136,8 @@ struct option
    differences in the consts, in stdlib.h.  To avoid compilation
    errors, only prototype getopt for the GNU C library.  */
 extern int getopt (int __argc, char *const *__argv, const char *__shortopts);
+# elif defined WIN32
+extern int getopt (int, char *const *, const char *);
 # else /* not __GNU_LIBRARY__ */
 extern int getopt ();
 # endif /* __GNU_LIBRARY__ */
@@ -155,7 +157,7 @@ extern int _getopt_internal (int __argc, char *const *__argv,
 # endif
 #elif (defined(_MSC_VER) && _MSC_VER) || \
         (defined(__WATCOMC__) && __WATCOMC__)
-/* using Microsoft Visual C++, Watcom or OpenWatcom. */
+/* using Microsoft Visual C++, Watcom, OpenWatcom. */
 extern int getopt (int, char **, const char *);
 
 # ifndef __need_getopt

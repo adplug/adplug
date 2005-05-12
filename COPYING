@@ -1,20 +1,3 @@
-Ken Silverman's YM3812 emulator, constituted in this distribution by
-the files `src/adlibemu.c' and `src/adlibemu.h', and only these files,
-is covered by the following license:
-
---- BEGIN of Ken Silverman's license ---
-
-1. These lines don't get removed from ADLIBEMU.C:
-// "ADLIBEMU.C" Copyright (c) 1998-2001 Ken Silverman
-// Ken Silverman's official web site: "http://www.advsys.net/ken"
-
-2. No commercial exploitation of my work.
-
---- END of Ken Silverman's license ---
-
-All other parts of this software distribution are copyrighted according
-to the following GNU LESSER GENERAL PUBLIC LICENSE (LGPL):
-
                   GNU LESSER GENERAL PUBLIC LICENSE
                        Version 2.1, February 1999
 

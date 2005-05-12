@@ -1,5 +1,10 @@
 This is a brief overview of user-visible changes in AdPlug.
 
+Changes for version 1.5.1:
+	- License change: Ken Silverman permitted to relicense his
+	  emulator under the LGPL. The whole AdPlug distribution is
+	  now LGPL'd.
+
 Changes for version 1.5:
 	- New format support:
 		- XSM: eXtra Simple Music
