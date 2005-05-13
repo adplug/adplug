@@ -1,3 +1,56 @@
+2005-05-12 19:46  dynamite
+
+	* AUTHORS, COPYING, NEWS, TODO, configure.in, adplugdb/getopt.h,
+	src/adlibemu.c, src/adlibemu.h, src/adplug.cpp: Switched license to
+	fully LGPL'd. This is for release 1.5.1.
+
+2005-01-16 20:51  dynamite
+
+	* src/: adplug.dsp, vc6inst.bat: MSVC projects are now obsolete and
+	moved to contrib folder
+
+2005-01-02 22:03  dynamite
+
+	* AUTHORS, src/Makefile.am, src/Makefile.bt, src/adplug.cpp,
+	src/adplug.dsp, src/emuopl.cpp, src/emuopl.h, src/msc.cpp,
+	src/msc.h, src/temuopl.h, src/ymf262.cpp, src/ymf262.h: Added
+	generic support for dual OPL2 and OPL3 chips. Added support for MSC
+	files.
+
+2004-10-15 12:17  dynamite
+
+	* NEWS, TODO, src/Makefile.am, src/dro.cpp, src/emuopl.cpp,
+	src/emuopl.h, src/opl.h, src/player.cpp, src/player.h,
+	src/temuopl.cpp, src/temuopl.h, src/ymf262.cpp: Added OPL3 support.
+
+2004-10-07 12:55  dynamite
+
+	* AUTHORS, NEWS, configure.in, adplugdb/getopt.h, src/Makefile.am,
+	src/adplug.cpp, src/analopl.cpp, src/analopl.h, src/emuopl.cpp,
+	src/realopl.cpp, src/realopl.h: Added hardware OPL drivers to UNIX
+	build. Support for MinGW (cross-)compilers.
+
+2004-10-04 09:37  zeromus
+
+	* src/opl.h: oops, fixed a goofup
+
+2004-10-04 00:30  zeromus
+
+	* src/: opl.h, player.cpp, player.h, dro.cpp, emuopl.cpp, emuopl.h,
+	ymf262.cpp, ymf262.h: . enhanced DRO support . added opl3 core in
+	ymf262.cpp . modified driver and player to support more than one
+	opl core . modified emuopl driver to take advantage of new driver
+	interfaces. it is now the first driver capable of handling the new
+	modes (opl3 and dualopl2)
+
+2004-09-30 18:18  dynamite
+
+	* src/: adplug.dsp, kemuopl.h: Release 1.5
+
+2004-09-30 16:28  dynamite
+
+	* ChangeLog, src/hsp.cpp, test/Makefile.am: Release 1.5
+
 2004-09-29 18:50  dynamite
 
 	* test/: SATNIGHT.HSP, SATNIGHT.ref: Added HSP test case.
