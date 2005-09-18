@@ -1,9 +1,14 @@
 This is a brief overview of user-visible changes in AdPlug.
 
 Changes for version 1.6:
+	- New format support:
+		- MSC: AdLib MSCplay
 	- Dual OPL2 and OPL3 support.
-	- This version is not binary-compatible with older versions! All
-	  linked applications need to be recompiled.
+	- This version is not binary-compatible with older versions!
+	  All linked applications need to be recompiled.
+	- License change: Ken Silverman permitted to relicense his
+	  emulator under the LGPL. The whole AdPlug distribution is
+	  now LGPL'd.
 
 Changes for version 1.5:
 	- New format support:
@@ -11,9 +16,9 @@ Changes for version 1.5:
 		- DRO: DOSBox Raw OPL
 		- LDS: LOUDNESS Sound System
 	- Added support for .adlib files to IMF player.
-	- Reverted fmopl OPL2 emulator to old LGPL'd version, so AdPlug
-	  is now completely free (LGPL) again. Please read the README
-	  file for details.
+	- Reverted fmopl OPL2 emulator to old LGPL'd version, so
+	  AdPlug is now completely free (LGPL) again. Please read the
+	  README file for details.
 	- Added Ken Silverman's YM3812 emulator again. The portability
 	  issues have been fixed.
 	- Added a test-suite.

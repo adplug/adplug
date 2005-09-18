@@ -204,7 +204,7 @@ CmscPlayer::load_header (binistream * bf, msc_header * hdr)
 	hdr->mh_ver = bf->readInt (sizeof (hdr->mh_ver));
 	if (hdr->mh_ver != 0)
 		return false;
-	
+
 	bf->readString ((char *) hdr->mh_desc, sizeof (hdr->mh_desc));
 	hdr->mh_timer = bf->readInt (sizeof (hdr->mh_timer));
 	hdr->mh_nr_blocks = bf->readInt (sizeof (hdr->mh_nr_blocks));
