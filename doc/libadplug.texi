@@ -9,7 +9,7 @@
 This manual documents the AdPlug core library, version
 @value{VERSION}.
 
-Copyright @copyright{} 2002 - 2004 Simon Peter <dn.tlp@@gmx.net>
+Copyright @copyright{} 2002 - 2005 Simon Peter <dn.tlp@@gmx.net>
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -794,8 +794,8 @@ database. @xref{Keys}.
 
 @item std::string filetype
 Holds the unique file type of the file associated with the
-record. This value is taken from the player list (see @ref{Player
-Lists}).
+record. This value is taken from the player list (see
+@ref{Player Lists}).
 @end vtable
 
 The common base class @code{CAdPlugDatabase::CRecord} defines a
