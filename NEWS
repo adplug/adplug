@@ -3,12 +3,13 @@ This is a brief overview of user-visible changes in AdPlug.
 Changes for version 1.6:
 	- New format support:
 		- MSC: AdLib MSCplay
-	- Dual OPL2 and OPL3 support.
+	- Dual OPL2 and OPL3 support (OPL3 only in non-free version).
 	- This version is not binary-compatible with older versions!
 	  All linked applications need to be recompiled.
 	- License change: Ken Silverman permitted to relicense his
 	  emulator under the LGPL. The whole AdPlug distribution is
 	  now LGPL'd.
+	- IMF player supports Adam Nielsen's tag format now.
 
 Changes for version 1.5:
 	- New format support:
