@@ -1,6 +1,6 @@
 /*
  * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2004 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2005 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,27 +35,39 @@ class CRealopl: public Copl
   void setvolume(int volume);		// set adlib master volume (0 - 63) 0 = loudest, 63 = softest
   void setquiet(bool quiet = true);	// sets the OPL2 quiet, while still writing to the registers
   void setport(unsigned short port)	// set new OPL2 hardware baseport
-    { adlport = port; };
+    {
+      adlport = port;
+    }
   void setnowrite(bool nw = true)	// set hardware write status
-    { nowrite = nw; };
+    {
+      nowrite = nw;
+    }
 
   int getvolume()			// get adlib master volume
-    { return hardvol; };
+    {
+      return hardvol;
+    }
 
   // template methods
   void write(int reg, int val);
   void init();
+  void settype(ChipType type)
+    {
+      currType = type;
+    }
 
  protected:
   void hardwrite(int reg, int val);		// write to OPL2 hardware registers
+  bool harddetect();				// do real hardware detection
 
   static const unsigned char op_table[9];	// the 9 operators as expected by the OPL2
 
   unsigned short	adlport;		// adlib hardware baseport
-  int			hardvol,oldvol;		// hardware master volume
+  int			hardvol, oldvol;	// hardware master volume
   bool			bequiet;		// quiet status cache
-  char			hardvols[22][2];	// volume cache
+  char			hardvols[2][22][2];	// volume cache
   bool			nowrite;		// don't write to hardware, if true
+  int			currType;		// current chip type
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
  * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2002 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2005 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 #include "emuopl.h"
 
 CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
-  : use16bit(bit16), stereo(usestereo)
+  : use16bit(bit16), stereo(usestereo), currType(TYPE_DUAL_OPL2)
 {
   opl[0] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
   opl[1] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
@@ -125,14 +125,11 @@ void CEmuopl::write(int reg, int val)
 {
   switch(currType){
   case TYPE_OPL2:
-    OPLWrite(opl[0], 0, reg);
-    OPLWrite(opl[0], 1, val);
-    break;
-  case TYPE_OPL3:	// unsupported
-    break;
   case TYPE_DUAL_OPL2:
     OPLWrite(opl[currChip], 0, reg);
     OPLWrite(opl[currChip], 1, val);
+    break;
+  case TYPE_OPL3:	// unsupported
     break;
   }
 }
@@ -140,13 +137,7 @@ void CEmuopl::write(int reg, int val)
 void CEmuopl::init()
 {
   OPLResetChip(opl[0]); OPLResetChip(opl[1]);
-  currChip = 0; currType = TYPE_OPL2;
-}
-
-void CEmuopl::setchip(int n)
-{
-  if(n < 2)
-    currChip = n;
+  currChip = 0;
 }
 
 void CEmuopl::settype(ChipType type)

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,14 +29,16 @@ class CAnalopl: public CRealopl
  public:
   CAnalopl(unsigned short initport = DFL_ADLIBPORT);	// initport = OPL2 hardware baseport
 
-  int getcarriervol(unsigned int v);	// get carrier volume of adlib voice v
-  int getmodulatorvol(unsigned int v);	// get modulator volume of adlib voice v
-  bool getkeyon(unsigned int v);
+  // get carrier volume of adlib voice v on chip c
+  int getcarriervol(unsigned int v, unsigned int c = 0);
+  // get modulator volume of adlib voice v on chip c
+  int getmodulatorvol(unsigned int v, unsigned int c = 0);
+  bool getkeyon(unsigned int v, unsigned int c = 0);
 
   void write(int reg, int val);
 
  protected:
-  unsigned char	keyregs[9][2];		// shadow key register
+  unsigned char	keyregs[2][9][2];		// shadow key register
 };
 
 #endif

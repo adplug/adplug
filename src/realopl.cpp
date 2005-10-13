@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -67,24 +67,28 @@ outb (unsigned char value, unsigned short int port)
 #endif
 
 CRealopl::CRealopl(unsigned short initport)
-  : adlport(initport), hardvol(0), bequiet(false), nowrite(false)
+  : adlport(initport), hardvol(0), bequiet(false), nowrite(false),
+    currType(TYPE_OPL3)
 {
   for(int i=0;i<22;i++) {
-    hardvols[i][0] = 0;
-    hardvols[i][1] = 0;
+    hardvols[0][i][0] = 0;
+    hardvols[0][i][1] = 0;
+    hardvols[1][i][0] = 0;
+    hardvols[1][i][1] = 0;
   }
 }
 
-bool CRealopl::detect()
+bool CRealopl::harddetect()
 {
-  unsigned char stat1,stat2,i;
+  unsigned char		stat1, stat2, i;
+  unsigned short	adp = (currChip == 0 ? adlport : adlport + 2);
 
   hardwrite(4,0x60); hardwrite(4,0x80);
-  stat1 = INP(adlport);
+  stat1 = INP(adp);
   hardwrite(2,0xff); hardwrite(4,0x21);
   for(i=0;i<80;i++)			// wait for adlib
-    INP(adlport);
-  stat2 = INP(adlport);
+    INP(adp);
+  stat2 = INP(adp);
   hardwrite(4,0x60); hardwrite(4,0x80);
 
   if(((stat1 & 0xe0) == 0) && ((stat2 & 0xe0) == 0xc0))
@@ -93,16 +97,37 @@ bool CRealopl::detect()
     return false;
 }
 
+bool CRealopl::detect()
+{
+  unsigned char	stat;
+
+  setchip(0);
+  if(harddetect()) {
+    // is at least OPL2, check for OPL3
+    currType = TYPE_OPL2;
+
+    stat = INP(adlport);
+    if(stat & 6) {
+      // not OPL3, try dual-OPL2
+      setchip(1);
+      if(harddetect())
+	currType = TYPE_DUAL_OPL2;
+    } else
+      currType = TYPE_OPL3;
+  }
+}
+
 void CRealopl::setvolume(int volume)
 {
-  int i;
+  int i, j;
 
   hardvol = volume;
-  for(i=0;i<9;i++) {
-    hardwrite(0x43+op_table[i],((hardvols[op_table[i]+3][0] & 63) + volume) > 63 ? 63 : hardvols[op_table[i]+3][0] + volume);
-    if(hardvols[i][1] & 1)	// modulator too?
-      hardwrite(0x40+op_table[i],((hardvols[op_table[i]][0] & 63) + volume) > 63 ? 63 : hardvols[op_table[i]][0] + volume);
-  }
+  for(j = 0; j < 2; j++)
+    for(i = 0; i < 9; i++) {
+      hardwrite(0x43+op_table[i],((hardvols[j][op_table[i]+3][0] & 63) + volume) > 63 ? 63 : hardvols[j][op_table[i]+3][0] + volume);
+      if(hardvols[j][i][1] & 1)	// modulator too?
+	hardwrite(0x40+op_table[i],((hardvols[j][op_table[i]][0] & 63) + volume) > 63 ? 63 : hardvols[j][op_table[i]][0] + volume);
+    }
 }
 
 void CRealopl::setquiet(bool quiet)
@@ -118,14 +143,15 @@ void CRealopl::setquiet(bool quiet)
 
 void CRealopl::hardwrite(int reg, int val)
 {
-  int i;
+  int 			i;
+  unsigned short	adp = (currChip == 0 ? adlport : adlport + 2);
 
-  OUTP(adlport,reg);		// set register
+  OUTP(adp,reg);		// set register
   for(i=0;i<SHORTDELAY;i++)	// wait for adlib
-    INP(adlport);
-  OUTP(adlport+1,val);		// set value
+    INP(adp);
+  OUTP(adp+1,val);		// set value
   for(i=0;i<LONGDELAY;i++)	// wait for adlib
-    INP(adlport);
+    INP(adp);
 }
 
 void CRealopl::write(int reg, int val)
@@ -135,18 +161,21 @@ void CRealopl::write(int reg, int val)
   if(nowrite)
     return;
 
+  if(currType == TYPE_OPL2 && currChip > 0)
+    return;
+
   if(bequiet && (reg >= 0xb0 && reg <= 0xb8))	// filter all key-on commands
     val &= ~32;
   if(reg >= 0x40 && reg <= 0x55)		// cache volumes
-    hardvols[reg-0x40][0] = val;
+    hardvols[currChip][reg-0x40][0] = val;
   if(reg >= 0xc0 && reg <= 0xc8)
-    hardvols[reg-0xc0][1] = val;
+    hardvols[currChip][reg-0xc0][1] = val;
   if(hardvol)					// reduce volume
     for(i=0;i<9;i++) {
       if(reg == 0x43 + op_table[i])
 	val = ((val & 63) + hardvol) > 63 ? 63 : val + hardvol;
       else
-	if((reg == 0x40 + op_table[i]) && (hardvols[i][1] & 1))
+	if((reg == 0x40 + op_table[i]) && (hardvols[currChip][i][1] & 1))
 	  val = ((val & 63) + hardvol) > 63 ? 63 : val + hardvol;
     }
 
@@ -155,11 +184,16 @@ void CRealopl::write(int reg, int val)
 
 void CRealopl::init()
 {
-  int i;
+  int i, j;
 
-  for (i=0;i<9;i++) {			// stop instruments
-    hardwrite(0xb0 + i,0);		// key off
-    hardwrite(0x80 + op_table[i],0xff);	// fastest release
+  for(j = 0; j < 2; j++) {
+    setchip(j);
+
+    for(i=0;i<9;i++) {				// stop instruments
+      hardwrite(0xb0 + i,0);			// key off
+      hardwrite(0x80 + op_table[i],0xff);	// fastest release
+    }
+
+    hardwrite(0xbd,0);	// clear misc. register
   }
-  hardwrite(0xbd,0);	// clear misc. register
 }
