@@ -72,7 +72,7 @@ public:
   long flen;
   unsigned long pos;
   unsigned long sierra_pos; //sierras gotta be special.. :>
-  int subsongs, maxchans;
+  int subsongs;
   unsigned char *data;
 
   unsigned char adlib_data[256];

@@ -128,11 +128,6 @@ CmidPlayer::CmidPlayer(Copl *newopl)
   : CPlayer(newopl), author(&emptystr), title(&emptystr), remarks(&emptystr),
     emptystr('\0'), flen(0), data(0)
 {
-  // OPL2 has 9 channels, dual OPL2 and OPL3 have 18
-  if(opl->gettype() == Copl::TYPE_OPL2)
-    maxchans = 9;
-  else
-    maxchans = 18;
 }
 
 unsigned char CmidPlayer::datalook(long pos)
@@ -521,7 +516,7 @@ bool CmidPlayer::update()
 
                 if (ch[c].on!=0)
                 {
-		  for (i=0; i<9; i++)
+		  for (i=0; i<18; i++)
                     chp[i][2]++;
 
 		  if(c < 11 || adlib_mode == ADLIB_MELODIC) {
