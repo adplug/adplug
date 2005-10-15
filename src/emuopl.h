@@ -44,7 +44,6 @@ class CEmuopl: public Copl
   FM_OPL	*opl[2];				// OPL2 emulator data
   short		*mixbuf0, *mixbuf1;
   int		mixbufSamples;
-  ChipType	currType;
 };
 
 #endif

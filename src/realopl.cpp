@@ -67,8 +67,7 @@ outb (unsigned char value, unsigned short int port)
 #endif
 
 CRealopl::CRealopl(unsigned short initport)
-  : adlport(initport), hardvol(0), bequiet(false), nowrite(false),
-    currType(TYPE_OPL3)
+  : adlport(initport), hardvol(0), bequiet(false), nowrite(false)
 {
   for(int i=0;i<22;i++) {
     hardvols[0][i][0] = 0;
@@ -76,6 +75,8 @@ CRealopl::CRealopl(unsigned short initport)
     hardvols[1][i][0] = 0;
     hardvols[1][i][1] = 0;
   }
+
+  currType = TYPE_OPL3;
 }
 
 bool CRealopl::harddetect()

@@ -35,6 +35,7 @@ public:
     : use16bit(bit16), stereo(usestereo)
     {
       adlibinit(rate, usestereo ? 2 : 1, bit16 ? 2 : 1);
+      currType = TYPE_OPL2;
     };
 
   void update(short *buf, int samples)

@@ -21,13 +21,15 @@
 
 #include "emuopl.h"
 
+#include "debug.h"
+
 CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
-  : use16bit(bit16), stereo(usestereo), currType(TYPE_DUAL_OPL2)
+  : use16bit(bit16), stereo(usestereo), mixbufSamples(0)
 {
   opl[0] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
   opl[1] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
 
-  mixbufSamples = 0;
+  currType = TYPE_DUAL_OPL2;
 
   init();
 }
@@ -123,6 +125,9 @@ void CEmuopl::update(short *buf, int samples)
 
 void CEmuopl::write(int reg, int val)
 {
+  if(currChip == 1)
+    AdPlug_LogWrite("write to second chip");
+
   switch(currType){
   case TYPE_OPL2:
   case TYPE_DUAL_OPL2:

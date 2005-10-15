@@ -37,13 +37,19 @@ class Copl
     }
 
   virtual void init(void) = 0;			// reinitialize OPL chip(s)
-  virtual void settype(ChipType type) {}	// Set OPL chip's type
+
+  // return this OPL chip's type
+  ChipType gettype()
+    {
+      return currType;
+    }
 
   // Emulation only: fill buffer
   virtual void update(short *buf, int samples) {}
 
  protected:
-  int	currChip;		// currently selected OPL chip number
+  int		currChip;		// currently selected OPL chip number
+  ChipType	currType;		// this OPL chip's type
 };
 
 #endif

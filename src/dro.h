@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,30 +23,30 @@
 
 class CdroPlayer: public CPlayer
 {
-public:
+ public:
   static CPlayer *factory(Copl *newopl);
 
-	CdroPlayer(Copl *newopl)
-		: CPlayer(newopl), data(0)
-	{ };
-	~CdroPlayer()
-	{ if(data) delete [] data; };
+  CdroPlayer(Copl *newopl);
+  ~CdroPlayer()
+    {
+      if(data)
+	delete [] data;
+    }
 
-	bool load(const std::string &filename, const CFileProvider &fp);
-	bool update();
-	void rewind(int subsong);
-	float getrefresh();
+  bool load(const std::string &filename, const CFileProvider &fp);
+  bool update();
+  void rewind(int subsong);
+  float getrefresh();
 
-	std::string gettype()
-	{ return std::string("DOSBox Raw OPL"); };
+  std::string gettype()
+    {
+      return std::string("DOSBox Raw OPL");
+    }
 
-protected:
-	unsigned char *data;
-	unsigned long pos,length;
-	unsigned long msdone,mstotal;
-	unsigned short delay;
-	unsigned char index;
-	enum OplMode {
-		ModeOPL2,ModeOPL3,ModeDUALOPL2
-	} mode;
+ protected:
+  unsigned char *data;
+  unsigned long pos,length;
+  unsigned long msdone,mstotal;
+  unsigned short delay;
+  unsigned char index, opl3_mode;
 };

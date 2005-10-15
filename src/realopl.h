@@ -67,7 +67,6 @@ class CRealopl: public Copl
   bool			bequiet;		// quiet status cache
   char			hardvols[2][22][2];	// volume cache
   bool			nowrite;		// don't write to hardware, if true
-  int			currType;		// current chip type
 };
 
 #endif
