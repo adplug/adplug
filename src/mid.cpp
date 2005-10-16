@@ -544,7 +544,7 @@ bool CmidPlayer::update()
                     if (adlib_mode == ADLIB_MELODIC || c < 12)
 		      midi_fm_instrument(on,ch[c].ins);
 		    else
-		      midi_fm_percussion(c, ch[c].ins);
+ 		      midi_fm_percussion(c, ch[c].ins);
 
                     if ((adlib_style&MIDI_STYLE)!=0)
                         {

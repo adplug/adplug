@@ -21,8 +21,6 @@
 
 #include "emuopl.h"
 
-#include "debug.h"
-
 CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
   : use16bit(bit16), stereo(usestereo), mixbufSamples(0)
 {
@@ -91,6 +89,9 @@ void CEmuopl::update(short *buf, int samples)
       }
     break;
 
+  case TYPE_OPL3:	// unsupported
+    break;
+
   case TYPE_DUAL_OPL2:
     //for dual opl2 mode:
     //render each chip to a different tempbuffer
@@ -112,8 +113,6 @@ void CEmuopl::update(short *buf, int samples)
       //then we need to mix the two buffers into buf
       for(i=0;i<samples;i++)
 	outbuf[i] = (tempbuf[i]>>1) + (tempbuf2[i]>>1);
-
-  case TYPE_OPL3:	// unsupported
     break;
   }
 
@@ -125,9 +124,6 @@ void CEmuopl::update(short *buf, int samples)
 
 void CEmuopl::write(int reg, int val)
 {
-  if(currChip == 1)
-    AdPlug_LogWrite("write to second chip");
-
   switch(currType){
   case TYPE_OPL2:
   case TYPE_DUAL_OPL2:
