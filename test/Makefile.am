@@ -4,6 +4,10 @@ playertest_SOURCES = playertest.cpp
 
 playertest_LDADD = -L../src -ladplug
 
+playertest_LDFLAGS = $(libbinio_LIBS)
+
+AM_CPPFLAGS = $(libbinio_CFLAGS)
+
 TESTS = playertest
 
 EXTRA_DIST = 2001.MKJ 2001.ref ADAGIO.DFM ADAGIO.ref adlibsp.ref adlibsp.s3m \

@@ -7,12 +7,12 @@ doing so. Your SourceForge login name is a good way to identify yourself.
 
 AdPlug To Do List:
 ------------------
-- Add rhythm mode support to CMF player (inside mid.cpp).
-
 - Add new Protracker loaders:
 	- MTR: Arkham Master Tracker [riven-mage]
 
 - Add some index entries to documentation. [dynamite]
+
+- Update documentation to reflect OPL class changes (OPL3/Dual OPL2) [dynamite]
 
 - Split out endian-unclean players of the main test case and make them
   another one. [dynamite]

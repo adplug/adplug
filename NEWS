@@ -12,6 +12,7 @@ Changes for version 1.6:
 	  emulator under the LGPL. The whole AdPlug distribution is
 	  now LGPL'd.
 	- IMF player supports Adam Nielsen's tag format now.
+	- CMF player supports rhythm mode now.
 
 Changes for version 1.5:
 	- New format support:
