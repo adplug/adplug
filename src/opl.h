@@ -29,6 +29,11 @@ class Copl
     TYPE_OPL2, TYPE_OPL3, TYPE_DUAL_OPL2
   } ChipType;
 
+  Copl()
+    : currChip(0), currType(TYPE_OPL2)
+    {
+    }
+
   virtual void write(int reg, int val) = 0;	// combined register select + data write
   virtual void setchip(int n)			// select OPL chip
     {

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -80,7 +80,9 @@ public:
   Testopl(const std::string filename)
   {
     f = fopen(filename.c_str(), "w");
-	if(!f) std::cerr << "Error opening for writing: " << filename << std::endl;
+    if(!f) std::cerr << "Error opening for writing: " << filename << std::endl;
+
+    currType = TYPE_OPL3;
   }
 
   virtual ~Testopl()
@@ -102,6 +104,14 @@ public:
 		<< std::hex << reg << ", val = " << val << ")\n";
     if(!f) return;
     fprintf(f, "%x <- %x\n", reg, val);
+  }
+
+  void setchip(int n)
+  {
+    Copl::setchip(n);
+
+    if(!f) return;
+    fprintf(f, "setchip(%d)\n", n);
   }
 
   void init()
