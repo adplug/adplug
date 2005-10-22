@@ -115,7 +115,11 @@ bool CRealopl::detect()
 	currType = TYPE_DUAL_OPL2;
     } else
       currType = TYPE_OPL3;
-  }
+
+    setchip(0);
+    return true;
+  } else
+    return false;
 }
 
 void CRealopl::setvolume(int volume)

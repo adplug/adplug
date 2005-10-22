@@ -46,12 +46,14 @@ CdroPlayer::CdroPlayer(Copl *newopl)
 bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
   binistream *f = fp.open(filename); if(!f) return false;
-  char id[8];unsigned long i;
+  char id[8];
+  unsigned long i;
 
   // file validation section
   f->readString(id, 8);
   if(strncmp(id,"DBRAWOPL",8)) { fp.close (f); return false; }
   int version = f->readInt(4);	// not very useful just yet
+  if(version != 0x10000) { fp.close(f); return false; }
 
   // load section
   mstotal = f->readInt(4);	// Total milliseconds in file
