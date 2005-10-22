@@ -444,6 +444,9 @@ void CmidPlayer::midi_fm_endnote(int voice)
 void CmidPlayer::midi_fm_reset()
 {
     int i;
+
+    opl->init();
+
     for (i=0; i<256; i++)
         midi_write_adlib(i,0);
 
@@ -1064,7 +1067,7 @@ void CmidPlayer::rewind(int subsong)
                 }
 
     doing=1;
-	opl->init();
+    midi_fm_reset();
 }
 
 std::string CmidPlayer::gettype()
