@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,11 @@ public:
 	//	memset(buffer,0,97948);
 		int i=0,j=i*3;
 		unsigned long t=9;
+
+		if(opl->gettype() == Copl::TYPE_OPL2)
+		  opl3_mode = 0;
+		else
+		  opl3_mode = 1;
 	};
 	~CrixPlayer()
 	{};
@@ -62,7 +67,7 @@ protected:
 	unsigned long pos,length;
 	unsigned long msdone,mstotal;
 	unsigned short delay;
-	unsigned char index;
+	unsigned char index, opl3_mode;
 	enum OplMode {
 		ModeOPL2,ModeOPL3,ModeDUALOPL2
 	} mode;

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,10 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * rix.c - Dayu OPL Format Player by palxex <palxex@163.com/palxex.ys168.com>
- *
- * NOTES:
- * OPL3 and second opl2 writes are ignored
-  */
+ */
 
 #include "rix.h"
 #include <binfile.h>
@@ -90,7 +87,7 @@ bool CrixPlayer::update()
 	if (delay>500) {
 		delay-=500;
 		return true;
-	} else delay=0;
+	} else delay=1;
 	while (pos < length) 
 	{	
 		unsigned char cmd = dro[pos++];
@@ -104,12 +101,14 @@ bool CrixPlayer::update()
 			return true;
 		case 2:
 			index = 0;
+			opl->setchip(0);
 			break;
 		case 3:
-			index = 0;
+			index = 1;
+			opl->setchip(1);
 			break;
 		default:
-		  if(!index)
+		  if(index == 0 || opl3_mode)
 		    opl->write(cmd,dro[pos++]);
 		  break;
 		}
