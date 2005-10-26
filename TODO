@@ -16,3 +16,8 @@ AdPlug To Do List:
 
 - Split out endian-unclean players of the main test case and make them
   another one. [dynamite]
+
+- Fix platform-dependent players:
+  - D00 [dynamite]
+
+- Create test-suite for the emulators [dynamite]

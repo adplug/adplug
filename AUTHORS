@@ -32,7 +32,7 @@ Akintunde Omitowoju <oplx@yahoo.com>:
 
 Nikita V. Kalaganov <riven@ok.ru>:
   - Player development:
-    - XAD: shell player and custom modules
+    - XAD: shell player and custom module formats
   - Protracker loader development:
     - SNG: Faust Music Creator
     - MAD: Mlat Adlib Tracker
@@ -64,3 +64,7 @@ Borg No. One <borg_no.one@gmx.de>:
 Matthew Gambrell <mgambrell@gmail.com>:
   - Enhancements to the DRO (DOSBox Raw OPL) format
   - Added dual OPL2 and OPL3 support
+
+BSPAL <bspal.ys168.com>,
+Palxex <palxex@163.com>:
+  - RIX: Dayu OPL Music Format player development
