@@ -3,7 +3,7 @@ This is a brief overview of user-visible changes in AdPlug.
 Changes for version 1.6:
 	- New format support:
 		- MSC: AdLib MSCplay
-		- RIX: Dayu OPL Music Format
+		- RIX: Softstar RIX OPL Music Format
 	- Added OPL3 support:
 		- RAW: RdosPlay RAW
 	- Dual OPL2 and OPL3 support (OPL3 only in non-free version).

@@ -107,7 +107,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CxsmPlayer::factory, "eXtra Simple Music", ".xsm\0"),
   CPlayerDesc(CdroPlayer::factory, "DOSBox Raw OPL", ".dro\0"),
   CPlayerDesc(CmscPlayer::factory, "Adlib MSC Player", ".msc\0"),
-  CPlayerDesc(CrixPlayer::factory, "Dayu OPL Music Format", ".rix\0"),
+  CPlayerDesc(CrixPlayer::factory, "Softstar RIX OPL Music", ".rix\0"),
   CPlayerDesc()
 };
 

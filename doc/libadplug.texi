@@ -67,9 +67,9 @@ Software Foundation raise funds for GNU development.''
 
 AdPlug is a free, multi-platform, hardware independent AdLib sound
 player library, mainly written in C++. AdPlug plays sound data,
-originally created for the AdLib (OPL2) audio board, on top of an OPL2
-emulator or by using the real hardware. No OPL2 chip is required for
-playback.
+originally created for the AdLib and Sound Blaster (OPL2/OPL3) audio
+boards, on top of an OPL emulator or by using the real hardware. No
+OPL chip is required for playback.
 
 @menu
 * Supported Formats::
@@ -93,15 +93,12 @@ but are included for testing purposes anyway.
 @item Unimplemented commands (version 5-8): @code{Gxy, Hxy, Kxy - &xy}
 @item In version 5-8 files, instrument panning & the flags byte is ignored
 @item Only SixPack compressed and uncompressed files are supported
-@item All OPL3 functionality is absent (not possible with AdLib)
+@item All OPL3 functionality is absent
 @end itemize
 @item @file{AMD}: AMUSIC Adlib Tracker by Elyssis
 @item @file{BAM}: Bob's Adlib Music Format by Bob
 @item @file{CFF}: BoomTracker 4.0 by CUD
 @item @file{CMF}: Creative Music File Format by Creative Technology
-@itemize @bullet
-@item Unimplemented: AdLib rhythm mode
-@end itemize
 @item @file{D00}: EdLib by Vibrants
 @itemize @bullet
 @item Bugs: Hard restart SR sometimes sound wrong
@@ -126,12 +123,11 @@ but are included for testing purposes anyway.
 @item @file{MAD}: Mlat Adlib Tracker
 @item @file{MID}: MIDI Audio File Format
 @item @file{MKJ}: MKJamz by M \ K Productions @strong{(preliminary)}
+@item @file{MSC}: AdLib MSCplay
 @item @file{MTK}: MPU-401 Trakker by SuBZeR0
 @item @file{RAD}: Reality ADlib Tracker by Reality
 @item @file{RAW}: RdosPlay RAW file format by RDOS
-@itemize @bullet
-@item Unimplemented: OPL3 register writes (not possible with AdLib)
-@end itemize
+@item @file{RIX}: Softstar RIX OPL Music Format
 @item @file{ROL}: AdLib Visual Composer by AdLib Inc.
 @itemize @bullet
 @item Needs file @file{standard.bnk} in the same directory as loaded file
@@ -206,7 +202,7 @@ the file @file{adplug.h} in your source files, which automatically
 includes all the other Mid-End headers.
 
 The Backend layer is responsible for reading and decoding the sound
-files into OPL2 command data. It then passes this data to the sound
+files into OPL command data. It then passes this data to the sound
 generation section, which generates the final audio data. The header
 @file{player.h} and all player header files belong to the Backend
 layer.
@@ -214,41 +210,51 @@ layer.
 @node Sound generation section
 @subsection Sound generation section
 
-The Sound generation section is responsible for generating the OPL2's
+The Sound generation section is responsible for generating the OPL's
 sound, according to the input of the Playback section. This sound is
 either routed back to the application for it to do something with it
 or routed directly to a specific audio hardware.
 
 The following headers provide the interface to the sound generation
-section: @file{emuopl.h}, @file{kemuopl.h}, @file{realopl.h},
-@file{silentopl.h} and @file{analopl.h}. All classes inside these
-headers are derived from the abstract base class @code{Copl}, declared
-inside the file @file{opl.h}, which provides the common interface for
-the Backend layer of the Playback section. This interface is not meant
-for the Frontend layer (i.e. your application). Your application,
-however, has to call special methods of these classes in order to
-route the data back, if there is any.
+section: @file{emuopl.h}, @file{temuopl.h}, @file{kemuopl.h},
+@file{realopl.h}, @file{silentopl.h}, @file{analopl.h} and
+@file{diskopl.h}. All classes inside these headers are derived from
+the abstract base class @code{Copl}, declared inside the file
+@file{opl.h}, which provides the common interface for the Backend
+layer of the Playback section. This interface is not meant for the
+Frontend layer (i.e. your application). Your application, however, has
+to call special methods of these classes in order to route the data
+back, if there is any.
 
-@file{emuopl.h} provides the class @code{CEmuopl}, which is a wrapper
-class around Tatsuyuki Satoh's fmopl OPL2 emulator, which generates
-wave audio data to be routed back to the application.
+@file{emuopl.h} provides the class @code{CEmuopl}, which implements a
+virtual OPL emulator, which automatically selects the best available
+OPL chip emulation and type for each replayer.
+
+@file{temuopl.h} provides the class @code{CTEmuopl}, which is a
+wrapper class around Tatsuyuki Satoh's fmopl OPL2 emulator, which
+generates wave audio data to be routed back to the application.
 
 @file{kemuopl.h} provides the class @code{CKemuopl}, which is a
 wrapper class around Ken Silverman's adlibemu OPL2 emulator, which
 generates wave audio data to be routed back to the application.
 
 @file{realopl.h} provides the class @code{CRealopl}, which outputs to
-a real hardware OPL2 chip. No data is routed back to the
+a real hardware OPL2 or OPL3 chip. No data is routed back to the
 application. This class is currently only working on x86 hardware.
 
 @file{silentopl.h} provides the class @code{CSilentopl}, which is a
-dummy OPL2, which generates nothing. All data sent to it is forgotten
-immediately. No data is routed back to the application.
+dummy OPL2/3, which generates nothing. All data sent to it is
+forgotten immediately. No data is routed back to the application.
 
 @file{analopl.h} provides the class @code{CAnalopl}, which is the same
 as @code{CRealopl}, but also provides a 9-channel loudness
 pseudo-analyzer interface for the application. The loudness data is
 the only data routed back to the application.
+
+@file{diskopl.h} provides the class @code{CDiskopl}, which is an OPL3
+emulator that does not output any sound to the soundcard, but instead
+writes all received OPL commands to a file in the RdosPlay RAW
+format.
 
 @node Basic Usage
 @chapter Basic Usage
@@ -271,6 +277,7 @@ instantiate an object of it.
 * Loading::
 * Playback::
 * Audio output::
+* Chip support selection::
 * Getting Playback Information::
 * Example::
 @end menu
@@ -295,7 +302,7 @@ any reason.
 I guess @var{filename} does not need any more explanation, so i will
 just explain how to get an instance of a @code{Copl} derived class:
 
-If you want to use the OPL2 emulator class @code{CEmuopl}, you have to
+If you want to use the OPL emulator class @code{CEmuopl}, you have to
 include the header @file{emuopl.h} inside your application's source
 code. @code{CEmuopl}'s constructor looks like this:
 @code{CEmuopl::CEmuopl(int @var{rate}, bool @var{bit16}, bool
@@ -377,7 +384,7 @@ For easier and more uniform handling of the different OPL classes, the
 subclasses that do not support read back of the audio data (and for
 which this is not necessary), the method is empty and does nothing.
 
-The volume analyzing hardware OPL2 class @code{CAnalopl} also has some
+The volume analyzing hardware OPL class @code{CAnalopl} also has some
 data readback methods:
 
 @ftable @code
@@ -391,6 +398,47 @@ the only argument.
 Returns whether a key-on event just happened on the OPL2 channel given
 as the only argument.
 @end ftable
+
+@node Chip support selection
+@section Chip support selection
+
+With some OPL classes, like @code{CEmuopl} and @code{CRealopl}, it is
+also possible to select the chip type to support. The hardware OPL
+class will of course only be able to support those chip types that are
+available in the system. The emulated OPL class will be able to
+support all chip types that it can emulate, provided the corresponding
+emulators are compiled in.
+
+Three different OPL chip configurations can be identified, which can
+all be support by AdPlug.
+
+@itemize
+@item Single OPL2: This is the classic configuration found on the
+standard AdLib boards. One OPL2 chip is supported.
+@item Dual OPL2: This configuration was first implemented on the Sound
+Blaster Pro II boards. Two independant OPL2 chips are on this card.
+@item OPL3: This is the configuration found on all newer sound
+cards. An OPL3 chip is supported, which is capable of emulating the
+other two configurations.
+@end itemize
+
+In accordance to this, AdPlug's @code{Copl} base class defines the
+enumeration type @code{ChipType}, containing the items
+@code{TYPE_OPL2}, @code{TYPE_OPL3} and @code{TYPE_DUAL_OPL2}.
+
+OPL classes supporting multiple OPL interfaces have the
+@code{settype(@var{type})} method, which can be used to set the chip
+interface to support, using the @code{ChipType} enumeration type.
+
+The chip type needs not to be set, as all supporting classes
+automatically set the best available chip type, they can support, but
+you may like to provide your user with this selection to suite his
+listenting preferences.
+
+You may retrieve the currently supported chip type of a class by using
+the method @code{Copl::gettype()}, which returns a variable of type
+@code{ChipType}. This method is defined in the @code{Copl} base class
+and thus supported by all of the OPL classes.
 
 @node Getting Playback Information
 @section Getting Playback Information
@@ -1060,6 +1108,7 @@ through @ref{Hacking}.
 * Before the work::
 * Main work::
 * Loading and File Providers::
+* Sound generation::
 @end menu
 
 @node Before the work
@@ -1194,6 +1243,37 @@ to a string containing a filename. The second argument is a reference
 to a string containing a file extension to check for. If the passed
 filename has got exactly this extension (caselessly), the method
 returns @samp{true}. @code{false} is returned otherwise.
+
+@node Sound generation
+@section Sound generation
+
+You generate sound by using the @code{Copl::write(@var{reg},
+@var{val})} method of the @code{Copl} class, which has been passed to
+your constructor.
+
+@var{reg} is the number of the register of the OPL chip, you want to
+write data into. @var{val} is the value to write into it. There is no
+method to read back written data from an OPL chip, as this also was
+not possible with the original hardware. Log all data into an array if
+you have to remember written values.
+
+If your player supports the dual-OPL2 or OPL3 configurations, you can
+use the method @code{Copl::setchip(@var{n})} to set the output chip
+number, all subsequent @code{write()} methods will write to. As two
+chips can be supported at maximum, the value of @var{n} may only be 0
+or 1 for the first or the second chip, respectively.
+
+Before switching to another chip, your player always has to make sure
+that the configuration, you are going to address, is supported by the
+current OPL class. This can be done by calling the
+@code{Copl::gettype()} method, which will return the currently
+supported OPL chip type as an enumeration of type
+@code{Copl::ChipType}.
+
+If the desired configuration is not supported, your player should
+support playback on any of the other configurations. Your player
+should never switch to another OPL chip when this is not actually
+supported by the OPL class! The sound will be totally messed up.
 
 @node Protracker based players
 @chapter Protracker based players

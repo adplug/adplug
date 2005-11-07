@@ -235,7 +235,7 @@ inline void CrixPlayer::int_08h_entry()
                 {
                         mutex++;
                         band_sus = rix_proc();
-                        if(band_sus) sustain += band_sus;
+                        if(band_sus) sustain += band_sus * 1.06;
 							mstotal+=sustain;
 							dro[T++]=(sustain>=0x100?1:0);
 							dro[T++]=sustain&0xff;

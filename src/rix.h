@@ -48,13 +48,13 @@ public:
 	float getrefresh();
 
 	std::string gettype()
-	{ return std::string("Dayu OPL Music Format"); };
+	{ return std::string("Softstar RIX OPL Music Format"); };
 
 	typedef struct {unsigned char v[14];}ADDT;
 
 protected:	
 	unsigned char dro[64000];
-	unsigned char buf_addr[32768];  /* rix files' buffer */
+	unsigned char buf_addr[65536];  /* rix files' buffer */
 	unsigned short buffer[300];
 	unsigned short a0b0_data2[11];
 	unsigned char a0b0_data3[18];

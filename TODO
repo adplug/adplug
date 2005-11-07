@@ -5,19 +5,25 @@ To AdPlug SourceForge developers:
 If anyone happens to take over a task listed here, please mark that you're
 doing so. Your SourceForge login name is a good way to identify yourself.
 
-AdPlug To Do List:
-------------------
-- Add new Protracker loaders:
-	- MTR: Arkham Master Tracker [riven-mage]
-
-- Add some index entries to documentation. [dynamite]
-
-- Update documentation to reflect OPL class changes (OPL3/Dual OPL2) [dynamite]
-
-- Split out endian-unclean players of the main test case and make them
-  another one. [dynamite]
-
+Unfinished release goals for version 1.6:
+-----------------------------------------
 - Fix platform-dependent players:
   - D00 [dynamite]
 
 - Create test-suite for the emulators [dynamite]
+
+Unfinished release goals for version 1.7:
+-----------------------------------------
+- Dual-OPL2/OPL3 support
+  - Convert players:
+    - A2M
+
+General to do items:
+--------------------
+- Add new Protracker loaders:
+  - MTR: Arkham Master Tracker [riven-mage]
+
+- Add some index entries to documentation. [dynamite]
+
+- Split out endian-unclean players of the main test case and make them
+  another one. [dynamite]
