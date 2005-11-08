@@ -54,7 +54,7 @@ public:
 
 protected:	
 	unsigned char dro[64000];
-	unsigned char buf_addr[65536];  /* rix files' buffer */
+	unsigned char buf_addr[655360];  /* rix files' buffer */
 	unsigned short buffer[300];
 	unsigned short a0b0_data2[11];
 	unsigned char a0b0_data3[18];
