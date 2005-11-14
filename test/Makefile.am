@@ -1,12 +1,14 @@
-check_PROGRAMS = playertest
+check_PROGRAMS = playertest emutest
 
 playertest_SOURCES = playertest.cpp
 
-playertest_LDFLAGS = $(top_builddir)/src/.libs/libadplug.la $(libbinio_LIBS)
+emutest_SOURCES = emutest.cpp
+
+AM_LDFLAGS = $(top_builddir)/src/.libs/libadplug.la $(libbinio_LIBS)
 
 AM_CPPFLAGS = $(libbinio_CFLAGS)
 
-TESTS = playertest
+TESTS = playertest emutest
 
 EXTRA_DIST = 2001.MKJ 2001.ref ADAGIO.DFM ADAGIO.ref adlibsp.ref adlibsp.s3m \
 	ALLOYRUN.RAD ALLOYRUN.ref ARAB.BAM ARAB.ref BEGIN.KSM BEGIN.ref \
