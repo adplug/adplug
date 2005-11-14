@@ -10,8 +10,6 @@ Unfinished release goals for version 1.6:
 - Fix platform-dependent players:
   - D00 [dynamite]
 
-- Create test-suite for the emulators [dynamite]
-
 Unfinished release goals for version 1.7:
 -----------------------------------------
 - Dual-OPL2/OPL3 support
