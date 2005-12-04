@@ -99,7 +99,7 @@ CmscPlayer::load (const std::string & filename, const CFileProvider & fp)
 	for (int blk_num = 0; blk_num < nr_blocks; blk_num++) {
 		msc_block blk;
 		
-		blk.mb_length = bf->readInt (sizeof (blk.mb_length));
+		blk.mb_length = bf->readInt (2);
 		blk.mb_data = new u8 [blk.mb_length];
 		for (int oct_num = 0; oct_num < blk.mb_length; oct_num++) {
 			blk.mb_data [oct_num] = bf->readInt (1);
@@ -202,14 +202,14 @@ CmscPlayer::load_header (binistream * bf, msc_header * hdr)
 		return false;
 
 	// check version
-	hdr->mh_ver = bf->readInt (sizeof (hdr->mh_ver));
+	hdr->mh_ver = bf->readInt (2);
 	if (hdr->mh_ver != 0)
 		return false;
 
 	bf->readString ((char *) hdr->mh_desc, sizeof (hdr->mh_desc));
-	hdr->mh_timer = bf->readInt (sizeof (hdr->mh_timer));
-	hdr->mh_nr_blocks = bf->readInt (sizeof (hdr->mh_nr_blocks));
-	hdr->mh_block_len = bf->readInt (sizeof (hdr->mh_block_len));
+	hdr->mh_timer = bf->readInt (2);
+	hdr->mh_nr_blocks = bf->readInt (2);
+	hdr->mh_block_len = bf->readInt (2);
 	return true;
 }
 
