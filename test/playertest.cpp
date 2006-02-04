@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2006 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -58,7 +58,7 @@ static const char *filelist[] = {
   "TUBES.SAT",		// Surprise! Adlib Tracker
   "TU_BLESS.AMD",	// AMUSIC
   "VIB_VOL3.D00",	// EdLib Packed
-  "WONDERIN.IMF",	// Apogee
+  "WONDERIN.WLF",	// Apogee
   "bmf1_2.xad",		// xad: BMF
   "flash.xad",		// xad. flash
   "HIP_D.ROL",		// Visual Composer
