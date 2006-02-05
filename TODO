@@ -7,6 +7,8 @@ doing so. Your SourceForge login name is a good way to identify yourself.
 
 Unfinished release goals for version 1.6:
 -----------------------------------------
+- Fix amd.cpp player to play Skyrunner's files correctly
+
 - Fix platform-dependent players:
   - D00 [dynamite]
 
