@@ -60,7 +60,7 @@ static const char *filelist[] = {
   "VIB_VOL3.D00",	// EdLib Packed
   "WONDERIN.WLF",	// Apogee
   "bmf1_2.xad",		// xad: BMF
-  "flash.xad",		// xad. flash
+  "flash.xad",		// xad: flash
   "HIP_D.ROL",		// Visual Composer
   "hybrid.xad", 	// xad: hybrid
   "hyp.xad",		// xad: hyp
