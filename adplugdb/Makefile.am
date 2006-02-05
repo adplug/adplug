@@ -2,7 +2,7 @@ bin_PROGRAMS = adplugdb
 
 adplugdb_SOURCES = adplugdb.cpp getopt.c getopt.h
 
-adplugdb_LDADD = -L../src -ladplug $(libbinio_LIBS)
+AM_LDFLAGS = $(top_builddir)/src/.libs/libadplug.la $(libbinio_LIBS)
 
 adplug_data_dir = $(datadir)/adplug
 
