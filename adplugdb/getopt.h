@@ -136,7 +136,7 @@ struct option
    differences in the consts, in stdlib.h.  To avoid compilation
    errors, only prototype getopt for the GNU C library.  */
 extern int getopt (int __argc, char *const *__argv, const char *__shortopts);
-# elif defined WIN32
+# elif defined WIN32 || defined DJGPP
 extern int getopt (int, char *const *, const char *);
 # else /* not __GNU_LIBRARY__ */
 extern int getopt ();
