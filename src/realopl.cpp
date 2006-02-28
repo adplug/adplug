@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2006 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@
 #	include <conio.h>
 #	define INP	inp
 #	define OUTP	outp
-#elif defined(WIN32) && defined(__MSVCRT__) && defined(__MINGW32__)
+#elif defined(WIN32) && defined(__MSVCRT__) && defined(__MINGW32__)	// MinGW32
 /*
 int __cdecl _inp(unsigned short);
 int __cdecl _outp(unsigned short, int);
@@ -36,6 +36,10 @@ int __cdecl _outp(unsigned short, int);
 */
 #	define INP		inb
 #	define OUTP(reg, val)	outb(val, reg)
+#elif defined(DJGPP)		// DJGPP
+#	include <pc.h>
+#	define INP	inportb
+#	define OUTP	outportb
 #else				// no support on other platforms
 #	define INP(reg)		0
 #	define OUTP(reg, val)

@@ -52,9 +52,9 @@ CPlayer *CrixPlayer::factory(Copl *newopl)
 }
 
 CrixPlayer::CrixPlayer(Copl *newopl)
-  : CPlayer(newopl),I(0),T(0),mus_block(0),ins_block(0),rhythm(0),mutex(0),
-    music_on(0),pause_flag(0),band(0),band_low(0),e0_reg_flag(0),bd_modify(0),
-    sustain(0),dro_end(0), mstotal(0), opl3_mode(0)
+  : CPlayer(newopl), mstotal(0),opl3_mode(0),I(0),T(0),mus_block(0),
+    ins_block(0),rhythm(0),mutex(0),music_on(0),pause_flag(0),band(0),
+    band_low(0),e0_reg_flag(0),bd_modify(0),sustain(0),dro_end(0)
 {
   memset(dro, 0, 64000);
   memset(buf_addr, 0, 655360);
