@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2006 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -459,7 +459,6 @@ bool CmidPlayer::update()
     long w,v,note,vel,ctrl,nv,x,l,lnum;
     int i=0,j,c;
     int on,onl,numchan;
-    unsigned char ins[11];
     int ret;
 
     if (doing == 1)
