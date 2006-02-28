@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2006 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,6 +31,10 @@ class Copl
 
   Copl()
     : currChip(0), currType(TYPE_OPL2)
+    {
+    }
+
+  virtual ~Copl()
     {
     }
 
