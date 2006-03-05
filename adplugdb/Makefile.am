@@ -8,4 +8,4 @@ adplug_data_dir = $(sharedstatedir)/adplug
 
 AM_CPPFLAGS = -DADPLUG_DATA_DIR=\"$(adplug_data_dir)\" $(libbinio_CFLAGS)
 
-EXTRA_DIST = adplugdb.dsp Makefile.bt vc6inst.bat
+EXTRA_DIST = Makefile.bt
