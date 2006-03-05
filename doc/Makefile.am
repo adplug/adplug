@@ -4,7 +4,7 @@ libadplug_TEXINFOS = fdl.texi
 
 man_MANS = adplugdb.1
 
-EXTRA_DIST = $(man_MANS)
+EXTRA_DIST = adplugdb.1.in
 
 MOSTLYCLEANFILES = stamp-vti libadplug.info libadplug.info-1 \
 	libadplug.info-2
