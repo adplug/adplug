@@ -13,7 +13,7 @@
 .\" License along with this library; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 .\"
-.TH ADPLUGDB 1 "February 25, 2003" "AdPlug database maintenance utility 1.4" "User Commands"
+.TH ADPLUGDB 1 "March 4, 2006" "AdPlug database maintenance utility @VERSION@" "User Commands"
 .SH NAME
 adplugdb \- AdPlug database maintenance utility
 .SH SYNOPSIS
@@ -35,7 +35,7 @@ looked for in the current working directory.
 .PP
 A system-wide database file can be used instead, by specifying the
 \fB-s\fP commandline option. The system-wide database file is located
-in \fB/usr/local/share/adplug/adplug.db\fP and may only be manipulated
+in \fB@sharedstatedir@/adplug/adplug.db\fP and may only be manipulated
 as the superuser. An arbitrary database file might be used as well, by
 specifying the \fB-d\fP commandline parameter. Only one database file
 may be manipulated at a time.
