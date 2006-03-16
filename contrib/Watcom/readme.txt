@@ -1,4 +1,14 @@
-Appendix to 'INSTALL.dos':
+Installing this build system:
+-----------------------------
+Before you can use it, you have to move this build system in place. To
+do that, you just copy the files 'Makefile.wat' and 'Makefile.bt' into
+the base directory of the AdPlug distribution. Then, you copy the
+files 'adplugdb.bt', 'src.bt' and 'test.bt' into the subdirectories
+of the base directory with the same basename (e.g. 'src.bt' goes to
+the 'src' subdirectory). After they are in the subdirectories, you
+rename each of them to 'Makefile.bt' and you're set.
+
+Appendix to 'install.txt':
 --------------------------
 The build instructions of the Watcom build are generic and generated
 automatically. They assume that the main Makefile would be called 'Makefile'.
@@ -15,11 +25,13 @@ Prerequisites for Watcom C/C++ builds:
 --------------------------------------
 AdPlug uses the STL, which doesn't come with Watcom's current compiler by
 default. However, there is a free STL implementation that works with
-Watcom C/C++ 11.0c at http://www.stlport.org, called STLport.
+Watcom C/C++ 11.0c and OpenWatcom at http://www.stlport.org, called
+STLport.
 
 So, in order to compile AdPlug with Watcom C/C++, you first need to upgrade
 your version of the compiler to 11.0c, if you don't have this version already.
-A free patch to 11.0c is available at http://www.openwatcom.org.
+A free patch to 11.0c is available at http://www.openwatcom.org. The
+OpenWatcom compiler is available there, as well.
 
 After you have applied the patch, you can install the STLport library. There
 is more to do than just installing the library, so be sure to also read the
