@@ -1,6 +1,6 @@
 This is a brief overview of user-visible changes in AdPlug.
 
-Changes for version 1.6:
+Changes for version 2.0:
 - New format support:
   - MSC: AdLib MSCplay
   - RIX: Softstar RIX OPL Music Format
@@ -18,6 +18,9 @@ Changes for version 1.6:
     560Hz. All other files have a rate of 700Hz. Please rename your
     files accordingly or use the AdPlug database.
 - CMF player supports rhythm mode now.
+- S3M player handles repeating commands correctly now.
+- MS Visual C++ and OpenWatcom build systems not actively supported
+  anymore. They are still available in the contrib directory though.
 
 Changes for version 1.5:
 - New format support:

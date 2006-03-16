@@ -1,14 +1,15 @@
 AdPlug - A free AdLib sound player library
-Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005 Simon Peter, et al.
+Copyright (C) 1999 - 2006 Simon Peter, et al.
 
 Website: http://adplug.sourceforge.net/
 
 Description:
 ------------
-AdPlug is a free, multi-platform, hardware independent AdLib sound player
-library, mainly written in C++. AdPlug plays sound data, originally created
-for the AdLib (OPL2) audio board, on top of an OPL2 emulator or by using the
-real hardware. No OPL2 chip is required for playback.
+AdPlug is a free, multi-platform, hardware independent AdLib sound
+player library, mainly written in C++. AdPlug plays sound data,
+originally created for the AdLib (OPL2/3) audio board, on top of an
+OPL2/3 emulator or by using the real hardware. No OPL2/3 chips are
+required for playback.
 
 Supported platforms:
 --------------------
@@ -18,7 +19,7 @@ platforms and compilers:
 Hardware                Operating System        Compiler
 --------                ----------------        --------
 IA32 - x86              Windows XP              GCC 3.4
-                        MS-DOS 7.0              OpenWatcom 1.2
+                        MS-DOS 6.22             GCC 4.0/DJGPPv2
                         Linux 2.4               GCC 2.95
                         Linux 2.6               GCC 3.3
                                                 GCC 4.0
@@ -30,7 +31,7 @@ AMD64 - x86_64          Linux 2.4               GCC 3.2
 DEC Alpha - ev67	Linux 2.2               GCC 2.95
 PowerPC                 Mac OS X                GCC
 Sparc - UltraSPARC-II   Sun Solaris 9           GCC
-IBM Power5              Linux 2.6               GCC
+IBM Power5              Linux 2.6               GCC 3.3
 
 This list only incorporates platforms on which this release of AdPlug has
 been tested successfully. This and/or earlier versions of AdPlug may and did
@@ -39,6 +40,43 @@ explicitly tested for this release.
 
 The library builds as dynamic and/or static link library, depending on
 the facilities provided by the host OS. These are autodetected.
+
+Prerequisites:
+--------------
+AdPlug depends upon the following libraries:
+
+Library:	Version:
+--------	--------
+libbinio	>= 1.4
+
+libbinio can be obtained from http://libbinio.sourceforge.net/.
+
+Installation:
+-------------
+Please refer to the INSTALL file for installation instructions.
+
+CVS:
+----
+If you checked out from CVS, please first run:
+
+autoreconf --install
+
+to generate the build cruft and get the configure script. Oh, and did i
+mention you need recent versions of autoconf, automake and libtool?
+
+When building a CVS version, always supply the --enable-maintainer-mode
+option to the configure script!
+
+Debugging AdPlug:
+-----------------
+If you feel you have to debug AdPlug, you can compile it with debug logging
+support. This is disabled by default. To enable it, you have to define the
+DEBUG preprocessor macro. This is done by passing the '--enable-debug'
+commandline option to the 'configure' script to enable debugging.
+
+AdPlug logs to stderr by default. The output can be redirected anytime to a
+user specified logfile. This is done by using the 'CAdPlug::debug_output'
+method of the 'CAdPlug' class.
 
 The emulator license issue:
 ---------------------------
@@ -52,5 +90,8 @@ http://www.informatik.uni-oldenburg.de/~dyna/adplug/
 that replaces the old version by the latest version from the MAME source
 distribution. The new version features improved emulation quality, but is
 licensed under the MAME license, which restricts commercial redistribution.
+
+The same goes for the OPL3 emulator, which requires the new version of
+the OPL2 emulator to build.
 
 	- Simon Peter <dn.tlp@gmx.net>

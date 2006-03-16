@@ -3,4 +3,5 @@ and contributions to it (which are also unsupported).
 
 Index of the contained subdirectories:
 --------------------------------------
-MSVC6		Microsoft Visual C++ 6.0 project files
+MSVC6        Microsoft Visual C++ 6.0 project files
+Watcom       Watcom C/C++ 11 and OpenWatcom build system
