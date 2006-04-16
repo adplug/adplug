@@ -68,7 +68,6 @@ CrixPlayer::CrixPlayer(Copl *newopl)
   memset(insbuf, 0, 28 * sizeof(unsigned short));
   memset(displace, 0, 11 * sizeof(unsigned short));
   memset(reg_bufs, 0, 18 * sizeof(ADDT));
-  memset(for40reg, 0, 18);
 
   if(opl->gettype() == Copl::TYPE_OPL2)
     opl3_mode = 0;
