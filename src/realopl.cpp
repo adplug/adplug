@@ -205,4 +205,6 @@ void CRealopl::init()
 
     hardwrite(0xbd,0);	// clear misc. register
   }
+
+  setchip(0);
 }
