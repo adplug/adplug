@@ -9,7 +9,7 @@
 This manual documents the AdPlug core library, version
 @value{VERSION}.
 
-Copyright @copyright{} 2002 - 2005 Simon Peter <dn.tlp@@gmx.net>
+Copyright @copyright{} 2002 - 2006 Simon Peter <dn.tlp@@gmx.net>
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
