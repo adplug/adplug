@@ -11,6 +11,8 @@ MOSTLYCLEANFILES = stamp-vti libadplug.info libadplug.info-1 \
 
 CLEANFILES = libadplug.cps libadplug.fns libadplug.vrs version.texi
 
+DISTCLEANFILES = adplugdb.1
+
 edit = sed \
 	-e 's,@sharedstatedir\@,$(sharedstatedir),g' \
 	-e 's,@VERSION\@,$(VERSION),g'
