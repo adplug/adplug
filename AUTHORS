@@ -1,4 +1,4 @@
-AdPlug is copyright (C) 1999 - 2005 Simon Peter <dn.tlp@gmx.net>, et al.
+AdPlug is copyright (C) 1999 - 2006 Simon Peter <dn.tlp@gmx.net>, et al.
 All library code is written by Simon Peter, except the parts listed below.
 
 Additional Credits:
@@ -57,9 +57,10 @@ Tyler Montbriand <tsm@accesscomm.ca>:
   - AMD64 (x86_64) fixes
   - ROL: Added pitch handling
 
-Borg No. One <borg_no.one@gmx.de>:
-  - Many thanks for digging out the original author (Andras Molnar) of the
-    LOUDNESS Sound System and managing to get the sources from him.
+Borg Number One [ Borg No. One ] <borg_no.one@gmx.net>:
+  - Many thanks for the huge amount of work to find the original
+    author (Andras Molnar) of the LOUDNESS Sound System and managing
+    to get the sources from him.
 
 Matthew Gambrell <mgambrell@gmail.com>:
   - Enhancements to the DRO (DOSBox Raw OPL) format
