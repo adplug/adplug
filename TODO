@@ -5,18 +5,20 @@ To AdPlug SourceForge developers:
 If anyone happens to take over a task listed here, please mark that you're
 doing so. Your SourceForge login name is a good way to identify yourself.
 
-Unfinished release goals for version 1.6:
+Unfinished release goals for version 2.1:
 -----------------------------------------
-- Fix amd.cpp player to play Skyrunner's files correctly
+- New players:
+  - ADL (Dune, Legend of Kyrandia) file format [dynamite]
+  - Palladix file format [dynamite]
+
+- Fix amd.cpp loader to play Skyrunner's files correctly [dynamite]
+  - Volume conversion is wrong in amd.cpp loader
 
 - Fix platform-dependent players:
   - D00 [dynamite]
 
-Unfinished release goals for version 1.7:
------------------------------------------
-- Dual-OPL2/OPL3 support
-  - Convert players:
-    - A2M
+- Convert players to dual-OPL2/OPL3 support:
+  - A2M
 
 General to do items:
 --------------------

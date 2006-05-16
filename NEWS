@@ -1,6 +1,11 @@
 This is a brief overview of user-visible changes in AdPlug.
 
+Changes for version 2.1:
+------------------------
+- None yet.
+
 Changes for version 2.0:
+------------------------
 - New format support:
   - MSC: AdLib MSCplay
   - RIX: Softstar RIX OPL Music Format
@@ -23,6 +28,7 @@ Changes for version 2.0:
   anymore. They are still available in the contrib directory though.
 
 Changes for version 1.5:
+------------------------
 - New format support:
   - XSM: eXtra Simple Music
   - DRO: DOSBox Raw OPL
@@ -36,6 +42,7 @@ Changes for version 1.5:
 - Added a test-suite.
 
 Changes for version 1.4:
+------------------------
 - Documentation changed into Texinfo format.
 - New, modularized file loading framework.
 - Now using 'libbinio' for platform-independant binary I/O.
@@ -43,6 +50,7 @@ Changes for version 1.4:
 - Uses newest fmopl OPL2 emulator version 0.60 from MAME 0.66.
 
 Changes for version 1.3:
+------------------------
 - Completely new build system for DOS and Windows.
 - Centralized debug management.
 - Added a whole bunch of new developer documentation.
@@ -57,6 +65,7 @@ Changes for version 1.3:
   - DMO: Twin TrackPlayer
 
 Changes for version 1.2:
+------------------------
 - Added a whole bunch of new players:
   - SAT, ROL, SNG, XAD, XMS, MAD
 - SA2 player now handles version 7 files.
@@ -67,6 +76,7 @@ Changes for version 1.2:
 - Reordered source directory structure (removed players directory).
 
 Changes for version 1.1:
+------------------------
 - Added MKJ, DFM and BAM players.
 - Removed Ken Silverman's YM3812 emulator due to portability issues.
 - Fixed memory leak in SNG player.

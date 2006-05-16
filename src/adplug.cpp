@@ -63,6 +63,7 @@
 #include "dro.h"
 #include "msc.h"
 #include "rix.h"
+#include "adl.h"
 
 /***** CAdPlug *****/
 
@@ -104,6 +105,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CdroPlayer::factory, "DOSBox Raw OPL", ".dro\0"),
   CPlayerDesc(CmscPlayer::factory, "Adlib MSC Player", ".msc\0"),
   CPlayerDesc(CrixPlayer::factory, "Softstar RIX OPL Music", ".rix\0"),
+  CPlayerDesc(CadlPlayer::factory, "Westwood ADL", ".adl\0"),
   CPlayerDesc()
 };
 
