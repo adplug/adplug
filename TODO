@@ -8,7 +8,6 @@ doing so. Your SourceForge login name is a good way to identify yourself.
 Unfinished release goals for version 2.1:
 -----------------------------------------
 - New players:
-  - ADL (Dune, Legend of Kyrandia) file format [dynamite]
   - Palladix file format [dynamite]
 
 - Fix amd.cpp loader to play Skyrunner's files correctly [dynamite]
