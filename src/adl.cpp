@@ -27,11 +27,11 @@
 #include "adl.h"
 #include "debug.h"
 
-// #define warning			AdPlug_LogWrite
-// #define debugC(i1, i2, ...)	AdPlug_LogWrite(__VA_ARGS__)
+#define warning			AdPlug_LogWrite
+#define debugC(i1, i2, ...)	AdPlug_LogWrite(__VA_ARGS__)
 
-#define warning(...)		
-#define debugC(i1, i2, ...)	
+// #define warning(...)		
+// #define debugC(i1, i2, ...)	
 
 #define ARRAYSIZE(x) ((int)(sizeof(x) / sizeof(x[0])))
 
@@ -2318,16 +2318,19 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
 // 	_soundFileLoaded = file;
 
   fp.close(f);
-  rewind(0);
   return true;
 }
 
 void CadlPlayer::rewind(int subsong)
 {
-//   opl->init();
-//   opl->write(1,32);
-
+  opl->init();
+  opl->write(1,32);
   playSoundEffect(subsong);
+}
+
+unsigned int CadlPlayer::getsubsongs()
+{
+  return 120;
 }
 
 bool CadlPlayer::update()

@@ -39,8 +39,14 @@ class CadlPlayer: public CPlayer
   bool load(const std::string &filename, const CFileProvider &fp);
   bool update();
   void rewind(int subsong);
-  float getrefresh() { return 72.0f; };	// refresh rate is fixed at 72Hz
 
+  // refresh rate is fixed at 72Hz
+  float getrefresh()
+    {
+      return 72.0f;
+    }
+
+  unsigned int getsubsongs();
   std::string gettype() { return std::string("Westwood ADL"); }
 
  private:
