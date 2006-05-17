@@ -20,7 +20,7 @@
  *
  */
 
-#include <stdint.h>
+#include <inttypes.h>
 #include <stdarg.h>
 #include <assert.h>
 

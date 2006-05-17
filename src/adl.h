@@ -22,7 +22,7 @@
 #ifndef H_ADPLUG_ADLPLAYER
 #define H_ADPLUG_ADLPLAYER
 
-#include <stdint.h>
+#include <inttypes.h>
 
 #include "player.h"
 
