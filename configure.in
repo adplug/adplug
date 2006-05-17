@@ -17,6 +17,9 @@ AC_PROG_CXX
 AC_CHECK_LIB(stdc++,main,,AC_MSG_ERROR([libstdc++ not installed]))
 PKG_CHECK_MODULES([libbinio], [libbinio >= 1.4])
 
+# Check if getopt header is installed on this system
+AC_CHECK_HEADERS([getopt.h], , AC_SUBST(GETOPT_SOURCES, [getopt.c getopt.h]))
+
 # Sanitize some compiler features, which may be broken...
 AC_C_CONST
 AC_C_INLINE

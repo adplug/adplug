@@ -1,6 +1,6 @@
 /*
  * AdPlug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (c) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (c) 1999 - 2006 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
  *
  * adplugdb.cpp - AdPlug database maintenance utility
  * Copyright (c) 2002 Riven the Mage <riven@ok.ru>
- * Copyright (c) 2002, 2003 Simon Peter <dn.tlp@gmx.net>
+ * Copyright (c) 2002, 2003, 2006 Simon Peter <dn.tlp@gmx.net>
  */
 
 #include <memory.h>
@@ -51,10 +51,14 @@
  * Apple (OS X) and Sun systems declare getopt in unistd.h, other systems
  * (Linux) use getopt.h.
  */
-#if defined ( __APPLE__ ) || ( defined (__SVR4) && defined (__sun) )
+#if defined (__APPLE__) || (defined(__SVR4) && defined(__sun))
 #	include <unistd.h>
 #else
-#	include "getopt.h"
+#	ifdef HAVE_GETOPT_H
+#		include <getopt.h>
+#	else
+#		include "getopt.h"
+#	endif
 #endif
 
 /***** Defines *****/
