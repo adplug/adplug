@@ -50,6 +50,8 @@ class CadlPlayer: public CPlayer
   std::string gettype() { return std::string("Westwood ADL"); }
 
  private:
+  int numsubsongs, cursubsong;
+
   AdlibDriver *_driver;
 
   uint8_t _trackEntries[120];
