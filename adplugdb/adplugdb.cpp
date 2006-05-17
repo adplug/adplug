@@ -57,7 +57,7 @@
 #	ifdef HAVE_GETOPT_H
 #		include <getopt.h>
 #	else
-#		include "getopt.h"
+#		include "mygetopt.h"
 #	endif
 #endif
 
