@@ -129,7 +129,6 @@ public:
   bool endOfData() const { return false; }
   // 	int getRate() const { return _mixer->getOutputRate(); }
 
-private:
   struct OpcodeEntry {
     typedef int (AdlibDriver::*DriverOpcode)(va_list &list);
     DriverOpcode function;
@@ -342,7 +341,7 @@ private:
   int update_setSoundTrigger(uint8 *&dataptr, Channel &channel, uint8 value);
   int update_setTempoReset(uint8 *&dataptr, Channel &channel, uint8 value);
   int updateCallback56(uint8 *&dataptr, Channel &channel, uint8 value);
-private:
+
   // These variables have not yet been named, but some of them are partly
   // known nevertheless:
   //
@@ -2362,6 +2361,7 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 void CadlPlayer::rewind(int subsong)
 {
+  AdPlug_LogWrite("rewind(%d) called\n", subsong);
   opl->init();
   opl->write(1,32);
   playSoundEffect(subsong);
@@ -2375,11 +2375,23 @@ unsigned int CadlPlayer::getsubsongs()
 
 bool CadlPlayer::update()
 {
-  if(_trackEntries[cursubsong] == 0xff)
-    return false;
+  bool songend = true;
+
+//   if(_trackEntries[cursubsong] == 0xff)
+//     return false;
 
   _driver->callback();
-  return true;
+
+  for(int i = 0; i < 10; i++)
+    if(_driver->_channels[i].dataptr != NULL)
+      songend = false;
+
+//   songend = false;
+
+  if(songend)
+    AdPlug_LogWrite("song has ended\n");
+
+  return !songend;
 }
 
 void CadlPlayer::unk1() {
