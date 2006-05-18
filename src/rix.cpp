@@ -21,7 +21,7 @@
  */
 
 #include "rix.h"
-#include <binfile.h>
+#include "debug.h"
 
 const unsigned char CrixPlayer::adflag[] = {0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1};
 const unsigned char CrixPlayer::reg_data[] = {0,1,2,3,4,5,8,9,10,11,12,13,16,17,18,19,20,21};
@@ -53,27 +53,9 @@ CPlayer *CrixPlayer::factory(Copl *newopl)
 }
 
 CrixPlayer::CrixPlayer(Copl *newopl)
-  : CPlayer(newopl), buf_addr(0), mstotal(0),opl3_mode(0),I(0),T(0),
-    mus_block(0),ins_block(0),rhythm(0),mutex(0),music_on(0),
-    pause_flag(0),band(0),band_low(0),e0_reg_flag(0),bd_modify(0),
-    sustain(0),dro_end(0)
+  : CPlayer(newopl), buf_addr(0)
 {
-  memset(dro, 0, 128000);
-  memset(buffer, 0, sizeof(unsigned short) * 300);
-  memset(a0b0_data2, 0, sizeof(unsigned short) * 11);
-  memset(a0b0_data3, 0, 18);
-  memset(a0b0_data4, 0, 18);
-  memset(a0b0_data5, 0, 96);
-  memset(addrs_head, 0, 96);
-  memset(insbuf, 0, 28 * sizeof(unsigned short));
-  memset(displace, 0, 11 * sizeof(unsigned short));
-  memset(reg_bufs, 0, 18 * sizeof(ADDT));
-
-  if(opl->gettype() == Copl::TYPE_OPL2)
-    opl3_mode = 0;
-  else
-    opl3_mode = 1;
-};
+}
 
 CrixPlayer::~CrixPlayer()
 {
@@ -87,29 +69,12 @@ bool CrixPlayer::load(const std::string &filename, const CFileProvider &fp)
   unsigned long i=0;
 
   if(f->readInt(2)!=0x55aa) { fp.close(f);return false; }
-  buf_addr = new unsigned char [fp.filesize(f)];
+  buf_addr = new unsigned char [fp.filesize(f) + 1];
   buf_addr[i++]=0xaa;buf_addr[i++]=0x55;
   while(!f->eof())
     buf_addr[i++]=f->readInt(1);
   length=i;
   fp.close(f);
-  set_new_int();
-  data_initial();
-  while(!dro_end)
-    int_08h_entry();
-
-  length=T;
-  mode = (OplMode)1;		// Type of opl data this can contain
-	
-  //	binofstream *g=new binofstream(filename+string(".dro"));
-  //	g->writeString("DBRAWOPL",8);
-  //	g->writeInt(mstotal,4);
-  //	g->writeInt(length+1,4);
-  //	g->writeInt(1,1);
-  //	for(int t=0;t<length;t++)
-  //		g->writeInt(dro[t],1);
-  //	g->close();
-  //	delete g;
 
   rewind(0);
   return true;
@@ -117,50 +82,52 @@ bool CrixPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 bool CrixPlayer::update()
 {
-  if (delay>500) {
-    delay-=500;
-    return true;
-  } else delay=1;
-  while (pos < length) 
-    {	
-      unsigned char cmd = dro[pos++];
-      switch(cmd) {
-      case 0: 
-	delay = 1 + dro[pos++];
-	return true;
-      case 1: 
-	delay = 1 + dro[pos] + (dro[pos+1]<<8);
-	pos+=2;
-	return true;
-      case 2:
-	index = 0;
-	opl->setchip(0);
-	break;
-      case 3:
-	index = 1;
-	opl->setchip(1);
-	break;
-      default:
-	if(index == 0 || opl3_mode)
-	  opl->write(cmd,dro[pos++]);
-	break;
-      }
-    }
-  return pos<length;
+  sustain = rix_proc();
+
+  if(!dro_end)
+    dro_end = (sustain == 0);
+  sustain++;
+
+  return !dro_end;
 }
 
 void CrixPlayer::rewind(int subsong)
 {
-  delay=1;
+  I = 0; T = 0;
+  mus_block = 0;
+  ins_block = 0;
+  rhythm = 0;
+  mutex = 0;
+  music_on = 0;
+  pause_flag = 0;
+  band = 0;
+  band_low = 0;
+  e0_reg_flag = 0;
+  bd_modify = 0;
+  sustain = 1;
+  dro_end = 0;
   pos = index = 0; 
-  opl->init(); 
+
+  memset(buffer, 0, sizeof(unsigned short) * 300);
+  memset(a0b0_data2, 0, sizeof(unsigned short) * 11);
+  memset(a0b0_data3, 0, 18);
+  memset(a0b0_data4, 0, 18);
+  memset(a0b0_data5, 0, 96);
+  memset(addrs_head, 0, 96);
+  memset(insbuf, 0, 28 * sizeof(unsigned short));
+  memset(displace, 0, 11 * sizeof(unsigned short));
+  memset(reg_bufs, 0, 18 * sizeof(ADDT));
+
+  opl->init();
   opl->write(1,32);	// go to OPL2 mode
+  set_new_int();
+  data_initial();
 }
 
 float CrixPlayer::getrefresh()
 {
-  if (delay > 500) return 1000 / 500;
-  else return 1000 / (double)delay;
+  if (sustain > 500) return 1000 / 500;
+  else return 1000.0 / (double)sustain;
 }
 
 /*------------------Implemention----------------------------*/
@@ -245,7 +212,9 @@ inline void CrixPlayer::prep_int()
 /*----------------------------------------------------------*/
 inline void CrixPlayer::ad_bop(unsigned short reg,unsigned short value)
 {
-  dro[T++]=reg;dro[T++]=value;
+  if(reg == 2 || reg == 3)
+    AdPlug_LogWrite("switch OPL2/3 mode!\n");
+  opl->write(reg & 0xff, value & 0xff);
 }
 /*------------------------------------------------------*/
 inline unsigned short CrixPlayer::ad_test()   /* Test the SoundCard */
@@ -257,36 +226,6 @@ inline unsigned short CrixPlayer::ad_test()   /* Test the SoundCard */
   ad_bop(0x04,0x60);
   ad_bop(0x04,0x80);
   return 1;
-}
-/*--------------------------------------------------------------*/
-inline void CrixPlayer::int_08h_entry()
-{
-  unsigned short band_sus = 1;
-  while(band_sus)
-    {
-      if(sustain <= 0 && mutex == 0)
-	{
-	  mutex++;
-	  band_sus = rix_proc();
-	  if(band_sus) sustain += band_sus;
-	  mstotal+=sustain;
-	  dro[T++]=(sustain>=0x100?1:0);
-	  dro[T++]=sustain&0xff;
-	  if(sustain>=0x100)
-	    dro[T++]=(sustain>>8)&0xff;
-	  mutex--;
-	  if(band_sus == 0)
-	    {
-	      dro_end=1;
-	      break;
-	    }
-	}
-      else
-	{
-	  if(band_sus) sustain -= 1; /* aging */
-	  break;
-	}
-    }
 }
 /*--------------------------------------------------------------*/
 inline unsigned short CrixPlayer::rix_proc()

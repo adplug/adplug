@@ -43,7 +43,6 @@ class CrixPlayer: public CPlayer
     unsigned char v[14];
   } ADDT;
 
-  unsigned char dro[128000];
   unsigned char *buf_addr;  /* rix files' buffer */
   unsigned short buffer[300];
   unsigned short a0b0_data2[11];
@@ -55,12 +54,7 @@ class CrixPlayer: public CPlayer
   unsigned short displace[11];
   ADDT reg_bufs[18];
   unsigned long pos,length;
-  unsigned long msdone,mstotal;
-  unsigned short delay;
-  unsigned char index, opl3_mode;
-  enum OplMode {
-    ModeOPL2,ModeOPL3,ModeDUALOPL2
-  } mode;
+  unsigned char index;
 
   static const unsigned char adflag[18];
   static const unsigned char reg_data[18];
@@ -101,7 +95,6 @@ class CrixPlayer: public CPlayer
   inline void data_initial();               /* done */
   inline void init();                       /**/
   inline void ins_to_reg(unsigned short,unsigned short*,unsigned short);  /**/
-  inline void int_08h_entry();    /**/
   inline void music_ctrl();                 /**/
   inline void Pause();                      /**/
   inline void prep_int();                   /**/
