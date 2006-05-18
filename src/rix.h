@@ -28,7 +28,7 @@ class CrixPlayer: public CPlayer
   static CPlayer *factory(Copl *newopl);
 
   CrixPlayer(Copl *newopl);
-  ~CrixPlayer() {};
+  ~CrixPlayer();
 
   bool load(const std::string &filename, const CFileProvider &fp);
   bool update();
@@ -44,7 +44,7 @@ class CrixPlayer: public CPlayer
   } ADDT;
 
   unsigned char dro[128000];
-  unsigned char buf_addr[327680];  /* rix files' buffer */
+  unsigned char *buf_addr;  /* rix files' buffer */
   unsigned short buffer[300];
   unsigned short a0b0_data2[11];
   unsigned char a0b0_data3[18];

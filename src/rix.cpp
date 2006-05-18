@@ -53,12 +53,12 @@ CPlayer *CrixPlayer::factory(Copl *newopl)
 }
 
 CrixPlayer::CrixPlayer(Copl *newopl)
-  : CPlayer(newopl), mstotal(0),opl3_mode(0),I(0),T(0),mus_block(0),
-    ins_block(0),rhythm(0),mutex(0),music_on(0),pause_flag(0),band(0),
-    band_low(0),e0_reg_flag(0),bd_modify(0),sustain(0),dro_end(0)
+  : CPlayer(newopl), buf_addr(0), mstotal(0),opl3_mode(0),I(0),T(0),
+    mus_block(0),ins_block(0),rhythm(0),mutex(0),music_on(0),
+    pause_flag(0),band(0),band_low(0),e0_reg_flag(0),bd_modify(0),
+    sustain(0),dro_end(0)
 {
   memset(dro, 0, 128000);
-  memset(buf_addr, 0, 327680);
   memset(buffer, 0, sizeof(unsigned short) * 300);
   memset(a0b0_data2, 0, sizeof(unsigned short) * 11);
   memset(a0b0_data3, 0, 18);
@@ -75,12 +75,19 @@ CrixPlayer::CrixPlayer(Copl *newopl)
     opl3_mode = 1;
 };
 
+CrixPlayer::~CrixPlayer()
+{
+  if(buf_addr)
+    delete [] buf_addr;
+}
+
 bool CrixPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
   binistream *f = fp.open(filename); if(!f) return false;
   unsigned long i=0;
 
-  if(f->readInt(2)!=0x55aa)	{fp.close(f);return false;	}
+  if(f->readInt(2)!=0x55aa) { fp.close(f);return false; }
+  buf_addr = new unsigned char [fp.filesize(f)];
   buf_addr[i++]=0xaa;buf_addr[i++]=0x55;
   while(!f->eof())
     buf_addr[i++]=f->readInt(1);
@@ -311,7 +318,13 @@ inline unsigned short CrixPlayer::rix_proc()
 /*--------------------------------------------------------------*/
 inline void CrixPlayer::rix_get_ins()
 {
-  memcpy(insbuf,(&buf_addr[ins_block])+(band_low<<6),56);
+  int		i;
+  unsigned char	*baddr = (&buf_addr[ins_block])+(band_low<<6);
+
+  for(i = 0; i < 28; i++)
+    insbuf[i] = (baddr[i * 2 + 1] << 8) + baddr[i * 2];
+
+//   memcpy(insbuf,(&buf_addr[ins_block])+(band_low<<6),56);
 }
 /*--------------------------------------------------------------*/
 inline void CrixPlayer::rix_90_pro(unsigned short ctrl_l)
