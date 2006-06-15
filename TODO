@@ -10,11 +10,11 @@ Unfinished release goals for version 2.1:
 - New players:
   - Palladix file format [dynamite]
 
-- Fix amd.cpp loader to play Skyrunner's files correctly [dynamite]
+- Fix amd.cpp loader to play Skyrunner's files correctly
   - Volume conversion is wrong in amd.cpp loader
 
 - Fix platform-dependent players:
-  - D00 [dynamite]
+  - D00
     - Problem is that all sections of the file at least need to be loaded
       separateley, as at least Sparc needs word-aligned section starts.
 
@@ -26,7 +26,9 @@ General to do items:
 - Add new Protracker loaders:
   - MTR: Arkham Master Tracker [riven-mage]
 
-- Add some index entries to documentation. [dynamite]
+- Add some index entries to documentation.
 
 - Split out endian-unclean players of the main test case and make them
-  another one. [dynamite]
+  another one.
+
+- Add ALSA direct-FM interface support.
