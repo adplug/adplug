@@ -71,6 +71,7 @@ class CadlPlayer: public CPlayer
   void process();
   void playTrack(uint8_t track);
   void playSoundEffect(uint8_t track);
+  void play(uint8_t track);
   void unk1();
   void unk2();
 };

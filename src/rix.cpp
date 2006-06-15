@@ -82,13 +82,13 @@ bool CrixPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 bool CrixPlayer::update()
 {
-  sustain = rix_proc();
+	if (delay>100) {
+		delay-=100;   
+	    return true;
+	} else delay=1; 
 
-  if(!dro_end)
-    dro_end = (sustain == 0);
-  sustain++;
-
-  return !dro_end;
+	int_08h_entry();
+	return !dro_end;
 }
 
 void CrixPlayer::rewind(int subsong)
@@ -104,7 +104,8 @@ void CrixPlayer::rewind(int subsong)
   band_low = 0;
   e0_reg_flag = 0;
   bd_modify = 0;
-  sustain = 1;
+  delay = 1;
+  sustain = 0;
   dro_end = 0;
   pos = index = 0; 
 
@@ -126,8 +127,8 @@ void CrixPlayer::rewind(int subsong)
 
 float CrixPlayer::getrefresh()
 {
-  if (sustain > 500) return 1000 / 500;
-  else return 1000.0 / (double)sustain;
+  if (delay > 100) return 1000 / 100;
+  else return 1000.0 / (double)delay;
 }
 
 /*------------------Implemention----------------------------*/
@@ -228,6 +229,32 @@ inline unsigned short CrixPlayer::ad_test()   /* Test the SoundCard */
   return 1;
 }
 /*--------------------------------------------------------------*/
+inline void CrixPlayer::int_08h_entry()   
+  {   
+    unsigned short band_sus = 1;   
+    while(band_sus)   
+      {   
+        if(sustain <= 0 && mutex == 0)   
+          {   
+            mutex++;   
+            band_sus = rix_proc();   
+            if(band_sus) sustain += band_sus; 
+			delay=sustain;
+            mutex--;   
+            if(band_sus == 0)   
+              {   
+                dro_end=1;   
+                break;   
+              }   
+          }   
+        else   
+          {   
+            if(band_sus) sustain -= 9; /* aging */   
+            break;   
+          }   
+      }   
+  }   
+/*--------------------------------------------------------------*/ 
 inline unsigned short CrixPlayer::rix_proc()
 {
   unsigned char ctrl = 0;

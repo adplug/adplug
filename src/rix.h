@@ -55,6 +55,7 @@ class CrixPlayer: public CPlayer
   ADDT reg_bufs[18];
   unsigned long pos,length;
   unsigned char index;
+  unsigned short delay;
 
   static const unsigned char adflag[18];
   static const unsigned char reg_data[18];
@@ -95,6 +96,7 @@ class CrixPlayer: public CPlayer
   inline void data_initial();               /* done */
   inline void init();                       /**/
   inline void ins_to_reg(unsigned short,unsigned short*,unsigned short);  /**/
+  inline void int_08h_entry();    /**/
   inline void music_ctrl();                 /**/
   inline void Pause();                      /**/
   inline void prep_int();                   /**/

@@ -40,9 +40,9 @@
 static const unsigned short notetable[12] =	// D00 note table
   {340,363,385,408,432,458,485,514,544,577,611,647};
 
-static inline uint16_t LE_WORD(const uint16_t val)
+static inline uint16_t LE_WORD(const uint16_t *val)
 {
-  const uint8_t *b = (const uint8_t *)&val;
+  const uint8_t *b = (const uint8_t *)val;
   return (b[1] << 8) + b[0];
 }
 
@@ -92,9 +92,9 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
   if(!ver1) {	// version 2 and above
     header = (struct d00header *)filedata;
     version = header->version;
-    datainfo = (char *)filedata + LE_WORD(header->infoptr);
-    inst = (struct Sinsts *)((char *)filedata + LE_WORD(header->instptr));
-    seqptr = (unsigned short *)((char *)filedata + LE_WORD(header->seqptr));
+    datainfo = (char *)filedata + LE_WORD(&header->infoptr);
+    inst = (struct Sinsts *)((char *)filedata + LE_WORD(&header->instptr));
+    seqptr = (unsigned short *)((char *)filedata + LE_WORD(&header->seqptr));
     for(i=31;i>=0;i--)	// erase whitespace
       if(header->songname[i] == ' ')
 	header->songname[i] = '\0';
@@ -108,9 +108,9 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
   } else {	// version 1
     header1 = (struct d00header1 *)filedata;
     version = header1->version;
-    datainfo = (char *)filedata + LE_WORD(header1->infoptr);
-    inst = (struct Sinsts *)((char *)filedata + LE_WORD(header1->instptr));
-    seqptr = (unsigned short *)((char *)filedata + LE_WORD(header1->seqptr));
+    datainfo = (char *)filedata + LE_WORD(&header1->infoptr);
+    inst = (struct Sinsts *)((char *)filedata + LE_WORD(&header1->instptr));
+    seqptr = (unsigned short *)((char *)filedata + LE_WORD(&header1->seqptr));
   }
   switch(version) {
   case 0:
@@ -119,11 +119,11 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
     header1->speed = 70;		// v0 files default to 70Hz
     break;
   case 1:
-    levpuls = (struct Slevpuls *)((char *)filedata + LE_WORD(header1->lpulptr));
+    levpuls = (struct Slevpuls *)((char *)filedata + LE_WORD(&header1->lpulptr));
     spfx = 0;
     break;
   case 2:
-    levpuls = (struct Slevpuls *)((char *)filedata + LE_WORD(header->spfxptr));
+    levpuls = (struct Slevpuls *)((char *)filedata + LE_WORD(&header->spfxptr));
     spfx = 0;
     break;
   case 3:
@@ -131,7 +131,7 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
     levpuls = 0;
     break;
   case 4:
-    spfx = (struct Sspfx *)((char *)filedata + LE_WORD(header->spfxptr));
+    spfx = (struct Sspfx *)((char *)filedata + LE_WORD(&header->spfxptr));
     levpuls = 0;
     break;
   }
@@ -160,13 +160,13 @@ bool Cd00Player::update()
       if(channel[c].fxdel)
 	channel[c].fxdel--;
       else {
-	channel[c].spfx = LE_WORD(spfx[channel[c].spfx].ptr);
+	channel[c].spfx = LE_WORD(&spfx[channel[c].spfx].ptr);
 	channel[c].fxdel = spfx[channel[c].spfx].duration;
-	channel[c].inst = LE_WORD(spfx[channel[c].spfx].instnr) & 0xfff;
+	channel[c].inst = LE_WORD(&spfx[channel[c].spfx].instnr) & 0xfff;
 	if(spfx[channel[c].spfx].modlev != 0xff)
 	  channel[c].modvol = spfx[channel[c].spfx].modlev;
 	setinst(c);
-	if(LE_WORD(spfx[channel[c].spfx].instnr) & 0x8000)	// locked frequency
+	if(LE_WORD(&spfx[channel[c].spfx].instnr) & 0x8000)	// locked frequency
 	  note = spfx[channel[c].spfx].halfnote;
 	else							// unlocked frequency
 	  note = spfx[channel[c].spfx].halfnote + channel[c].note;
@@ -228,32 +228,32 @@ bool Cd00Player::update()
 	continue;
       }
     readorder:	// process arrangement (orderlist)
-      ord = LE_WORD(channel[c].order[channel[c].ordpos]);
+      ord = LE_WORD(&channel[c].order[channel[c].ordpos]);
       switch(ord) {
       case 0xfffe: channel[c].seqend = 1; continue;	// end of arrangement stream
       case 0xffff:		// jump to order
-	channel[c].ordpos = LE_WORD(channel[c].order[channel[c].ordpos + 1]);
+	channel[c].ordpos = LE_WORD(&channel[c].order[channel[c].ordpos + 1]);
 	channel[c].seqend = 1;
 	goto readorder;
       default:
 	if(ord >= 0x9000) {	// set speed
 	  channel[c].speed = ord & 0xff;
-	  ord = LE_WORD(channel[c].order[channel[c].ordpos - 1]);
+	  ord = LE_WORD(&channel[c].order[channel[c].ordpos - 1]);
 	  channel[c].ordpos++;
 	} else
 	  if(ord >= 0x8000) {	// transpose track
 	    channel[c].transpose = ord & 0xff;
 	    if(ord & 0x100)
 	      channel[c].transpose = -channel[c].transpose;
-	    ord = LE_WORD(channel[c].order[++channel[c].ordpos]);
+	    ord = LE_WORD(&channel[c].order[++channel[c].ordpos]);
 	  }
-	patt = (unsigned short *)((char *)filedata + LE_WORD(seqptr[ord]));
+	patt = (unsigned short *)((char *)filedata + LE_WORD(&seqptr[ord]));
 	break;
       }
     readseq:	// process sequence (pattern)
       if(!version)	// v0: always initialize rhcnt
 	channel[c].rhcnt = channel[c].irhcnt;
-      pattpos = LE_WORD(patt[channel[c].pattpos]);
+      pattpos = LE_WORD(&patt[channel[c].pattpos]);
       if(pattpos == 0xffff) {	// pattern ended?
 	channel[c].pattpos = 0;
 	channel[c].ordpos++;
@@ -263,7 +263,7 @@ bool Cd00Player::update()
       note = LOBYTE(pattpos);
       fx = pattpos >> 12;
       fxop = pattpos & 0x0fff;
-      channel[c].pattpos++; pattpos = LE_WORD(patt[channel[c].pattpos]);
+      channel[c].pattpos++; pattpos = LE_WORD(&patt[channel[c].pattpos]);
       channel[c].nextnote = LOBYTE(pattpos) & 0x7f;
       if(version ? cnt < 0x40 : !fx) {	// note event
 	switch(note) {
@@ -292,11 +292,11 @@ bool Cd00Player::update()
 
 	    if(channel[c].ispfx != 0xffff && cnt < 0x20) {	// reset SpFX
 	      channel[c].spfx = channel[c].ispfx;
-	      if(LE_WORD(spfx[channel[c].spfx].instnr) & 0x8000)	// locked frequency
+	      if(LE_WORD(&spfx[channel[c].spfx].instnr) & 0x8000)	// locked frequency
 		note = spfx[channel[c].spfx].halfnote;
 	      else												// unlocked frequency
 		note += spfx[channel[c].spfx].halfnote;
-	      channel[c].inst = LE_WORD(spfx[channel[c].spfx].instnr) & 0xfff;
+	      channel[c].inst = LE_WORD(&spfx[channel[c].spfx].instnr) & 0xfff;
 	      channel[c].fxdel = spfx[channel[c].spfx].duration;
 	      if(spfx[channel[c].spfx].modlev != 0xff)
 		channel[c].modvol = spfx[channel[c].spfx].modlev;
@@ -415,15 +415,15 @@ void Cd00Player::rewind(int subsong)
 
   memset(channel,0,sizeof(channel));
   if(version > 1)
-    tpoin = (struct Stpoin *)((char *)filedata + LE_WORD(header->tpoin));
+    tpoin = (struct Stpoin *)((char *)filedata + LE_WORD(&header->tpoin));
   else
-    tpoin = (struct Stpoin *)((char *)filedata + LE_WORD(header1->tpoin));
+    tpoin = (struct Stpoin *)((char *)filedata + LE_WORD(&header1->tpoin));
   for(i=0;i<9;i++) {
-    if(LE_WORD(tpoin[subsong].ptr[i])) {	// track enabled
-      channel[i].speed = LE_WORD(*((unsigned short *)
-				   ((char *)filedata + LE_WORD(tpoin[subsong].ptr[i]))));
+    if(LE_WORD(&tpoin[subsong].ptr[i])) {	// track enabled
+      channel[i].speed = LE_WORD((unsigned short *)
+				 ((char *)filedata + LE_WORD(&tpoin[subsong].ptr[i])));
       channel[i].order = (unsigned short *)
-	((char *)filedata + LE_WORD(tpoin[subsong].ptr[i]) + 2);
+	((char *)filedata + LE_WORD(&tpoin[subsong].ptr[i]) + 2);
     } else {					// track disabled
       channel[i].speed = 0;
       channel[i].order = 0;
