@@ -42,7 +42,7 @@ CPlayer *Cs3mPlayer::factory(Copl *newopl)
 
 Cs3mPlayer::Cs3mPlayer(Copl *newopl): CPlayer(newopl)
 {
-  int			i,j,k;
+  int i,j,k;
 
   memset(pattern,255,sizeof(pattern));
   memset(orders,255,sizeof(orders));
@@ -57,18 +57,19 @@ Cs3mPlayer::Cs3mPlayer(Copl *newopl): CPlayer(newopl)
 
 bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
-  binistream *f = fp.open(filename); if(!f) return false;
+  binistream		*f = fp.open(filename); if(!f) return false;
   unsigned short	insptr[99],pattptr[99];
-  int		i,row;
-  unsigned char	bufval,bufval2;
+  int			i,row;
+  unsigned char		bufval,bufval2;
   unsigned short	ppatlen;
-  s3mheader	*checkhead;
-  bool		adlibins=false;
+  s3mheader		*checkhead;
+  bool			adlibins=false;
 
   // file validation section
   checkhead = new s3mheader;
   load_header(f, checkhead);
-  if((checkhead->kennung != 0x1a) || (checkhead->typ != 16)) {
+  if(checkhead->kennung != 0x1a || checkhead->typ != 16
+     || checkhead->insnum > 99) {
     delete checkhead; fp.close(f); return false;
   } else
     if(strncmp(checkhead->scrm,"SCRM",4)) {
@@ -89,11 +90,18 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
     }
 
   // load section
-  f->seek(0);	// rewind for load
-  load_header(f, &header);			// read header
+  f->seek(0);			// rewind for load
+  load_header(f, &header);	// read header
+
+  // security check
+  if(header.ordnum > 256 || header.insnum > 99 || header.patnum > 99) {
+    fp.close(f);
+    return false;
+  }
+
   for(i = 0; i < header.ordnum; i++) orders[i] = f->readInt(1);	// read orders
   for(i = 0; i < header.insnum; i++) insptr[i] = f->readInt(2);	// instrument parapointers
-  for(i = 0; i < header.patnum; i++) pattptr[i] = f->readInt(2);	// pattern parapointers
+  for(i = 0; i < header.patnum; i++) pattptr[i] = f->readInt(2); // pattern parapointers
 
   for(i=0;i<header.insnum;i++) {	// load instruments
     f->seek(insptr[i]*16);

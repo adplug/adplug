@@ -22,6 +22,13 @@
 
 #include "u6m.h"
 
+// Makes security checks on output buffer before writing
+#define SAVE_OUTPUT_ROOT(c, d, p) \
+if(p < d.size) \
+  output_root(c, d.data, p); \
+else \
+  return false;
+
 CPlayer *Cu6mPlayer::factory(Copl *newopl)
 {
   return new Cu6mPlayer(newopl);
@@ -223,7 +230,7 @@ bool Cu6mPlayer::lzw_decompress(Cu6mPlayer::data_block source, Cu6mPlayer::data_
 	  dictionary_size = 0x200;
 	  dictionary.reset();
 	  cW = get_next_codeword(bits_read, source.data, codeword_size);
-	  output_root((unsigned char)cW, dest.data, bytes_written);
+	  SAVE_OUTPUT_ROOT((unsigned char)cW, dest, bytes_written);
 	  break;
 	  // end of compressed file has been reached
 	case 0x101:
@@ -239,7 +246,7 @@ bool Cu6mPlayer::lzw_decompress(Cu6mPlayer::data_block source, Cu6mPlayer::data_
 	      // output the string represented by cW
 	      while (!root_stack.empty())
 		{
-		  output_root(root_stack.top(), dest.data, bytes_written);
+		  SAVE_OUTPUT_ROOT(root_stack.top(), dest, bytes_written);
 		  root_stack.pop();
 		}
 	      // add pW+C to the dictionary
@@ -263,11 +270,11 @@ bool Cu6mPlayer::lzw_decompress(Cu6mPlayer::data_block source, Cu6mPlayer::data_
 	      // output the string represented by pW
 	      while (!root_stack.empty())
 		{
-		  output_root(root_stack.top(), dest.data, bytes_written);
+		  SAVE_OUTPUT_ROOT(root_stack.top(), dest, bytes_written);
 		  root_stack.pop();
 		}
 	      // output the char C
-	      output_root(C, dest.data, bytes_written);
+	      SAVE_OUTPUT_ROOT(C, dest, bytes_written);
 
 	      // the new dictionary entry must correspond to cW
 	      // if it doesn't, something is wrong with the lzw-compressed data.

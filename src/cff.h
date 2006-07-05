@@ -1,6 +1,6 @@
 /*
   AdPlug - Replayer for many OPL2/OPL3 audio file formats.
-  Copyright (C) 1999 - 2003 Simon Peter <dn.tlp@gmx.net>, et al.
+  Copyright (C) 1999 - 2006 Simon Peter <dn.tlp@gmx.net>, et al.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -23,81 +23,81 @@
 
 class CcffLoader: public CmodPlayer
 {
-	public:
-		static CPlayer *factory(Copl *newopl);
+ public:
+  static CPlayer *factory(Copl *newopl);
 
-		CcffLoader(Copl *newopl) : CmodPlayer(newopl) { };
+  CcffLoader(Copl *newopl) : CmodPlayer(newopl) { };
 
-		bool	load(const std::string &filename, const CFileProvider &fp);
-		void	rewind(int subsong);
+  bool	load(const std::string &filename, const CFileProvider &fp);
+  void	rewind(int subsong);
 
-		std::string		gettype();
-		std::string		gettitle();
-		std::string		getauthor();
-		std::string		getinstrument(unsigned int n);
-		unsigned int	getinstruments();
+  std::string		gettype();
+  std::string		gettitle();
+  std::string		getauthor();
+  std::string		getinstrument(unsigned int n);
+  unsigned int	getinstruments();
 
-	private:
+ private:
 
-		class cff_unpacker
-		{
-			public:
+  class cff_unpacker
+    {
+    public:
 
-				long unpack(unsigned char *ibuf, unsigned char *obuf);
+      long unpack(unsigned char *ibuf, unsigned char *obuf);
 
-			private:
+    private:
 
-				unsigned long get_code();
-				void translate_code(unsigned long code, unsigned char *string);
+      unsigned long get_code();
+      void translate_code(unsigned long code, unsigned char *string);
 
-				void cleanup();
-				void startup();
+      void cleanup();
+      int startup();
 
-				void expand_dictionary(unsigned char *string);
+      void expand_dictionary(unsigned char *string);
 
-				unsigned char *input;
-				unsigned char *output;
+      unsigned char *input;
+      unsigned char *output;
 
-				long output_length;
+      long output_length;
 
-				unsigned char code_length;
+      unsigned char code_length;
 
-				unsigned long bits_buffer;
-				unsigned int bits_left;
+      unsigned long bits_buffer;
+      unsigned int bits_left;
 
-				unsigned char *heap;
-				unsigned char **dictionary;
+      unsigned char *heap;
+      unsigned char **dictionary;
 
-				unsigned int heap_length;
-				unsigned int dictionary_length;
+      unsigned int heap_length;
+      unsigned int dictionary_length;
 
-				unsigned long old_code,new_code;
+      unsigned long old_code,new_code;
 
-				unsigned char the_string[256];
-		};
+      unsigned char the_string[256];
+    };
 
-		struct cff_header
-		{
-			char	id[16];
-			unsigned char	version;
-			unsigned short	size;
-			unsigned char	packed;
-			unsigned char	reserved[12];
-		} header;
+  struct cff_header
+  {
+    char	id[16];
+    unsigned char	version;
+    unsigned short	size;
+    unsigned char	packed;
+    unsigned char	reserved[12];
+  } header;
 
-		struct cff_instrument
-		{
-			unsigned char	data[12];
-			char            name[21];
-		} instruments[47];
+  struct cff_instrument
+  {
+    unsigned char	data[12];
+    char		name[21];
+  } instruments[47];
 
-		char    song_title[20];
-		char	song_author[20];
+  char	song_title[20];
+  char	song_author[20];
 
-		struct cff_event
-		{
-			unsigned char	byte0;
-			unsigned char	byte1;
-			unsigned char	byte2;
-		};
+  struct cff_event
+  {
+    unsigned char	byte0;
+    unsigned char	byte1;
+    unsigned char	byte2;
+  };
 };

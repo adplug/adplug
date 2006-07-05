@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2003 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2006 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,28 +23,28 @@
 
 class CmtkLoader: public ChscPlayer
 {
-public:
+ public:
   static CPlayer *factory(Copl *newopl);
 
-	CmtkLoader(Copl *newopl)
-		: ChscPlayer(newopl)
-	{
-		mtkmode = 1;
-	};
+  CmtkLoader(Copl *newopl)
+    : ChscPlayer(newopl)
+    {
+      mtkmode = 1;
+    };
 
-	bool load(const std::string &filename, const CFileProvider &fp);
+  bool load(const std::string &filename, const CFileProvider &fp);
 
-	std::string gettype()
-	{ return std::string("MPU-401 Trakker"); };
-	std::string gettitle()
-	{ return std::string(title); };
-	std::string getauthor()
-	{ return std::string(composer); };
-	unsigned int getinstruments()
-	{ return 128; };
-	std::string getinstrument(unsigned int n)
-	{ return std::string(instname[n]); };
+  std::string gettype()
+    { return std::string("MPU-401 Trakker"); };
+  std::string gettitle()
+    { return std::string(title); };
+  std::string getauthor()
+    { return std::string(composer); };
+  unsigned int getinstruments()
+    { return 128; };
+  std::string getinstrument(unsigned int n)
+    { return std::string(instname[n]); };
 
-private:
-	char title[34],composer[34],instname[0x80][34];
+ private:
+  char title[34],composer[34],instname[0x80][34];
 };
