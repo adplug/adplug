@@ -34,6 +34,7 @@ class CrixPlayer: public CPlayer
   bool update();
   void rewind(int subsong);
   float getrefresh();
+  unsigned int getsubsongs();
 
   std::string gettype()
     { return std::string("Softstar RIX OPL Music Format"); };
@@ -43,6 +44,8 @@ class CrixPlayer: public CPlayer
     unsigned char v[14];
   } ADDT;
 
+  int flag_mkf;
+  unsigned char *file_buffer;
   unsigned char *buf_addr;  /* rix files' buffer */
   unsigned short buffer[300];
   unsigned short a0b0_data2[11];
@@ -55,7 +58,6 @@ class CrixPlayer: public CPlayer
   ADDT reg_bufs[18];
   unsigned long pos,length;
   unsigned char index;
-  unsigned short delay;
 
   static const unsigned char adflag[18];
   static const unsigned char reg_data[18];
