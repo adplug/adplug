@@ -22,6 +22,7 @@
 #include <stdio.h>
 
 #include "msc.h"
+#include "debug.h"
 
 const unsigned char CmscPlayer::msc_signature [MSC_SIGN_LEN] = {
   'C', 'e', 'r', 'e', 's', ' ', '\x13', ' ',
@@ -272,8 +273,13 @@ bool CmscPlayer::decode_octet(u8 * output)
 			
       // prefix copy mode
     case 255:
-      octet = raw_data [raw_pos - dec_dist];
-			
+      if((int)raw_pos >= dec_dist)
+	octet = raw_data [raw_pos - dec_dist];
+      else {
+	AdPlug_LogWrite("error! read before raw_data buffer.\n");
+	octet = 0;
+      }
+
       dec_len--;
       if (dec_len == 0) {
 	// back to normal mode

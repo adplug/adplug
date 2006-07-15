@@ -4,6 +4,3 @@ Known bugs and problems:
   a well-known "problem" with software mixing, hearable when the composer plays
   the same sound on multiple channels. Hardware mixing is unaffected by this
   issue.
-
-- Some players are still not endian-clean and may crash on big endian
-  architectures.

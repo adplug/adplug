@@ -28,12 +28,13 @@ class CrixPlayer: public CPlayer
   static CPlayer *factory(Copl *newopl);
 
   CrixPlayer(Copl *newopl);
-  ~CrixPlayer() {};
+  ~CrixPlayer();
 
   bool load(const std::string &filename, const CFileProvider &fp);
   bool update();
   void rewind(int subsong);
   float getrefresh();
+  unsigned int getsubsongs();
 
   std::string gettype()
     { return std::string("Softstar RIX OPL Music Format"); };
@@ -43,8 +44,9 @@ class CrixPlayer: public CPlayer
     unsigned char v[14];
   } ADDT;
 
-  unsigned char dro[128000];
-  unsigned char buf_addr[327680];  /* rix files' buffer */
+  int flag_mkf;
+  unsigned char *file_buffer;
+  unsigned char *buf_addr;  /* rix files' buffer */
   unsigned short buffer[300];
   unsigned short a0b0_data2[11];
   unsigned char a0b0_data3[18];
@@ -55,12 +57,7 @@ class CrixPlayer: public CPlayer
   unsigned short displace[11];
   ADDT reg_bufs[18];
   unsigned long pos,length;
-  unsigned long msdone,mstotal;
-  unsigned short delay;
-  unsigned char index, opl3_mode;
-  enum OplMode {
-    ModeOPL2,ModeOPL3,ModeDUALOPL2
-  } mode;
+  unsigned char index;
 
   static const unsigned char adflag[18];
   static const unsigned char reg_data[18];

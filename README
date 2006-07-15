@@ -16,22 +16,21 @@ Supported platforms:
 AdPlug currently is tested to compile and run well on the following
 platforms and compilers:
 
-Hardware                Operating System        Compiler
+Platform                Operating System        Compiler
 --------                ----------------        --------
-IA32 - x86              Windows XP              GCC 3.4
+IA32 - x86              Windows XP              GCC 3.4/MinGW32
                         MS-DOS 6.22             GCC 4.0/DJGPPv2
-                        Linux 2.4               GCC 2.95
                         Linux 2.6               GCC 3.3
                                                 GCC 4.0
-                        FreeBSD 4.11-RELEASE    GCC 2.95
-                        NetBSD 1.6.1            GCC 2.95
+                        FreeBSD 5.4-RELEASE     GCC 3.4
+                        NetBSD 2.0.2            GCC 3.3
                         SunOS 5.9               GCC 3.3
-                        OpenBSD 3.4             GCC 2.95
-AMD64 - x86_64          Linux 2.4               GCC 3.2
+                        OpenBSD 3.8             GCC 3.3
+AMD64 - x86_64          Linux 2.6               GCC 3.4
 DEC Alpha - ev67	Linux 2.2               GCC 2.95
 PowerPC                 Mac OS X                GCC
-Sparc - UltraSPARC-II   Sun Solaris 9           GCC
-IBM Power5              Linux 2.6               GCC 3.3
+Sparc - Sun Ultra-60    SunOS 5.9               GCC 3.3
+PowerPC 64              Linux 2.6               GCC 3.3
 
 This list only incorporates platforms on which this release of AdPlug has
 been tested successfully. This and/or earlier versions of AdPlug may and did
