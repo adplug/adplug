@@ -1,5 +1,10 @@
 This is a brief overview of user-visible changes in AdPlug.
 
+Changes for version 2.0.1:
+- All players are endian-clean now.
+- Lots of security fixes (many thanks to Luigi Auriemma).
+- Fixed volume handling in AMD player.
+
 Changes for version 2.0:
 - New format support:
   - MSC: AdLib MSCplay
