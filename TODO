@@ -7,9 +7,6 @@ doing so. Your SourceForge login name is a good way to identify yourself.
 
 Unfinished release goals for version 2.1:
 -----------------------------------------
-- Fix amd.cpp loader to play Skyrunner's files correctly
-  - Volume conversion is wrong in amd.cpp loader
-
 - Convert players to dual-OPL2/OPL3 support:
   - A2M
 
