@@ -20,3 +20,4 @@ srcdist.lst
 bindist.lst
 compile
 makeall
+INSTALL
