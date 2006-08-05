@@ -67,7 +67,7 @@ static const char *filelist[] = {
   "psi1.xad",		// xad: PSI
   "SATNIGHT.HSP",	// HSC Packed
   "blaster2.msc",	// AdLib MSCplay
-  "03B.RIX",		// Softstar RIX OPL Music
+  "RI051.RIX",		// Softstar RIX OPL Music
   NULL
 };
 
