@@ -5,8 +5,9 @@ Changes for version 2.1:
 - New format support:
   - ADL: Westwood ADL File Format
 - All players are endian-clean now.
-- Lots of security fixes (many thanks to Luigi Auriemma).
+- Lots of security fixes (thanks to Luigi Auriemma).
 - Fixed volume handling in AMD player.
+- Fixed a buffer overflow in ROL player (thanks to dai).
 
 Changes for version 2.0:
 ------------------------

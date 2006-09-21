@@ -19,8 +19,8 @@ General to do items:
   - Palladix file format, used in LOGICAL game [dynamite]
   - Herad System (HSQ), used in Dune, Megarace, KGB games
 
-- Fix correct replay of pitch information in RIX player.
-
 - Add some index entries to documentation.
 
 - Add ALSA direct-FM interface support.
+
+- Add possibility to mute/solo AdLib channels.
