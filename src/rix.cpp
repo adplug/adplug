@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2006 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2007 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -133,6 +133,7 @@ void CrixPlayer::rewind(int subsong)
   set_new_int();
   data_initial();
 }
+
 unsigned int CrixPlayer::getsubsongs()
 {
 	if(flag_mkf)
@@ -156,7 +157,8 @@ float CrixPlayer::getrefresh()
 /*------------------Implemention----------------------------*/
 inline void CrixPlayer::set_new_int()
 {
-  if(!ad_initial()) exit(1);
+//   if(!ad_initial()) exit(1);
+  ad_initial();
 }
 /*----------------------------------------------------------*/
 inline void CrixPlayer::Pause()
