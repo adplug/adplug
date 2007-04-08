@@ -9,7 +9,7 @@
 This manual documents the AdPlug core library, version
 @value{VERSION}.
 
-Copyright @copyright{} 2002 - 2006 Simon Peter <dn.tlp@@gmx.net>
+Copyright @copyright{} 2002 - 2007 Simon Peter <dn.tlp@@gmx.net>
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -89,19 +89,20 @@ but are included for testing purposes anyway.
 @itemize @bullet
 @item @file{A2M}: AdLib Tracker 2 by subz3ro
 @itemize @bullet
-@item Unimplemented commands (version 1-4): @code{FF1 - FF9, FAx - FEx}
-@item Unimplemented commands (version 5-8): @code{Gxy, Hxy, Kxy - &xy}
-@item In version 5-8 files, instrument panning & the flags byte is ignored
+@item File format versions 1, 4, 5 and 8 are supported
+@item Unimplemented commands (versions 1-4): @code{FF1 - FF9, FAx - FEx}
+@item Unimplemented commands (versions 5-8): @code{Gxy, Hxy, Kxy - &xy}
+@item In version 5-8 files, some parts of the flags byte are ignored
 @item Only SixPack compressed and uncompressed files are supported
-@item All OPL3 functionality is absent
 @end itemize
+@item @file{ADL}: Westwood ADL File Format
 @item @file{AMD}: AMUSIC Adlib Tracker by Elyssis
 @item @file{BAM}: Bob's Adlib Music Format by Bob
 @item @file{CFF}: BoomTracker 4.0 by CUD
 @item @file{CMF}: Creative Music File Format by Creative Technology
 @item @file{D00}: EdLib by Vibrants
 @itemize @bullet
-@item Bugs: Hard restart SR sometimes sound wrong
+@item Bugs: Hard restart SR sometimes sounds wrong
 @end itemize
 @item @file{DFM}: Digital-FM by R.Verhaag
 @item @file{DMO}: Twin TrackPlayer by TwinTeam
@@ -1043,7 +1044,7 @@ AdPlug recently offers centralized debug log management. If you like to
 implement debug logging inside your code, please follow these guidelines:
 
 To implement debug logging, @code{#include "debug.h"} in your code
-(this header is @strong{NOT} being installed with the rest of the
+(this header is @emph{not} being installed with the rest of the
 AdPlug header files into your standard include directory! It is only
 available in AdPlug's @file{src/} subdirectory!).
 
@@ -1306,15 +1307,11 @@ would, AdPlug's generic Protracker player has the following extra
 features:
 
 @itemize @bullet
-@item
-Special Arpeggio lists, just like in the SA2 format.
-@item
-Extendable set of up to 256 note commands.
-@item
-Up to 16 behaviour changing flags.
-@item
-Arbitrary numbers of rows, patterns, tracks, instruments and orderlist
-entries.
+@item Special Arpeggio lists, compatible with the SA2 format.
+@item Extendable set of up to 256 note commands.
+@item Simulates many different tracker flavors.
+@item Arbitrary numbers of rows, patterns, tracks, instruments and
+orderlist entries.
 @end itemize
 
 The only current limitation is that it has a maximum 9 voice
@@ -1324,17 +1321,15 @@ voices, anyway.
 @node Defaults
 @section Defaults
 
-For historical reasons, @code{CmodPlayer} sets defaults to some values
-that needn't be initialized by you. These are:
+For historical reasons, @code{CmodPlayer} sets defaults to some
+values, so they need not be initialized. These are:
 
 @itemize @bullet
-@item
-The orderlist is preallocated to 128 entries.
-@item
-The patterndata is preinitialized to 64 patterns with 9 channels and
-64 rows each.
-@item
-The instruments array is preallocated to 250 instruments.
+@item The orderlist is preallocated to 128 entries.
+@item The patterndata is preinitialized to 64 patterns with 9 channels
+and 64 rows each.
+@item The instruments array is preallocated to 250 instruments.
+@item All flags are cleared (simulates Protracker flavor).
 @end itemize
 
 These are mostly standard Protracker limits. They stem from the
@@ -1394,62 +1389,51 @@ following:
 @item length
 The orderlist length. When @code{CmodPlayer}'s orderlist pointer
 equals or is bigger than this length, it is automatically wrapped
-around to @code{restartpos}.
-
-This variable has no default.
+around to @code{restartpos}. This variable has no default.
 
 @item trackord
-Refer to @ref{Loading Patterns} below on this one.
-
-This variable defaults to @samp{0}.
+Refer to @ref{Loading Patterns} below on this one. This variable
+defaults to @samp{0}.
 
 @item restartpos
 The restarting position in the orderlist, when @code{length} is
-exceeded.
-
-This variable has no default.
+exceeded. This variable has no default.
 
 @item activechan
 A flag array, telling the player which channels in every pattern are
 actually active and to be played. The ordering of this variable is a
-bit awkward, so be careful! It is a 16-bit @code{unsigned short},
+bit awkward, so be careful! It is a 32-bit @code{unsigned long},
 holding the activeness of a channel in each of its bits,
-@strong{starting at the highest order bit}. It also holds values for
-16 channels and you can only use the lower 9. So, to set channel 0
-active, you have to set bit 15 (counting from bit 0) to @samp{1} and
-so on. You only use the upper 9 bits of this variable. Setting the
-lower bits will have no effect.
-
-This variable defaults to @samp{0xffff}, meaning all channels are enabled.
+@emph{starting at the highest order bit}. It can hold values for up to
+32 channels. So, to set channel 0 active, you have to set bit 31
+(counting from bit 0) to @samp{1} and so on. Setting any bits for
+channels that are not defined has no effect. This variable defaults to
+all bits set to 1, meaning all channels are enabled.
 
 @item initspeed
-Initial protracker-compatible speed setting.
-
-This variable defaults to @samp{6}, the standard Protracker speed setting.
+Initial protracker-compatible speed setting. This variable defaults to
+@samp{6}, the standard Protracker speed setting.
 
 @item bpm
-Initial protracker-compatible bpm (sometimes called tempo) setting.
-
-This variable has no default.
+Initial protracker-compatible bpm (sometimes called tempo)
+setting. This variable has no default.
 
 @item flags
-Refer to @ref{Special Flags} below.
-
-This variable defaults to @samp{Standard}, which sets standard
-Protracker defaults and imposes no specialities.
+Refer to @ref{Special Flags} below. This variable defaults to
+@samp{Standard}, which sets standard Protracker defaults and imposes
+no specialities.
 
 @item nop
 The number of patterns in your module. You don't need to set this
 value. If you leave it at @samp{0}, @code{CmodPlayer} will
 automatically determine the number of @emph{accessed} patterns (which
-in no way need to be the same as the actual number of patterns in your
-module) from the orderlist, in the @code{rewind()} method. The value
-serves only informational purposes, anyway. It is not needed for the
-actual playback. If you think you know better than @code{CmodPlayer},
-feel free to set it to something else and @code{CmodPlayer} won't
-touch it anymore and display your value instead.
-
-This variable defaults to @samp{0}.
+need not be the same as the actual number of patterns in your module)
+from the orderlist, in the @code{rewind()} method. The value serves
+only informational purposes, anyway. It is not needed for the actual
+playback. If you think you know better than @code{CmodPlayer}, feel
+free to set it to something else and @code{CmodPlayer} won't touch it
+anymore and display your value instead. This variable defaults to
+@samp{0}.
 @end vtable
 
 @node Loading Patterns
@@ -1499,7 +1483,7 @@ array (it's 0 based).
 available commands are listed in the following table:
 
 @multitable {@code{255--}} {Command descriptionwifuehwuifhw} {Parametersewufwuhwjjhhui} {@code{[0-3,F]iufhu}}
-@item Value @tab Command description @tab Parameters @tab Range
+@headitem Value @tab Command description @tab Parameters @tab Range
 @item @code{@ @ 0xy} @tab Arpeggio @tab @code{xy}=1st note,2nd note @tab @code{[0-F]}
 @item @code{@ @ 1xx} @tab Frequency slide up @tab @code{xx}=sliding speed @tab @code{[0-FF]}
 @item @code{@ @ 2xx} @tab Frequency slide down @tab @code{xx}=sliding speed @tab @code{[0-FF]}
@@ -1522,6 +1506,7 @@ available commands are listed in the following table:
 @item @code{@ @ @ 5y} @tab Fine volume slide down @tab @code{y}=vol down @tab @code{[0-F]}
 @item @code{@ @ @ 6y} @tab Fine frequency slide up @tab @code{y}=freq up @tab @code{[0-F]}
 @item @code{@ @ @ 7y} @tab Fine frequency slide down @tab @code{y}=freq down @tab @code{[0-F]}
+@item @code{@ @ @ 8y} @tab Pattern delay (rows) @tab @code{y}=rows to delay @tab @code{[0-F]}
 @item @code{@ 15xx} @tab SA2 set speed @tab @code{xx}=new speed @tab @code{[0-FF]}
 @item @code{@ 16xy} @tab AMD volume slide @tab @code{xy}=vol up|vol down @tab @code{[0-F]}
 @item @code{@ 17xx} @tab Set instrument volume @tab @code{xx}=new volume @tab @code{[0-3F]}
@@ -1536,6 +1521,7 @@ available commands are listed in the following table:
 @item @code{@ 26xy} @tab Volume slide @tab @code{xy}=vol up|vol down @tab @code{[0-F]}
 @item @code{@ 27xy} @tab Set chip tremolo/vibrato @tab @code{xy}=tr depth|vb depth @tab @code{[0-1]}
 @item @code{@ 28xy} @tab DTM frequency slide @tab @code{xy}=frames up|down @tab @code{[0-F]}
+@item @code{@ 29xx} @tab Pattern delay (frames) @tab @code{xx}=frames to delay @tab @code{[0-FF]}
 @item @code{255--} @tab No operation (NOP)
 @end multitable
 
@@ -1554,10 +1540,10 @@ For the instrument data, @code{CmodPlayer} stores it in the
 @code{inst[].data[]} array, in the following way:
 
 @multitable {Index} {Modulator} {Amp Mod / Vib / EG type / Key Scaling / Multiple} {@samp{0x00}}
-@item Index @tab Operator @tab Description @tab OPL2
-@item 0 @tab Channel @tab Feedback strength / Connection type @tab @samp{0xc0}
-@item 1 @tab Modulator @tab Amp Mod / Vib / EG type / Key Scaling / Multiple @tab @samp{0x20}
-@item 2	@tab Carrier @tab Amp Mod / Vib / EG type / Key Scaling / Multiple @tab @samp{0x23}
+@headitem Index @tab Operator @tab Description @tab Register
+@item 0 @tab Channel @tab (Panning) / Feedback strength / Connection type @tab @samp{0xc0}
+@item 1 @tab Modulator @tab Tremolo / Vibrato / Sustain / KSR / Multiple @tab @samp{0x20}
+@item 2	@tab Carrier @tab Tremolo / Vibrato / Sustain / KSR / Multiple @tab @samp{0x23}
 @item 3 @tab Modulator @tab Attack Rate / Decay Rate @tab @samp{0x60}
 @item 4 @tab Carrier @tab Attack Rate / Decay Rate @tab @samp{0x63}
 @item 5 @tab Modulator @tab Sustain Level / Release Rate @tab @samp{0x80}
@@ -1568,19 +1554,20 @@ For the instrument data, @code{CmodPlayer} stores it in the
 @item 10 @tab Carrier @tab Key scaling level / Operator output level @tab @samp{0x43}
 @end multitable
 
-There are 3 extensions, @code{CmodPlayer} imposes to the standard
-instrument data. These are also stored within the @code{inst[]} array.
+There are three extensions to the standard instrument data. These are
+also stored within the @code{inst[]} array.
 
-First, there's the @emph{Special Arpeggio}. This is explained in the
+@enumerate
+@item The @emph{Special Arpeggio}. This is explained in the
 @ref{Special Arpeggio} section, below.
 
-Next we got the @code{slide} variable. This is a pre-slide value that
-is always added to the frequency of the note, whenever this instrument
-is to be played.
+@item The @code{slide} variable. This is a pre-slide value that is
+always added to the frequency of the note, whenever this instrument is
+to be played.
 
-Finally, there's the @code{misc} variable. This is just the holder for
-the value of the 0xbd register (i.e. the "drums'n'misc" register) of
-the OPL2.
+@item The @code{misc} variable. This is just the holder for the value
+of the 0xbd register (i.e. the "drums'n'misc" register) of the OPL.
+@end enumerate
 
 @node Special Flags
 @section Special Flags
@@ -1617,8 +1604,24 @@ final volume = (channel volume + instrument volume) / 2
 @end example
 
 @item NoKeyOn
-This prevents the OPL2 key off/on toggle on every newly played
+This prevents the OPL key off/on toggle on every newly played
 note. Some trackers require it that way...
+
+@item Opl3
+Sets the player into OPL3 mode. Extended register settings of the OPL3
+become effective and the player initializes the OPL chip to OPL3
+mode. This has no effect if the hardware does not support OPL3
+features. Be careful to set panning information in register
+@code{0xc0} or else no sound will appear.
+
+@item Tremolo
+Sets tremolo depth to 4.8dB upon each @code{rewind()}.
+
+@item Vibrato
+Sets Vibrato depth to 14 cents upon each @code{rewind()}.
+
+@item Percussion
+Enables the OPL percussion mode.
 @end table
 
 These flags can be set and unset at any time. To set a flag, just
@@ -1642,7 +1645,7 @@ The special arpeggio uses the 4 variables @code{arpstart},
 the meantime. The following table summarizes the special commands.]
 
 @multitable {Value} {Set carr. & mod. volume}
-@item Value @tab Command description
+@headitem Value @tab Command description
 @item @samp{252} @tab Set carr. & mod. volume
 @item @samp{253} @tab Release sustaining note
 @item @samp{254} @tab Arpeggio loop
