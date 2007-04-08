@@ -5,11 +5,6 @@ To AdPlug SourceForge developers:
 If anyone happens to take over a task listed here, please mark that you're
 doing so. Your SourceForge login name is a good way to identify yourself.
 
-Unfinished release goals for version 2.1:
------------------------------------------
-- Convert players to dual-OPL2/OPL3 support:
-  - A2M
-
 General to do items:
 --------------------
 - Add new Protracker loaders:
