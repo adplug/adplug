@@ -1,3 +1,8 @@
+2007-04-09 18:01  dynamite
+
+	* AUTHORS, ChangeLog, adplugdb/Makefile.am, test/Makefile.am: Fixed
+	  makefiles.
+
 2007-04-09 17:47  dynamite
 
 	* README: Update.
