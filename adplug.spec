@@ -1,5 +1,5 @@
 %define name adplug
-%define version 1.5
+%define version 2.1
 %define release 1
 
 Summary: AdLib sound player library
@@ -12,8 +12,8 @@ License: LGPL
 Group: Applications/Multimedia
 BuildRoot: %{_tmppath}/%{name}-buildroot
 Prefix: %{_prefix}
-BuildRequires: binio-devel >= 1.1
-Requires: binio >= 1.1
+BuildRequires: binio-devel >= 1.4
+Requires: binio >= 1.4
 
 %description
 AdPlug is a free, multi-platform, hardware independent AdLib sound player
@@ -27,7 +27,7 @@ It supports various audio formats from MS-DOS AdLib trackers.
 Group: Development/Libraries
 Summary: Development files of AdPlug
 Requires: %name = %version-%release
-Requires: binio-devel >= 1.1
+Requires: binio-devel >= 1.4
 
 %description devel
 AdPlug is a free, multi-platform, hardware independent AdLib sound player

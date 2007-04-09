@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2006 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2007 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,12 @@
 
 #include "../src/adplug.h"
 #include "../src/opl.h"
+
+#ifdef MSDOS
+#	define DIR_DELIM	"\\"
+#else
+#	define DIR_DELIM	"/"
+#endif
 
 /***** Local variables *****/
 
@@ -167,7 +173,7 @@ static bool testplayer(const std::string filename)
    * prerecorded original and returns true if they match, false otherwise.
    */
 {
-  std::string	fn = std::string(srcdir) + "/" + filename;
+  std::string	fn = std::string(srcdir) + DIR_DELIM + filename;
 #ifdef __WATCOMC__
   std::string	testfn = tmpnam(NULL);
 #else

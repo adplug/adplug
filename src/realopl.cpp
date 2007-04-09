@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2006 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2007 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,8 +54,7 @@ const unsigned char CRealopl::op_table[9] =
   {0x00, 0x01, 0x02, 0x08, 0x09, 0x0a, 0x10, 0x11, 0x12};
 
 #if defined(WIN32) && defined(__MINGW32__)
-static __inline unsigned char
-inb (unsigned short int port)
+static __inline unsigned char inb(unsigned short int port)
 {
   unsigned char _v;
 
@@ -63,8 +62,7 @@ inb (unsigned short int port)
   return _v;
 }
 
-static __inline void
-outb (unsigned char value, unsigned short int port)
+static __inline void outb(unsigned char value, unsigned short int port)
 {
   __asm__ __volatile__ ("outb %b0,%w1": :"a" (value), "Nd" (port));
 }
