@@ -5,6 +5,12 @@ To AdPlug SourceForge developers:
 If anyone happens to take over a task listed here, please mark that you're
 doing so. Your SourceForge login name is a good way to identify yourself.
 
+Unfinished items for version 2.2:
+---------------------------------
+- Add test-case for ADL file format.
+
+- Add ALSA direct-FM interface support.
+
 General to do items:
 --------------------
 - Add new Protracker loaders:
@@ -13,9 +19,5 @@ General to do items:
 - New players:
   - Palladix file format, used in LOGICAL game [dynamite]
   - Herad System (HSQ), used in Dune, Megarace, KGB games
-
-- Add some index entries to documentation.
-
-- Add ALSA direct-FM interface support.
 
 - Add possibility to mute/solo AdLib channels.

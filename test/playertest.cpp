@@ -74,6 +74,7 @@ static const char *filelist[] = {
   "SATNIGHT.HSP",	// HSC Packed
   "blaster2.msc",	// AdLib MSCplay
   "RI051.RIX",		// Softstar RIX OPL Music
+  "DUNE19.ADL",		// Westwood ADL
   NULL
 };
 

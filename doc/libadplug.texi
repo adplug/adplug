@@ -5,6 +5,11 @@
 @settitle AdPlug Core Library @value{VERSION} Manual
 @c %**end of header
 
+@macro class{name}
+@tindex \name\
+@code{\name\}
+@end macro
+
 @copying
 This manual documents the AdPlug core library, version
 @value{VERSION}.
@@ -60,6 +65,7 @@ Software Foundation raise funds for GNU development.''
 * Copying This Manual::         Your rights and freedoms.
 * Method Index::
 * Variable Index::
+* Class Index::
 @end menu
 
 @node Introduction
@@ -143,7 +149,7 @@ but are included for testing purposes anyway.
 @item @file{SCI}: Sierra's AdLib Audio File Format by Sierra On-Line Inc.
 @itemize @bullet
 @item Needs file @file{@var{???}patch.003} in the same directory as
-loaded file, while @var{???} are the first 3 characters of the loaded
+loaded file, where @var{???} are the first 3 characters of the loaded
 file's filename
 @item Bugs: Some instruments are messed up
 @end itemize
@@ -152,7 +158,7 @@ file's filename
 @item @file{SNG}: Adlib Tracker 1.0 by TJ
 @itemize @bullet
 @item Needs file @file{@var{songname}.ins} in the same directory as
-loaded file, while @var{songname} is the song's filename without
+loaded file, where @var{songname} is the song's filename without
 @file{.sng} extension.
 @end itemize
 @item @file{XAD}: eXotic ADlib Format by Riven the Mage
@@ -168,9 +174,9 @@ names are case-sensitive.
 @section Concepts
 
 All of AdPlug's header files are installed under the directory
-@file{adplug} inside your specified include path. Whenever i refer to
-a specific header file in this manual, i mean the filename with the
-path @file{adplug/} prepended.
+@file{adplug} inside your specified include path. Whenever a specific
+header file in this manual is referred to, the filename with the path
+@file{adplug/} prepended is meant.
 
 AdPlug can be divided into 2 sections and 3 layers of
 functionality. These are the @dfn{Playback} and @dfn{Sound
@@ -220,39 +226,39 @@ The following headers provide the interface to the sound generation
 section: @file{emuopl.h}, @file{temuopl.h}, @file{kemuopl.h},
 @file{realopl.h}, @file{silentopl.h}, @file{analopl.h} and
 @file{diskopl.h}. All classes inside these headers are derived from
-the abstract base class @code{Copl}, declared inside the file
+the abstract base class @class{Copl}, declared inside the file
 @file{opl.h}, which provides the common interface for the Backend
 layer of the Playback section. This interface is not meant for the
 Frontend layer (i.e. your application). Your application, however, has
 to call special methods of these classes in order to route the data
 back, if there is any.
 
-@file{emuopl.h} provides the class @code{CEmuopl}, which implements a
+@file{emuopl.h} provides the class @class{CEmuopl}, which implements a
 virtual OPL emulator, which automatically selects the best available
 OPL chip emulation and type for each replayer.
 
-@file{temuopl.h} provides the class @code{CTEmuopl}, which is a
+@file{temuopl.h} provides the class @class{CTEmuopl}, which is a
 wrapper class around Tatsuyuki Satoh's fmopl OPL2 emulator, which
 generates wave audio data to be routed back to the application.
 
-@file{kemuopl.h} provides the class @code{CKemuopl}, which is a
+@file{kemuopl.h} provides the class @class{CKemuopl}, which is a
 wrapper class around Ken Silverman's adlibemu OPL2 emulator, which
 generates wave audio data to be routed back to the application.
 
-@file{realopl.h} provides the class @code{CRealopl}, which outputs to
+@file{realopl.h} provides the class @class{CRealopl}, which outputs to
 a real hardware OPL2 or OPL3 chip. No data is routed back to the
 application. This class is currently only working on x86 hardware.
 
-@file{silentopl.h} provides the class @code{CSilentopl}, which is a
+@file{silentopl.h} provides the class @class{CSilentopl}, which is a
 dummy OPL2/3, which generates nothing. All data sent to it is
 forgotten immediately. No data is routed back to the application.
 
-@file{analopl.h} provides the class @code{CAnalopl}, which is the same
-as @code{CRealopl}, but also provides a 9-channel loudness
+@file{analopl.h} provides the class @class{CAnalopl}, which is the same
+as @class{CRealopl}, but also provides a 9-channel loudness
 pseudo-analyzer interface for the application. The loudness data is
 the only data routed back to the application.
 
-@file{diskopl.h} provides the class @code{CDiskopl}, which is an OPL3
+@file{diskopl.h} provides the class @class{CDiskopl}, which is an OPL3
 emulator that does not output any sound to the soundcard, but instead
 writes all received OPL commands to a file in the RdosPlay RAW
 format.
@@ -269,7 +275,7 @@ For basic usage, you need to include the header @file{adplug.h} inside
 your application's source code. In addition, you need one of the
 headers from the sound generation section, if you want sound output.
 
-@file{adplug.h} provides the class @code{CAdPlug}, which in turn
+@file{adplug.h} provides the class @class{CAdPlug}, which in turn
 provides the load and playback facilities for the song
 files. @code{CAdPlug} is a static class, you do not need to
 instantiate an object of it.
@@ -600,18 +606,18 @@ std::string &fn, Copl *opl, const CPlayers &@var{pl} = players, ...)}
 method. The argument @var{pl} is a reference to an object holding a
 @dfn{Player List}.
 
-A player list object is an instance of the @code{CPlayers} class (not
-to be confused with the @code{CPlayer} class). The object can be
+A player list object is an instance of the @class{CPlayers} class (not
+to be confused with the @class{CPlayer} class). The object can be
 constant and even static (so it is possible to pass a temporary
 object, created on the fly).
 
 The @code{CPlayers} class itself is not much more than a specialized
 @code{std::list} from the @acronym{STL}, holding pointers to objects
-of type @code{CPlayerDesc}, which are explained below. Look into the
+of type @class{CPlayerDesc}, which are explained below. Look into the
 @acronym{STL} documentation for more information on @code{std::list}
 functionality.
 
-The @code{CPlayerDesc} class is essentially an information-holder,
+The @class{CPlayerDesc} class is essentially an information-holder,
 describing all needed characteristics of a player class, to create an
 instance and load a supported file with it. It has two public
 attributes:
@@ -701,7 +707,7 @@ because the application's programmer would have to be aware of each of
 the player's characteristics to know which files to pass.
 
 A file provider class is derived from the abstract base class
-@code{CFileProvider}, which is declared in the header
+@class{CFileProvider}, which is declared in the header
 @file{fprovide.h}. This class defines the following methods:
 
 @ftable @code
@@ -741,7 +747,7 @@ would use your file provider to fetch and depack the file from the
 archive first, before passing it to AdPlug.
 
 One derived file provider class is already defined in
-@file{fprovide.h}: @code{CProvider_Filesystem}. This file provider
+@file{fprovide.h}: @class{CProvider_Filesystem}. This file provider
 supports loading from the machine's local filesystem. File names are
 normal paths in the operating system's common notation.
 
@@ -765,7 +771,7 @@ The database can be maintained by using the @command{adplugdb}
 command. Usage of this command is explained in its own manual page.
 
 The application's interface to the database is defined through the
-@code{CAdPlugDatabase} class, residing in the header file
+@class{CAdPlugDatabase} class, residing in the header file
 @file{database.h}.
 
 If you just want to pass a database for AdPlug to make use of it,
@@ -849,7 +855,7 @@ record. This value is taken from the player list (see
 
 The common base class @code{CAdPlugDatabase::CRecord} defines a
 static method @code{factory(RecordType type)} for application usage
-that returns a pointer to a newly allocated @code{CRecord} object, or
+that returns a pointer to a newly allocated @class{CRecord} object, or
 the @samp{NULL}-pointer if an error occured. You pass the type of the
 record to be created as the only argument.
 
@@ -1120,7 +1126,7 @@ Your player normally consists of two files (the @file{.h} &
 your player handles. For example, the HSC player consists of the files
 @file{hsc.cpp} & @file{hsc.h}, because it handles @file{.hsc}
 files. This is the same with your player class name. Thus, the HSC
-player's class is called @code{ChscPlayer}. If any of these names
+player's class is called @class{ChscPlayer}. If any of these names
 happens to be already taken for other purposes, just name your player
 something else, appropriately.
 
@@ -1135,7 +1141,7 @@ I/O and initialization work.
 @node Main work
 @section Main work
 
-All you have to do now is to inherit the @code{CPlayer} class into
+All you have to do now is to inherit the @class{CPlayer} class into
 your own player class and fill the abstract methods with code. You at
 least have to fill in the following methods:
 
@@ -1232,7 +1238,7 @@ from where to open the file.
 @samp{false} from your @code{load()} method immediately. You do not
 have to call @code{fp.close()} in this case.
 
-The @code{CFileProvider} class offers two convenience methods. These
+The @class{CFileProvider} class offers two convenience methods. These
 are @code{unsigned long filesize(binistream *f)} and @code{bool
 extension(const std::string &filename, const std::string
 &extension)}.
@@ -1280,7 +1286,7 @@ supported by the OPL class! The sound will be totally messed up.
 @chapter Protracker based players
 
 If you want to create a player for a Protracker-derivative format, the
-generic Protracker player @code{CmodPlayer} that comes with AdPlug can
+generic Protracker player @class{CmodPlayer} that comes with AdPlug can
 be of great help. It supports all standard Protracker features, plus a
 good set of extensions to cope with most derivative formats.
 
@@ -1670,6 +1676,11 @@ the meantime. The following table summarizes the special commands.]
 @unnumbered Variable Index
 
 @printindex vr
+
+@node Class Index
+@unnumbered Class Index
+
+@printindex tp
 
 @shortcontents
 
