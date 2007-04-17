@@ -413,6 +413,8 @@ void Cd00Player::rewind(int subsong)
   } *tpoin;
   int i;
 
+  if(subsong == -1) subsong = cursubsong;
+
   if(version > 1) {	// do nothing if subsong > number of subsongs
     if(subsong >= header->subsongs)
       return;
@@ -442,6 +444,7 @@ void Cd00Player::rewind(int subsong)
   }
   songend = 0;
   opl->init(); opl->write(1,32);	// reset OPL chip
+  cursubsong = subsong;
 }
 
 std::string Cd00Player::gettype()
