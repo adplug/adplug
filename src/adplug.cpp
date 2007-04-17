@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2006 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2007 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -64,6 +64,7 @@
 #include "msc.h"
 #include "rix.h"
 #include "adl.h"
+#include "jbm.h"
 
 /***** CAdPlug *****/
 
@@ -106,6 +107,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CmscPlayer::factory, "Adlib MSC Player", ".msc\0"),
   CPlayerDesc(CrixPlayer::factory, "Softstar RIX OPL Music", ".rix\0"),
   CPlayerDesc(CadlPlayer::factory, "Westwood ADL", ".adl\0"),
+  CPlayerDesc(CjbmPlayer::factory, "Johannes Bjerregaard", ".jbm\0"),
   CPlayerDesc()
 };
 
