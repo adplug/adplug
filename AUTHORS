@@ -74,3 +74,6 @@ Torbjorn Andersson,
 Johannes Schickel 'lordhoto' <lordhoto at scummvm dot org>:
   - Development of original ADL (Westwood ADL File Format) player in
     ScummVM, which has been adapted for AdPlug.
+
+Dennis Lindroos <lindroos@nls.fi>:
+  - JBM: Johannes Bjerregaard Module player development

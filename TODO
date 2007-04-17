@@ -9,6 +9,8 @@ Unfinished items for version 2.2:
 ---------------------------------
 - Add ALSA direct-FM interface support.
 
+- When only one OPL2 is active, it needs to be output to the center channel.
+
 General to do items:
 --------------------
 - Add new Protracker loaders:
