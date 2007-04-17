@@ -75,6 +75,7 @@ static const char *filelist[] = {
   "blaster2.msc",	// AdLib MSCplay
   "RI051.RIX",		// Softstar RIX OPL Music
   "DUNE19.ADL",		// Westwood ADL
+  "DEMO4.JBM",		// JBM Adlib Music
   NULL
 };
 

@@ -3,7 +3,7 @@ This is a brief overview of user-visible changes in AdPlug.
 Changes for version 2.2:
 ------------------------
 - New format support:
-  - JBM: Johannes Bjerregaard Module
+  - JBM: JBM Adlib Music Format
 - Fixed D00 player current subsong rewind.
 - Added test case for ADL file format.
 
