@@ -4,8 +4,9 @@ Changes for version 2.2:
 ------------------------
 - New format support:
   - JBM: JBM Adlib Music Format
-- Fixed D00 player current subsong rewind.
+- Fixed current subsong rewind in D00 player.
 - Added test case for ADL file format.
+- Fixed replay bug in DRO player (thanks to Adam Nielsen).
 
 Changes for version 2.1:
 ------------------------
