@@ -19,6 +19,7 @@
  * adplug.cpp - CAdPlug utility class, by Simon Peter <dn.tlp@gmx.net>
  */
 
+#include <cstring>
 #include <string>
 #include <binfile.h>
 

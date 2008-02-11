@@ -19,6 +19,7 @@
  * msc.c - MSC Player by Lubomir Bulej (pallas@kadan.cz)
  */
 
+#include <cstring>
 #include <stdio.h>
 
 #include "msc.h"

@@ -4,6 +4,7 @@ AC_CONFIG_SRCDIR(src/adplug.cpp)
 AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile adplugdb/Makefile test/Makefile adplug.pc])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
+#AM_DISABLE_SHARED
 AM_PROG_LIBTOOL
 AC_LANG(C++)
 

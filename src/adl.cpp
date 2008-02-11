@@ -48,6 +48,7 @@
  *
  */
 
+#include <cstring>
 #include <inttypes.h>
 #include <stdarg.h>
 #include <assert.h>

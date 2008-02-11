@@ -20,6 +20,7 @@
  *
  * Visit:  http://tenacity.hispeed.com/aomit/oplx/
  */
+#include <cstring>
 #include <algorithm>
 
 #include "rol.h"
