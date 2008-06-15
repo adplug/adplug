@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2007 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2008 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <cstring>
 #include <string>
 
 #include "../src/adplug.h"
@@ -80,7 +81,7 @@ static const char *filelist[] = {
 };
 
 // String holding the relative path to the source directory
-static char *srcdir;
+static const char *srcdir;
 
 /***** Testopl *****/
 
