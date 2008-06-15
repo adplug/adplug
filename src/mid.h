@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2008 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -96,7 +96,7 @@ public:
 
  private:
   bool load_sierra_ins(const std::string &fname, const CFileProvider &fp);
-  void midiprintf(char *format, ...);
+  void midiprintf(const char *format, ...);
   unsigned char datalook(long pos);
   unsigned long getnexti(unsigned long num);
   unsigned long getnext(unsigned long num);

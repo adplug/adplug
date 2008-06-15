@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2007 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2008 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -177,7 +177,7 @@ bool Cd00Player::update()
       setvolume(c);
     }
 
-    if(channel[c].levpuls != 0xff)	// Levelpuls
+    if(channel[c].levpuls != 0xff) {	// Levelpuls
       if(channel[c].frameskip)
 	channel[c].frameskip--;
       else {
@@ -193,6 +193,7 @@ bool Cd00Player::update()
 	channel[c].modvol += levpuls[channel[c].levpuls].voladd; channel[c].modvol &= 63;
 	setvolume(c);
       }
+    }
   }
 
   // song handling

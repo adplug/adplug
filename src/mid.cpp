@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2006 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2008 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -81,7 +81,7 @@
 #ifdef TESTING
 #define midiprintf printf
 #else
-void CmidPlayer::midiprintf(char *format, ...)
+void CmidPlayer::midiprintf(const char *format, ...)
     {
     }
 #endif
@@ -300,12 +300,13 @@ bool CmidPlayer::load(const std::string &filename, const CFileProvider &fp)
             if (s[1]=='T' && s[2]=='M' && s[3]=='F') good=FILE_CMF;
             break;
         case 0x84:
-            if (s[1]==0x00 && load_sierra_ins(filename, fp))
-                if (s[2]==0xf0)
-                    good=FILE_ADVSIERRA;
-                    else
-                    good=FILE_SIERRA;
-            break;
+	  if (s[1]==0x00 && load_sierra_ins(filename, fp)) {
+	    if (s[2]==0xf0)
+	      good=FILE_ADVSIERRA;
+	    else
+	      good=FILE_SIERRA;
+	  }
+	  break;
         default:
             if (s[4]=='A' && s[5]=='D') good=FILE_OLDLUCAS;
             break;
@@ -811,11 +812,12 @@ fwait=1.0f/(((float)iwait/(float)deltas)*((float)msqtr/(float)1000000));
 
     midiprintf ("\n");
     for (i=0; i<16; i++)
-        if (track[i].on)
-            if (track[i].pos < track[i].tend)
-                midiprintf ("<%d>",track[i].iwait);
-                else
-                midiprintf("stop");
+      if (track[i].on) {
+	if (track[i].pos < track[i].tend)
+	  midiprintf ("<%d>",track[i].iwait);
+	else
+	  midiprintf("stop");
+      }
 
     /*
     if (ret==0 && type==FILE_ADVSIERRA)

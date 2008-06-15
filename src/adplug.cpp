@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2007 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2008 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -140,25 +140,27 @@ CPlayer *CAdPlug::factory(const std::string &fn, Copl *opl, const CPlayers &pl,
     for(j = 0; (*i)->get_extension(j); j++)
       if(fp.extension(fn, (*i)->get_extension(j))) {
 	AdPlug_LogWrite("Trying direct hit: %s\n", (*i)->filetype.c_str());
-	if((p = (*i)->factory(opl)))
+	if((p = (*i)->factory(opl))) {
 	  if(p->load(fn, fp)) {
 	    AdPlug_LogWrite("got it!\n");
 	    AdPlug_LogWrite("--- CAdPlug::factory ---\n");
 	    return p;
 	  } else
 	    delete p;
+	}
       }
 
   // Try all players, one by one
   for(i = pl.begin(); i != pl.end(); i++) {
     AdPlug_LogWrite("Trying: %s\n", (*i)->filetype.c_str());
-    if((p = (*i)->factory(opl)))
+    if((p = (*i)->factory(opl))) {
       if(p->load(fn, fp)) {
         AdPlug_LogWrite("got it!\n");
         AdPlug_LogWrite("--- CAdPlug::factory ---\n");
 	return p;
       } else
 	delete p;
+    }
   }
 
   // Unknown file
