@@ -7,6 +7,9 @@ Changes for version 2.2:
 - Fixed current subsong rewind in D00 player.
 - Added test case for ADL file format.
 - Fixed replay bug in DRO player (thanks to Adam Nielsen).
+- Fixed CMF rhythm mode (thanks to Adam Nielsen).
+- Added support for non-standard CMF AM+VIB controller (thanks to Adam
+  Nielsen).
 
 Changes for version 2.1:
 ------------------------
