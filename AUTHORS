@@ -76,7 +76,9 @@ Johannes Schickel 'lordhoto' <lordhoto at scummvm dot org>:
     ScummVM, which has been adapted for AdPlug.
 
 Adam Nielsen <malvineous@shikadi.net>:
-  - Fixes for CMF rhythm mode support
+  - Fixes for CMF rhythm mode support in original player
+  - Added entirely new (more accurate) CMF player
+  - Added surround/harmonic synth
 
 Dennis Lindroos <lindroos@nls.fi>:
   - JBM: JBM Adlib Music format player development
