@@ -23,4 +23,4 @@ a2m.h amd.h bam.h d00.h dfm.h hsc.h hsp.h imf.h ksm.h lds.h mid.h mkj.h \
 mtk.h protrack.h rad.h raw.h s3m.h sa2.h sng.h u6m.h player.h fmc.h mad.h \
 xad.h bmf.h flash.h hyp.h psi.h rat.h hybrid.h rol.h adtrack.h cff.h dtm.h \
 dmo.h fprovide.h database.h players.h xsm.h adlibemu.h kemuopl.h dro.h \
-realopl.h analopl.h temuopl.h msc.h rix.h adl.h jbm.h cmf.h
+realopl.h analopl.h temuopl.h msc.h rix.h adl.h jbm.h cmf.h surroundopl.h
