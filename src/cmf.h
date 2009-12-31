@@ -64,22 +64,14 @@ class CcmfPlayer: public CPlayer
 {
 	private:
 		uint8_t *data; // song data (CMF music block)
-		//volatile bool bPlaying;
-		int iHertz;
 		int iPlayPointer;		// Current location of playback pointer
 		int iSongLen;       // Max value for iPlayPointer
 		CMFHEADER cmfHeader;
 		SBI *pInstruments;
 		bool bPercussive; // are rhythm-mode instruments enabled?
 		uint8_t iCurrentRegs[256]; // Current values in the OPL chip
-		//double dbAFreq; // Frequency of A (defaults to 440Hz unless transposed)
 		int iTranspose;  // Transpose amount for entire song (between -128 and +128)
 		uint8_t iPrevCommand; // Previous command (used for repeated MIDI commands, as the seek and playback code need to share this)
-		//UINT8 iCurrentNote[16]; // Current note playing on a channel
-		//UINT16 iCurrentPitchbend[16]; // Current pitchbend value on a channel (defaults to 8192 == no pitch bend)
-		//bool bFastQuit; // true if we want to stop playback ASAP (i.e. if the user clicked the stop button)
-		//CriticalSection *pcsBlockPlayback; // block playback during seeking
-		//volatile bool bHaveSeeked;
 
 		int iNoteCount;  // Used to count how long notes have been playing for
 		MIDICHANNEL chMIDI[16];

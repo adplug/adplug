@@ -20,7 +20,7 @@
  *   Subset of CMF reader in MOPL code (Malvineous' OPL player), no seeking etc.
  */
 
-//#include <cstring>
+#include <stdlib.h> // for uintxx_t
 #include <cassert>
 #include <stdio.h> // for printf
 #include <math.h> // for pow() etc.
@@ -39,8 +39,6 @@
 //#define USE_VELOCITY
 //
 // The Xargon demo song is a good example of a song that uses note velocity.
-
-#define SPEED (AUD_FREQ / this->iHertz)
 
 // OPL register offsets
 #define BASE_CHAR_MULT  0x20
@@ -66,7 +64,7 @@
 // so any that aren't overridden are still available for use with these default
 // patches.  The Word Rescue CMFs are good examples of songs that rely on these
 // default patches.
-char cDefaultPatches[] =
+uint8_t cDefaultPatches[] =
 "\x01\x11\x4F\x00\xF1\xD2\x53\x74\x00\x00\x06"
 "\x07\x12\x4F\x00\xF2\xF2\x60\x72\x00\x00\x08"
 "\x31\xA1\x1C\x80\x51\x54\x03\x67\x00\x00\x0E"
@@ -101,22 +99,6 @@ CcmfPlayer::CcmfPlayer(Copl *newopl) :
 	assert(OPLOFFSET(1-1) == 0x00);
 	assert(OPLOFFSET(5-1) == 0x09);
 	assert(OPLOFFSET(9-1) == 0x12);
-
-	for (int i = 0; i < 9; i++) {
-		this->chOPL[i].iNoteStart = 0; // no note playing atm
-		this->chOPL[i].iMIDINote = 0;
-		this->chOPL[i].iMIDIChannel = 0;
-		this->chOPL[i].iMIDIPatch = -1;
-
-		this->chMIDI[i].iPatch = 0;
-		this->chMIDI[i].iPitchbend = 8192;
-	}
-	for (int i = 9; i < 16; i++) {
-		this->chMIDI[i].iPatch = 0;
-		this->chMIDI[i].iPitchbend = 8192;
-	}
-
-	memset(this->iCurrentRegs, 0, 256);
 }
 
 CcmfPlayer::~CcmfPlayer()
@@ -180,17 +162,17 @@ bool CcmfPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 	// Set the rest of the instruments to the CMF defaults
 	for (int i = this->cmfHeader.iNumInstruments; i < 128; i++) {
-		this->pInstruments[i].op[0].iCharMult =       cDefaultPatches[(11 * i + 0) % 16];
-		this->pInstruments[i].op[1].iCharMult =       cDefaultPatches[(11 * i + 1) % 16];
-		this->pInstruments[i].op[0].iScalingOutput =  cDefaultPatches[(11 * i + 2) % 16];
-		this->pInstruments[i].op[1].iScalingOutput =  cDefaultPatches[(11 * i + 3) % 16];
-		this->pInstruments[i].op[0].iAttackDecay =    cDefaultPatches[(11 * i + 4) % 16];
-		this->pInstruments[i].op[1].iAttackDecay =    cDefaultPatches[(11 * i + 5) % 16];
-		this->pInstruments[i].op[0].iSustainRelease = cDefaultPatches[(11 * i + 6) % 16];
-		this->pInstruments[i].op[1].iSustainRelease = cDefaultPatches[(11 * i + 7) % 16];
-		this->pInstruments[i].op[0].iWaveSel =        cDefaultPatches[(11 * i + 8) % 16];
-		this->pInstruments[i].op[1].iWaveSel =        cDefaultPatches[(11 * i + 9) % 16];
-		this->pInstruments[i].iConnection =           cDefaultPatches[(11 * i + 10) % 16];
+		this->pInstruments[i].op[0].iCharMult =       cDefaultPatches[(i % 16) * 11 + 0];
+		this->pInstruments[i].op[1].iCharMult =       cDefaultPatches[(i % 16) * 11 + 1];
+		this->pInstruments[i].op[0].iScalingOutput =  cDefaultPatches[(i % 16) * 11 + 2];
+		this->pInstruments[i].op[1].iScalingOutput =  cDefaultPatches[(i % 16) * 11 + 3];
+		this->pInstruments[i].op[0].iAttackDecay =    cDefaultPatches[(i % 16) * 11 + 4];
+		this->pInstruments[i].op[1].iAttackDecay =    cDefaultPatches[(i % 16) * 11 + 5];
+		this->pInstruments[i].op[0].iSustainRelease = cDefaultPatches[(i % 16) * 11 + 6];
+		this->pInstruments[i].op[1].iSustainRelease = cDefaultPatches[(i % 16) * 11 + 7];
+		this->pInstruments[i].op[0].iWaveSel =        cDefaultPatches[(i % 16) * 11 + 8];
+		this->pInstruments[i].op[1].iWaveSel =        cDefaultPatches[(i % 16) * 11 + 9];
+		this->pInstruments[i].iConnection =           cDefaultPatches[(i % 16) * 11 + 10];
 	}
 
 	if (this->cmfHeader.iTagOffsetTitle) {
@@ -213,7 +195,7 @@ bool CcmfPlayer::load(const std::string &filename, const CFileProvider &fp)
   f->readString((char *)data, this->iSongLen);
 
   fp.close(f);
-  rewind(0);
+	rewind(0);
 
   return true;
 }
@@ -225,7 +207,7 @@ bool CcmfPlayer::update()
 
 	// Read in the next event
 	while (!this->iDelayRemaining) {
-		int iCommand = this->data[this->iPlayPointer++];
+		uint8_t iCommand = this->data[this->iPlayPointer++];
 		if ((iCommand & 0x80) == 0) {
 			// Running status, use previous command
 			this->iPlayPointer--;
@@ -233,7 +215,7 @@ bool CcmfPlayer::update()
 		} else {
 			this->iPrevCommand = iCommand;
 		}
-		int iChannel = iCommand & 0x0F;
+		uint8_t iChannel = iCommand & 0x0F;
 		switch (iCommand & 0xF0) {
 			case 0x80: { // Note off (two data bytes)
 				uint8_t iNote = this->data[this->iPlayPointer++];
@@ -280,8 +262,7 @@ bool CcmfPlayer::update()
 				uint8_t iLSB = this->data[this->iPlayPointer++];
 				uint8_t iMSB = this->data[this->iPlayPointer++];
 				uint16_t iValue = (iMSB << 7) | iLSB;
-				// 8192 is middle, 0 is -2 semitones, 16384 is +2 semitones
-				//this->iCurrentPitchbend[iChannel] = iValue;
+				// 8192 is middle/off, 0 is -2 semitones, 16384 is +2 semitones
 				this->chMIDI[iChannel].iPitchbend = iValue;
 				printf("CMF: Channel %d pitchbent to %d (%+.2f)\n", iChannel + 1, iValue, (float)(iValue - 8192) / 8192);
 				break;
@@ -367,7 +348,7 @@ bool CcmfPlayer::update()
 
 void CcmfPlayer::rewind(int subsong)
 {
-  opl->init();
+  this->opl->init();
 
 	// Initialise
 
@@ -403,6 +384,28 @@ void CcmfPlayer::rewind(int subsong)
 
 	// Read in the number of ticks until the first event
 	this->iDelayRemaining = this->readMIDINumber();
+
+  // Reset song state.  This used to be in the constructor, but the XMMS2
+  // plugin sets the song length before starting playback.  AdPlug plays the
+  // song in its entirety (with no synth) to determine the song length, which
+  // results in the state variables below matching the end of the song.  When
+  // the real OPL synth is activated for playback, it no longer matches the
+  // state variables and the instruments are not set correctly!
+	for (int i = 0; i < 9; i++) {
+		this->chOPL[i].iNoteStart = 0; // no note playing atm
+		this->chOPL[i].iMIDINote = -1;
+		this->chOPL[i].iMIDIChannel = -1;
+		this->chOPL[i].iMIDIPatch = -1;
+
+		this->chMIDI[i].iPatch = -2;
+		this->chMIDI[i].iPitchbend = 8192;
+	}
+	for (int i = 9; i < 16; i++) {
+		this->chMIDI[i].iPatch = -2;
+		this->chMIDI[i].iPitchbend = 8192;
+	}
+
+	memset(this->iCurrentRegs, 0, 256);
 
 	return;
 }
