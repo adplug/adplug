@@ -77,6 +77,7 @@ static const char *filelist[] = {
   "RI051.RIX",		// Softstar RIX OPL Music
   "DUNE19.ADL",		// Westwood ADL
   "DEMO4.JBM",		// JBM Adlib Music
+  "dro_v2.dro",         // DOSBox DRO v2.0
   NULL
 };
 
