@@ -63,6 +63,7 @@
 #include "rol.h"
 #include "xsm.h"
 #include "dro.h"
+#include "dro2.h"
 #include "msc.h"
 #include "rix.h"
 #include "adl.h"
@@ -106,7 +107,8 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(Cu6mPlayer::factory, "Ultima 6 Music", ".m\0"),
   CPlayerDesc(CrolPlayer::factory, "Adlib Visual Composer", ".rol\0"),
   CPlayerDesc(CxsmPlayer::factory, "eXtra Simple Music", ".xsm\0"),
-  CPlayerDesc(CdroPlayer::factory, "DOSBox Raw OPL", ".dro\0"),
+  CPlayerDesc(CdroPlayer::factory, "DOSBox Raw OPL v0.1", ".dro\0"),
+  CPlayerDesc(Cdro2Player::factory, "DOSBox Raw OPL v2.0", ".dro\0"),
   CPlayerDesc(CmscPlayer::factory, "Adlib MSC Player", ".msc\0"),
   CPlayerDesc(CrixPlayer::factory, "Softstar RIX OPL Music", ".rix\0"),
   CPlayerDesc(CadlPlayer::factory, "Westwood ADL", ".adl\0"),

@@ -7,7 +7,7 @@ hsp.cpp ksm.cpp mad.cpp mid.cpp mkj.cpp cff.cpp dmo.cpp s3m.cpp dtm.cpp \
 fmc.cpp mtk.cpp rad.cpp raw.cpp sa2.cpp xad.cpp flash.cpp bmf.cpp hybrid.cpp \
 hyp.cpp psi.cpp rat.cpp u6m.cpp rol.cpp mididata.h xsm.cpp adlibemu.c dro.cpp \
 lds.cpp realopl.cpp analopl.cpp temuopl.cpp msc.cpp rix.cpp adl.cpp jbm.cpp \
-cmf.cpp
+cmf.cpp dro2.cpp
 
 libadplug_la_LDFLAGS = -release @VERSION@ -version-info 0 $(libbinio_LIBS)
 
@@ -23,4 +23,5 @@ a2m.h amd.h bam.h d00.h dfm.h hsc.h hsp.h imf.h ksm.h lds.h mid.h mkj.h \
 mtk.h protrack.h rad.h raw.h s3m.h sa2.h sng.h u6m.h player.h fmc.h mad.h \
 xad.h bmf.h flash.h hyp.h psi.h rat.h hybrid.h rol.h adtrack.h cff.h dtm.h \
 dmo.h fprovide.h database.h players.h xsm.h adlibemu.h kemuopl.h dro.h \
-realopl.h analopl.h temuopl.h msc.h rix.h adl.h jbm.h cmf.h surroundopl.h
+realopl.h analopl.h temuopl.h msc.h rix.h adl.h jbm.h cmf.h surroundopl.h \
+dro2.h
