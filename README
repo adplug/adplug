@@ -1,5 +1,5 @@
 AdPlug - A free AdLib sound player library
-Copyright (C) 1999 - 2007 Simon Peter, et al.
+Copyright (C) 1999 - 2010 Simon Peter, et al.
 
 Website: http://adplug.sourceforge.net/
 
@@ -21,6 +21,7 @@ Platform                Operating System        Compiler
 IA32 - x86              Windows XP              MinGW 3.4
                         MS-DOS 6.22             DJGPP 4.0
                         Linux 2.6               GCC 4.1
+x86_64                  Linux 2.6               GCC 4.4.2
 
 This list only incorporates platforms on which this release of AdPlug has
 been tested successfully. This and/or earlier versions of AdPlug may and did

@@ -5,7 +5,7 @@ To AdPlug SourceForge developers:
 If anyone happens to take over a task listed here, please mark that you're
 doing so. Your SourceForge login name is a good way to identify yourself.
 
-Unfinished items for version 2.2:
+Unfinished items for version 2.3:
 ---------------------------------
 - Add ALSA direct-FM interface support.
 
@@ -21,3 +21,7 @@ General to do items:
   - Herad System (HSQ), used in Dune, Megarace, KGB games
 
 - Add possibility to mute/solo AdLib channels.
+
+- Isolate Ken Silverman's synth (no global variables) so that multiple
+  instances can be created.  Surround mode won't work with Ken's synth
+  until this is done.

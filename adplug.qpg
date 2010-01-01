@@ -24,8 +24,8 @@
    <QPG:Values>
       <QPG:Files>
          <QPG:Add file="./COPYING" install="LicenseUrl/" handling="repdata"/>
-         <QPG:Add permissions="0755" file="./src/.libs/libadplug-1.5.so.0" install="/opt/lib/"/>
-         <QPG:Add filetype="symlink" file="libadplug.so.0" install="/opt/lib/" linkto="libadplug-1.5.so.0"/>
+         <QPG:Add permissions="0755" file="./src/.libs/libadplug-2.2.so.0" install="/opt/lib/"/>
+         <QPG:Add filetype="symlink" file="libadplug.so.0" install="/opt/lib/" linkto="libadplug-2.2.so.0"/>
          <QPG:Add permissions="0644" file="./src/.libs/libadplug.a" install="/opt/lib/"/>
          <QPG:Add permissions="0644" file="./AUTHORS" install="/usr/doc/libadplug/"/>
          <QPG:Add permissions="0644" file="./BUGS" install="/usr/doc/libadplug/"/>
@@ -54,15 +54,19 @@
          <QPG:Add permissions="0644" file="./src/silentopl.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/diskopl.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/realopl.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/surroundopl.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/adtrack.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/a2m.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/amd.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/bam.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/bmf.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/cff.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/cmf.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/d00.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/dfm.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/dmo.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/dro.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/dro2.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/dtm.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/flash.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/fmc.h" install="/opt/include/adplug/"/>
@@ -121,7 +125,7 @@
                <QPM:ProductDescriptionEmbedURL/>
             </QPM:ProductDescription>
             <QPM:ReleaseDescription>
-               <QPM:ReleaseVersion>1.5</QPM:ReleaseVersion>
+               <QPM:ReleaseVersion>2.2</QPM:ReleaseVersion>
                <QPM:ReleaseUrgency>Medium</QPM:ReleaseUrgency>
                <QPM:ReleaseStability>Stable</QPM:ReleaseStability>
                <QPM:ReleaseNoteMinor/>

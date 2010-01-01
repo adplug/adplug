@@ -1,3 +1,133 @@
+2010-01-01 10:14  malvineous
+
+	* test/: Makefile.am, dro_v2.dro, dro_v2.ref, michaeld.ref,
+	  playertest.cpp, samurai.ref: Added/updated CMF, DROv1 and DROv2
+	  tests
+
+2010-01-01 09:41  malvineous
+
+	* src/cmf.cpp: New CMF player: replace all printfs with AdPlug's
+	  debug logging mechanism
+
+2010-01-01 09:34  malvineous
+
+	* src/rol.cpp: Fixed buffer overflow in ROL player
+
+2010-01-01 09:26  malvineous
+
+	* src/: Makefile.am, surroundopl.cpp, surroundopl.h: Moved surround
+	  OPL effect into .cpp file to make debug logging work properly
+	  after installation
+
+2010-01-01 06:15  malvineous
+
+	* src/dro.h: Added version number to original DOSBox .dro player
+
+2010-01-01 06:13  malvineous
+
+	* src/cmf.cpp: Tiny CMF coding fix
+
+2010-01-01 06:13  malvineous
+
+	* src/: Makefile.am, adplug.cpp, dro2.cpp, dro2.h: Added support
+	  for DOSBox .dro version 2.0
+
+2009-12-31 02:08  malvineous
+
+	* src/: cmf.cpp, cmf.h: CMF player: Fixed default instruments,
+	  moved OPL tracking code to song init instead of class init (fixes
+	  instruments in XMMS2 plugin), misc code tidy up
+
+2009-12-27 08:17  malvineous
+
+	* AUTHORS: Added my recent changes to AUTHORS
+
+2009-12-27 08:03  malvineous
+
+	* src/: Makefile.am, surroundopl.h: Added surround (stereo
+	  harmonic) OPL synth wrapper
+
+2009-12-27 06:16  malvineous
+
+	* src/: Makefile.am, adplug.cpp, cmf.cpp, cmf.h: Added new CMF
+	  player (more accurate than existing MIDI-based player)
+
+2008-09-14 14:33  dynamite
+
+	* doc/Makefile.am: Moved version.texi from CLEANFILES to
+	  MAINTAINERCLEANFILES, where it belongs. It should only be cleaned
+	  when going back to the CVS-distributed version, as it is created
+	  by autoreconf.
+
+2008-09-14 11:46  dynamite
+
+	* AUTHORS, NEWS, src/mid.cpp: Applied CMF rhythm mode patch. Thanks
+	  to Adam Nielsen!
+
+2008-06-15 13:50  dynamite
+
+	* test/playertest.cpp: Fixed undefined reference to strncmp() error
+	  and deprecated string conversion warning.
+
+2008-06-15 13:47  dynamite
+
+	* src/: adplug.cpp, cff.cpp, d00.cpp, fmc.cpp, imf.cpp, mid.cpp,
+	  mid.h, protrack.cpp, rol.h, s3m.cpp, sa2.cpp: Fix many if-else
+	  and other perenthesizing ambiguities. Also applied patch by Per
+	  Karlsen (fixes Bug #1985050) that cures warnings about deprecated
+	  string conversions in mid.cpp.
+
+2008-02-11 21:18  dynamite
+
+	* configure.in, src/a2m.cpp, src/adl.cpp, src/adplug.cpp,
+	  src/bmf.cpp, src/cff.cpp, src/dro.cpp, src/dtm.cpp, src/fmc.cpp,
+	  src/mad.cpp, src/mkj.cpp, src/msc.cpp, src/mtk.cpp,
+	  src/protrack.cpp, src/rad.cpp, src/rat.cpp, src/raw.cpp,
+	  src/rix.cpp, src/rol.cpp, src/s3m.cpp, src/sa2.cpp, src/sng.cpp:
+	  Applied patch to fix building with upcoming GCC 4.3.0 (thanks to
+	  Linus Walleij). Adds a couple of cstring #includes.
+
+2007-06-17 22:05  dynamite
+
+	* NEWS, src/dro.cpp, test/samurai.ref: DRO player fix (header 3
+	  bytes short) by Adam Nielsen.
+
+2007-04-18 00:19  dynamite
+
+	* AUTHORS, NEWS, src/Makefile.am, src/adplug.cpp, test/DEMO4.JBM,
+	  test/DEMO4.ref, test/playertest.cpp: Added test case for JBM
+	  format.
+
+2007-04-18 00:12  dynamite
+
+	* src/: adplug.cpp, jbm.cpp, jbm.h: Adapted JBM player for AdPlug.
+
+2007-04-18 00:03  dynamite
+
+	* AUTHORS, NEWS, TODO, src/jbm.cpp, src/jbm.h: Added JBM player.
+
+2007-04-17 19:36  dynamite
+
+	* src/: d00.cpp, d00.h: Fixed D00 player to accept rewind(-1) and
+	  rewind the current subsong.
+
+2007-04-16 12:47  dynamite
+
+	* TODO, test/DUNE19.ref: Added ADL test case reference file.
+
+2007-04-14 20:37  dynamite
+
+	* NEWS, TODO, configure.in, doc/libadplug.texi, src/adl.cpp,
+	  src/adl.h, src/hsc.h, src/player.h, test/DUNE19.ADL,
+	  test/playertest.cpp: Added test case for ADL files. Added index
+	  entries to documentation. Changed default subsong of ADL player
+	  to be subsong #2. Added getsubsong() method to CPlayer base
+	  class.
+
+2007-04-09 18:21  dynamite
+
+	* ChangeLog: release.
+
 2007-04-09 18:01  dynamite
 
 	* AUTHORS, ChangeLog, adplugdb/Makefile.am, test/Makefile.am: Fixed
@@ -1610,38 +1740,84 @@
 	  src/sa2.h, src/silentopl.h, src/sng.cpp, src/sng.h, src/u6m.cpp,
 	  src/u6m.h, src/xad.cpp, src/xad.h, doc/PLAYER_SDK: no message
 
-2002-03-25 15:00  dynamite
+2002-03-25 15:03  dynamite
 
-	* AUTHORS, Makefile.am, Makefile.wat, NEWS, PLAYER_SDK, README,
+	* COPYING: no message
+
+2002-03-25 14:59  dynamite
+
+	* players/Makefile.wat, players/a2m.cpp, players/a2m.h,
+	  players/amd.cpp, players/amd.h, players/bam.cpp, players/bam.h,
+	  players/d00.cpp, players/d00.h, players/debug.c, players/dfm.cpp,
+	  players/dfm.h, players/fmc.cpp, players/fmc.h, players/hsc.cpp,
+	  players/hsc.h, players/hsp.cpp, players/hsp.h, players/imf.cpp,
+	  players/imf.h, players/imfcrc.h, players/ksm.cpp, players/ksm.h,
+	  players/lds.cpp, players/lds.h, players/mad.cpp, players/mad.h,
+	  players/mid.cpp, players/mid.h, players/mididata.h,
+	  players/mkj.cpp, players/mkj.h, players/mtk.cpp, players/mtk.h,
+	  players/player.h, players/protrack.cpp, players/protrack.h,
+	  players/rad.cpp, players/rad.h, players/raw.cpp, players/raw.h,
+	  players/rol.cpp, players/rol.h, players/s3m.cpp, players/s3m.h,
+	  players/sa2.cpp, players/sa2.h, players/sng.cpp, players/sng.h,
+	  players/u6m.cpp, players/u6m.h, players/xad.cpp, players/xad.h,
+	  AUTHORS, Makefile.am, Makefile.wat, NEWS, PLAYER_SDK, README,
 	  adplug.cpp, adplug.dsp, adplug.h, analopl.cpp, analopl.h,
 	  configure.in, diskopl.cpp, diskopl.h, emuopl.cpp, emuopl.h,
-	  fmopl.c, fmopl.h, opl.h, realopl.cpp, realopl.h, silentopl.h,
-	  COPYING: no message
+	  fmopl.c, fmopl.h, opl.h, realopl.cpp, realopl.h, silentopl.h: no
+	  message
 
 2002-03-18 15:55  dynamite
 
 	* CHANGES, COPYING, CREDITS, INSTALL, adplug.cpp, adplug.h, fm.h,
-	  makefile, makefile.wat, AUTHORS, ChangeLog, Makefile.am,
-	  Makefile.wat, NEWS, autogen.sh, configure.in, diskopl.cpp,
-	  diskopl.h: no message
+	  makefile, makefile.wat, players/amd.cpp, players/player.h,
+	  players/protrack.cpp, players/protrack.h, players/sa2.h, AUTHORS,
+	  ChangeLog, Makefile.am, Makefile.wat, NEWS, autogen.sh,
+	  configure.in, diskopl.cpp, diskopl.h, players/Makefile.wat,
+	  players/debug.c, players/fmc.cpp, players/fmc.h, players/mad.cpp,
+	  players/mad.h, players/makefile, players/makefile.wat,
+	  players/rol.cpp, players/rol.h, players/xad.cpp, players/xad.h:
+	  no message
+
+2002-03-02 23:44  dynamite
+
+	* players/: imf.cpp, imfcrc.h: "
 
 2002-03-02 18:35  dynamite
 
-	* adplug.cpp, makefile: G
+	* adplug.cpp, makefile, players/lds.cpp, players/makefile: G
 
 2002-03-02 15:01  dynamite
 
 	* CHANGES, CREDITS, INSTALL, PLAYER_SDK, README, adplug.cpp,
-	  adplug.dsp, emuopl.h, fmopl.c, makefile, makefile.wat, opl.h: G
+	  adplug.dsp, emuopl.h, fmopl.c, makefile, makefile.wat, opl.h,
+	  players/a2m.cpp, players/amd.cpp, players/bam.cpp,
+	  players/dfm.cpp, players/hsc.cpp, players/hsp.cpp,
+	  players/ksm.cpp, players/makefile, players/mid.cpp,
+	  players/mtk.cpp, players/rad.cpp, players/s3m.cpp,
+	  players/sa2.cpp, players/u6m.cpp: G
+
+2002-03-02 00:09  dynamite
+
+	* players/player.h: General update. Added GCC 3.x and FreeBSD
+	  support.
+
+2002-01-14 21:33  dynamite
+
+	* players/: bam.cpp, bam.h: fixed bug #476088.
+
+2002-01-14 20:51  dynamite
+
+	* players/: bam.cpp, bam.h: fixed bug #476088.
 
 2002-01-13 11:27  dynamite
 
-	* adplug.cpp, adplug.dsp, adplug.h: made CAdPlug a static class.
+	* adplug.cpp, adplug.dsp, adplug.h, players/makefile.wat: made
+	  CAdPlug a static class.
 
 2001-12-26 14:27  dynamite
 
-	* CHANGES, CREDITS, README, adplug.cpp, adplug.dsp: documentation
-	  updates.
+	* CHANGES, CREDITS, README, adplug.cpp, adplug.dsp,
+	  players/sa2.cpp: documentation updates.
 
 2001-11-27 20:36  dynamite
 
@@ -1656,21 +1832,31 @@
 
 	* CREDITS: .SAT support added to sa2.cpp - thanks mamiya
 
+2001-11-09 04:42  cdc_
+
+	* players/sa2.cpp: .SAT support added to sa2.cpp - thanks mamiya
+
 2001-10-26 17:06  dynamite
 
 	* CHANGES, INSTALL, PLAYER_SDK, README, adplug.cpp, adplug.dsp,
-	  makefile: release candidate #1
+	  makefile, players/makefile, players/makefile.wat: release
+	  candidate #1
 
 2001-10-23 21:19  dynamite
 
 	* CREDITS, adplug.dsp, analopl.cpp, analopl.h, makefile,
-	  makefile.wat: added WATCOM and MSVC support.
+	  makefile.wat, players/makefile.wat: added WATCOM and MSVC
+	  support.
 
 2001-10-18 18:44  dynamite
 
 	* CHANGES, CREDITS, INSTALL, README, adlibemu.c, adlibemu.h,
-	  adplug.cpp, adplug.h, kemuopl.h, makefile: made linux dynamic
-	  library, removed adlibemu.
+	  adplug.cpp, adplug.h, kemuopl.h, makefile, players/makefile: made
+	  linux dynamic library, removed adlibemu.
+
+2001-10-17 20:34  dynamite
+
+	* players/sng.h: fixed memory leak in sng player.
 
 2001-10-15 13:18  dynamite
 
@@ -1678,11 +1864,26 @@
 
 2001-10-15 13:13  dynamite
 
-	* README, adplug.cpp: added BAM player. messed with LDS player.
+	* README, adplug.cpp, players/bam.cpp, players/bam.h,
+	  players/lds.cpp: added BAM player. messed with LDS player.
+
+2001-10-09 15:01  dynamite
+
+	* players/: a2m.cpp, d00.h: removed #ifdef's before #pragmas.
 
 2001-10-08 15:23  dynamite
 
-	* PLAYER_SDK, README, adplug.cpp: misc. changes.
+	* PLAYER_SDK, README, adplug.cpp, players/a2m.cpp, players/lds.cpp,
+	  players/lds.h: misc. changes.
+
+2001-09-24 04:05  cdc_
+
+	* players/: a2m.cpp, a2m.h, amd.cpp, amd.h, d00.cpp, d00.h,
+	  dfm.cpp, dfm.h, hsc.cpp, hsc.h, hsp.cpp, hsp.h, imf.cpp, imf.h,
+	  imfcrc.h, ksm.cpp, ksm.h, mid.cpp, mid.h, mididata.h, mkj.cpp,
+	  mkj.h, mtk.cpp, mtk.h, player.h, protrack.cpp, protrack.h,
+	  rad.cpp, rad.h, raw.cpp, raw.h, s3m.cpp, s3m.h, sa2.cpp, sa2.h,
+	  sng.cpp, sng.h, u6m.cpp, u6m.h: added license information
 
 2001-09-24 04:01  cdc_
 
@@ -1692,16 +1893,26 @@
 
 2001-09-15 17:05  dynamite
 
-	* fmopl.c, opl.h: linux fixes.
+	* fmopl.c, opl.h, players/imf.cpp, players/imf.h, players/imfcrc.h,
+	  players/mkj.cpp: linux fixes.
 
 2001-08-19 17:00  dynamite
 
-	* adlibemu.c, adlibemu.h, adplug.cpp, adplug.h, kemuopl.h:
-	  miscellaneous fixups & code cleanups.
+	* adlibemu.c, adlibemu.h, adplug.cpp, adplug.h, kemuopl.h,
+	  players/d00.cpp, players/d00.h, players/imf.cpp, players/imf.h,
+	  players/imfcrc.h, players/ksm.cpp, players/mid.cpp,
+	  players/mid.h, players/player.h, players/protrack.cpp,
+	  players/rad.cpp, players/s3m.cpp, players/u6m.cpp: miscellaneous
+	  fixups & code cleanups.
+
+2001-07-24 16:41  dynamite
+
+	* players/: dfm.cpp, dfm.h: finalized DFM player.
 
 2001-07-16 17:00  dynamite
 
-	* adplug.cpp: added DFM player.
+	* adplug.cpp, players/dfm.cpp, players/dfm.h, players/protrack.cpp,
+	  players/protrack.h: added DFM player.
 
 2001-07-01 05:42  cdc_
 
@@ -1717,28 +1928,112 @@
 
 2001-06-24 19:51  dynamite
 
-	* adplug.cpp, realopl.cpp: added preliminary MKJamz player. Some
-	  comments added to realopl.cpp.
+	* adplug.cpp, realopl.cpp, players/mkj.cpp, players/mkj.h: added
+	  preliminary MKJamz player. Some comments added to realopl.cpp.
+
+2001-06-18 17:41  dynamite
+
+	* players/mid.cpp: misc. tweaks.
+
+2001-06-17 18:03  dynamite
+
+	* players/: imf.h, ksm.cpp, protrack.cpp, protrack.h, sa2.cpp:
+	  fixes to protracker and ksm players.
 
 2001-06-14 20:12  dynamite
 
-	* adplug.cpp: added .wlf support. IMF player rewinds songs
-	  automatically now.
+	* adplug.cpp, players/imf.cpp: added .wlf support. IMF player
+	  rewinds songs automatically now.
+
+2001-06-10 13:04  dynamite
+
+	* players/: mid.cpp, mid.h: fixed load/reject bug in SCI player
+
+2001-06-03 14:43  dynamite
+
+	* players/: ksm.cpp, ksm.h: added copyright notice to ksm replay.
+
+2001-05-31 14:19  dynamite
+
+	* frontends/: dos/adplay.cpp, dos/colors.ini, dos/makefile,
+	  dos/readme.txt, dos/timer/dpmi.cpp, dos/timer/dpmi.h,
+	  dos/timer/imsrtns.h, dos/timer/irq.cpp, dos/timer/irq.h,
+	  dos/timer/makefile, dos/timer/pindos.cpp, dos/timer/pindos.h,
+	  dos/timer/readme.txt, dos/timer/timer.cpp, dos/timer/timer.h,
+	  dos/window/makefile, dos/window/readme.txt, dos/window/txtgfx.c,
+	  dos/window/txtgfx.h, dos/window/window.cpp, dos/window/window.h,
+	  winamp/In2.h, winamp/adplug.bmp, winamp/debug.h,
+	  winamp/frontend.h, winamp/in_adlib.cpp, winamp/in_adlib.dsp,
+	  winamp/in_adlib.rc, winamp/in_adlib.txt, winamp/out.h,
+	  winamp/resource.h: removed frontends from adplug main source
+	  tree.
 
 2001-05-31 12:20  dynamite
 
-	* adlibemu.c: added proper credits to adlibemu.c & ksm.cpp. Fixed
-	  raw.cpp (del variable was falsely interpreted).
+	* adlibemu.c, frontends/winamp/in_adlib.cpp,
+	  frontends/winamp/in_adlib.txt, players/ksm.cpp, players/raw.cpp,
+	  players/raw.h: added proper credits to adlibemu.c & ksm.cpp.
+	  Fixed raw.cpp (del variable was falsely interpreted).
 
 2001-05-30 17:42  dynamite
 
 	* adlibemu.c, adlibemu.h, adplug.cpp, adplug.h, emuopl.cpp,
 	  emuopl.h, realopl.cpp, fm.h, fmopl.c, fmopl.h, kemuopl.h, opl.h,
-	  realopl.h, silentopl.h: Initial revision
+	  realopl.h, silentopl.h, frontends/winamp/resource.h,
+	  frontends/winamp/in_adlib.cpp, frontends/winamp/In2.h,
+	  frontends/winamp/in_adlib.txt, frontends/winamp/out.h,
+	  frontends/winamp/frontend.h, frontends/winamp/in_adlib.rc,
+	  frontends/winamp/in_adlib.dsp, frontends/dos/colors.ini,
+	  frontends/dos/makefile, frontends/winamp/adplug.bmp,
+	  frontends/winamp/debug.h, frontends/dos/readme.txt,
+	  frontends/dos/adplay.cpp, frontends/dos/timer/dpmi.cpp,
+	  frontends/dos/timer/irq.h, frontends/dos/timer/makefile,
+	  frontends/dos/timer/pindos.cpp, frontends/dos/timer/pindos.h,
+	  frontends/dos/timer/readme.txt, frontends/dos/timer/timer.cpp,
+	  frontends/dos/timer/dpmi.h, frontends/dos/timer/imsrtns.h,
+	  frontends/dos/timer/irq.cpp, frontends/dos/timer/timer.h,
+	  frontends/dos/window/readme.txt, frontends/dos/window/txtgfx.c,
+	  frontends/dos/window/txtgfx.h, frontends/dos/window/window.h,
+	  frontends/dos/window/makefile, frontends/dos/window/window.cpp,
+	  players/a2m.h, players/u6m.h, players/amd.cpp, players/amd.h,
+	  players/d00.cpp, players/d00.h, players/hsc.cpp, players/hsc.h,
+	  players/hsp.cpp, players/hsp.h, players/imf.cpp, players/imf.h,
+	  players/imfcrc.h, players/ksm.cpp, players/ksm.h,
+	  players/mid.cpp, players/mid.h, players/mididata.h,
+	  players/mtk.cpp, players/mtk.h, players/player.h,
+	  players/protrack.cpp, players/protrack.h, players/rad.cpp,
+	  players/rad.h, players/raw.cpp, players/raw.h, players/s3m.cpp,
+	  players/s3m.h, players/sa2.cpp, players/sa2.h, players/sng.cpp,
+	  players/sng.h, players/u6m.cpp, players/a2m.cpp: Initial revision
 
 2001-05-30 17:42  dynamite
 
 	* adlibemu.c, adlibemu.h, adplug.cpp, adplug.h, emuopl.cpp,
 	  emuopl.h, realopl.cpp, fm.h, fmopl.c, fmopl.h, kemuopl.h, opl.h,
-	  realopl.h, silentopl.h: initial import.
+	  realopl.h, silentopl.h, frontends/winamp/resource.h,
+	  frontends/winamp/in_adlib.cpp, frontends/winamp/In2.h,
+	  frontends/winamp/in_adlib.txt, frontends/winamp/out.h,
+	  frontends/winamp/frontend.h, frontends/winamp/in_adlib.rc,
+	  frontends/winamp/in_adlib.dsp, frontends/dos/colors.ini,
+	  frontends/dos/makefile, frontends/winamp/adplug.bmp,
+	  frontends/winamp/debug.h, frontends/dos/readme.txt,
+	  frontends/dos/adplay.cpp, frontends/dos/timer/dpmi.cpp,
+	  frontends/dos/timer/irq.h, frontends/dos/timer/makefile,
+	  frontends/dos/timer/pindos.cpp, frontends/dos/timer/pindos.h,
+	  frontends/dos/timer/readme.txt, frontends/dos/timer/timer.cpp,
+	  frontends/dos/timer/dpmi.h, frontends/dos/timer/imsrtns.h,
+	  frontends/dos/timer/irq.cpp, frontends/dos/timer/timer.h,
+	  frontends/dos/window/readme.txt, frontends/dos/window/txtgfx.c,
+	  frontends/dos/window/txtgfx.h, frontends/dos/window/window.h,
+	  frontends/dos/window/makefile, frontends/dos/window/window.cpp,
+	  players/a2m.h, players/u6m.h, players/amd.cpp, players/amd.h,
+	  players/d00.cpp, players/d00.h, players/hsc.cpp, players/hsc.h,
+	  players/hsp.cpp, players/hsp.h, players/imf.cpp, players/imf.h,
+	  players/imfcrc.h, players/ksm.cpp, players/ksm.h,
+	  players/mid.cpp, players/mid.h, players/mididata.h,
+	  players/mtk.cpp, players/mtk.h, players/player.h,
+	  players/protrack.cpp, players/protrack.h, players/rad.cpp,
+	  players/rad.h, players/raw.cpp, players/raw.h, players/s3m.cpp,
+	  players/s3m.h, players/sa2.cpp, players/sa2.h, players/sng.cpp,
+	  players/sng.h, players/u6m.cpp, players/a2m.cpp: initial import.
 
