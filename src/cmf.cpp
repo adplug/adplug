@@ -20,7 +20,7 @@
  *   Subset of CMF reader in MOPL code (Malvineous' OPL player), no seeking etc.
  */
 
-#include <stdlib.h> // for uintxx_t
+#include <stdint.h> // for uintxx_t
 #include <cassert>
 #include <stdio.h> // for printf
 #include <math.h> // for pow() etc.
