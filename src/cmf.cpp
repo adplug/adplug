@@ -104,6 +104,7 @@ CcmfPlayer::CcmfPlayer(Copl *newopl) :
 CcmfPlayer::~CcmfPlayer()
 {
 	if (this->data) delete[] data;
+	if (this->pInstruments) delete[] pInstruments;
 }
 
 bool CcmfPlayer::load(const std::string &filename, const CFileProvider &fp)
@@ -137,13 +138,20 @@ bool CcmfPlayer::load(const std::string &filename, const CFileProvider &fp)
 	this->cmfHeader.iTagOffsetComposer = f->readInt(2);
 	this->cmfHeader.iTagOffsetRemarks = f->readInt(2);
 	f->readString((char *)this->cmfHeader.iChannelsInUse, 16);
-	this->cmfHeader.iNumInstruments = f->readInt(2);
-	this->cmfHeader.iTempo = f->readInt(2);
+	if (iVer == 0x0100) {
+		this->cmfHeader.iNumInstruments = f->readInt(1);
+		this->cmfHeader.iTempo = 0;
+	} else { // 0x0101
+		this->cmfHeader.iNumInstruments = f->readInt(2);
+		this->cmfHeader.iTempo = f->readInt(2);
+	}
 
 	// Load the instruments
 
 	f->seek(this->cmfHeader.iInstrumentBlockOffset);
-	this->pInstruments = new SBI[128];  // Always 128 available for use
+	this->pInstruments = new SBI[
+		(this->cmfHeader.iNumInstruments < 128) ? 128 : this->cmfHeader.iNumInstruments
+	];  // Always at least 128 available for use
 
 	for (int i = 0; i < this->cmfHeader.iNumInstruments; i++) {
 		this->pInstruments[i].op[0].iCharMult = f->readInt(1);
