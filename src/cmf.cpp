@@ -364,6 +364,9 @@ void CcmfPlayer::rewind(int subsong)
   // Apparently this enables nine-channel mode?
 	this->writeOPL(0x01, 0x20);
 
+	// Disable OPL3 mode (can be left enabled by a previous non-CMF song)
+	this->writeOPL(0x05, 0x00);
+
 	// Really make sure CSM+SEL are off (again, Creative's player...)
 	this->writeOPL(0x08, 0x00);
 
