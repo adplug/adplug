@@ -9,4 +9,4 @@ URL: http://adplug.sourceforge.net
 Version: @VERSION@
 Requires: libbinio >= 1.4
 Libs: -L${libdir} -ladplug
-CFlags: -I${includedir}/@PACKAGE@
+CFlags: -I${includedir}
