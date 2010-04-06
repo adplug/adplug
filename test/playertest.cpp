@@ -58,7 +58,8 @@ static const char *filelist[] = {
   "rat.xad",		// xad: rat
   "REVELAT.SNG",	// Faust Music Creator
   "SAILOR.CFF",		// Boomtracker
-  "samurai.dro",	// DOSBox
+  "samurai.dro",	// DOSBox v0.1 (one-byte hardware type)
+  "doofus.dro",		// DOSBox v0.1 (four-byte hardware type)
   "SCALES.SA2",		// Surprise! Adlib Tracker 2
   "SMKEREM.HSC",	// HSC-Tracker
   "TOCCATA.MAD",	// Mlat Adlib Tracker
