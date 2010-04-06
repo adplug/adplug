@@ -1,5 +1,5 @@
 %define name adplug
-%define version 2.2
+%define version 2.2.1
 %define release 1
 
 Summary: AdLib sound player library

@@ -1,5 +1,11 @@
 This is a brief overview of user-visible changes in AdPlug.
 
+Changes for version 2.2.1:
+--------------------------
+- Bug fixes:
+  - CMF: Fix crash on v1.0 files
+  - DRO: Correct playback of early v0.1 files
+
 Changes for version 2.2:
 ------------------------
 - New format support:
