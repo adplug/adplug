@@ -24,6 +24,18 @@
 #include "rix.h"
 #include "debug.h"
 
+#if defined(__hppa__) || \
+   defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || \
+   (defined(__MIPS__) && defined(__MISPEB__)) || \
+   defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || \
+   defined(__sparc__)
+   // big endian
+   #define RIX_SWAP32(a) (((a) << 24) | (((a) << 8) & 0x00FF0000) | (((a) >> 8) & 0x0000FF00) | ((a) >> 24))
+#else
+   // little endian
+   #define RIX_SWAP32(a) (a)
+#endif
+
 const unsigned char CrixPlayer::adflag[] = {0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1};
 const unsigned char CrixPlayer::reg_data[] = {0,1,2,3,4,5,8,9,10,11,12,13,16,17,18,19,20,21};
 const unsigned char CrixPlayer::ad_C0_offs[] = {0,1,2,0,1,2,3,4,5,3,4,5,6,7,8,6,7,8};
@@ -124,8 +136,8 @@ void CrixPlayer::rewind(int subsong)
   if(flag_mkf)
   {
 	  unsigned int *buf_index=(unsigned int *)file_buffer;
-	  int offset1=buf_index[subsong],offset2;
-	  while((offset2=buf_index[++subsong])==offset1);
+	  int offset1=RIX_SWAP32(buf_index[subsong]),offset2;
+	  while((offset2=RIX_SWAP32(buf_index[++subsong]))==offset1);
 	  length=offset2-offset1+1;
 	  buf_addr=file_buffer+offset1;
   }
@@ -140,7 +152,7 @@ unsigned int CrixPlayer::getsubsongs()
 	if(flag_mkf)
 	{
 		unsigned int *buf_index=(unsigned int *)file_buffer;
-		int songs=buf_index[0]/4,i=0;
+		int songs=RIX_SWAP32(buf_index[0])/4,i=0;
 		for(i=0;i<songs;i++)
 			if(buf_index[i+1]==buf_index[i])
 				songs--;
