@@ -207,6 +207,8 @@ void CSurroundopl::init()
 	for (int i = 0; i < 256; i++) {
 		this->iFMReg[i] = 0;
 		this->iTweakedFMReg[i] = 0;
+	}
+	for (int i = 0; i < 9; i++) {
 		this->iCurrentTweakedBlock[i] = 0;
 		this->iCurrentFNum[i] = 0;
 	}
