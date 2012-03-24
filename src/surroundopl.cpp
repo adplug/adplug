@@ -198,6 +198,16 @@ void CSurroundopl::write(int reg, int val)
 	b->write(iRegister, iValue);
 	this->iTweakedFMReg[iRegister] = iValue;
 
-};
+}
 
-void CSurroundopl::init() {};
+void CSurroundopl::init()
+{
+	a->init();
+	b->init();
+	for (int i = 0; i < 256; i++) {
+		this->iFMReg[i] = 0;
+		this->iTweakedFMReg[i] = 0;
+		this->iCurrentTweakedBlock[i] = 0;
+		this->iCurrentFNum[i] = 0;
+	}
+}
