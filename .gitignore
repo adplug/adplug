@@ -21,3 +21,17 @@ bindist.lst
 compile
 makeall
 INSTALL
+doc/mdate-sh
+doc/texinfo.tex
+test-driver
+*.o
+*.lo
+*.la
+.deps
+.libs
+adplug.pc
+adplugdb/adplugdb
+doc/*.1
+doc/libadplug.info
+doc/version.texi
+doc/stamp-vti
