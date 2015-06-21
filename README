@@ -1,5 +1,5 @@
 AdPlug - A free AdLib sound player library
-Copyright (C) 1999 - 2010 Simon Peter, et al.
+Copyright (C) 1999 - 2015 Simon Peter, et al.
 
 Website: http://adplug.sourceforge.net/
 
@@ -45,17 +45,18 @@ Installation:
 -------------
 Please refer to the INSTALL file for installation instructions.
 
-CVS:
+git:
 ----
-If you checked out from CVS, please first run:
+If you checked out from git, please first run:
 
 autoreconf --install
 
 to generate the build cruft and get the configure script. Oh, and did i
 mention you need recent versions of autoconf, automake and libtool?
 
-When building a CVS version, always supply the --enable-maintainer-mode
-option to the configure script!
+When building a git version, always supply the --enable-maintainer-mode
+option to the configure script!  (Otherwise you will get errors about
+version.texi missing).
 
 Debugging AdPlug:
 -----------------
