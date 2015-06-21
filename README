@@ -1,7 +1,7 @@
 AdPlug - A free AdLib sound player library
 Copyright (C) 1999 - 2015 Simon Peter, et al.
 
-Website: http://adplug.sourceforge.net/
+Website: http://adplug.github.io/
 
 Description:
 ------------
@@ -39,7 +39,7 @@ Library:	Version:
 --------	--------
 libbinio	>= 1.4
 
-libbinio can be obtained from http://libbinio.sourceforge.net/.
+libbinio can be obtained from http://adplug.github.io/libbinio/.
 
 Installation:
 -------------

@@ -110,18 +110,18 @@
                <QPM:ProductEmail>dn.tlp@gmx.net</QPM:ProductEmail>
                <QPM:VendorName>Public</QPM:VendorName>
                <QPM:VendorInstallName>public</QPM:VendorInstallName>
-               <QPM:VendorURL>http://adplug.sourceforge.net</QPM:VendorURL>
+               <QPM:VendorURL>http://adplug.github.io</QPM:VendorURL>
                <QPM:VendorEmbedURL/>
                <QPM:VendorEmail>dn.tlp@gmx.net</QPM:VendorEmail>
                <QPM:AuthorName>Simon Peter</QPM:AuthorName>
-               <QPM:AuthorURL>http://adplug.sourceforge.net</QPM:AuthorURL>
+               <QPM:AuthorURL>http://adplug.github.io</QPM:AuthorURL>
                <QPM:AuthorEmbedURL/>
                <QPM:AuthorEmail>dn.tlp@gmx.net</QPM:AuthorEmail>
                <QPM:ProductIconSmall/>
                <QPM:ProductIconLarge/>
                <QPM:ProductDescriptionShort>AdPlug is a free, multi-platform, hardware independent AdLib sound player library, mainly written in C++.</QPM:ProductDescriptionShort>
                <QPM:ProductDescriptionLong>AdPlug is a free, multi-platform, hardware independent AdLib sound player library, mainly written in C++. AdPlug plays sound data, originally created for the AdLib (OPL2) audio board, on top of an OPL2 emulator or by using the real hardware. No OPL2 chip is required for playback. It supports various audio formats from MS-DOS AdLib trackers.</QPM:ProductDescriptionLong>
-               <QPM:ProductDescriptionURL>http://adplug.sourceforge.net</QPM:ProductDescriptionURL>
+               <QPM:ProductDescriptionURL>http://adplug.github.io</QPM:ProductDescriptionURL>
                <QPM:ProductDescriptionEmbedURL/>
             </QPM:ProductDescription>
             <QPM:ReleaseDescription>
