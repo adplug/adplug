@@ -35,3 +35,9 @@ doc/*.1
 doc/libadplug.info
 doc/version.texi
 doc/stamp-vti
+test/test-suite.log
+test/*.trs
+test/emutest
+test/emutest.log
+test/playertest
+test/playertest.log
