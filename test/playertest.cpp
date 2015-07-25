@@ -47,7 +47,8 @@ static const char *filelist[] = {
   "BOOTUP.M",		// Ultima 6
   "CHILD1.XSM",		// eXtra Simple Music
   "DTM-TRK1.DTM",	// DeFy Adlib Tracker
-  "fdance03.dmo",	// TwinTrack
+// Skip TwinTrack as it produces different results each time
+//  "fdance03.dmo",	// TwinTrack
   "ice_thnk.sci",	// Sierra
   "inc.raw",		// RAW
   "loudness.lds",	// Loudness
