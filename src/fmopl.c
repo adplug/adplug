@@ -125,7 +125,7 @@ static const int slot_array[32]=
 /* key scale level */
 /* table is 3dB/OCT , DV converts this in TL step at 6dB/OCT */
 #define DV (EG_STEP/2)
-static const UINT32 KSL_TABLE[8*16]=
+static const double KSL_TABLE[8*16]=
 {
 	/* OCT 0 */
 	 0.000/DV, 0.000/DV, 0.000/DV, 0.000/DV,
@@ -173,7 +173,7 @@ static const UINT32 KSL_TABLE[8*16]=
 /* sustain lebel table (3db per step) */
 /* 0 - 15: 0, 3, 6, 9,12,15,18,21,24,27,30,33,36,39,42,93 (dB)*/
 #define SC(db) (db*((3/EG_STEP)*(1<<ENV_BITS)))+EG_DST
-static const INT32 SL_TABLE[16]={
+static const double SL_TABLE[16]={
  SC( 0),SC( 1),SC( 2),SC(3 ),SC(4 ),SC(5 ),SC(6 ),SC( 7),
  SC( 8),SC( 9),SC(10),SC(11),SC(12),SC(13),SC(14),SC(31)
 };
@@ -198,7 +198,7 @@ static INT32 ENV_CURVE[2*EG_ENT+1];
 
 /* multiple table */
 #define ML 2
-static const UINT32 MUL_TABLE[16]= {
+static const double MUL_TABLE[16]= {
 /* 1/2, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15 */
    0.50*ML, 1.00*ML, 2.00*ML, 3.00*ML, 4.00*ML, 5.00*ML, 6.00*ML, 7.00*ML,
    8.00*ML, 9.00*ML,10.00*ML,10.00*ML,12.00*ML,12.00*ML,15.00*ML,15.00*ML
@@ -393,7 +393,7 @@ INLINE void set_mul(FM_OPL *OPL,int slot,int v)
 	OPL_CH   *CH   = &OPL->P_CH[slot/2];
 	OPL_SLOT *SLOT = &CH->SLOT[slot&1];
 
-	SLOT->mul    = MUL_TABLE[v&0x0f];
+	SLOT->mul    = static_cast<UINT32>(MUL_TABLE[v&0x0f]);
 	SLOT->KSR    = (v&0x10) ? 0 : 2;
 	SLOT->eg_typ = (v&0x20)>>5;
 	SLOT->vib    = (v&0x40);
@@ -442,7 +442,7 @@ INLINE void set_sl_rr(FM_OPL *OPL,int slot,int v)
 	int sl = v>>4;
 	int rr = v & 0x0f;
 
-	SLOT->SL = SL_TABLE[sl];
+	SLOT->SL = static_cast<INT32>(SL_TABLE[sl]);
 	if( SLOT->evm == ENV_MOD_DR ) SLOT->eve = SLOT->SL;
 	SLOT->RR = &OPL->DR_TABLE[rr<<2];
 	SLOT->evsr = SLOT->RR[SLOT->ksr];
@@ -976,7 +976,7 @@ static void OPLWriteReg(FM_OPL *OPL, int r, int v)
 			int fnum   = block_fnum&0x3ff;
 			CH->block_fnum = block_fnum;
 
-			CH->ksl_base = KSL_TABLE[block_fnum>>6];
+			CH->ksl_base = static_cast<UINT32>(KSL_TABLE[block_fnum>>6]);
 			CH->fc = OPL->FN_TABLE[fnum]>>blockRv;
 			CH->kcode = CH->block_fnum>>9;
 			if( (OPL->mode&0x40) && CH->block_fnum&0x100) CH->kcode |=1;
