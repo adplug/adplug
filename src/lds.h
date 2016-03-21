@@ -32,7 +32,7 @@ class CldsPlayer: public CPlayer
   bool load(const std::string &filename, const CFileProvider &fp);
   virtual bool update();
   virtual void rewind(int subsong = -1);
-  float getrefresh() { return 70.0f; }
+  float getrefresh() { return 1193182.0f / speed; }
 
   std::string gettype() { return std::string("LOUDNESS Sound System"); }
   unsigned int getorders() { return numposi; }
