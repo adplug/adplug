@@ -31,33 +31,29 @@ class CWemuopl: public Copl
 {
 public:
   CWemuopl(int rate, bool bit16, bool usestereo)
-    : use16bit(bit16), stereo(usestereo), opl(0)
     {
-      opl.adlib_init(rate);
+      opl.adlib_init(rate, usestereo ? 2 : 1, bit16 ? 2 : 1);
       currType = TYPE_OPL2;
     };
 
   void update(short *buf, int samples)
     {
-      //      if(use16bit) samples *= 2;
-      if(stereo) samples *= 2;
       opl.adlib_getsample(buf, samples);
     }
 
   // template methods
   void write(int reg, int val)
     {
-      if(currChip != 0)
-	return;
+      //if(currChip != 0)
+	//return;
 
-      opl.index = reg;
-      opl.adlib_write(opl.index, val, 0);
+      opl.adlib_write_index(0, reg);
+      opl.adlib_write(reg, val);
     };
 
   void init() {};
 
 private:
-  bool		use16bit, stereo;
   OPLChipClass	opl;
 };
 
