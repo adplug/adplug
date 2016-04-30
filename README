@@ -69,6 +69,11 @@ AdPlug logs to stderr by default. The output can be redirected anytime to a
 user specified logfile. This is done by using the 'CAdPlug::debug_output'
 method of the 'CAdPlug' class.
 
+If you have changed a format and the tests now fail (run "make check"), once
+you have confirmed the output is correct, there will be a *.test file in the
+test/ folder.  Rename this from .test to .ref to have it used as the new
+reference data.
+
 The emulator license issue:
 ---------------------------
 AdPlug uses MAME's fmopl OPL2 emulator. While this official distribution
