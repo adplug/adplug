@@ -25,7 +25,6 @@
 
 #include <vector>
 #include <string>
-#include <strings.h>
 
 #include "player.h"
 
