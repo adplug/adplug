@@ -75,7 +75,9 @@ bool ChscPlayer::update()
     fadein--;
 
   pattnr = song[songpos];
-  if(pattnr == 0xff) {			// arrangement handling
+  // 0xff indicates song end, but this prevents a crash for some songs that
+  // use other weird values, like 0xbf
+  if(pattnr >= 0xb2) {			// arrangement handling
     songend = 1;				// set end-flag
     songpos = 0;
     pattnr = song[songpos];
