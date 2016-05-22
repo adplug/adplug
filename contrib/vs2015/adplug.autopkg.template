@@ -1,0 +1,49 @@
+nuget {
+	nuspec {
+		id = adplug;
+		// "@version" is replaced by the current Appveyor build number in the
+		// pre-deployment script.
+		version: @version;
+		title: adplug;
+		authors: {Simon Peter};
+		owners: {Malvineous};
+		licenseUrl: "http://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html";
+		projectUrl: "https://github.com/adplug/adplug";
+		iconUrl: "https://avatars2.githubusercontent.com/u/12982922?v=3&s=200";
+		copyright: "Copyright 2002-2016 Simon Peter";
+		requireLicenseAcceptance: false;
+		description: "AdPlug is a free, multi-platform, hardware independent AdLib sound player library, mainly written in C++.  AdPlug plays sound data, originally created for the AdLib (OPL2/3) audio board, on top of an OPL2/3 emulator. No OPL2/3 chips are required for playback.";
+		releaseNotes: "Package upstream git version.";
+		tags: {coapp, native, nativepackage, static};
+	}
+	files {
+		#defines {
+			SDK_ROOT = "../../";
+			SolutionDir = "./";
+		}
+		include: {
+			"${SDK_ROOT}src/*.h"
+		};
+		docs: {
+			"${SDK_ROOT}README",
+			"${SDK_ROOT}COPYING"
+		};
+		[x86,debug] {
+			lib: ${SolutionDir}Debug\${pkgname}.lib;
+			symbols: ${SolutionDir}Debug\${pkgname}.pdb;
+		}
+		[x86,release] {
+			lib: ${SolutionDir}Release\${pkgname}.lib;
+		}
+		[x64,debug] {
+			lib: ${SolutionDir}x64\Debug\${pkgname}.lib;
+			symbols: ${SolutionDir}x64\Debug\${pkgname}.pdb;
+		}
+		[x64,release] {
+			lib: ${SolutionDir}x64\Release\${pkgname}.lib;
+		}
+	}
+	targets {
+		Defines += HAS_ADPLUG;
+	}
+}

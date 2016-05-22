@@ -1,0 +1,97 @@
+version: 2.3.{build}
+
+install:
+- ps: >-
+    # Download nuget.exe 2.x as default version (3.x) produces corrupted native .nupkg files
+
+    $nugetPath = "$($env:USERPROFILE)\nuget.exe"
+
+    (New-Object Net.WebClient).DownloadFile('https://nuget.org/nuget.exe', $nugetPath)
+
+
+    # Make the nuget.exe folder come first in the path, so it gets picked up before anything else
+
+    $env:Path = $env:USERPROFILE + ";" + $env:Path
+
+
+    # Download the CoApp tools.
+
+    $msiPath = "$($env:USERPROFILE)\CoApp.Tools.Powershell.msi"
+
+    (New-Object Net.WebClient).DownloadFile('http://coapp.org/files/CoApp.Tools.Powershell.msi', $msiPath)
+
+
+    # Install the CoApp tools from the downloaded .msi.
+
+    Start-Process -FilePath msiexec -ArgumentList /i, $msiPath, /quiet -Wait
+
+
+    # Make the tools available for later PS scripts to use.
+
+    $env:PSModulePath = $env:PSModulePath + ';C:\Program Files (x86)\Outercurve Foundation\Modules'
+
+    Import-Module CoApp
+
+nuget:
+  disable_publish_on_pr: true
+
+build_script:
+- cmd: >-
+    @echo off
+
+    "%VS140COMNTOOLS%\VsMSBuildCmd.bat" && ^
+
+    appveyor-retry nuget restore contrib\vs2015\vs2015.sln && ^
+
+    msbuild contrib\vs2015\adplug\adplug.vcxproj /p:Configuration=Debug /p:Platform=x86 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\adplug\adplug.vcxproj /p:Configuration=Release /p:Platform=x86 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\adplug\adplug.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\adplug\adplug.vcxproj /p:Configuration=Release /p:Platform=x64 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\emutest\emutest.vcxproj /p:Configuration=Debug /p:Platform=x86 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\emutest\emutest.vcxproj /p:Configuration=Release /p:Platform=x86 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\emutest\emutest.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\emutest\emutest.vcxproj /p:Configuration=Release /p:Platform=x64 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\playertest\playertest.vcxproj /p:Configuration=Debug /p:Platform=x86 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\playertest\playertest.vcxproj /p:Configuration=Release /p:Platform=x86 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\playertest\playertest.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:SolutionDir=..\ /v:minimal /nologo && ^
+
+    msbuild contrib\vs2015\playertest\playertest.vcxproj /p:Configuration=Release /p:Platform=x64 /p:SolutionDir=..\ /v:minimal /nologo
+
+before_deploy:
+- ps: >-
+    # This is the CoApp .autopkg file to create.
+
+    $autopkgFile = "contrib\vs2015\adplug.autopkg"
+
+
+    # Get the ".autopkg.template" file, replace "@version" with the Appveyor version number, then save to the ".autopkg" file.
+
+    cat ($autopkgFile + ".template") | % { $_ -replace "@version", $env:appveyor_build_version } > $autopkgFile
+
+
+    # Use the CoApp tools to create NuGet native packages from the .autopkg.
+
+    Write-NuGetPackage $autopkgFile
+
+
+    # Push all newly created .nupkg files as Appveyor artifacts for later deployment.
+
+    Get-ChildItem .\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+
+deploy:
+- provider: NuGet
+  api_key:
+    secure: j1VV7CpBunCGtQ7rINQkkxoSeOd8ptKZEvh/FaGx8DuucNP78uLNn9W+ZVqsEoNm
+  artifact: /.*\.nupkg/
+  on:
+    branch: master
