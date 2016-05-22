@@ -258,6 +258,7 @@ void CrolPlayer::UpdateVoice( int const voice, CVoiceData &voiceData )
     TPitchEvents       &pEvents = voiceData.pitch_events;
 
     if( !(voiceData.mEventStatus & CVoiceData::kES_InstrEnd ) &&
+        (voiceData.next_instrument_event < iEvents.size()) &&
         iEvents[voiceData.next_instrument_event].time == mCurrTick )
     {
         if( voiceData.next_instrument_event < iEvents.size() )
@@ -272,6 +273,7 @@ void CrolPlayer::UpdateVoice( int const voice, CVoiceData &voiceData )
     }
 
     if( !(voiceData.mEventStatus & CVoiceData::kES_VolumeEnd ) &&
+        (voiceData.next_volume_event < vEvents.size()) &&
         vEvents[voiceData.next_volume_event].time == mCurrTick )
     {
       SVolumeEvent const &volumeEvent = vEvents[voiceData.next_volume_event];
@@ -315,6 +317,7 @@ void CrolPlayer::UpdateVoice( int const voice, CVoiceData &voiceData )
     }
 
     if( !(voiceData.mEventStatus & CVoiceData::kES_PitchEnd ) &&
+        (voiceData.next_pitch_event < pEvents.size()) &&
         pEvents[voiceData.next_pitch_event].time == mCurrTick )
     {
         if( voiceData.next_pitch_event < pEvents.size() )
