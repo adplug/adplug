@@ -16,6 +16,11 @@ nuget {
 		releaseNotes: "Package upstream git version.";
 		tags: {coapp, native, nativepackage, static};
 	}
+	dependencies {
+		packages : {
+			libbinio/1.4.7
+		};
+	}
 	files {
 		#defines {
 			SDK_ROOT = "../../";
