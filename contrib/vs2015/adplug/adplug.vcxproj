@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\a2m.cpp" />
+    <ClCompile Include="..\..\..\src\adl.cpp" />
+    <ClCompile Include="..\..\..\src\adlibemu.c" />
+    <ClCompile Include="..\..\..\src\adplug.cpp" />
+    <ClCompile Include="..\..\..\src\adtrack.cpp" />
+    <ClCompile Include="..\..\..\src\amd.cpp" />
+    <ClCompile Include="..\..\..\src\bam.cpp" />
+    <ClCompile Include="..\..\..\src\bmf.cpp" />
+    <ClCompile Include="..\..\..\src\cff.cpp" />
+    <ClCompile Include="..\..\..\src\cmf.cpp" />
+    <ClCompile Include="..\..\..\src\d00.cpp" />
+    <ClCompile Include="..\..\..\src\database.cpp" />
+    <ClCompile Include="..\..\..\src\debug.c" />
+    <ClCompile Include="..\..\..\src\dfm.cpp" />
+    <ClCompile Include="..\..\..\src\diskopl.cpp" />
+    <ClCompile Include="..\..\..\src\dmo.cpp" />
+    <ClCompile Include="..\..\..\src\dro.cpp" />
+    <ClCompile Include="..\..\..\src\dro2.cpp" />
+    <ClCompile Include="..\..\..\src\dtm.cpp" />
+    <ClCompile Include="..\..\..\src\emuopl.cpp" />
+    <ClCompile Include="..\..\..\src\flash.cpp" />
+    <ClCompile Include="..\..\..\src\fmc.cpp" />
+    <ClCompile Include="..\..\..\src\fmopl.c" />
+    <ClCompile Include="..\..\..\src\fprovide.cpp" />
+    <ClCompile Include="..\..\..\src\hsc.cpp" />
+    <ClCompile Include="..\..\..\src\hsp.cpp" />
+    <ClCompile Include="..\..\..\src\hybrid.cpp" />
+    <ClCompile Include="..\..\..\src\hyp.cpp" />
+    <ClCompile Include="..\..\..\src\imf.cpp" />
+    <ClCompile Include="..\..\..\src\jbm.cpp" />
+    <ClCompile Include="..\..\..\src\ksm.cpp" />
+    <ClCompile Include="..\..\..\src\lds.cpp" />
+    <ClCompile Include="..\..\..\src\mad.cpp" />
+    <ClCompile Include="..\..\..\src\mid.cpp" />
+    <ClCompile Include="..\..\..\src\mkj.cpp" />
+    <ClCompile Include="..\..\..\src\msc.cpp" />
+    <ClCompile Include="..\..\..\src\mtk.cpp" />
+    <ClCompile Include="..\..\..\src\player.cpp" />
+    <ClCompile Include="..\..\..\src\players.cpp" />
+    <ClCompile Include="..\..\..\src\protrack.cpp" />
+    <ClCompile Include="..\..\..\src\psi.cpp" />
+    <ClCompile Include="..\..\..\src\rad.cpp" />
+    <ClCompile Include="..\..\..\src\rat.cpp" />
+    <ClCompile Include="..\..\..\src\raw.cpp" />
+    <ClCompile Include="..\..\..\src\rix.cpp" />
+    <ClCompile Include="..\..\..\src\rol.cpp" />
+    <ClCompile Include="..\..\..\src\s3m.cpp" />
+    <ClCompile Include="..\..\..\src\sa2.cpp" />
+    <ClCompile Include="..\..\..\src\sng.cpp" />
+    <ClCompile Include="..\..\..\src\surroundopl.cpp" />
+    <ClCompile Include="..\..\..\src\temuopl.cpp" />
+    <ClCompile Include="..\..\..\src\u6m.cpp" />
+    <ClCompile Include="..\..\..\src\woodyopl.cpp" />
+    <ClCompile Include="..\..\..\src\xad.cpp" />
+    <ClCompile Include="..\..\..\src\xsm.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\a2m.h" />
+    <ClInclude Include="..\..\..\src\adl.h" />
+    <ClInclude Include="..\..\..\src\adlibemu.h" />
+    <ClInclude Include="..\..\..\src\adplug.h" />
+    <ClInclude Include="..\..\..\src\adtrack.h" />
+    <ClInclude Include="..\..\..\src\amd.h" />
+    <ClInclude Include="..\..\..\src\analopl.h" />
+    <ClInclude Include="..\..\..\src\bam.h" />
+    <ClInclude Include="..\..\..\src\bmf.h" />
+    <ClInclude Include="..\..\..\src\cff.h" />
+    <ClInclude Include="..\..\..\src\cmf.h" />
+    <ClInclude Include="..\..\..\src\d00.h" />
+    <ClInclude Include="..\..\..\src\database.h" />
+    <ClInclude Include="..\..\..\src\debug.h" />
+    <ClInclude Include="..\..\..\src\dfm.h" />
+    <ClInclude Include="..\..\..\src\diskopl.h" />
+    <ClInclude Include="..\..\..\src\dmo.h" />
+    <ClInclude Include="..\..\..\src\dro.h" />
+    <ClInclude Include="..\..\..\src\dro2.h" />
+    <ClInclude Include="..\..\..\src\dtm.h" />
+    <ClInclude Include="..\..\..\src\emuopl.h" />
+    <ClInclude Include="..\..\..\src\flash.h" />
+    <ClInclude Include="..\..\..\src\fmc.h" />
+    <ClInclude Include="..\..\..\src\fmopl.h" />
+    <ClInclude Include="..\..\..\src\fprovide.h" />
+    <ClInclude Include="..\..\..\src\hsc.h" />
+    <ClInclude Include="..\..\..\src\hsp.h" />
+    <ClInclude Include="..\..\..\src\hybrid.h" />
+    <ClInclude Include="..\..\..\src\hyp.h" />
+    <ClInclude Include="..\..\..\src\imf.h" />
+    <ClInclude Include="..\..\..\src\jbm.h" />
+    <ClInclude Include="..\..\..\src\kemuopl.h" />
+    <ClInclude Include="..\..\..\src\ksm.h" />
+    <ClInclude Include="..\..\..\src\lds.h" />
+    <ClInclude Include="..\..\..\src\mad.h" />
+    <ClInclude Include="..\..\..\src\mid.h" />
+    <ClInclude Include="..\..\..\src\mididata.h" />
+    <ClInclude Include="..\..\..\src\mkj.h" />
+    <ClInclude Include="..\..\..\src\msc.h" />
+    <ClInclude Include="..\..\..\src\mtk.h" />
+    <ClInclude Include="..\..\..\src\opl.h" />
+    <ClInclude Include="..\..\..\src\player.h" />
+    <ClInclude Include="..\..\..\src\players.h" />
+    <ClInclude Include="..\..\..\src\protrack.h" />
+    <ClInclude Include="..\..\..\src\psi.h" />
+    <ClInclude Include="..\..\..\src\rad.h" />
+    <ClInclude Include="..\..\..\src\rat.h" />
+    <ClInclude Include="..\..\..\src\raw.h" />
+    <ClInclude Include="..\..\..\src\realopl.h" />
+    <ClInclude Include="..\..\..\src\rix.h" />
+    <ClInclude Include="..\..\..\src\rol.h" />
+    <ClInclude Include="..\..\..\src\s3m.h" />
+    <ClInclude Include="..\..\..\src\sa2.h" />
+    <ClInclude Include="..\..\..\src\silentopl.h" />
+    <ClInclude Include="..\..\..\src\sng.h" />
+    <ClInclude Include="..\..\..\src\surroundopl.h" />
+    <ClInclude Include="..\..\..\src\temuopl.h" />
+    <ClInclude Include="..\..\..\src\u6m.h" />
+    <ClInclude Include="..\..\..\src\wemuopl.h" />
+    <ClInclude Include="..\..\..\src\woodyopl.h" />
+    <ClInclude Include="..\..\..\src\xad.h" />
+    <ClInclude Include="..\..\..\src\xsm.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BCA921F9-1D8E-495D-884F-B3150447FD2E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>adplug</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;VERSION="2.3";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4244;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\libbinio.1.4.5\build\native\libbinio.targets" Condition="Exists('..\packages\libbinio.1.4.5\build\native\libbinio.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\libbinio.1.4.5\build\native\libbinio.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\libbinio.1.4.5\build\native\libbinio.targets'))" />
+  </Target>
+</Project>
