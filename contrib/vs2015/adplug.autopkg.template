@@ -21,8 +21,9 @@ nuget {
 			SDK_ROOT = "../../";
 			SolutionDir = "./";
 		}
-		include: {
-			"${SDK_ROOT}src/*.h"
+		nestedInclude: {
+			#destination = ${d_include}adplug;
+				"${SDK_ROOT}src\*.h"
 		};
 		docs: {
 			"${SDK_ROOT}README",
