@@ -25,6 +25,7 @@
     <ClCompile Include="..\..\..\src\adplug.cpp" />
     <ClCompile Include="..\..\..\src\adtrack.cpp" />
     <ClCompile Include="..\..\..\src\amd.cpp" />
+    <ClCompile Include="..\..\..\src\analopl.cpp" />
     <ClCompile Include="..\..\..\src\bam.cpp" />
     <ClCompile Include="..\..\..\src\bmf.cpp" />
     <ClCompile Include="..\..\..\src\cff.cpp" />
@@ -63,6 +64,7 @@
     <ClCompile Include="..\..\..\src\rad.cpp" />
     <ClCompile Include="..\..\..\src\rat.cpp" />
     <ClCompile Include="..\..\..\src\raw.cpp" />
+    <ClCompile Include="..\..\..\src\realopl.cpp" />
     <ClCompile Include="..\..\..\src\rix.cpp" />
     <ClCompile Include="..\..\..\src\rol.cpp" />
     <ClCompile Include="..\..\..\src\s3m.cpp" />

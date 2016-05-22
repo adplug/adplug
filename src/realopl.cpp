@@ -20,9 +20,15 @@
  */
 
 #ifdef _MSC_VER			// Microsoft Visual C++
+#if (_MSC_VER >= 1900) // VS2015+
+// _inp and _outp are no longer part of the C runtime from VS2015/Win8.1
+int INP(int dummy) { return 0; }
+void OUTP(int dummy, int dummy2) { return; }
+#else // _MSC_VER < 1900
 #	include <conio.h>
 #	define INP	_inp
 #	define OUTP	_outp
+#endif // _MSC_VER < 1900
 #elif defined(__WATCOMC__)	// Watcom C/C++ and OpenWatcom
 #	include <conio.h>
 #	define INP	inp
