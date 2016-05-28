@@ -1,5 +1,26 @@
 This is a brief overview of user-visible changes in AdPlug.
 
+Changes for version 2.3:
+-------------------------
+- Bug fixes:
+  - ROL: Prevent access beyond end of vector
+  - MSC: Fix use of uninitialised variable
+  - HSC: Handle out of range patterns more gracefully
+  - MID: Fix for issue #2 - out of range array read
+  - LDS: Use the tempo stored inside the Loudness-File instead of simply returning 70Hz
+  - RIX: Fix several replay bugs (thanks to Palxex)
+  - RIX: Big-endian fix by Wei Mingzhi
+  - Various other out of bounds array fixes
+- Allow compilation on platforms that don't support real OPL hardware access
+- Add support for compiling on Appveyor and publishing a NuGet package
+- Add Visual Studio 2015 projects
+- Add support for Travis CI builds
+- Addition of WoodyOPL from DOSBox SVN (thanks to NY00123)
+- Move from SourceForge to GitHub
+- DRO player refactored (thanks to Laurence Myers and William Yates)
+- Add (mono) OPL3 support to the surround/harmonic-effect OPL
+- Fix occasional random noise in right channel when using surround OPL and Satoh synth
+
 Changes for version 2.2.1:
 --------------------------
 - Bug fixes:

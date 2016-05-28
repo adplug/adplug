@@ -1,0 +1,6 @@
+Release procedure
+-----------------
+ * Update version number in configure.ac and appveyor.yml
+ * Update file list in adplug.qpg
+ * Update NEWS with changes since last release
+ * Update ChangeLog
