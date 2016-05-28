@@ -51,6 +51,7 @@ nuget {
 	}
 	targets {
 		Defines += HAS_ADPLUG;
-		Defines += VERSION="@version";
+		Defines += HAVE_ADPLUG_SURROUND;
+		Defines += ADPLUG_VERSION=@version;
 	}
 }
