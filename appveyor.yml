@@ -35,6 +35,18 @@ install:
 nuget:
   disable_publish_on_pr: true
 
+before_build:
+- ps: >-
+    # This is the version header to create.
+
+    $file = "src\version.h"
+
+
+    # Get the ".in" version of the file, replace "@VERSION@" with the Appveyor version number, then save to the target file.
+
+    cat ($file + ".in") | % { $_ -replace "@VERSION@", $env:appveyor_build_version } > $file
+
+
 build_script:
 - cmd: >-
     @echo off

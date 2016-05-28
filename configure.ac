@@ -1,7 +1,7 @@
 # Tell autoconf we're compiling a C++ library, using automake & libtool
 AC_INIT(adplug,2.3)
 AC_CONFIG_SRCDIR(src/adplug.cpp)
-AC_CONFIG_FILES([Makefile src/Makefile doc/Makefile adplugdb/Makefile test/Makefile adplug.pc])
+AC_CONFIG_FILES([Makefile src/Makefile src/version.h doc/Makefile adplugdb/Makefile test/Makefile adplug.pc])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 #AM_DISABLE_SHARED

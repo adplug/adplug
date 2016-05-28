@@ -35,6 +35,7 @@ doc/*.1
 doc/libadplug.info
 doc/version.texi
 doc/stamp-vti
+src/version.h
 test/test-suite.log
 test/*.trs
 test/emutest
