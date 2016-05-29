@@ -14,8 +14,10 @@ Marc Winterrowd <remove space and vowels from "marc winterrowd" and append
                  "at yahoo" plus "dot com">:
   - M: Origin Music player development
 
-Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>:
+Tatsuyuki Satoh <tatuyuki@tky.3web.ne.jp>,
+Jarek Burczynski <bujar@mame.net>:
   - First YM3812 emulator development
+  - YMF262 emulator development
 
 Ken Silverman <kjs@lems.brown.edu>:
   - Second YM3812 emulator development

@@ -1,3 +1,28 @@
+Tatsuyuki Satoh and Jarek Burczynski's YM3812 emulator, constituted in
+this distribution by the files `src/fmopl.c' and `src/fmopl.h', and
+only these files, is covered by paragraph VI of the MAME license:
+
+--- BEGIN of excerpt of the MAME license ---
+
+VI. Reuse of Source Code
+--------------------------
+   This chapter might not apply to specific portions of MAME (e.g. CPU
+   emulators) which bear different copyright notices.
+   The source code cannot be used in a commercial product without the written
+   authorization of the authors. Use in non-commercial products is allowed, and
+   indeed encouraged.  If you use portions of the MAME source code in your
+   program, however, you must make the full source code freely available as
+   well.
+   Usage of the _information_ contained in the source code is free for any use.
+   However, given the amount of time and energy it took to collect this
+   information, if you find new information we would appreciate if you made it
+   freely available as well.
+
+--- END of excerpt of the MAME license ---
+
+All other parts of this software distribution are copyrighted according
+to the following GNU LESSER GENERAL PUBLIC LICENSE (LGPL):
+
                   GNU LESSER GENERAL PUBLIC LICENSE
                        Version 2.1, February 1999
 

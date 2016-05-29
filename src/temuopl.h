@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2004 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2005 Simon Peter, <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,8 +40,8 @@ class CTemuopl: public Copl
   void init();
 
  private:
-  bool		use16bit,stereo;
-  FM_OPL	*opl;			// holds emulator data
+  bool	use16bit,stereo;
+  void	*opl;
 };
 
 #endif

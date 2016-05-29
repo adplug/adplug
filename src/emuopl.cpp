@@ -24,17 +24,20 @@
 CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
   : use16bit(bit16), stereo(usestereo), mixbufSamples(0)
 {
-  opl[0] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
-  opl[1] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
+  opl[0] = YM3812Init(3579545, rate);
+  opl[1] = YM3812Init(3579545, rate);
+  opl3 = new YMF262::Class();
+  opl3->YMF262Init(1, 14400000, rate);
 
-  currType = TYPE_DUAL_OPL2;
+  currType = TYPE_OPL3;
 
   init();
 }
 
 CEmuopl::~CEmuopl()
 {
-  OPLDestroy(opl[0]); OPLDestroy(opl[1]);
+  YM3812Shutdown(opl[0]); YM3812Shutdown(opl[1]);
+  opl3->YMF262Shutdown(); delete opl3;
 
   if(mixbufSamples) {
     delete [] mixbuf0;
@@ -89,7 +92,18 @@ void CEmuopl::update(short *buf, int samples)
       }
     break;
 
-  case TYPE_OPL3:	// unsupported
+  case TYPE_OPL3:
+    //for opl3 mode:
+    //if we are to render in stereo, render straight to outbuf
+    if(stereo) {
+      opl3->YMF262UpdateOne(0,outbuf,samples);
+    } else {
+    //otherwise, render to a tempbuf and then we will combine the channels
+      opl3->YMF262UpdateOne(0,tempbuf,samples);
+
+      for(i=0;i<samples;i++)
+	outbuf[i] = (tempbuf[i*2]>>1) + (tempbuf[i*2+1]>>1);
+    }
     break;
 
   case TYPE_DUAL_OPL2:
@@ -127,17 +141,20 @@ void CEmuopl::write(int reg, int val)
   switch(currType){
   case TYPE_OPL2:
   case TYPE_DUAL_OPL2:
-    OPLWrite(opl[currChip], 0, reg);
-    OPLWrite(opl[currChip], 1, val);
+    YM3812Write(opl[currChip], 0, reg);
+    YM3812Write(opl[currChip], 1, val);
     break;
-  case TYPE_OPL3:	// unsupported
+  case TYPE_OPL3:
+    opl3->YMF262Write(0, currChip * 2 + 0, reg);
+    opl3->YMF262Write(0, currChip * 2 + 1, val);
     break;
   }
 }
 
 void CEmuopl::init()
 {
-  OPLResetChip(opl[0]); OPLResetChip(opl[1]);
+  YM3812ResetChip(opl[0]); YM3812ResetChip(opl[1]);
+  opl3->YMF262ResetChip(0);
   currChip = 0;
 }
 
