@@ -1,3 +1,16 @@
+#define {
+	// Must match the PlatformToolset options in appveyor.yml
+	toolsets: "v140,v120_xp";
+}
+
+configurations {
+	UserPlatformToolset {
+		// Needed for VS2015 support
+		key = "PlatformToolset";
+		choices: ${toolsets};
+	};
+}
+
 nuget {
 	nuspec {
 		id = adplug;
@@ -14,7 +27,7 @@ nuget {
 		requireLicenseAcceptance: false;
 		description: "AdPlug is a free, multi-platform, hardware independent AdLib sound player library, mainly written in C++.  AdPlug plays sound data, originally created for the AdLib (OPL2/3) audio board, on top of an OPL2/3 emulator. No OPL2/3 chips are required for playback.";
 		releaseNotes: "Package upstream git version.";
-		tags: {coapp, native, nativepackage, static};
+		tags: {coapp, native, nativepackage, static, v120_xp, v140};
 	}
 	dependencies {
 		packages : {
@@ -34,19 +47,11 @@ nuget {
 			"${SDK_ROOT}README",
 			"${SDK_ROOT}COPYING"
 		};
-		[x86,debug] {
-			lib: ${SolutionDir}Debug\${pkgname}.lib;
-			symbols: ${SolutionDir}Debug\${pkgname}.pdb;
-		}
-		[x86,release] {
-			lib: ${SolutionDir}Release\${pkgname}.lib;
-		}
-		[x64,debug] {
-			lib: ${SolutionDir}x64\Debug\${pkgname}.lib;
-			symbols: ${SolutionDir}x64\Debug\${pkgname}.pdb;
-		}
-		[x64,release] {
-			lib: ${SolutionDir}x64\Release\${pkgname}.lib;
+		(${toolsets}, "Win32,x64", "release,debug") => {
+			[${0},${1},${2}] {
+				lib: ${SolutionDir}${0}\${1}\${2}\${pkgname}.lib;
+				symbols: ${SolutionDir}${0}\${1}\${2}\${pkgname}.pdb;
+			}
 		}
 	}
 	targets {
