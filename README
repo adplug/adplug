@@ -45,8 +45,8 @@ Installation:
 -------------
 Please refer to the INSTALL file for installation instructions.
 
-git:
-----
+Linux/OSX git:
+--------------
 If you checked out from git, please first run:
 
 autoreconf --install
@@ -57,6 +57,14 @@ mention you need recent versions of autoconf, automake and libtool?
 When building a git version, always supply the --enable-maintainer-mode
 option to the configure script!  (Otherwise you will get errors about
 version.texi missing).
+
+Windows git:
+------------
+If you checked out from git, you will need to copy src\version.h.in to
+src\version.h and replace @VERSION@ with a proper version number.
+
+A Visual Studio 2015 solution you can open and build is located in
+contrib\vs2015\vs2015.sln.
 
 Debugging AdPlug:
 -----------------
@@ -76,18 +84,22 @@ reference data.
 
 The emulator license issue:
 ---------------------------
-AdPlug uses MAME's fmopl OPL2 emulator. While this official distribution
+AdPlug now uses WoodyOPL, the LGPL-licenced OPL emulator from the DOSBox
+team.
+
+Previously, AdPlug used MAME's fmopl OPL2 emulator. While this distribution
 includes an old LGPL'd version of the emulator, which was developed by
 Tatsuyuki Satoh alone, who relicensed this version under the LGPL, there is
-a patch available at:
-
-http://www.informatik.uni-oldenburg.de/~dyna/adplug/
-
+a patch available in the `mame` branch of the GitHub repository
 that replaces the old version by the latest version from the MAME source
 distribution. The new version features improved emulation quality, but is
 licensed under the MAME license, which restricts commercial redistribution.
 
 The same goes for the OPL3 emulator, which requires the new version of
 the OPL2 emulator to build.
+
+Later versions of MAME are released under the GPL, so this patch could be
+updated to use that instead, however this is probably not necessary given
+the high quality of the WoodyOPL emulator.
 
 	- Simon Peter <dn.tlp@gmx.net>
