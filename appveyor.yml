@@ -49,13 +49,13 @@ before_build:
 
 build_script:
 - cmd: >-
-    @echo off
-
     "%VS140COMNTOOLS%\VsMSBuildCmd.bat"
 
     appveyor-retry nuget restore contrib\vs2015\vs2015.sln
 
-    FOR %%T IN (v140,v120_xp) DO ( FOR %%P IN (x86,x64) DO ( FOR %%C IN (Debug,Release) DO ( echo *** Building %%T/%%P/%%C *** && msbuild contrib\vs2015\adplug\adplug.vcxproj /p:Configuration=%%C /p:Platform=%%P /p:PlatformToolset=%%T /p:SolutionDir=..\ /v:minimal /nologo && msbuild contrib\vs2015\emutest\emutest.vcxproj /p:Configuration=%%C /p:Platform=%%P /p:PlatformToolset=%%T /p:SolutionDir=..\ /v:minimal /nologo && msbuild contrib\vs2015\playertest\playertest.vcxproj /p:Configuration=%%C /p:Platform=%%P /p:PlatformToolset=%%T /p:SolutionDir=..\ /v:minimal /nologo || EXIT 1 ) ) )
+    appveyor-retry nuget update contrib\vs2015\vs2015.sln
+
+    FOR %%T IN (v140,v120_xp) DO ( FOR %%P IN (x86,x64) DO ( FOR %%C IN (Debug,Release) DO ( FOR %%F IN (adplug,emutest,playertest) DO ( echo *** Building %%F as %%T/%%P/%%C *** && msbuild contrib\vs2015\%%F\%%F.vcxproj /p:Configuration=%%C /p:Platform=%%P /p:PlatformToolset=%%T /p:SolutionDir=..\ /v:minimal /nologo || EXIT 1 ) ) ) )
 
 before_deploy:
 - ps: >-
