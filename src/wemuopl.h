@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * kemuopl.h - Emulated OPL using the DOSBox OPL3 emulator
+ * wemuopl.h - Emulated OPL using the DOSBox OPL3 emulator
  */
 
 #ifndef H_ADPLUG_WEMUOPL
@@ -44,11 +44,7 @@ public:
   // template methods
   void write(int reg, int val)
     {
-      //if(currChip != 0)
-	//return;
-
-      opl.adlib_write_index(0, reg);
-      opl.adlib_write(reg, val);
+      opl.adlib_write((currChip << 8) | reg, val);
     };
 
   void init() {};

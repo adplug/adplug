@@ -31,7 +31,7 @@
 #ifndef H_ADPLUG_WOODYOPL
 #define H_ADPLUG_WOODYOPL
 
-//#define OPLTYPE_IS_OPL3
+#define OPLTYPE_IS_OPL3
 
 #define fltype double
 
