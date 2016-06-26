@@ -137,6 +137,17 @@ bool CcmfPlayer::load(const std::string &filename, const CFileProvider &fp)
 	this->cmfHeader.iTagOffsetTitle = f->readInt(2);
 	this->cmfHeader.iTagOffsetComposer = f->readInt(2);
 	this->cmfHeader.iTagOffsetRemarks = f->readInt(2);
+
+	// This checks will fix crash for a lot of broken files
+	// Title, Composer and Remarks blocks usually located before Instrument block
+	// But if not this will indicate invalid offset value (sometimes even bigger than filesize)
+	if (this->cmfHeader.iTagOffsetTitle >= this->cmfHeader.iInstrumentBlockOffset)
+		this->cmfHeader.iTagOffsetTitle = 0;
+	if (this->cmfHeader.iTagOffsetComposer >= this->cmfHeader.iInstrumentBlockOffset)
+		this->cmfHeader.iTagOffsetComposer = 0;
+	if (this->cmfHeader.iTagOffsetRemarks >= this->cmfHeader.iInstrumentBlockOffset)
+		this->cmfHeader.iTagOffsetRemarks = 0;
+
 	f->readString((char *)this->cmfHeader.iChannelsInUse, 16);
 	if (iVer == 0x0100) {
 		this->cmfHeader.iNumInstruments = f->readInt(1);
