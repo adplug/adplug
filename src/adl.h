@@ -48,14 +48,17 @@ class CadlPlayer: public CPlayer
 
   unsigned int getsubsongs();
   unsigned int getsubsong() { return cursubsong; }
-  std::string gettype() { return std::string("Westwood ADL"); }
+  std::string gettype();
 
  private:
   int numsubsongs, cursubsong;
 
   AdlibDriver *_driver;
 
-  uint8_t _trackEntries[120];
+  uint8_t  _version;
+  uint8_t  _trackEntries[120];
+  uint16_t _trackEntries16[250];
+  uint16_t _EntriesSize;
   uint8_t *_soundDataPtr;
   int _sfxPlayingSound;
 
@@ -70,9 +73,9 @@ class CadlPlayer: public CPlayer
 
   bool init();
   void process();
-  void playTrack(uint8_t track);
-  void playSoundEffect(uint8_t track);
-  void play(uint8_t track);
+  void playTrack(uint16_t track);
+  void playSoundEffect(uint16_t track);
+  void play(uint16_t track);
   void unk1();
   void unk2();
 };

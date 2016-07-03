@@ -274,14 +274,27 @@ public:
   // The sound data has at least two lookup tables:
   //
   // * One for programs, starting at offset 0.
-  // * One for instruments, starting at offset 500.
+  // * One for instruments, starting at offset depending on version.
 
   uint8 *getProgram(int progId) {
     return _soundData + READ_LE_UINT16(_soundData + 2 * progId);
   }
 
   uint8 *getInstrument(int instrumentId) {
-    return _soundData + READ_LE_UINT16(_soundData + 500 + 2 * instrumentId);
+    uint16 instOffset = 0;
+    switch (ADLVer)
+    {
+    case 1:
+      instOffset = 150 * 2;
+      break;
+    case 2:
+      instOffset = 250 * 2;
+      break;
+    case 3:
+      instOffset = 500 * 2;
+      break;
+    }
+    return _soundData + READ_LE_UINT16(_soundData + instOffset + 2 * instrumentId);
   }
 
   void setupPrograms();
@@ -383,6 +396,8 @@ public:
   // _unkTable2_2[]  - One of the tables in _unkTable2[]
   // _unkTable2_3[]  - One of the tables in _unkTable2[]
 
+  uint8 ADLVer;
+
   int32 _samplesPerCallback;
   int32 _samplesPerCallbackRemainder;
   int32 _samplesTillCallback;
@@ -452,6 +467,7 @@ AdlibDriver::AdlibDriver(Copl *newopl)
 
   // 	_mixer = mixer;
 
+  ADLVer = 0;
   _flags = 0;
   // 	_adlib = makeAdlibOPL(getRate());
   // 	assert(_adlib);
@@ -2206,9 +2222,11 @@ const int CadlPlayer::_kyra1SoundTriggers[] = {
 const int CadlPlayer::_kyra1NumSoundTriggers = ARRAYSIZE(CadlPlayer::_kyra1SoundTriggers);
 
 CadlPlayer::CadlPlayer(Copl *newopl)
-  : CPlayer(newopl), numsubsongs(0), _trackEntries(), _soundDataPtr(0)
+  : CPlayer(newopl), numsubsongs(0), _trackEntries(), _trackEntries16(), _soundDataPtr(0)
 {
+  _version = 0;
   memset(_trackEntries, 0, sizeof(_trackEntries));
+  memset(_trackEntries16, 0, sizeof(_trackEntries16));
   _driver = new AdlibDriver(newopl);
   assert(_driver);
 
@@ -2258,7 +2276,7 @@ void CadlPlayer::process() {
 // 	loadSoundFile(file);
 // }
 
-void CadlPlayer::playTrack(uint8 track) {
+void CadlPlayer::playTrack(uint16_t track) {
   play(track);
 }
 
@@ -2268,15 +2286,27 @@ void CadlPlayer::playTrack(uint8 track) {
 // 	//_engine->_system->delayMillis(3 * 60);
 // }
 
-void CadlPlayer::playSoundEffect(uint8_t track) {
+void CadlPlayer::playSoundEffect(uint16_t track) {
   play(track);
 }
 
-void CadlPlayer::play(uint8_t track) {
-  uint8 soundId = _trackEntries[track];
-  if ((int8)soundId == -1 || !_soundDataPtr)
-    return;
-  soundId &= 0xFF;
+void CadlPlayer::play(uint16_t track) {
+  uint16 soundId = 0;
+  if (_version < 3)
+  {
+    soundId = _trackEntries[track];
+    if ((int8)soundId == -1 || !_soundDataPtr)
+      return;
+    soundId &= 0xFF;
+  }
+  else
+  {
+    soundId = _trackEntries16[track];
+    if ((int16)soundId == -1 || !_soundDataPtr)
+      return;
+    soundId &= 0xFFFF;
+  }
+  _driver->ADLVer = _version;
   _driver->callback(16, 0);
   // 	while ((_driver->callback(16, 0) & 8)) {
   // We call the system delay and not the game delay to avoid concurrency issues.
@@ -2330,6 +2360,11 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
     fp.close(f);
     return false;
   }
+  if (fp.filesize(f) < 720)
+  { // minimum file size of v1
+    fp.close(f);
+    return false;
+  }
 
   // 	if (_soundFileLoaded == file)
   // 		return;
@@ -2352,6 +2387,47 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
   unk2();
   unk1();
 
+  // detect format version
+  _version = 3; // assuming we have v3
+  for (int i = 0; i < 120; i += 2)
+  {
+    uint16_t w = f->readInt(2);
+    // all entries should be in range 0..500-1 or 0xFFFF
+    if (w >= 500 && w < 0xffff)
+    {
+      _version = 1; // actually 1 or 2
+      break;
+    }
+  }
+  if (_version == 1)
+  { // detect whether v1 or v2
+    f->seek(120);
+    _version = 2; // assuming we have v2
+    for (int i = 0; i < 150; i += 2)
+    {
+      uint16_t w = f->readInt(2);
+      if (w > 0 && w < 600)
+      { // minimum track offset for v1 is 600
+        fp.close(f);
+        return false;
+      }
+      // minimum track offset for v2 is 1000
+      if (w > 0 && w < 1000)
+        _version = 1;
+    }
+  }
+  if (_version == 2 && fp.filesize(f) < 1120)
+  { // minimum file size of v2
+    fp.close(f);
+    return false;
+  }
+  if (_version == 3 && fp.filesize(f) < 2500)
+  { // minimum file size of v3
+    fp.close(f);
+    return false;
+  }
+
+  f->seek(0);
   file_size = fp.filesize(f);
   file_data = new uint8 [file_size];
   f->readString((char *)file_data, file_size);
@@ -2360,10 +2436,19 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
   _soundDataPtr = 0;
 
   uint8 *p = file_data;
-  memcpy(_trackEntries, p, 120*sizeof(uint8));
-  p += 120;
+  if (_version < 3)
+  {
+    _EntriesSize = 120 * sizeof(uint8);
+    memcpy(_trackEntries, p, _EntriesSize);
+  }
+  else
+  {
+    _EntriesSize = 250 * sizeof(uint16);
+    memcpy(_trackEntries16, p, _EntriesSize);
+  }
+  p += _EntriesSize;
 
-  int soundDataSize = file_size - 120;
+  int soundDataSize = file_size - _EntriesSize;
 
   _soundDataPtr = new uint8[soundDataSize];
   assert(_soundDataPtr);
@@ -2379,11 +2464,35 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
   // 	_soundFileLoaded = file;
 
   // find last subsong
-  for(int i = 119; i >= 0; i--)
-    if(_trackEntries[i] != 0xff) {
-      numsubsongs = i + 1;
-      break;
-    }
+  uint16_t maxEntry = 0xffff;
+  switch (_version)
+  {
+  case 1:
+    maxEntry = 150 - 1;
+    break;
+  case 2:
+    maxEntry = 250 - 1;
+    break;
+  case 3:
+    maxEntry = 500 - 1;
+    break;
+  }
+  if (_version < 3)
+  {
+    for (int i = 120-1; i >= 0; i--)
+      if (_trackEntries[i] <= maxEntry) {
+        numsubsongs = i + 1;
+        break;
+      }
+  }
+  else
+  {
+    for (int i = 250-1; i >= 0; i--)
+      if (_trackEntries16[i] <= maxEntry) {
+        numsubsongs = i + 1;
+        break;
+      }
+  }
 
   fp.close(f);
   cursubsong = 2;
@@ -2429,6 +2538,14 @@ void CadlPlayer::unk1() {
 
 void CadlPlayer::unk2() {
   playSoundEffect(0);
+}
+
+std::string CadlPlayer::gettype()
+{
+  char tmpstr[25];
+
+  sprintf(tmpstr, "Westwood ADL (version %d)", _version);
+  return std::string(tmpstr);
 }
 
 CPlayer *CadlPlayer::factory(Copl *newopl)
