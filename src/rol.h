@@ -53,7 +53,15 @@ public:
     virtual void  rewind    (int subsong);	// rewinds to specified subsong
     virtual float getrefresh();			// returns needed timer refresh rate
 
-    virtual std::string gettype() { return std::string("Adlib Visual Composer"); }
+    virtual std::string gettype() { return std::string("AdLib Visual Composer"); }
+    virtual unsigned int getinstruments()
+    {
+        return usedInstruments.size();
+    };
+    virtual std::string getinstrument(unsigned int n)
+    {
+        return usedInstruments[n];
+    };
 
 private:
 
@@ -300,6 +308,7 @@ private:
     typedef std::vector<int16_t>         TInt16Vector;
     typedef std::vector<uint8_t>         TUInt8Vector;
     typedef std::vector<bool>            TBoolVector;
+    typedef std::vector<std::string>     TStringVector;
 
     SRolHeader      * mpROLHeader;
     TUint16ConstPtr   mpOldFNumFreqPtr;
@@ -321,6 +330,7 @@ private:
     int16_t           mTimeOfLastNote;
     int16_t           mOldHalfToneOffset;
     uint8_t           mAMVibRhythmCache;
+    TStringVector     usedInstruments;
 
     static int   const kSizeofDataRecord;
     static int   const kMaxTickBeat;
