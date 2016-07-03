@@ -38,6 +38,7 @@
 #define ROL_MAX_NAME_SIZE  9U
 #define ROL_INSTRUMENT_EVENT_FILLER_SIZE 3U // 1 for filler, 2 for unused
 #define ROL_BNK_SIGNATURE_SIZE 6U
+#define ROL_MAX_USED_INSTRUMENTS 0x80
 
 class CrolPlayer: public CPlayer
 {
@@ -53,7 +54,21 @@ public:
     virtual void  rewind    (int subsong);	// rewinds to specified subsong
     virtual float getrefresh();			// returns needed timer refresh rate
 
-    virtual std::string gettype() { return std::string("Adlib Visual Composer"); }
+    virtual std::string gettype() { return std::string("AdLib Visual Composer"); }
+	virtual unsigned int getinstruments()
+	{
+		unsigned int n = 0;
+		while (n < ROL_MAX_USED_INSTRUMENTS && *instname[n])
+			n++;
+		return n;
+	};
+	virtual std::string getinstrument(unsigned int n)
+	{
+		if (*instname[n])
+			return std::string(instname[n], 0, *instname[n]);
+		else
+			return std::string();
+	};
 
 private:
 
@@ -322,7 +337,9 @@ private:
     int16_t           mOldHalfToneOffset;
     uint8_t           mAMVibRhythmCache;
 
-    static int   const kSizeofDataRecord;
+	char instname[ROL_MAX_USED_INSTRUMENTS][ROL_MAX_NAME_SIZE];
+
+	static int   const kSizeofDataRecord;
     static int   const kMaxTickBeat;
     static int   const kSilenceNote;
     static int   const kNumMelodicVoices;
