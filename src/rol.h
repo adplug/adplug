@@ -55,20 +55,20 @@ public:
     virtual float getrefresh();			// returns needed timer refresh rate
 
     virtual std::string gettype() { return std::string("AdLib Visual Composer"); }
-	virtual unsigned int getinstruments()
-	{
-		unsigned int n = 0;
-		while (n < ROL_MAX_USED_INSTRUMENTS && *instname[n])
-			n++;
-		return n;
-	};
-	virtual std::string getinstrument(unsigned int n)
-	{
-		if (*instname[n])
-			return std::string(instname[n], 0, *instname[n]);
-		else
-			return std::string();
-	};
+    virtual unsigned int getinstruments()
+    {
+        unsigned int n = 0;
+        while (n < ROL_MAX_USED_INSTRUMENTS && *instname[n])
+            n++;
+        return n;
+    };
+    virtual std::string getinstrument(unsigned int n)
+    {
+        if (*instname[n])
+            return std::string(instname[n], 0, *instname[n]);
+        else
+            return std::string();
+    };
 
 private:
 
@@ -337,9 +337,9 @@ private:
     int16_t           mOldHalfToneOffset;
     uint8_t           mAMVibRhythmCache;
 
-	char instname[ROL_MAX_USED_INSTRUMENTS][ROL_MAX_NAME_SIZE];
+    char instname[ROL_MAX_USED_INSTRUMENTS][ROL_MAX_NAME_SIZE];
 
-	static int   const kSizeofDataRecord;
+    static int   const kSizeofDataRecord;
     static int   const kMaxTickBeat;
     static int   const kSilenceNote;
     static int   const kNumMelodicVoices;
