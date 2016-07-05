@@ -58,7 +58,6 @@ class CadlPlayer: public CPlayer
   uint8_t  _version;
   uint8_t  _trackEntries[120];
   uint16_t _trackEntries16[250];
-  uint16_t _EntriesSize;
   uint8_t *_soundDataPtr;
   int _sfxPlayingSound;
 

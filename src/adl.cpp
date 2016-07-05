@@ -2437,6 +2437,7 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
   _soundDataPtr = 0;
 
   uint8 *p = file_data;
+  uint16 _EntriesSize;
   if (_version < 3)
   {
     _EntriesSize = 120 * sizeof(uint8);
