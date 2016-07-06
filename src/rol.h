@@ -38,7 +38,6 @@
 #define ROL_MAX_NAME_SIZE  9U
 #define ROL_INSTRUMENT_EVENT_FILLER_SIZE 3U // 1 for filler, 2 for unused
 #define ROL_BNK_SIGNATURE_SIZE 6U
-#define ROL_MAX_USED_INSTRUMENTS 0x80
 
 class CrolPlayer: public CPlayer
 {
@@ -57,17 +56,11 @@ public:
     virtual std::string gettype() { return std::string("AdLib Visual Composer"); }
     virtual unsigned int getinstruments()
     {
-        unsigned int n = 0;
-        while (n < ROL_MAX_USED_INSTRUMENTS && *instname[n])
-            n++;
-        return n;
+        return usedInstruments.size();
     };
     virtual std::string getinstrument(unsigned int n)
     {
-        if (*instname[n])
-            return std::string(instname[n], 0, *instname[n]);
-        else
-            return std::string();
+        return usedInstruments[n];
     };
 
 private:
@@ -315,6 +308,7 @@ private:
     typedef std::vector<int16_t>         TInt16Vector;
     typedef std::vector<uint8_t>         TUInt8Vector;
     typedef std::vector<bool>            TBoolVector;
+    typedef std::vector<std::string>     TStringVector;
 
     SRolHeader      * mpROLHeader;
     TUint16ConstPtr   mpOldFNumFreqPtr;
@@ -336,8 +330,7 @@ private:
     int16_t           mTimeOfLastNote;
     int16_t           mOldHalfToneOffset;
     uint8_t           mAMVibRhythmCache;
-
-    char instname[ROL_MAX_USED_INSTRUMENTS][ROL_MAX_NAME_SIZE];
+    TStringVector     usedInstruments;
 
     static int   const kSizeofDataRecord;
     static int   const kMaxTickBeat;

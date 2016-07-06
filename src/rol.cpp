@@ -710,18 +710,9 @@ void CrolPlayer::load_instrument_events(binistream *f, CVoiceData & voice,
         event.time = static_cast<int16_t>(f->readInt(2));
         f->readString(event.name, ROL_MAX_NAME_SIZE);
 
-        for (uint8_t j = 0; j < ROL_MAX_USED_INSTRUMENTS; j++)
-        {
-            if (!*instname[j])
-            {
-                strcpy(instname[j], event.name);
-                break;
-            }
-            if (!strcmp(instname[j], event.name))
-                break;
-        }
-
         std::string event_name = event.name;
+        if (std::find(usedInstruments.begin(), usedInstruments.end(), event_name) == usedInstruments.end())
+            usedInstruments.push_back(event_name);
         event.ins_index = load_rol_instrument(bnk_file, bnk_header, event_name);
 
         instrument_events.push_back(event);
