@@ -1,17 +1,17 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
  * Copyright (C) 1999 - 2007 Simon Peter, <dn.tlp@gmx.net>, et al.
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -46,6 +46,10 @@ int __cdecl _outp(unsigned short, int);
 #	include <pc.h>
 #	define INP	inportb
 #	define OUTP	outportb
+#elif defined(linux)
+# include <sys/io.h>
+# define INP inb
+# define OUTP(reg,val) outb(val,reg)
 #else				// no support on other platforms
 #	define INP(reg)		0
 #	define OUTP(reg, val)
@@ -110,6 +114,12 @@ bool CRealopl::detect()
 {
   unsigned char	stat;
 
+#ifdef linux // see whether we can access the port
+  if ((ioperm(adlport, 2, 1) != 0) && (ioperm(adlport + 2, 2, 1) != 0)) {
+    return false;
+  }
+#endif
+
   setchip(0);
   if(harddetect()) {
     // is at least OPL2, check for OPL3
@@ -158,6 +168,9 @@ void CRealopl::hardwrite(int reg, int val)
 {
   int 			i;
   unsigned short	adp = (currChip == 0 ? adlport : adlport + 2);
+
+  if(nowrite)
+    return;
 
   OUTP(adp,reg);		// set register
   for(i=0;i<SHORTDELAY;i++)	// wait for adlib
