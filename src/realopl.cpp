@@ -115,7 +115,7 @@ bool CRealopl::detect()
   unsigned char	stat;
 
 #ifdef linux // see whether we can access the port
-  if ((ioperm(adlport, 2, 1) != 0) && (ioperm(adlport + 2, 2, 1) != 0)) {
+  if ((ioperm(adlport, 2, 1) != 0) || (ioperm(adlport + 2, 2, 1) != 0)) {
     return false;
   }
 #endif
