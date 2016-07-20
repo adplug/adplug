@@ -215,6 +215,11 @@ void CRealopl::init()
   for(j = 0; j < 2; j++) {
     setchip(j);
 
+    // set all registers to zero
+    for (i = 0; i < 256;i++) {
+      write(i, 0);
+    }
+
     for(i=0;i<9;i++) {				// stop instruments
       hardwrite(0xb0 + i,0);			// key off
       hardwrite(0x80 + op_table[i],0xff);	// fastest release
