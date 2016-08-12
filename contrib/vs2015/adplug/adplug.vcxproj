@@ -44,6 +44,7 @@
     <ClCompile Include="..\..\..\src\fmc.cpp" />
     <ClCompile Include="..\..\..\src\fmopl.c" />
     <ClCompile Include="..\..\..\src\fprovide.cpp" />
+    <ClCompile Include="..\..\..\src\got.cpp" />
     <ClCompile Include="..\..\..\src\hsc.cpp" />
     <ClCompile Include="..\..\..\src\hsp.cpp" />
     <ClCompile Include="..\..\..\src\hybrid.cpp" />
@@ -103,6 +104,7 @@
     <ClInclude Include="..\..\..\src\fmc.h" />
     <ClInclude Include="..\..\..\src\fmopl.h" />
     <ClInclude Include="..\..\..\src\fprovide.h" />
+    <ClInclude Include="..\..\..\src\got.h" />
     <ClInclude Include="..\..\..\src\hsc.h" />
     <ClInclude Include="..\..\..\src\hsp.h" />
     <ClInclude Include="..\..\..\src\hybrid.h" />
