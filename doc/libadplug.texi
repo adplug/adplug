@@ -114,6 +114,7 @@ but are included for testing purposes anyway.
 @item @file{DMO}: Twin TrackPlayer by TwinTeam
 @item @file{DRO}: DOSBox Raw OPL Format
 @item @file{DTM}: DeFy Adlib Tracker by DeFy
+@item @file{GOT}: God of Thunder Music by Roy Davis of Adept Software
 @item @file{HSC}: HSC Adlib Composer by Hannes Seifert, HSC-Tracker by Electronic Rats
 @item @file{HSP}: HSC Packed by Number Six / Aegis Corp.
 @item @file{IMF}: Apogee IMF File Format by Apogee

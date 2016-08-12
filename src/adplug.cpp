@@ -69,6 +69,7 @@
 #include "rix.h"
 #include "adl.h"
 #include "jbm.h"
+#include "got.h"
 
 /***** CAdPlug *****/
 
@@ -114,6 +115,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CrixPlayer::factory, "Softstar RIX OPL Music", ".rix\0"),
   CPlayerDesc(CadlPlayer::factory, "Westwood ADL", ".adl\0"),
   CPlayerDesc(CjbmPlayer::factory, "JBM Adlib Music", ".jbm\0"),
+  CPlayerDesc(CgotPlayer::factory, "God of Thunder Music", ".got\0"),
   CPlayerDesc()
 };
 
