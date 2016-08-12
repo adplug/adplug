@@ -82,6 +82,8 @@ static const char *filelist[] = {
   "LOREINTR.ADL",	// Westwood ADL v3
   "DEMO4.JBM",		// JBM Adlib Music
   "dro_v2.dro",         // DOSBox DRO v2.0
+  "menu.got",       // God of Thunder Music (at 140 Hz)
+  "opensong.got",   // God of Thunder Music (at 120 Hz)
   NULL
 };
 
