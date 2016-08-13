@@ -1,14 +1,16 @@
-check_PROGRAMS = playertest emutest
+check_PROGRAMS = playertest emutest crctest
 
 playertest_SOURCES = playertest.cpp
 
 emutest_SOURCES = emutest.cpp
 
+crctest_SOURCES = crctest.cpp
+
 AM_LDFLAGS = $(top_builddir)/src/.libs/libadplug.la $(libbinio_LIBS)
 
 AM_CPPFLAGS = $(libbinio_CFLAGS)
 
-TESTS = playertest emutest
+TESTS = playertest emutest crctest
 
 EXTRA_DIST = 2001.MKJ 2001.ref ADAGIO.DFM ADAGIO.ref adlibsp.ref adlibsp.s3m \
 	ALLOYRUN.RAD ALLOYRUN.ref ARAB.BAM ARAB.ref BEGIN.KSM BEGIN.ref \

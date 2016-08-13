@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "adplug", "adplug\adplug.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "emutest", "emutest\emutest.vcxproj", "{C2BA812C-346F-4B7F-98AE-FCA6B1443243}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crctest", "crctest\crctest.vcxproj", "{FC6DC4D7-F88D-46D3-AA2F-86E524B6FA7F}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "playertest", "playertest\playertest.vcxproj", "{9A9C80AD-2418-44DB-AAF7-220287983FD9}"
 EndProject
 Global
@@ -33,6 +35,14 @@ Global
 		{C2BA812C-346F-4B7F-98AE-FCA6B1443243}.Release|x64.Build.0 = Release|x64
 		{C2BA812C-346F-4B7F-98AE-FCA6B1443243}.Release|x86.ActiveCfg = Release|Win32
 		{C2BA812C-346F-4B7F-98AE-FCA6B1443243}.Release|x86.Build.0 = Release|Win32
+		{FC6DC4D7-F88D-46D3-AA2F-86E524B6FA7F}.Debug|x64.ActiveCfg = Debug|x64
+		{FC6DC4D7-F88D-46D3-AA2F-86E524B6FA7F}.Debug|x64.Build.0 = Debug|x64
+		{FC6DC4D7-F88D-46D3-AA2F-86E524B6FA7F}.Debug|x86.ActiveCfg = Debug|Win32
+		{FC6DC4D7-F88D-46D3-AA2F-86E524B6FA7F}.Debug|x86.Build.0 = Debug|Win32
+		{FC6DC4D7-F88D-46D3-AA2F-86E524B6FA7F}.Release|x64.ActiveCfg = Release|x64
+		{FC6DC4D7-F88D-46D3-AA2F-86E524B6FA7F}.Release|x64.Build.0 = Release|x64
+		{FC6DC4D7-F88D-46D3-AA2F-86E524B6FA7F}.Release|x86.ActiveCfg = Release|Win32
+		{FC6DC4D7-F88D-46D3-AA2F-86E524B6FA7F}.Release|x86.Build.0 = Release|Win32
 		{9A9C80AD-2418-44DB-AAF7-220287983FD9}.Debug|x64.ActiveCfg = Debug|x64
 		{9A9C80AD-2418-44DB-AAF7-220287983FD9}.Debug|x64.Build.0 = Debug|x64
 		{9A9C80AD-2418-44DB-AAF7-220287983FD9}.Debug|x86.ActiveCfg = Debug|Win32
