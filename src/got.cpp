@@ -78,8 +78,8 @@ bool CgotPlayer::load(const std::string &filename, const CFileProvider &fp)
 	}
 
 	CAdPlugDatabase::CKey menu_music;
-	menu_music.crc16 = 46631;
-	menu_music.crc32 = 1912826945;
+	menu_music.crc16 = 0xA649;
+	menu_music.crc32 = 0x0B61B41F;
 
 	if (key == menu_music)
 		rate = 140.0f;
