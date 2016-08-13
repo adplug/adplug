@@ -41,9 +41,9 @@ struct crcEntry
 };
 
 static const crcEntry testlist[] = {
-	{"2001.MKJ", 0x783C, 0x44B25BC7},
-	{"ADAGIO.DFM", 0x21FF, 0x979A0582},
-	{"adlibsp.s3m", 0xE800, 0xA7316E24},
+	{"2001.MKJ", 0x5138, 0xFA44E548},
+	{"ADAGIO.DFM", 0x0021, 0xFC217809},
+	{"adlibsp.s3m", 0x40A8, 0xC3A4D5BF},
 	{NULL, 0, 0}
 };
 
@@ -68,14 +68,21 @@ int main(int argc, char *argv[])
 				continue;
 			}
 
-			std::cout << "Checking CRC: " << testlist[i].filename;
 			f->seek(0);
 			CAdPlugDatabase::CKey key(*f);
 			fp.close(f);
-			if (testlist[i].crc16 != key.crc16 ||
-				testlist[i].crc32 != key.crc32)
+			std::cout << "Checking CRC16: " << testlist[i].filename;
+			if (testlist[i].crc16 != key.crc16)
 			{
-				std::cout << " [FAIL: " << key.crc16 << ", " << key.crc32 << "]\n";
+				std::cout << " [FAIL: " << std::hex << key.crc16 << "]\n";
+				retval = false;
+			}
+			else
+				std::cout << " [OK]\n";
+			std::cout << "Checking CRC32: " << testlist[i].filename;
+			if (testlist[i].crc32 != key.crc32)
+			{
+				std::cout << " [FAIL: " << std::hex << key.crc32 << "]\n";
 				retval = false;
 			}
 			else
