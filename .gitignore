@@ -38,6 +38,8 @@ doc/stamp-vti
 src/version.h
 test/test-suite.log
 test/*.trs
+test/crctest
+test/crctest.log
 test/emutest
 test/emutest.log
 test/playertest
