@@ -326,7 +326,7 @@ void CAdPlugDatabase::CKey::make(binistream &buf)
   static const unsigned short magic16 = 0xa001;
   static const unsigned long  magic32 = 0xedb88320;
 
-  crc16 = 0; crc32 = ~0;
+  crc16 = 0; crc32 = 0xffffffffL;
 
   while(!buf.eof())
     {
@@ -350,6 +350,7 @@ void CAdPlugDatabase::CKey::make(binistream &buf)
 
   crc16 &= 0xffff;
   crc32  = ~crc32;
+  crc32 &= 0xffffffffL;
 }
 
 /***** CInfoRecord *****/
