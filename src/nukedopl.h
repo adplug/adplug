@@ -24,8 +24,8 @@
 // version: 1.7.4
 //
 
-#ifndef OPL_OPL3_H
-#define OPL_OPL3_H
+#ifndef NUKEDOPL_H
+#define NUKEDOPL_H
 
 #include <inttypes.h>
 

@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2008 Simon Peter, <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2006 Simon Peter, <dn.tlp@gmx.net>, et al.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,30 +16,35 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * nemuopl.h - Emulated OPL using the Nuked OPL3 emulator
+ * nemuopl.cpp - Emulated OPL using the Nuked OPL3 emulator
  */
 
-#ifndef H_ADPLUG_NEMUOPL
-#define H_ADPLUG_NEMUOPL
+#include "nemuopl.h"
 
-#include "opl.h"
+extern "C" {
+#include "nukedopl.h"
+}
 
-typedef struct _opl3_chip opl3_chip;
-
-class CNemuopl: public Copl
+CNemuopl::CNemuopl(int rate)
 {
-public:
-  CNemuopl(int rate);
-  ~CNemuopl();
+  opl = new opl3_chip();
+  OPL3_Reset(opl, rate);
+  currType = TYPE_OPL2;
+}
 
-  void update(short *buf, int samples);
+CNemuopl::~CNemuopl()
+{
+  delete opl;
+}
 
-  void write(int reg, int val);
+void CNemuopl::update(short *buf, int samples)
+{
+  OPL3_GenerateStream(opl, buf, samples);
+}
 
-  void init();
+void CNemuopl::write(int reg, int val)
+{
+  OPL3_WriteRegBuffered(opl, (currChip << 8) | reg, val);
+}
 
-private:
-  opl3_chip*	opl;
-};
-
-#endif
+void CNemuopl::init() {}
