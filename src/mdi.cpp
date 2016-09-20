@@ -1,0 +1,315 @@
+/*
+ * Adplug - Replayer for many OPL2/OPL3 audio file formats.
+ * Copyright (C) 1999 - 2008 Simon Peter <dn.tlp@gmx.net>, et al.
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * mdi.cpp - AdLib SMF (MDI) Player by Stas'M <binarymaster@mail.ru>
+ *
+ * Based on MIDIPLAY.C by Dale Glowinski, Ad Lib Inc.
+ *
+ * REFERENCES:
+ * http://www.shikadi.net/moddingwiki/MDI_Format
+ * http://www.vgmpf.com/Wiki/index.php?title=MDI
+ */
+
+#include <string.h>
+
+#include "mdi.h"
+
+/*** public methods *************************************/
+
+CPlayer *CmdiPlayer::factory(Copl *newopl)
+{
+	return new CmdiPlayer(newopl);
+}
+
+bool CmdiPlayer::load(const std::string &filename, const CFileProvider &fp)
+{
+	binistream *f = fp.open(filename); if(!f) return false;
+
+	// file validation
+	if (!fp.extension(filename, ".mdi"))
+	{
+		fp.close(f);
+		return false;
+	}
+	if (fp.filesize(f) < MIDI_MIN_SIZE)
+	{
+		fp.close(f);
+		return false;
+	}
+
+	char chunk[MIDI_CHUNK_SIZE + 1];
+	chunk[MIDI_CHUNK_SIZE] = 0;
+	uint32_t be32;
+	uint16_t be16;
+
+	// header validation
+	f->readString(chunk, MIDI_CHUNK_SIZE);
+	if (strcmp(chunk, "MThd"))
+	{
+		fp.close(f);
+		return false;
+	}
+	// chunk size (UINT32_BE)
+	be32  = static_cast<uint8_t>(f->readInt(1)) << 24;
+	be32 |= static_cast<uint8_t>(f->readInt(1)) << 16;
+	be32 |= static_cast<uint8_t>(f->readInt(1)) << 8;
+	be32 |= static_cast<uint8_t>(f->readInt(1));
+	// MIDI Type (UINT16_BE)
+	be16  = static_cast<uint8_t>(f->readInt(1)) << 8;
+	be16 |= static_cast<uint8_t>(f->readInt(1));
+	// must be Type-0
+	if (be32 != MIDI_HEAD_SIZE || be16 != 0)
+	{
+		fp.close(f);
+		return false;
+	}
+	// track count (UINT16_BE)
+	be16  = static_cast<uint8_t>(f->readInt(1)) << 8;
+	be16 |= static_cast<uint8_t>(f->readInt(1));
+	// must be 1
+	if (be16 != 1)
+	{
+		fp.close(f);
+		return false;
+	}
+	// division (UINT16_BE)
+	be16  = static_cast<uint8_t>(f->readInt(1)) << 8;
+	be16 |= static_cast<uint8_t>(f->readInt(1));
+	division = be16;
+	// track validation
+	f->readString(chunk, MIDI_CHUNK_SIZE);
+	if (strcmp(chunk, "MTrk"))
+	{
+		fp.close(f);
+		return false;
+	}
+	// chunk size (UINT32_BE)
+	be32  = static_cast<uint8_t>(f->readInt(1)) << 24;
+	be32 |= static_cast<uint8_t>(f->readInt(1)) << 16;
+	be32 |= static_cast<uint8_t>(f->readInt(1)) << 8;
+	be32 |= static_cast<uint8_t>(f->readInt(1));
+	size = be32;
+	// data size validation
+	if (fp.filesize(f) < MIDI_MIN_SIZE + size)
+	{
+		fp.close(f);
+		return false;
+	}
+	// load section
+	data = new uint8_t[size];
+	for(unsigned int i = 0; i < size; i++) {
+		data[i] = f->readInt(1);
+	}
+
+	// set default MIDI tempo
+	SetTempo(500000);
+
+	fp.close(f);
+	drv = new CadlibDriver(opl);
+	rewind(0);
+	return true;
+}
+
+void CmdiPlayer::rewind(int subsong)
+{
+	pos = 0; timer = rate; songend = false;
+	opl->init();
+	drv->SoundWarmInit();
+}
+
+/*
+	Change the tempo.
+*/
+void CmdiPlayer::SetTempo(uint32_t tempo)
+{
+	rate = division * 1000000 / (float)tempo;
+}
+
+uint32_t CmdiPlayer::GetVarVal()
+{
+	uint32_t result = 0;
+	do
+	{
+		result <<= 7;
+		result |= data[pos] & 0x7F;
+	} while (data[pos++] & 0x80 && pos < size);
+	return result;
+}
+
+bool CmdiPlayer::update()
+{
+	uint32_t ticks = 0, len, tempo;
+	uint8_t new_status = 0, meta, voice, note, vol;
+	uint16_t code, pitch;
+	while (!ticks && pos < size)
+	{
+		// delay ticks
+		ticks = GetVarVal();
+		if (pos >= size)
+			break;
+		// execute MIDI command
+		if (data[pos] < 0x80)
+		{
+			// running status
+			new_status = status;
+		}
+		else
+			new_status = data[pos++];
+		if (new_status == STOP_FC)
+		{
+			pos = size;
+			break;
+		}
+		else if (new_status == SYSEX_F0 || new_status == SYSEX_F7)
+		{
+			/* skip over system exclusive event */
+			len = GetVarVal();
+			pos += len;
+		}
+		else if (new_status == META)
+		{
+			/* Process meta-event */
+			meta = data[pos++];
+			len = GetVarVal();
+			switch (meta)
+			{
+			case END_OF_TRACK:
+				pos = size;
+				break;
+			case TEMPO:
+				if (len >= 3)
+				{
+					tempo = data[pos] << 16 | data[pos + 1] << 8 | data[pos + 2];
+					SetTempo(tempo);
+				}
+				break;
+			case SEQ_SPECIFIC:
+				if (len >= 6)
+				{
+					/* Ad Lib midi ID is 00 00 3f. */
+					if (data[pos] == 0 &&
+						data[pos + 1] == 0 &&
+						data[pos + 2] == 0x3f)
+					{
+						/*
+						The first two bytes after the ID contain the Ad Lib event code.
+						The following bytes contain the data pertaining to the event.
+						*/
+						code = data[pos + 3] << 8 | data[pos + 4];
+						if (code == 1 && len >= 34)
+						{
+							/*
+							Instrument change code.  First byte of data contains voice number.
+							Following bytes contain instrument parameters.
+							*/
+							voice = data[pos + 5];
+							uint8_t params[28];
+							for (int n = 0; n < 28; n++)
+								params[n] = data[pos + 6 + n];
+							drv->SetVoiceTimbre(voice, params);
+						}
+						else if (code == 2) {
+							/* Melo/perc mode code.  0 is melodic, !0 is percussive. */
+							drv->SetMode((int)data[pos + 5]);
+						}
+						else if (code == 3) {
+							/* Sets the interval over which pitch bend changes will be applied. */
+							drv->SetPitchRange((int)data[pos + 5]);
+						}
+					}
+				}
+				break;
+			}
+			pos += len;
+		}
+		else
+		{
+			status = new_status;
+			voice = status & 0xF;
+			switch (status & 0xF0)
+			{
+			case NOTE_OFF:
+				pos += 2;
+				drv->NoteOff(voice);
+				break;
+			case NOTE_ON:
+				note = data[pos++];
+				vol = data[pos++];
+				if (!vol)
+				{
+					/* A note-on with a volume of 0 is equivalent to a note-off. */
+					drv->NoteOff(voice);
+					volume[voice] = vol;
+				}
+				else
+				{
+					/* Regular note-on */
+					if (vol != volume[voice])
+					{
+						drv->SetVoiceVolume(voice, vol);
+						volume[voice] = vol;
+					}
+					drv->NoteOn(voice, note);
+				}
+				break;
+			case AFTER_TOUCH:
+				pos++; // skip note
+				vol = data[pos++];
+				drv->SetVoiceVolume(voice, vol);
+				volume[voice] = vol;
+				break;
+			case CONTROL_CHANGE:
+				/* not implemented ... */
+				pos += 2;
+				break;
+			case PROG_CHANGE:
+				/* unused */
+				pos += 1;
+				break;
+			case CHANNEL_PRESSURE:
+				vol = data[pos++];
+				drv->SetVoiceVolume(voice, vol);
+				volume[voice] = vol;
+				break;
+			case PITCH_BEND:
+				pitch  = data[pos++];
+				pitch |= data[pos++] << 7;
+				drv->SetVoicePitch(voice, pitch);
+				break;
+			default:
+				/*
+				A bad status byte ( or unimplemented MIDI command) has been encontered.
+				Skip bytes until next timing byte followed by status byte.
+				*/
+				while (data[pos++] < NOTE_OFF && pos < size);
+				if (pos >= size)
+					break;
+				break;
+			}
+		}
+	}
+
+	if (pos >= size) {
+		pos = 0;
+		songend = true;
+	}
+	else
+		timer = rate / (float)ticks;
+
+	return !songend;
+}
