@@ -22,14 +22,8 @@
  */
 
 #include "adlib.h"
-#include "debug.h"
 
 /*** public methods *************************************/
-
-CadlibDriver::CadlibDriver(Copl *newopl)
-	: opl(newopl)
-{
-}
 
 void CadlibDriver::SoundWarmInit()
 {

@@ -199,7 +199,7 @@ bool CmdiPlayer::update()
 				}
 				break;
 			case SEQ_SPECIFIC:
-				if (len >= 6)
+				if (len >= META_MIN_SIZE)
 				{
 					/* Ad Lib midi ID is 00 00 3f. */
 					if (data[pos] == 0 &&
@@ -211,23 +211,23 @@ bool CmdiPlayer::update()
 						The following bytes contain the data pertaining to the event.
 						*/
 						code = data[pos + 3] << 8 | data[pos + 4];
-						if (code == 1 && len >= 34)
+						if (code == ADLIB_TIMBRE && len >= META_MIN_SIZE + ADLIB_INST_LEN)
 						{
 							/*
 							Instrument change code.  First byte of data contains voice number.
 							Following bytes contain instrument parameters.
 							*/
 							voice = data[pos + 5];
-							uint8_t params[28];
-							for (int n = 0; n < 28; n++)
-								params[n] = data[pos + 6 + n];
+							uint8_t params[ADLIB_INST_LEN];
+							for (int n = 0; n < ADLIB_INST_LEN; n++)
+								params[n] = data[pos + META_MIN_SIZE + n];
 							drv->SetVoiceTimbre(voice, params);
 						}
-						else if (code == 2) {
+						else if (code == ADLIB_RHYTHM) {
 							/* Melo/perc mode code.  0 is melodic, !0 is percussive. */
 							drv->SetMode((int)data[pos + 5]);
 						}
-						else if (code == 3) {
+						else if (code == ADLIB_PITCH) {
 							/* Sets the interval over which pitch bend changes will be applied. */
 							drv->SetPitchRange((int)data[pos + 5]);
 						}

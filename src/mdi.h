@@ -54,6 +54,14 @@
 #define TEMPO			0x51
 #define SEQ_SPECIFIC	0x7f
 
+#define META_SIGN_LEN	3
+#define META_CODE_LEN	2
+#define META_MIN_SIZE	META_SIGN_LEN + META_CODE_LEN + 1
+
+#define ADLIB_TIMBRE	1
+#define ADLIB_RHYTHM	2
+#define ADLIB_PITCH		3
+
 class CmdiPlayer: public CPlayer
 {
 public:

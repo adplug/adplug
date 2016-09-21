@@ -83,14 +83,16 @@
 #define SD_PITCH	(TOM_PITCH + TOM_TO_SD)
 
 #define NR_STEP_PITCH	25			/* 25 steps within a half-tone for pitch bend */
-#define ADLIB_INST_LEN	28			/* modulator, carrier, wave select */
+#define ADLIB_OPER_LEN	13			/* operator length */
+#define ADLIB_INST_LEN	(ADLIB_OPER_LEN * 2 + 2)	/* modulator, carrier, mod/car wave select */
 
 #define GetLocPrm(slot, prm) ( (uint8_t)paramSlot[slot][prm] )
 
 class CadlibDriver
 {
 public:
-	CadlibDriver(Copl *opl);
+	CadlibDriver(Copl *opl)
+	{};
 	~CadlibDriver()
 	{};
 
