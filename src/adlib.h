@@ -91,7 +91,8 @@
 class CadlibDriver
 {
 public:
-	CadlibDriver(Copl *opl)
+	CadlibDriver(Copl *newopl)
+		: opl(newopl)
 	{};
 	~CadlibDriver()
 	{};

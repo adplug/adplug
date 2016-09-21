@@ -124,6 +124,7 @@ private:
 	bool LoadTimbreBank(const std::string fname, const CFileProvider &fp);
 	bool FetchTimbreData(const std::string fname, const CFileProvider &fp);
 	void SetTempo(uint16_t tempo, uint8_t tickBeat);
+	uint32_t GetTicks();
 	CadlibDriver *drv;
 
 protected:
@@ -176,6 +177,7 @@ protected:
 	TimbreRec *	insts;					/* instrument definitions */
 	bool		isIMS;					/* play as IMS format */
 
+	bool		firstDelay;				/* flag to process first delay */
 	uint8_t		status;                 /* running status byte */
 	uint8_t		volume[NR_VOICES];		/* actual volume of all voices */
 };

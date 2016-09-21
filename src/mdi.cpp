@@ -116,9 +116,6 @@ bool CmdiPlayer::load(const std::string &filename, const CFileProvider &fp)
 		data[i] = f->readInt(1);
 	}
 
-	// set default MIDI tempo
-	SetTempo(500000);
-
 	fp.close(f);
 	drv = new CadlibDriver(opl);
 	rewind(0);
@@ -127,7 +124,14 @@ bool CmdiPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 void CmdiPlayer::rewind(int subsong)
 {
+	// set default MIDI tempo
+	SetTempo(500000);
 	pos = 0; timer = rate; songend = false;
+
+	for (int i = 0; i < MAX_VOICES; i++)
+		volume[i] = 0;
+	firstDelay = true;
+
 	opl->init();
 	drv->SoundWarmInit();
 }
@@ -158,154 +162,157 @@ bool CmdiPlayer::update()
 	uint16_t code, pitch;
 	while (!ticks && pos < size)
 	{
-		// delay ticks
-		ticks = GetVarVal();
-		if (pos >= size)
-			break;
-		// execute MIDI command
-		if (data[pos] < 0x80)
+		if (!firstDelay)
 		{
-			// running status
-			new_status = status;
-		}
-		else
-			new_status = data[pos++];
-		if (new_status == STOP_FC)
-		{
-			pos = size;
-			break;
-		}
-		else if (new_status == SYSEX_F0 || new_status == SYSEX_F7)
-		{
-			/* skip over system exclusive event */
-			len = GetVarVal();
-			pos += len;
-		}
-		else if (new_status == META)
-		{
-			/* Process meta-event */
-			meta = data[pos++];
-			len = GetVarVal();
-			switch (meta)
+			// execute MIDI command
+			if (data[pos] < 0x80)
 			{
-			case END_OF_TRACK:
+				// running status
+				new_status = status;
+			}
+			else
+				new_status = data[pos++];
+			if (new_status == STOP_FC)
+			{
 				pos = size;
-				break;
-			case TEMPO:
-				if (len >= 3)
+			}
+			else if (new_status == SYSEX_F0 || new_status == SYSEX_F7)
+			{
+				/* skip over system exclusive event */
+				len = GetVarVal();
+				pos += len;
+			}
+			else if (new_status == META)
+			{
+				/* Process meta-event */
+				meta = data[pos++];
+				len = GetVarVal();
+				switch (meta)
 				{
-					tempo = data[pos] << 16 | data[pos + 1] << 8 | data[pos + 2];
-					SetTempo(tempo);
-				}
-				break;
-			case SEQ_SPECIFIC:
-				if (len >= META_MIN_SIZE)
-				{
-					/* Ad Lib midi ID is 00 00 3f. */
-					if (data[pos] == 0 &&
-						data[pos + 1] == 0 &&
-						data[pos + 2] == 0x3f)
+				case END_OF_TRACK:
+					pos = size - len; // pos incremented later
+					break;
+				case TEMPO:
+					if (len >= 3)
 					{
-						/*
-						The first two bytes after the ID contain the Ad Lib event code.
-						The following bytes contain the data pertaining to the event.
-						*/
-						code = data[pos + 3] << 8 | data[pos + 4];
-						if (code == ADLIB_TIMBRE && len >= META_MIN_SIZE + ADLIB_INST_LEN)
+						tempo = data[pos] << 16 | data[pos + 1] << 8 | data[pos + 2];
+						SetTempo(tempo);
+					}
+					break;
+				case SEQ_SPECIFIC:
+					if (len >= META_MIN_SIZE)
+					{
+						/* Ad Lib midi ID is 00 00 3f. */
+						if (data[pos] == 0 &&
+							data[pos + 1] == 0 &&
+							data[pos + 2] == 0x3f)
 						{
 							/*
-							Instrument change code.  First byte of data contains voice number.
-							Following bytes contain instrument parameters.
+							The first two bytes after the ID contain the Ad Lib event code.
+							The following bytes contain the data pertaining to the event.
 							*/
-							voice = data[pos + 5];
-							uint8_t params[ADLIB_INST_LEN];
-							for (int n = 0; n < ADLIB_INST_LEN; n++)
-								params[n] = data[pos + META_MIN_SIZE + n];
-							drv->SetVoiceTimbre(voice, params);
-						}
-						else if (code == ADLIB_RHYTHM) {
-							/* Melo/perc mode code.  0 is melodic, !0 is percussive. */
-							drv->SetMode((int)data[pos + 5]);
-						}
-						else if (code == ADLIB_PITCH) {
-							/* Sets the interval over which pitch bend changes will be applied. */
-							drv->SetPitchRange((int)data[pos + 5]);
+							code = data[pos + 3] << 8 | data[pos + 4];
+							if (code == ADLIB_TIMBRE && len >= META_MIN_SIZE + ADLIB_INST_LEN)
+							{
+								/*
+								Instrument change code.  First byte of data contains voice number.
+								Following bytes contain instrument parameters.
+								*/
+								voice = data[pos + 5];
+								uint8_t params[ADLIB_INST_LEN];
+								for (int n = 0; n < ADLIB_INST_LEN; n++)
+									params[n] = data[pos + META_MIN_SIZE + n];
+								drv->SetVoiceTimbre(voice, params);
+							}
+							else if (code == ADLIB_RHYTHM) {
+								/* Melo/perc mode code.  0 is melodic, !0 is percussive. */
+								drv->SetMode((int)data[pos + 5]);
+							}
+							else if (code == ADLIB_PITCH) {
+								/* Sets the interval over which pitch bend changes will be applied. */
+								drv->SetPitchRange((int)data[pos + 5]);
+							}
 						}
 					}
+					break;
 				}
-				break;
+				pos += len;
 			}
-			pos += len;
-		}
-		else
-		{
-			status = new_status;
-			voice = status & 0xF;
-			switch (status & 0xF0)
+			else
 			{
-			case NOTE_OFF:
-				pos += 2;
-				drv->NoteOff(voice);
-				break;
-			case NOTE_ON:
-				note = data[pos++];
-				vol = data[pos++];
-				if (!vol)
+				status = new_status;
+				voice = status & 0xF;
+				switch (status & 0xF0)
 				{
-					/* A note-on with a volume of 0 is equivalent to a note-off. */
+				case NOTE_OFF:
+					pos += 2;
 					drv->NoteOff(voice);
-					volume[voice] = vol;
-				}
-				else
-				{
-					/* Regular note-on */
-					if (vol != volume[voice])
+					break;
+				case NOTE_ON:
+					note = data[pos++];
+					vol = data[pos++];
+					if (!vol)
 					{
-						drv->SetVoiceVolume(voice, vol);
+						/* A note-on with a volume of 0 is equivalent to a note-off. */
+						drv->NoteOff(voice);
 						volume[voice] = vol;
 					}
-					drv->NoteOn(voice, note);
-				}
-				break;
-			case AFTER_TOUCH:
-				pos++; // skip note
-				vol = data[pos++];
-				drv->SetVoiceVolume(voice, vol);
-				volume[voice] = vol;
-				break;
-			case CONTROL_CHANGE:
-				/* not implemented ... */
-				pos += 2;
-				break;
-			case PROG_CHANGE:
-				/* unused */
-				pos += 1;
-				break;
-			case CHANNEL_PRESSURE:
-				vol = data[pos++];
-				drv->SetVoiceVolume(voice, vol);
-				volume[voice] = vol;
-				break;
-			case PITCH_BEND:
-				pitch  = data[pos++];
-				pitch |= data[pos++] << 7;
-				drv->SetVoicePitch(voice, pitch);
-				break;
-			default:
-				/*
-				A bad status byte ( or unimplemented MIDI command) has been encontered.
-				Skip bytes until next timing byte followed by status byte.
-				*/
-				while (data[pos++] < NOTE_OFF && pos < size);
-				if (pos >= size)
+					else
+					{
+						/* Regular note-on */
+						if (vol != volume[voice])
+						{
+							drv->SetVoiceVolume(voice, vol);
+							volume[voice] = vol;
+						}
+						drv->NoteOn(voice, note);
+					}
 					break;
-				break;
+				case AFTER_TOUCH:
+					pos++; // skip note
+					vol = data[pos++];
+					drv->SetVoiceVolume(voice, vol);
+					volume[voice] = vol;
+					break;
+				case CONTROL_CHANGE:
+					/* not implemented ... */
+					pos += 2;
+					break;
+				case PROG_CHANGE:
+					/* unused */
+					pos += 1;
+					break;
+				case CHANNEL_PRESSURE:
+					vol = data[pos++];
+					drv->SetVoiceVolume(voice, vol);
+					volume[voice] = vol;
+					break;
+				case PITCH_BEND:
+					pitch = data[pos++];
+					pitch |= data[pos++] << 7;
+					drv->SetVoicePitch(voice, pitch);
+					break;
+				default:
+					/*
+					A bad status byte ( or unimplemented MIDI command) has been encontered.
+					Skip bytes until next timing byte followed by status byte.
+					*/
+					while (data[pos++] < NOTE_OFF && pos < size);
+					if (pos >= size)
+						break;
+					break;
+				}
 			}
 		}
+		// delay ticks
+		firstDelay = false;
+		if (pos < size)
+			ticks = GetVarVal();
 	}
 
 	if (pos >= size) {
 		pos = 0;
+		ticks = GetVarVal();
 		songend = true;
 	}
 	else

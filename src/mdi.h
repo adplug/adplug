@@ -102,6 +102,7 @@ protected:
 	uint16_t	division;				/* division in PPQN */
 	uint8_t *	data;					/* MIDI data */
 
+	bool		firstDelay;				/* flag to process first delay */
 	uint8_t		status;                 /* running status byte */
 	uint8_t		volume[MAX_VOICES];		/* actual volume of all voices */
 };
