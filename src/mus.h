@@ -120,6 +120,7 @@ public:
 	};
 
 private:
+	bool InstsLoaded();
 	bool LoadTimbreBank(const std::string fname, const CFileProvider &fp);
 	bool FetchTimbreData(const std::string fname, const CFileProvider &fp);
 	void SetTempo(uint16_t tempo, uint8_t tickBeat);

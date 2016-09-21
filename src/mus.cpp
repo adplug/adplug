@@ -150,18 +150,33 @@ bool CmusPlayer::load(const std::string &filename, const CFileProvider &fp)
 			np = filename.find_last_of("\\");
 		if (np != std::string::npos)
 		{
-			// fetch IMPlay bank
-			bankload = FetchTimbreData(filename.substr(0, np + 1).append("implay.bnk"), fp);
-			if (!bankload) // for case-sensitive file systems
-				bankload = FetchTimbreData(filename.substr(0, np + 1).append("IMPLAY.BNK"), fp);
-			// fetch standard bank
-			bankload = FetchTimbreData(filename.substr(0, np + 1).append("standard.bnk"), fp);
-			if (!bankload) // for case-sensitive file systems
-				bankload = FetchTimbreData(filename.substr(0, np + 1).append("STANDARD.BNK"), fp);
+			if (!InstsLoaded())
+			{
+				// fetch IMPlay bank
+				bankload = FetchTimbreData(filename.substr(0, np + 1).append("implay.bnk"), fp);
+				if (!bankload) // for case-sensitive file systems
+					bankload = FetchTimbreData(filename.substr(0, np + 1).append("IMPLAY.BNK"), fp);
+			}
+			if (!InstsLoaded())
+			{
+				// fetch standard bank
+				bankload = FetchTimbreData(filename.substr(0, np + 1).append("standard.bnk"), fp);
+				if (!bankload) // for case-sensitive file systems
+					bankload = FetchTimbreData(filename.substr(0, np + 1).append("STANDARD.BNK"), fp);
+			}
 		}
 	}
 	drv = new CadlibDriver(opl);
 	rewind(0);
+	return true;
+}
+
+bool CmusPlayer::InstsLoaded()
+{
+	if (!insts) return false;
+	for (int i = 0; i < tH.nrTimbre; i++)
+		if (!insts[i].loaded)
+			return false;
 	return true;
 }
 
