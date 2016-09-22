@@ -275,7 +275,7 @@ bool CmdiPlayer::update()
 					volume[voice] = vol;
 					break;
 				case CONTROL_CHANGE:
-					/* not implemented ... */
+					/* unused */
 					pos += 2;
 					break;
 				case PROG_CHANGE:

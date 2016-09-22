@@ -92,7 +92,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CmadLoader::factory, "Mlat Adlib Tracker", ".mad\0"),
   CPlayerDesc(CmusPlayer::factory, "AdLib MIDI/IMS Format", ".mus\0.ims\0"),
   CPlayerDesc(CmdiPlayer::factory, "AdLib MIDIPlay File", ".mdi\0"),
-  CPlayerDesc(CmidPlayer::factory, "MIDI", ".mid\0.mdi\0.sci\0.laa\0"),
+  CPlayerDesc(CmidPlayer::factory, "MIDI", ".mid\0.sci\0.laa\0"),
   CPlayerDesc(CmkjPlayer::factory, "MKJamz", ".mkj\0"),
   CPlayerDesc(CcffLoader::factory, "Boomtracker", ".cff\0"),
   CPlayerDesc(CdmoLoader::factory, "TwinTeam", ".dmo\0"),

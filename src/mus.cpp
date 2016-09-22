@@ -444,11 +444,11 @@ bool CmusPlayer::update()
 					drv->SetVoicePitch(voice, pitch);
 					break;
 				case CONTROL_CHANGE_BYTE:
-					/* not implemented ... */
+					/* unused */
 					pos += 2;
 					break;
 				case CHANNEL_PRESSURE_BYTE:
-					/* not implemented ... */
+					/* unused */
 					pos++;
 					break;
 				default:
