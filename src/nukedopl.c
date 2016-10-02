@@ -1,32 +1,31 @@
-/*
- * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2008 Simon Peter, <dn.tlp@gmx.net>, et al.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Nuked OPL3 emulator.
- * Thanks:
- *  MAME Development Team(Jarek Burczynski, Tatsuyuki Satoh):
- *        Feedback and Rhythm part calculation information.
- *    forums.submarine.org.uk(carbon14, opl3):
- *        Tremolo and phase generator calculation information.
- *    OPLx decapsulated(Matthew Gambrell, Olli Niemitalo):
- *        OPL2 ROMs.
- *
- * version: 1.7.4
- */
+//
+// Copyright (C) 2013-2016 Alexey Khokholov (Nuke.YKT)
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+//
+//  Nuked OPL3 emulator.
+//  Thanks:
+//      MAME Development Team(Jarek Burczynski, Tatsuyuki Satoh):
+//          Feedback and Rhythm part calculation information.
+//      forums.submarine.org.uk(carbon14, opl3):
+//          Tremolo and phase generator calculation information.
+//      OPLx decapsulated(Matthew Gambrell, Olli Niemitalo):
+//          OPL2 ROMs.
+//
+// version: 1.7.4
+//
 
 #include <stdio.h>
 #include <stdlib.h>
