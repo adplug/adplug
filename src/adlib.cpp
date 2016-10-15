@@ -542,10 +542,10 @@ void CadlibDriver::SetFNum(uint16_t * fNumVec, int num, int den)
 	int i;
 	long val;
 
-	*fNumVec++ = (uint8_t)(4 + (val = CalcPremFNum(num, den))) >> 3;
+	*fNumVec++ = (uint16_t)(4 + (val = CalcPremFNum(num, den))) >> 3;
 	for (i = 1; i < 12; i++) {
 		val *= 106;
-		*fNumVec++ = (uint8_t)(4 + (val /= 100)) >> 3;
+		*fNumVec++ = (uint16_t)(4 + (val /= 100)) >> 3;
 	}
 }
 
