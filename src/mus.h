@@ -51,7 +51,6 @@
 #define ADLIB_CTRL_BYTE	0x7F	/* for System exclusive */
 #define TEMPO_CTRL_BYTE	0
 
-#define NR_VOICES			11
 #define TUNE_NAME_SIZE		30
 #define FILLER_SIZE			8
 #define TIMBRE_NAME_SIZE	9
@@ -74,7 +73,7 @@ public:
 	static CPlayer *factory(Copl *newopl);
 
 	CmusPlayer(Copl *newopl)
-		: CPlayer(newopl), data(0)
+		: CPlayer(newopl), data(0), insts(0)
 		{ }
 	~CmusPlayer()
 	{
@@ -97,16 +96,7 @@ public:
 		return std::string(mH.tuneName);
 	};
 
-	std::string gettype()
-	{
-		char	tmpstr[30];
-
-		if (isIMS)
-			sprintf(tmpstr, "AdLib MIDI/IMS Format v%d.%d", mH.majorVersion, mH.minorVersion);
-		else
-			sprintf(tmpstr, "AdLib MIDI Format v%d.%d", mH.majorVersion, mH.minorVersion);
-		return std::string(tmpstr);
-	}
+	std::string gettype();
 
 	unsigned int getinstruments()
 	{
@@ -130,7 +120,7 @@ private:
 protected:
 	unsigned long	pos;
 	bool		songend;
-	float		timer, rate;
+	float		timer;
 
 	/* structure of music file: */
 	struct MusHeader {
@@ -168,7 +158,7 @@ protected:
 	struct TimbreRec {
 		char	name[TIMBRE_NAME_SIZE];
 		bool	loaded;
-		uint8_t	data[TIMBRE_DEF_LEN];
+		int16_t	data[TIMBRE_DEF_LEN];
 	};
 
 	struct		MusHeader mH;			/* header of .MUS file */
@@ -177,9 +167,9 @@ protected:
 	TimbreRec *	insts;					/* instrument definitions */
 	bool		isIMS;					/* play as IMS format */
 
-	bool		firstDelay;				/* flag to process first delay */
+	uint32_t	ticks;					/* ticks to wait for next event */
 	uint8_t		status;                 /* running status byte */
-	uint8_t		volume[NR_VOICES];		/* actual volume of all voices */
+	uint8_t		volume[MAX_VOICES];		/* actual volume of all voices */
 };
 
 #endif

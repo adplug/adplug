@@ -28,4 +28,6 @@ EXTRA_DIST = 2001.MKJ 2001.ref ADAGIO.DFM ADAGIO.ref adlibsp.ref adlibsp.s3m \
 	blaster2.ref RI051.RIX RI051.ref dro_v2.dro dro_v2.ref DUNE19.ADL \
 	DUNE19.ref DEMO4.JBM DEMO4.ref doofus.dro doofus.ref EOBSOUND.ADL \
 	EOBSOUND.ref LOREINTR.ADL LOREINTR.ref opensong.got opensong.ref \
-	menu.got menu.ref
+	menu.got menu.ref lines1.mus lines1.snd lines1.ref tafa.mus tafa.tim \
+	tafa.ref revival.ims implay.bnk revival.ref go-_-go.ims go-_-go.bnk \
+	go-_-go.ref Flying.mdi Flying.ref RIK6.MDI RIK6.ref

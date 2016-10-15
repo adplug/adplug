@@ -34,9 +34,9 @@
 #define MIDI_CHUNK_SIZE	4	/* FOURCC size */
 #define MIDI_HEAD_SIZE	6	/* MThd data size */
 #define MIDI_MIN_SIZE	MIDI_CHUNK_SIZE + sizeof(uint32_t) + MIDI_HEAD_SIZE + MIDI_CHUNK_SIZE + sizeof(uint32_t)
+#define MIDI_DEF_TEMPO	500000
 
 #define NR_CHANS		16
-#define MAX_VOICES		11
 
 #define NOTE_OFF		0x80
 #define NOTE_ON			0x90
@@ -98,11 +98,11 @@ private:
 protected:
 	unsigned long	pos, size;
 	bool		songend;
-	float		rate, timer;
+	float		timer;
 	uint16_t	division;				/* division in PPQN */
 	uint8_t *	data;					/* MIDI data */
 
-	bool		firstDelay;				/* flag to process first delay */
+	uint32_t	ticks;					/* ticks to wait for next event */
 	uint8_t		status;                 /* running status byte */
 	uint8_t		volume[MAX_VOICES];		/* actual volume of all voices */
 };

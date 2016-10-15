@@ -30,6 +30,7 @@
  */
 
 #include <string.h>
+#include <stdio.h>
 
 #include "mus.h"
 #include "debug.h"
@@ -39,6 +40,17 @@
 CPlayer *CmusPlayer::factory(Copl *newopl)
 {
 	return new CmusPlayer(newopl);
+}
+
+std::string CmusPlayer::gettype()
+{
+	char tmpstr[30];
+
+	if (isIMS)
+		sprintf(tmpstr, "IMPlay Song Format v%d.%d", mH.majorVersion, mH.minorVersion);
+	else
+		sprintf(tmpstr, "AdLib MIDI Format v%d.%d", mH.majorVersion, mH.minorVersion);
+	return std::string(tmpstr);
 }
 
 bool CmusPlayer::load(const std::string &filename, const CFileProvider &fp)
@@ -134,6 +146,13 @@ bool CmusPlayer::load(const std::string &filename, const CFileProvider &fp)
 			bankload = LoadTimbreBank(filename.substr(0, filename.length() - 3).append("TIM"), fp);
 		if (!bankload)
 		{
+			// fetch default bank
+			size_t np = filename.find_last_of("/");
+			if (np == std::string::npos)
+				np = filename.find_last_of("\\");
+			if (np != std::string::npos)
+				bankload = LoadTimbreBank(filename.substr(0, np + 1).append("timbres.snd"), fp);
+			// TODO:
 			// search for *.snd then *.tim in current directory
 			// try loading each found until success
 		}
@@ -182,12 +201,17 @@ bool CmusPlayer::InstsLoaded()
 
 bool CmusPlayer::LoadTimbreBank(const std::string fname, const CFileProvider &fp)
 {
-	binistream *f = fp.open(fname); if (!f) return false;
+	binistream *f = fp.open(fname);
+	if (!f) {
+		AdPlug_LogWrite("Timbre bank not found: %s\n", fname.c_str());
+		return false;
+	}
 
 	// file validation
 	if (fp.filesize(f) < SND_HEADER_LEN)
 	{
 		fp.close(f);
+		AdPlug_LogWrite("Timbre bank size is wrong.\n");
 		return false;
 	}
  	tH.majorVersion = static_cast<uint8_t>(f->readInt(1));
@@ -201,6 +225,7 @@ bool CmusPlayer::LoadTimbreBank(const std::string fname, const CFileProvider &fp
 		fp.filesize(f) < SND_HEADER_LEN + tH.nrTimbre * TIMBRE_NAME_SIZE + tH.nrTimbre * TIMBRE_DEF_SIZE)
 	{
 		fp.close(f);
+		AdPlug_LogWrite("Timbre bank format is incorrect.\n");
 		return false;
 	}
 	insts = new TimbreRec[tH.nrTimbre];
@@ -214,7 +239,7 @@ bool CmusPlayer::LoadTimbreBank(const std::string fname, const CFileProvider &fp
 	for (int i = 0; i < tH.nrTimbre; i++)
 	{
 		for (int j = 0; j < TIMBRE_DEF_LEN; j++)
-			insts[i].data[j] = static_cast<uint8_t>(f->readInt(2));
+			insts[i].data[j] = f->readInt(2);
 		insts[i].loaded = true;
 	}
 	fp.close(f);
@@ -223,13 +248,18 @@ bool CmusPlayer::LoadTimbreBank(const std::string fname, const CFileProvider &fp
 
 bool CmusPlayer::FetchTimbreData(const std::string fname, const CFileProvider &fp)
 {
-	binistream *f = fp.open(fname); if (!f) return false;
+	binistream *f = fp.open(fname);
+	if (!f) {
+		AdPlug_LogWrite("Instrument bank not found: %s\n", fname.c_str());
+		return false;
+	}
 	bool stopFetch;
 
 	// file validation
 	if (fp.filesize(f) < BNK_HEADER_SIZE)
 	{
 		fp.close(f);
+		AdPlug_LogWrite("Instrument bank size is wrong.");
 		return false;
 	}
 	// check bank version
@@ -237,6 +267,7 @@ bool CmusPlayer::FetchTimbreData(const std::string fname, const CFileProvider &f
 		f->readInt(1) != 0)
 	{
 		fp.close(f);
+		AdPlug_LogWrite("Instrument bank version is wrong.");
 		return false;
 	}
 	// check bank signature
@@ -246,6 +277,7 @@ bool CmusPlayer::FetchTimbreData(const std::string fname, const CFileProvider &f
 	if (strcmp(signature, "ADLIB-"))
 	{
 		fp.close(f);
+		AdPlug_LogWrite("Instrument bank signature is wrong.");
 		return false;
 	}
 	uint16_t numUsed = static_cast<uint16_t>(f->readInt(2));
@@ -263,6 +295,7 @@ bool CmusPlayer::FetchTimbreData(const std::string fname, const CFileProvider &f
 		fp.filesize(f) < offsetData + numInst * BNK_INST_SIZE)
 	{
 		fp.close(f);
+		AdPlug_LogWrite("Instrument bank format is incorrect.");
 		return false;
 	}
 	uint16_t index;
@@ -291,7 +324,9 @@ bool CmusPlayer::FetchTimbreData(const std::string fname, const CFileProvider &f
 				f->seek(offsetData + index * BNK_INST_SIZE);
 				f->seek(2, binio::Add); // skip iPercussive, iVoiceNum
 				for (int k = 0; k < TIMBRE_DEF_LEN; k++)
-					insts[j].data[k] = static_cast<uint8_t>(f->readInt(1));
+				{
+					insts[j].data[k] = (int8_t)f->readInt(1);
+				}
 				insts[j].loaded = true;
 			}
 		}
@@ -311,13 +346,13 @@ bool CmusPlayer::FetchTimbreData(const std::string fname, const CFileProvider &f
 void CmusPlayer::rewind(int subsong)
 {
 	SetTempo(mH.basicTempo, mH.tickBeat);
-	pos = 0; timer = rate; songend = false;
+	pos = 0; songend = false;
 	opl->init();
 	drv->SoundWarmInit();
 
-	for (int i = 0; i < NR_VOICES; i++)
+	for (int i = 0; i < MAX_VOICES; i++)
 		volume[i] = 0;
-	firstDelay = true;
+	ticks = (uint32_t)-1;
 
 	drv->SetMode(mH.soundMode);
 	drv->SetPitchRange(mH.pitchBRange);
@@ -328,7 +363,8 @@ void CmusPlayer::rewind(int subsong)
 */
 void CmusPlayer::SetTempo(uint16_t tempo, uint8_t tickBeat)
 {
-	rate = tempo * tickBeat / 60.0f;
+	if (!tempo) tempo = mH.basicTempo;
+	timer = tempo * tickBeat / 60.0f;
 }
 
 uint32_t CmusPlayer::GetTicks()
@@ -338,6 +374,8 @@ uint32_t CmusPlayer::GetTicks()
 	{
 		ticks += OVERFLOW_TICKS;
 		pos++;
+		if (ticks > OVERFLOW_TICKS * 12) // for very long IMS delays
+			ticks = OVERFLOW_TICKS * 12;
 	}
 	if (pos < mH.dataSize)
 		ticks += data[pos++];
@@ -346,138 +384,143 @@ uint32_t CmusPlayer::GetTicks()
 
 bool CmusPlayer::update()
 {
-	uint32_t ticks = 0;
 	uint8_t new_status = 0, voice, haut, vol, timbre;
 	uint16_t pitch;
+
+	if ((int32_t)ticks == -1) // first delay ticks
+		ticks = GetTicks();
+	if (ticks)
+	{
+		ticks--;
+		return !songend;
+	}
 	while (!ticks && pos < mH.dataSize)
 	{
-		if (!firstDelay)
+		// execute MIDI command
+		if (data[pos] < NOTE_OFF_BYTE)
 		{
-			// execute MIDI command
-			if (data[pos] < NOTE_OFF_BYTE)
+			// running status
+			new_status = status;
+		}
+		else
+			new_status = data[pos++];
+		if (new_status == STOP_BYTE)
+		{
+			pos = mH.dataSize;
+		}
+		else if (new_status == SYSTEM_XOR_BYTE)
+		{
+			/*
+			non-standard... this is a tempo multiplier:
+			data format: <F0> <7F> <00> <integer> <frac> <F7>
+			tempo = basicTempo * integerPart + basicTempo * fractionPart/128
+			*/
+			if (data[pos++] != ADLIB_CTRL_BYTE ||
+				data[pos++] != TEMPO_CTRL_BYTE)
 			{
-				// running status
-				new_status = status;
-			}
-			else
-				new_status = data[pos++];
-			if (new_status == STOP_BYTE)
-			{
-				pos = mH.dataSize;
-			}
-			else if (new_status == SYSTEM_XOR_BYTE)
-			{
-				/*
-				non-standard... this is a tempo multiplier:
-				data format: <F0> <7F> <00> <integer> <frac> <F7>
-				tempo = basicTempo * integerPart + basicTempo * fractionPart/128
-				*/
-				if (data[pos++] != ADLIB_CTRL_BYTE ||
-					data[pos++] != TEMPO_CTRL_BYTE)
-				{
-					/* unknown format ... skip all the XOR message */
-					pos -= 2;
-					while (data[pos++] != EOX_BYTE);
-				}
-				else
-				{
-					uint8_t integer = data[pos++];
-					uint8_t frac = data[pos++];
-					uint16_t tempo = mH.basicTempo;
-					tempo = tempo * integer + ((tempo * frac) >> 7);
-					SetTempo(tempo, mH.tickBeat);
-					pos++;       /* skip EOX_BYTE */
-				}
+				/* unknown format ... skip all the XOR message */
+				pos -= 2;
+				while (data[pos++] != EOX_BYTE);
 			}
 			else
 			{
-				status = new_status;
-				voice = status & 0xF;
-				switch (status & 0xF0)
-				{
-				case NOTE_ON_BYTE:
-					haut = data[pos++];
-					vol = data[pos++];
-					if (!vol)
-						drv->NoteOff(voice);
-					else
-					{
-						if (vol != volume[voice])
-						{
-							drv->SetVoiceVolume(voice, vol);
-							volume[voice] = vol;
-						}
-						drv->NoteOn(voice, haut);
-					}
-					break;
-				case NOTE_OFF_BYTE:
-					haut = data[pos++];
-					vol = data[pos++];
-					drv->NoteOff(voice);
-					if (isIMS && vol)
-					{
-						if (vol != volume[voice])
-						{
-							drv->SetVoiceVolume(voice, vol);
-							volume[voice] = vol;
-						}
-						drv->NoteOn(voice, haut);
-					}
-					break;
-				case AFTER_TOUCH_BYTE:
-					drv->SetVoiceVolume(voice, data[pos++]);
-					break;
-				case PROG_CHANGE_BYTE:
-					timbre = data[pos++];
-					if (insts &&
-						timbre < tH.nrTimbre &&
-						insts[timbre].loaded)
-					{
-						drv->SetVoiceTimbre(voice, insts[timbre].data);
-					}
-					else
-						AdPlug_LogWrite("Timbre not found: %d\n", timbre);
-					break;
-				case PITCH_BEND_BYTE:
-					pitch = data[pos++];
-					pitch |= data[pos++] << 7;
-					drv->SetVoicePitch(voice, pitch);
-					break;
-				case CONTROL_CHANGE_BYTE:
-					/* unused */
-					pos += 2;
-					break;
-				case CHANNEL_PRESSURE_BYTE:
-					/* unused */
-					pos++;
-					break;
-				default:
-					/*
-					A bad status byte ( or unimplemented MIDI command) has been encontered.
-					Skip bytes until next timing byte followed by status byte.
-					*/
-					AdPlug_LogWrite("Bad MIDI status byte: %d\n", status);
-					while (data[pos++] < NOTE_OFF_BYTE && pos < mH.dataSize);
-					if (pos >= mH.dataSize)
-						break;
-					if (data[pos] != OVERFLOW_BYTE)
-						pos--;
-					break;
-				}
+				uint8_t integer = data[pos++];
+				uint8_t frac = data[pos++];
+				uint16_t tempo = mH.basicTempo;
+				tempo = tempo * integer + ((tempo * frac) >> 7);
+				SetTempo(tempo, mH.tickBeat);
+				pos++;       /* skip EOX_BYTE */
 			}
 		}
-		// delay ticks
-		firstDelay = false;
-		if (pos < mH.dataSize)
+		else
+		{
+			status = new_status;
+			voice = status & 0xF;
+			switch (status & 0xF0)
+			{
+			case NOTE_ON_BYTE:
+				haut = data[pos++];
+				vol = data[pos++];
+				if (!vol)
+					drv->NoteOff(voice);
+				else
+				{
+					if (vol != volume[voice])
+					{
+						drv->SetVoiceVolume(voice, vol);
+						volume[voice] = vol;
+					}
+					drv->NoteOn(voice, haut);
+				}
+				break;
+			case NOTE_OFF_BYTE:
+				haut = data[pos++];
+				vol = data[pos++];
+				drv->NoteOff(voice);
+				if (isIMS && vol)
+				{
+					if (vol != volume[voice])
+					{
+						drv->SetVoiceVolume(voice, vol);
+						volume[voice] = vol;
+					}
+					drv->NoteOn(voice, haut);
+				}
+				break;
+			case AFTER_TOUCH_BYTE:
+				vol = data[pos++];
+				if (vol != volume[voice])
+				{
+					drv->SetVoiceVolume(voice, vol);
+					volume[voice] = vol;
+				}
+				break;
+			case PROG_CHANGE_BYTE:
+				timbre = data[pos++];
+				if (insts &&
+					timbre < tH.nrTimbre &&
+					insts[timbre].loaded)
+				{
+					drv->SetVoiceTimbre(voice, &insts[timbre].data[0]);
+				}
+				else
+					AdPlug_LogWrite("Timbre not found: %d\n", timbre);
+				break;
+			case PITCH_BEND_BYTE:
+				pitch = data[pos++];
+				pitch |= data[pos++] << 7;
+				drv->SetVoicePitch(voice, pitch);
+				break;
+			case CONTROL_CHANGE_BYTE:
+				/* unused */
+				pos += 2;
+				break;
+			case CHANNEL_PRESSURE_BYTE:
+				/* unused */
+				pos++;
+				break;
+			default:
+				/*
+				A bad status byte ( or unimplemented MIDI command) has been encontered.
+				Skip bytes until next timing byte followed by status byte.
+				*/
+				AdPlug_LogWrite("Bad MIDI status byte: %d\n", status);
+				while (data[pos++] < NOTE_OFF_BYTE && pos < mH.dataSize);
+				if (pos >= mH.dataSize)
+					break;
+				if (data[pos] != OVERFLOW_BYTE)
+					pos--;
+				break;
+			}
+		}
+		if (pos >= mH.dataSize) {
+			pos = 0;
+			songend = true;
+			ticks = GetTicks();
+			if (!ticks) ticks++; // 1 tick delay for better song end
+		}
+		else
 			ticks = GetTicks();
 	}
-
-	if (pos >= mH.dataSize) {
-		pos = 0;
-		ticks = GetTicks();
-		songend = true;
-	} else
-		timer = rate / (float)ticks;
-
 	return !songend;
 }

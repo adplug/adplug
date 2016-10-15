@@ -84,6 +84,12 @@ static const char *filelist[] = {
   "dro_v2.dro",         // DOSBox DRO v2.0
   "menu.got",       // God of Thunder Music (at 140 Hz)
   "opensong.got",   // God of Thunder Music (at 120 Hz)
+  "lines1.mus",		// AdLib MIDI Format (melodic mode)
+  "tafa.mus",		// AdLib MIDI Format (rhythm mode)
+  "revival.ims",	// IMPlay Song (standard bank)
+  "go-_-go.ims",	// IMPlay Song (custom bank)
+  "Flying.mdi",		// AdLib MIDIPlay (melodic mode)
+  "RIK6.MDI",		// AdLib MIDIPlay (rhythm mode)
   NULL
 };
 

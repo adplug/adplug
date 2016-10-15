@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * adlib.h - AdLib Sound Driver by Stas'M <binarymaster@mail.ru>
+ * adlib.h - AdLib Sound Driver by Stas'M <binarymaster@mail.ru> and Jepael
  *
  * Based on ADLIB.H by Marc Savary and Dale Glowinski, Ad Lib Inc.
  */
@@ -69,7 +69,7 @@
 #define CYMB			9
 #define HIHAT			10
 
-
+#define MAX_VOICES		11
 #define MAX_VOLUME		0x7f
 #define MAX_PITCH		0x3fff
 #define MID_PITCH		0x2000
@@ -102,7 +102,7 @@ public:
 	void SetWaveSel(int state);
 	void SetPitchRange(uint8_t pR);
 	void SetGParam(int amD, int vibD, int nSel);
-	void SetVoiceTimbre(uint8_t voice, uint8_t paramArray[ADLIB_INST_LEN]);
+	void SetVoiceTimbre(uint8_t voice, int16_t * paramArray);
 	void SetVoiceVolume(uint8_t voice, uint8_t volume);
 	void SetVoicePitch(uint8_t voice, uint16_t pitchBend);
 	void NoteOn(uint8_t voice, int pitch);
@@ -124,7 +124,7 @@ private:
 	void SndSAVEK(uint8_t slot);
 	void SndWaveSelect(uint8_t slot);
 	void SndSetAllPrm(uint8_t slot);
-	void SetSlotParam(uint8_t slot, uint8_t * param, uint8_t waveSel);
+	void SetSlotParam(uint8_t slot, int16_t * param, uint8_t waveSel);
 	void SetCharSlotParam(uint8_t slot, char * cParam, uint8_t waveSel);
 	void InitSlotParams();
 	void SetFNum(uint16_t * fNumVec, int num, int den);
@@ -132,15 +132,15 @@ private:
 	long CalcPremFNum(int numDeltaDemiTon, int denDeltaDemiTon);
 
 	uint16_t fNumNotes[NR_STEP_PITCH][12];
-	int		halfToneOffset[11];
-	uint16_t * fNumFreqPtr[11];
+	int		halfToneOffset[MAX_VOICES];
+	uint16_t * fNumFreqPtr[MAX_VOICES];
 	int	 	pitchRange;			/* pitch variation, half-tone [+1,+12] */
 	int 	pitchRangeStep;		/* == pitchRange * NR_STEP_PITCH */
 	int		modeWaveSel;		/* != 0 if used with the 'wave-select' parameters */
 
 	char percBits;				/* control bits of percussive voices */
-	char notePitch[11];			/* pitch of last note-on of each voice */
-	char voiceKeyOn[11];		/* state of keyOn bit of each voice */
+	char notePitch[MAX_VOICES];	/* pitch of last note-on of each voice */
+	char voiceKeyOn[MAX_VOICES];	/* state of keyOn bit of each voice */
 
 	char noteDIV12[96];			/* table of (0..95) DIV 12 */
 	char noteMOD12[96];			/* table of (0..95) MOD 12 */
@@ -156,88 +156,20 @@ private:
 	char percussion;		/* percussion mode parameter */
 
 protected:
-	const char percMasks[5] = {0x10, 0x08, 0x04, 0x02, 0x01};
-
-	/* definition of the ELECTRIC-PIANO voice (opr0 & opr1) */
-	char pianoParamsOp0[nbLocParam] =
-		{1, 1, 3, 15, 5, 0, 1, 3, 15, 0, 0, 0, 1, 0 };
-	char pianoParamsOp1[nbLocParam] =
-		{0, 1, 1, 15, 7, 0, 2, 4, 0, 0, 0, 1, 0, 0 };
-
-	/* definition of default percussive voices: */
-	char bdOpr0[nbLocParam] =
-		{ 0,  0, 0, 10,  4, 0, 8, 12, 11, 0, 0, 0, 1, 0 };
-	char bdOpr1[nbLocParam] =
-		{ 0,  0, 0, 13,  4, 0, 6, 15,  0, 0, 0, 0, 1, 0 };
-	char sdOpr[nbLocParam] =
-		{ 0, 12, 0, 15, 11, 0, 8,  5,  0, 0, 0, 0, 0, 0 };
-	char tomOpr[nbLocParam] =
-		{ 0,  4, 0, 15, 11, 0, 7,  5,  0, 0, 0, 0, 0, 0 };
-	char cymbOpr[nbLocParam] =
-		{ 0,  1, 0, 15, 11, 0, 5,  5,  0, 0, 0, 0, 0, 0 };
-	char hhOpr[nbLocParam] =
-		{ 0,  1, 0, 15, 11, 0, 7,  5,  0, 0, 0, 0, 0, 0 };
-
-	/* Slot numbers as a function of the voice and the operator.
-		( melodic only)
-	*/
-	char slotVoice[9][2] = {
-		{ 0, 3 },	/* voix 0 */
-		{ 1, 4 },	/* 1 */
-		{ 2, 5 },	/* 2 */
-		{ 6, 9 },	/* 3 */
-		{ 7, 10 },	/* 4 */
-		{ 8, 11 },	/* 5 */
-		{ 12, 15 },	/* 6 */
-		{ 13, 16 },	/* 7 */
-		{ 14, 17 }	/* 8 */
-	};
-
-	/* Slot numbers for the percussive voices.
-		0 indicates that there is only one slot.
-	*/
-	char slotPerc[5][2] = {
-		{ 12, 15 },		/* Bass Drum: slot 12 et 15 */
-		{ 16, 0 },		/* SD: slot 16 */
-		{ 14, 0 },		/* TOM: slot 14 */
-		{ 17, 0 },		/* TOP-CYM: slot 17 */
-		{ 13, 0 }		/* HH: slot 13 */
-	};
-
-	/*
-		This table gives the offset of each slot within the chip.
-		offset = fn( slot)
-	*/
-	char offsetSlot[18] = {
-		0,  1,  2,  3,  4,  5,
-		8,  9, 10, 11, 12, 13,
-		16, 17, 18, 19, 20, 21
-	};
-
-	/* This table indicates if the slot is a modulator (0) or a carrier (1).
-		opr = fn( slot)
-	*/
-	char operSlot[18] = {
-		0, 0, 0,		/* 1 2 3 */
-		1, 1, 1,		/* 4 5 6 */
-		0, 0, 0, 		/* 7 8 9 */
-		1, 1, 1, 		/* 10 11 12 */
-		0, 0, 0, 		/* 13 14 15 */
-		1, 1, 1,		/* 16 17 18 */
-	};
-
-	/* This table gives the voice number associated with each slot.
-		(melodic mode only)
-		voice = fn( slot)
-	*/
-	char voiceSlot[18] = {
-		0, 1, 2,
-		0, 1, 2,
-		3, 4, 5,
-		3, 4, 5,
-		6, 7, 8,
-		6, 7, 8,
-	};
+	static const char percMasks[5];
+	static char pianoParamsOp0[nbLocParam];
+	static char pianoParamsOp1[nbLocParam];
+	static char bdOpr0[nbLocParam];
+	static char bdOpr1[nbLocParam];
+	static char sdOpr[nbLocParam];
+	static char tomOpr[nbLocParam];
+	static char cymbOpr[nbLocParam];
+	static char hhOpr[nbLocParam];
+	static char slotVoice[9][2];
+	static char slotPerc[5][2];
+	static char offsetSlot[18];
+	static char operSlot[18];
+	static char voiceSlot[18];
 };
 
 #endif

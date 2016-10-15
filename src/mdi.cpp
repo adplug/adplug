@@ -125,12 +125,12 @@ bool CmdiPlayer::load(const std::string &filename, const CFileProvider &fp)
 void CmdiPlayer::rewind(int subsong)
 {
 	// set default MIDI tempo
-	SetTempo(500000);
-	pos = 0; timer = rate; songend = false;
+	SetTempo(MIDI_DEF_TEMPO);
+	pos = 0; songend = false;
 
 	for (int i = 0; i < MAX_VOICES; i++)
 		volume[i] = 0;
-	firstDelay = true;
+	ticks = (uint32_t)-1;
 
 	opl->init();
 	drv->SoundWarmInit();
@@ -141,7 +141,8 @@ void CmdiPlayer::rewind(int subsong)
 */
 void CmdiPlayer::SetTempo(uint32_t tempo)
 {
-	rate = division * 1000000 / (float)tempo;
+	if (!tempo) tempo = MIDI_DEF_TEMPO;
+	timer = division * 1000000 / (float)tempo;
 }
 
 uint32_t CmdiPlayer::GetVarVal()
@@ -157,166 +158,172 @@ uint32_t CmdiPlayer::GetVarVal()
 
 bool CmdiPlayer::update()
 {
-	uint32_t ticks = 0, len, tempo;
+	uint32_t len, tempo;
 	uint8_t new_status = 0, meta, voice, note, vol;
 	uint16_t code, pitch;
+
+	if ((int32_t)ticks == -1) // first delay ticks
+		ticks = GetVarVal();
+	if (ticks)
+	{
+		ticks--;
+		return !songend;
+	}
 	while (!ticks && pos < size)
 	{
-		if (!firstDelay)
+		// execute MIDI command
+		if (data[pos] < 0x80)
 		{
-			// execute MIDI command
-			if (data[pos] < 0x80)
+			// running status
+			new_status = status;
+		}
+		else
+			new_status = data[pos++];
+		if (new_status == STOP_FC)
+		{
+			pos = size;
+		}
+		else if (new_status == SYSEX_F0 || new_status == SYSEX_F7)
+		{
+			/* skip over system exclusive event */
+			len = GetVarVal();
+			pos += len;
+		}
+		else if (new_status == META)
+		{
+			/* Process meta-event */
+			meta = data[pos++];
+			len = GetVarVal();
+			switch (meta)
 			{
-				// running status
-				new_status = status;
-			}
-			else
-				new_status = data[pos++];
-			if (new_status == STOP_FC)
-			{
-				pos = size;
-			}
-			else if (new_status == SYSEX_F0 || new_status == SYSEX_F7)
-			{
-				/* skip over system exclusive event */
-				len = GetVarVal();
-				pos += len;
-			}
-			else if (new_status == META)
-			{
-				/* Process meta-event */
-				meta = data[pos++];
-				len = GetVarVal();
-				switch (meta)
+			case END_OF_TRACK:
+				pos = size - len; // pos incremented later
+				break;
+			case TEMPO:
+				if (len >= 3)
 				{
-				case END_OF_TRACK:
-					pos = size - len; // pos incremented later
-					break;
-				case TEMPO:
-					if (len >= 3)
+					tempo = data[pos] << 16 | data[pos + 1] << 8 | data[pos + 2];
+					SetTempo(tempo);
+				}
+				break;
+			case SEQ_SPECIFIC:
+				if (len >= META_MIN_SIZE)
+				{
+					/* Ad Lib midi ID is 00 00 3f. */
+					if (data[pos] == 0 &&
+						data[pos + 1] == 0 &&
+						data[pos + 2] == 0x3f)
 					{
-						tempo = data[pos] << 16 | data[pos + 1] << 8 | data[pos + 2];
-						SetTempo(tempo);
-					}
-					break;
-				case SEQ_SPECIFIC:
-					if (len >= META_MIN_SIZE)
-					{
-						/* Ad Lib midi ID is 00 00 3f. */
-						if (data[pos] == 0 &&
-							data[pos + 1] == 0 &&
-							data[pos + 2] == 0x3f)
+						/*
+						The first two bytes after the ID contain the Ad Lib event code.
+						The following bytes contain the data pertaining to the event.
+						*/
+						code = data[pos + 3] << 8 | data[pos + 4];
+						if (code == ADLIB_TIMBRE && len >= META_MIN_SIZE + ADLIB_INST_LEN)
 						{
 							/*
-							The first two bytes after the ID contain the Ad Lib event code.
-							The following bytes contain the data pertaining to the event.
+							Instrument change code.  First byte of data contains voice number.
+							Following bytes contain instrument parameters.
 							*/
-							code = data[pos + 3] << 8 | data[pos + 4];
-							if (code == ADLIB_TIMBRE && len >= META_MIN_SIZE + ADLIB_INST_LEN)
-							{
-								/*
-								Instrument change code.  First byte of data contains voice number.
-								Following bytes contain instrument parameters.
-								*/
-								voice = data[pos + 5];
-								uint8_t params[ADLIB_INST_LEN];
-								for (int n = 0; n < ADLIB_INST_LEN; n++)
-									params[n] = data[pos + META_MIN_SIZE + n];
-								drv->SetVoiceTimbre(voice, params);
-							}
-							else if (code == ADLIB_RHYTHM) {
-								/* Melo/perc mode code.  0 is melodic, !0 is percussive. */
-								drv->SetMode((int)data[pos + 5]);
-							}
-							else if (code == ADLIB_PITCH) {
-								/* Sets the interval over which pitch bend changes will be applied. */
-								drv->SetPitchRange((int)data[pos + 5]);
-							}
+							voice = data[pos + 5];
+							int16_t params[ADLIB_INST_LEN];
+							for (int n = 0; n < ADLIB_INST_LEN; n++)
+								params[n] = (int8_t)data[pos + META_MIN_SIZE + n];
+							drv->SetVoiceTimbre(voice, &params[0]);
+						}
+						else if (code == ADLIB_RHYTHM) {
+							/* Melo/perc mode code.  0 is melodic, !0 is percussive. */
+							drv->SetMode((int)data[pos + 5]);
+						}
+						else if (code == ADLIB_PITCH) {
+							/* Sets the interval over which pitch bend changes will be applied. */
+							drv->SetPitchRange((int)data[pos + 5]);
 						}
 					}
-					break;
 				}
-				pos += len;
+				break;
 			}
-			else
+			pos += len;
+		}
+		else
+		{
+			status = new_status;
+			voice = status & 0xF;
+			switch (status & 0xF0)
 			{
-				status = new_status;
-				voice = status & 0xF;
-				switch (status & 0xF0)
+			case NOTE_OFF:
+				pos += 2;
+				drv->NoteOff(voice);
+				break;
+			case NOTE_ON:
+				note = data[pos++];
+				vol = data[pos++];
+				if (!vol)
 				{
-				case NOTE_OFF:
-					pos += 2;
+					/* A note-on with a volume of 0 is equivalent to a note-off. */
 					drv->NoteOff(voice);
-					break;
-				case NOTE_ON:
-					note = data[pos++];
-					vol = data[pos++];
-					if (!vol)
+					volume[voice] = vol;
+				}
+				else
+				{
+					/* Regular note-on */
+					if (vol != volume[voice])
 					{
-						/* A note-on with a volume of 0 is equivalent to a note-off. */
-						drv->NoteOff(voice);
+						drv->SetVoiceVolume(voice, vol);
 						volume[voice] = vol;
 					}
-					else
-					{
-						/* Regular note-on */
-						if (vol != volume[voice])
-						{
-							drv->SetVoiceVolume(voice, vol);
-							volume[voice] = vol;
-						}
-						drv->NoteOn(voice, note);
-					}
-					break;
-				case AFTER_TOUCH:
-					pos++; // skip note
-					vol = data[pos++];
-					drv->SetVoiceVolume(voice, vol);
-					volume[voice] = vol;
-					break;
-				case CONTROL_CHANGE:
-					/* unused */
-					pos += 2;
-					break;
-				case PROG_CHANGE:
-					/* unused */
-					pos += 1;
-					break;
-				case CHANNEL_PRESSURE:
-					vol = data[pos++];
-					drv->SetVoiceVolume(voice, vol);
-					volume[voice] = vol;
-					break;
-				case PITCH_BEND:
-					pitch = data[pos++];
-					pitch |= data[pos++] << 7;
-					drv->SetVoicePitch(voice, pitch);
-					break;
-				default:
-					/*
-					A bad status byte ( or unimplemented MIDI command) has been encontered.
-					Skip bytes until next timing byte followed by status byte.
-					*/
-					while (data[pos++] < NOTE_OFF && pos < size);
-					if (pos >= size)
-						break;
-					break;
+					drv->NoteOn(voice, note);
 				}
+				break;
+			case AFTER_TOUCH:
+				pos++; // skip note
+				vol = data[pos++];
+				if (vol != volume[voice])
+				{
+					drv->SetVoiceVolume(voice, vol);
+					volume[voice] = vol;
+				}
+				break;
+			case CONTROL_CHANGE:
+				/* unused */
+				pos += 2;
+				break;
+			case PROG_CHANGE:
+				/* unused */
+				pos += 1;
+				break;
+			case CHANNEL_PRESSURE:
+				vol = data[pos++];
+				if (vol != volume[voice])
+				{
+					drv->SetVoiceVolume(voice, vol);
+					volume[voice] = vol;
+				}
+				break;
+			case PITCH_BEND:
+				pitch = data[pos++];
+				pitch |= data[pos++] << 7;
+				drv->SetVoicePitch(voice, pitch);
+				break;
+			default:
+				/*
+				A bad status byte ( or unimplemented MIDI command) has been encontered.
+				Skip bytes until next timing byte followed by status byte.
+				*/
+				while (data[pos++] < NOTE_OFF && pos < size);
+				if (pos >= size)
+					break;
+				break;
 			}
 		}
-		// delay ticks
-		firstDelay = false;
-		if (pos < size)
+		if (pos >= size) {
+			pos = 0;
+			songend = true;
+			ticks = GetVarVal();
+			if (!ticks) ticks++; // 1 tick delay for better song end
+		}
+		else
 			ticks = GetVarVal();
 	}
-
-	if (pos >= size) {
-		pos = 0;
-		ticks = GetVarVal();
-		songend = true;
-	}
-	else
-		timer = rate / (float)ticks;
-
 	return !songend;
 }
