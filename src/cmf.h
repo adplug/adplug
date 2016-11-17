@@ -72,6 +72,8 @@ class CcmfPlayer: public CPlayer
 		uint8_t iCurrentRegs[256]; // Current values in the OPL chip
 		int iTranspose;  // Transpose amount for entire song (between -128 and +128)
 		uint8_t iPrevCommand; // Previous command (used for repeated MIDI commands, as the seek and playback code need to share this)
+		uint8_t iNotePlaying[16]; // Last note turned on, used for duplicate note check
+		bool bNoteFix[16]; // Fix duplicated Note On / Note Off
 
 		int iNoteCount;  // Used to count how long notes have been playing for
 		MIDICHANNEL chMIDI[16];
