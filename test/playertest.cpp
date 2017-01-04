@@ -90,6 +90,7 @@ static const char *filelist[] = {
   "go-_-go.ims",	// IMPlay Song (custom bank)
   "Flying.mdi",		// AdLib MIDIPlay (melodic mode)
   "RIK6.MDI",		// AdLib MIDIPlay (rhythm mode)
+  "NECRONOM.CMF",   // SoundFX Macs Opera CMF
   NULL
 };
 
