@@ -63,5 +63,9 @@ after_failure:
     else
       echo "Unknown OS, cannot check for core dump"
     fi
+    for I in test/*.test; do
+      echo === Failed test output for $I [first 200 lines only] ===
+      head -n 200 $I
+    done
     sleep 5
   - echo == End of test log ==
