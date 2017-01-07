@@ -44,6 +44,7 @@
     <ClCompile Include="..\..\..\src\fmc.cpp" />
     <ClCompile Include="..\..\..\src\fmopl.c" />
     <ClCompile Include="..\..\..\src\fprovide.cpp" />
+    <ClCompile Include="..\..\..\src\adlib.cpp" />
     <ClCompile Include="..\..\..\src\got.cpp" />
     <ClCompile Include="..\..\..\src\hsc.cpp" />
     <ClCompile Include="..\..\..\src\hsp.cpp" />
@@ -54,10 +55,12 @@
     <ClCompile Include="..\..\..\src\ksm.cpp" />
     <ClCompile Include="..\..\..\src\lds.cpp" />
     <ClCompile Include="..\..\..\src\mad.cpp" />
+    <ClCompile Include="..\..\..\src\mdi.cpp" />
     <ClCompile Include="..\..\..\src\mid.cpp" />
     <ClCompile Include="..\..\..\src\mkj.cpp" />
     <ClCompile Include="..\..\..\src\msc.cpp" />
     <ClCompile Include="..\..\..\src\mtk.cpp" />
+    <ClCompile Include="..\..\..\src\mus.cpp" />
     <ClCompile Include="..\..\..\src\player.cpp" />
     <ClCompile Include="..\..\..\src\players.cpp" />
     <ClCompile Include="..\..\..\src\protrack.cpp" />
@@ -106,6 +109,7 @@
     <ClInclude Include="..\..\..\src\fmc.h" />
     <ClInclude Include="..\..\..\src\fmopl.h" />
     <ClInclude Include="..\..\..\src\fprovide.h" />
+    <ClInclude Include="..\..\..\src\adlib.h" />
     <ClInclude Include="..\..\..\src\got.h" />
     <ClInclude Include="..\..\..\src\hsc.h" />
     <ClInclude Include="..\..\..\src\hsp.h" />
@@ -117,11 +121,13 @@
     <ClInclude Include="..\..\..\src\ksm.h" />
     <ClInclude Include="..\..\..\src\lds.h" />
     <ClInclude Include="..\..\..\src\mad.h" />
+    <ClInclude Include="..\..\..\src\mdi.h" />
     <ClInclude Include="..\..\..\src\mid.h" />
     <ClInclude Include="..\..\..\src\mididata.h" />
     <ClInclude Include="..\..\..\src\mkj.h" />
     <ClInclude Include="..\..\..\src\msc.h" />
     <ClInclude Include="..\..\..\src\mtk.h" />
+    <ClInclude Include="..\..\..\src\mus.h" />
     <ClInclude Include="..\..\..\src\opl.h" />
     <ClInclude Include="..\..\..\src\player.h" />
     <ClInclude Include="..\..\..\src\players.h" />

@@ -118,6 +118,12 @@ but are included for testing purposes anyway.
 @item @file{HSC}: HSC Adlib Composer by Hannes Seifert, HSC-Tracker by Electronic Rats
 @item @file{HSP}: HSC Packed by Number Six / Aegis Corp.
 @item @file{IMF}: Apogee IMF File Format by Apogee
+@item @file{IMS}: IMPlay Song Format
+@itemize @bullet
+@item Needs file @file{implay.bnk} or @file{standard.bnk} or @file{@var{filename}.bnk}
+in the same directory as loaded file, where @var{filename} is the name
+of music file without extension
+@end itemize
 @item @file{KSM}: Ken Silverman's Adlib Music Format by Ken Silverman
 @itemize @bullet
 @item Needs file @file{insts.dat} in the same directory as loaded file
@@ -129,10 +135,17 @@ but are included for testing purposes anyway.
 @item @file{LDS}: LOUDNESS Music Format by Andras Molnar
 @item @file{M}: Ultima 6 Music Format by Origin
 @item @file{MAD}: Mlat Adlib Tracker
+@item @file{MDI}: AdLib MIDIPlay File Format
 @item @file{MID}: MIDI Audio File Format
 @item @file{MKJ}: MKJamz by M \ K Productions @strong{(preliminary)}
 @item @file{MSC}: AdLib MSCplay
 @item @file{MTK}: MPU-401 Trakker by SuBZeR0
+@item @file{MUS}: AdLib MIDI Music Format
+@itemize @bullet
+@item Needs file @file{@var{filename}.snd} or @file{@var{filename}.tim} or
+@file{timbres.snd} in the same directory as loaded file, where @var{filename}
+is the name of music file without extension
+@end itemize
 @item @file{RAD}: Reality ADlib Tracker by Reality
 @item @file{RAW}: RdosPlay RAW file format by RDOS
 @item @file{RIX}: Softstar RIX OPL Music Format
