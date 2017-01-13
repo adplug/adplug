@@ -29,7 +29,7 @@
 #include "player.h"
 
 // These are here since Visual C 6 doesn't support statics declared and defined in class.
-#define ROL_UNSUED0_SIZE 40U
+#define ROL_COMMENT_SIZE 40U
 #define ROL_UNUSED1_SIZE 1U
 #define ROL_UNUSED2_SIZE 90U
 #define ROL_FILLER0_SIZE 38U
@@ -62,6 +62,10 @@ public:
     {
         return usedInstruments[n];
     };
+    virtual std::string getdesc()
+    {
+        return std::string(mpROLHeader->comment);
+    };
 
 private:
 
@@ -84,7 +88,7 @@ private:
     {
         uint16_t version_major;
         uint16_t version_minor;
-        char     unused0[ROL_UNSUED0_SIZE];
+        char     comment[ROL_COMMENT_SIZE];
         uint16_t ticks_per_beat;
         uint16_t beats_per_measure;
         uint16_t edit_scale_y;

@@ -225,8 +225,8 @@ bool CrolPlayer::load(const std::string & filename, const CFileProvider & fp)
         return false;
     }
 
-    f->seek(ROL_UNSUED0_SIZE, binio::Add); // Seek past 'SRolHeader.unused' field of header
-
+    f->readString(mpROLHeader->comment, ROL_COMMENT_SIZE);
+    mpROLHeader->comment[ROL_COMMENT_SIZE - 1] = 0;
     mpROLHeader->ticks_per_beat    = static_cast<uint16_t>(f->readInt(2));
     mpROLHeader->beats_per_measure = static_cast<uint16_t>(f->readInt(2));
     mpROLHeader->edit_scale_y      = static_cast<uint16_t>(f->readInt(2));
