@@ -91,6 +91,8 @@ static const char *filelist[] = {
   "Flying.mdi",		// AdLib MIDIPlay (melodic mode)
   "RIK6.MDI",		// AdLib MIDIPlay (rhythm mode)
   "NECRONOM.CMF",   // SoundFX Macs Opera CMF
+  "YsBattle.vgm",	// Video Game Music 1.51 (OPL2)
+  "BeyondSN.vgm",	// Video Game Music 1.51 (OPL3)
   NULL
 };
 

@@ -73,6 +73,7 @@
 #include "mus.h"
 #include "mdi.h"
 #include "cmfmcsop.h"
+#include "vgm.h"
 
 /***** CAdPlug *****/
 
@@ -122,6 +123,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CjbmPlayer::factory, "JBM Adlib Music", ".jbm\0"),
   CPlayerDesc(CgotPlayer::factory, "God of Thunder Music", ".got\0"),
   CPlayerDesc(CcmfmacsoperaPlayer::factory, "SoundFX Macs Opera CMF", ".cmf\0"),
+  CPlayerDesc(CvgmPlayer::factory, "Video Game Music", ".vgm\0.vgz\0"),
   CPlayerDesc()
 };
 

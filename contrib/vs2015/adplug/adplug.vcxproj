@@ -83,6 +83,7 @@
     <ClCompile Include="..\..\..\src\nemuopl.cpp" />
     <ClCompile Include="..\..\..\src\nukedopl.c" />
     <ClCompile Include="..\..\..\src\cmfmcsop.cpp" />
+    <ClCompile Include="..\..\..\src\vgm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\a2m.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="..\..\..\src\nemuopl.h" />
     <ClInclude Include="..\..\..\src\nukedopl.h" />
     <ClInclude Include="..\..\..\src\cmfmcsop.h" />
+    <ClInclude Include="..\..\..\src\vgm.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
