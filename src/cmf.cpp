@@ -246,6 +246,24 @@ bool CcmfPlayer::update()
 				uint8_t iNote = this->data[this->iPlayPointer++];
 				uint8_t iVelocity = this->data[this->iPlayPointer++]; // attack velocity
 				if (iVelocity) {
+					if (iNotePlaying[iChannel] == iNote)
+					{	// Note duplicated, turn it off
+						iVelocity = 0;
+						// Fix this on next Note Off event
+						bNoteFix[iChannel] = true;
+					}
+				}
+				else {
+					if (bNoteFix[iChannel])
+					{	// Turn on this note again
+						iVelocity = 127;
+						// Fix not needed anymore
+						bNoteFix[iChannel] = false;
+					}
+				}
+				// Store last played note
+				iNotePlaying[iChannel] = (iVelocity ? iNote : 255);
+				if (iVelocity) {
 					this->cmfNoteOn(iChannel, iNote, iVelocity);
 				} else {
 					// This is a note-off instead (velocity == 0)
@@ -428,6 +446,8 @@ void CcmfPlayer::rewind(int subsong)
 	}
 
 	memset(this->iCurrentRegs, 0, 256);
+	memset(this->iNotePlaying, 255, sizeof(iNotePlaying));
+	memset(this->bNoteFix, false, sizeof(bNoteFix));
 
 	return;
 }
