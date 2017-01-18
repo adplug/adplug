@@ -25,7 +25,6 @@
  *
  * TODO:
  * - Add support for *.VGZ (GZip compressed files)
- * - Fix Dual OPL2 playback (strange delays)
  */
 
 #include <cstring>
@@ -249,6 +248,8 @@ bool CvgmPlayer::update()
 				wait = (cmd & 0xF) + 1;
 			}
 		}
+		if (wait && wait < 40)
+			wait = 0; // skip too short pauses
 		songend = pos >= data_sz;
 		if (songend && loop_ofs >= 0)
 			pos = loop_ofs;

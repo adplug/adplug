@@ -1,0 +1,6653 @@
+init
+r9.89
+40 <- ff
+setchip(1)
+40 <- ff
+setchip(0)
+41 <- ff
+setchip(1)
+41 <- ff
+setchip(0)
+42 <- ff
+setchip(1)
+42 <- ff
+setchip(0)
+43 <- ff
+setchip(1)
+43 <- ff
+setchip(0)
+44 <- ff
+setchip(1)
+44 <- ff
+setchip(0)
+45 <- ff
+setchip(1)
+45 <- ff
+setchip(0)
+80 <- ff
+setchip(1)
+80 <- ff
+setchip(0)
+81 <- ff
+setchip(1)
+81 <- ff
+setchip(0)
+82 <- ff
+setchip(1)
+82 <- ff
+setchip(0)
+83 <- ff
+setchip(1)
+83 <- ff
+setchip(0)
+84 <- ff
+setchip(1)
+84 <- ff
+setchip(0)
+85 <- ff
+setchip(1)
+85 <- ff
+setchip(0)
+a0 <- 0
+setchip(1)
+a0 <- 0
+setchip(0)
+a1 <- 0
+setchip(1)
+a1 <- 0
+setchip(0)
+a2 <- 0
+setchip(1)
+a2 <- 0
+setchip(0)
+b0 <- 0
+setchip(1)
+b0 <- 0
+setchip(0)
+b1 <- 0
+setchip(1)
+b1 <- 0
+setchip(0)
+b2 <- 0
+setchip(1)
+b2 <- 0
+setchip(0)
+88 <- ff
+setchip(1)
+88 <- ff
+setchip(0)
+89 <- ff
+setchip(1)
+89 <- ff
+setchip(0)
+8a <- ff
+setchip(1)
+8a <- ff
+setchip(0)
+8b <- ff
+setchip(1)
+8b <- ff
+setchip(0)
+8c <- ff
+setchip(1)
+8c <- ff
+setchip(0)
+8d <- ff
+setchip(1)
+8d <- ff
+setchip(0)
+90 <- ff
+setchip(1)
+90 <- ff
+setchip(0)
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+92 <- ff
+setchip(1)
+92 <- ff
+setchip(0)
+93 <- ff
+setchip(1)
+93 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+95 <- ff
+setchip(1)
+95 <- ff
+setchip(0)
+46 <- ff
+setchip(1)
+46 <- ff
+setchip(0)
+47 <- ff
+setchip(1)
+47 <- ff
+setchip(0)
+48 <- ff
+setchip(1)
+48 <- ff
+setchip(0)
+50 <- ff
+setchip(1)
+50 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+52 <- ff
+setchip(1)
+52 <- ff
+setchip(0)
+53 <- ff
+setchip(1)
+53 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+setchip(0)
+55 <- ff
+setchip(1)
+55 <- ff
+setchip(0)
+a3 <- 0
+setchip(1)
+a3 <- 0
+setchip(0)
+a4 <- 0
+setchip(1)
+a4 <- 0
+setchip(0)
+a5 <- 0
+setchip(1)
+a5 <- 0
+setchip(0)
+a6 <- 0
+setchip(1)
+a6 <- 0
+setchip(0)
+a7 <- 0
+setchip(1)
+a7 <- 0
+setchip(0)
+a8 <- 0
+setchip(1)
+a8 <- 0
+setchip(0)
+b3 <- 0
+setchip(1)
+b3 <- 0
+setchip(0)
+b4 <- 0
+setchip(1)
+b4 <- 0
+setchip(0)
+b5 <- 0
+setchip(1)
+b5 <- 0
+setchip(0)
+b6 <- 0
+setchip(1)
+b6 <- 0
+setchip(0)
+b7 <- 0
+setchip(1)
+b7 <- 0
+setchip(0)
+b8 <- 0
+setchip(1)
+b8 <- 0
+r2.35
+setchip(0)
+1 <- 20
+setchip(1)
+1 <- 20
+setchip(0)
+8 <- 40
+setchip(1)
+8 <- 40
+setchip(0)
+bd <- c0
+setchip(1)
+bd <- c0
+r205.12
+setchip(0)
+48 <- 0
+setchip(1)
+48 <- 0
+setchip(0)
+4b <- 13
+setchip(1)
+4b <- 13
+setchip(0)
+c3 <- e
+setchip(1)
+c3 <- e
+setchip(0)
+28 <- 31
+setchip(1)
+28 <- 31
+setchip(0)
+68 <- e1
+setchip(1)
+68 <- e1
+setchip(0)
+88 <- cf
+setchip(1)
+88 <- cf
+setchip(0)
+e8 <- 0
+setchip(1)
+e8 <- 0
+setchip(0)
+2b <- b1
+setchip(1)
+2b <- b1
+setchip(0)
+6b <- d1
+setchip(1)
+6b <- d1
+setchip(0)
+8b <- df
+setchip(1)
+8b <- df
+setchip(0)
+eb <- 0
+setchip(1)
+eb <- 0
+setchip(0)
+48 <- 6d
+setchip(1)
+48 <- 6d
+setchip(0)
+4b <- 15
+setchip(1)
+4b <- 15
+setchip(0)
+a3 <- 25
+setchip(1)
+a3 <- 27
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+49 <- 0
+setchip(1)
+49 <- 0
+setchip(0)
+4c <- f
+setchip(1)
+4c <- f
+setchip(0)
+c4 <- 8
+setchip(1)
+c4 <- 8
+setchip(0)
+29 <- 7f
+setchip(1)
+29 <- 7f
+setchip(0)
+69 <- f8
+setchip(1)
+69 <- f8
+setchip(0)
+89 <- aa
+setchip(1)
+89 <- aa
+setchip(0)
+e9 <- 3
+setchip(1)
+e9 <- 3
+setchip(0)
+2c <- 32
+setchip(1)
+2c <- 32
+setchip(0)
+6c <- d2
+setchip(1)
+6c <- d2
+setchip(0)
+8c <- be
+setchip(1)
+8c <- be
+setchip(0)
+ec <- 1
+setchip(1)
+ec <- 1
+setchip(0)
+49 <- bc
+setchip(1)
+49 <- bc
+setchip(0)
+4c <- 13
+setchip(1)
+4c <- 13
+setchip(0)
+a4 <- 8d
+setchip(1)
+a4 <- 8f
+setchip(0)
+b4 <- e
+setchip(1)
+b4 <- e
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+4a <- 0
+setchip(1)
+4a <- 0
+setchip(0)
+4d <- 10
+setchip(1)
+4d <- 10
+setchip(0)
+c5 <- c
+setchip(1)
+c5 <- 8
+setchip(0)
+2a <- 21
+setchip(1)
+2a <- 2
+setchip(0)
+6a <- f7
+setchip(1)
+6a <- f7
+setchip(0)
+8a <- 47
+setchip(1)
+8a <- c6
+setchip(0)
+ea <- 0
+setchip(1)
+ea <- 0
+setchip(0)
+2d <- 21
+setchip(1)
+2d <- 1
+setchip(0)
+6d <- f1
+setchip(1)
+6d <- f4
+setchip(0)
+8d <- f8
+setchip(1)
+8d <- 18
+setchip(0)
+ed <- 0
+setchip(1)
+ed <- 0
+setchip(0)
+4a <- 60
+setchip(1)
+4a <- 60
+4d <- 14
+setchip(0)
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+50 <- 0
+setchip(1)
+50 <- 0
+setchip(0)
+53 <- 11
+setchip(1)
+53 <- 11
+setchip(0)
+c6 <- 8
+setchip(1)
+c6 <- 8
+setchip(0)
+30 <- 7f
+setchip(1)
+30 <- 7f
+setchip(0)
+70 <- f8
+setchip(1)
+70 <- f8
+setchip(0)
+90 <- aa
+setchip(1)
+90 <- aa
+setchip(0)
+f0 <- 3
+setchip(1)
+f0 <- 3
+setchip(0)
+33 <- 32
+setchip(1)
+33 <- 32
+setchip(0)
+73 <- d2
+setchip(1)
+73 <- d2
+setchip(0)
+93 <- be
+setchip(1)
+93 <- be
+setchip(0)
+f3 <- 1
+setchip(1)
+f3 <- 1
+setchip(0)
+50 <- bc
+setchip(1)
+50 <- bc
+setchip(0)
+53 <- 15
+setchip(1)
+53 <- 15
+setchip(0)
+a6 <- 68
+setchip(1)
+a6 <- 6a
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+51 <- 0
+setchip(1)
+51 <- 0
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+52 <- 0
+setchip(1)
+52 <- 0
+setchip(0)
+55 <- 2
+setchip(1)
+55 <- 2
+setchip(0)
+c8 <- a
+setchip(1)
+c8 <- 0
+setchip(0)
+32 <- 0
+setchip(1)
+32 <- a
+setchip(0)
+72 <- df
+setchip(1)
+72 <- a5
+setchip(0)
+92 <- 22
+setchip(1)
+92 <- 64
+setchip(0)
+f2 <- 2
+setchip(1)
+f2 <- 0
+setchip(0)
+35 <- 9
+setchip(1)
+35 <- b
+setchip(0)
+75 <- 8f
+setchip(1)
+75 <- f8
+setchip(0)
+95 <- 24
+setchip(1)
+95 <- 82
+setchip(0)
+f5 <- 3
+setchip(1)
+f5 <- 2
+setchip(0)
+52 <- 5
+setchip(1)
+55 <- a
+setchip(0)
+a8 <- b0
+b8 <- 36
+setchip(1)
+a8 <- b0
+b8 <- 35
+r3.82
+setchip(0)
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.49
+setchip(0)
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.86
+setchip(0)
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.50
+setchip(0)
+a4 <- 36
+setchip(1)
+a4 <- 38
+setchip(0)
+b4 <- f
+setchip(1)
+b4 <- f
+b4 <- 2f
+setchip(0)
+b4 <- 2f
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+a6 <- 45
+setchip(1)
+a6 <- 47
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.88
+setchip(0)
+a3 <- e5
+setchip(1)
+a3 <- e7
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a5 <- dd
+setchip(1)
+a5 <- df
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.86
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.51
+setchip(0)
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a5 <- 36
+setchip(1)
+a5 <- 38
+setchip(0)
+b5 <- b
+setchip(1)
+b5 <- b
+b5 <- 2b
+setchip(0)
+b5 <- 2b
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.86
+setchip(0)
+c7 <- c
+setchip(1)
+c7 <- e
+setchip(0)
+31 <- 4
+setchip(1)
+31 <- f
+setchip(0)
+71 <- f7
+setchip(1)
+71 <- fa
+setchip(0)
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+setchip(1)
+f1 <- 0
+setchip(0)
+34 <- 5
+setchip(1)
+34 <- 1
+setchip(0)
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+f4 <- 0
+setchip(1)
+f4 <- 0
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+r11.48
+setchip(0)
+a3 <- 8
+setchip(1)
+a3 <- a
+setchip(0)
+b3 <- 17
+setchip(1)
+b3 <- 17
+b3 <- 37
+setchip(0)
+b3 <- 37
+setchip(1)
+b4 <- f
+setchip(0)
+b4 <- f
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.87
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.51
+setchip(0)
+a3 <- dd
+setchip(1)
+a3 <- df
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b7 <- e
+setchip(0)
+b7 <- d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.88
+setchip(0)
+a4 <- 8
+setchip(1)
+a4 <- a
+b4 <- 2f
+setchip(0)
+b4 <- 2f
+a6 <- 25
+setchip(1)
+a6 <- 27
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+r11.41
+setchip(1)
+b4 <- f
+setchip(0)
+b4 <- f
+a5 <- cd
+setchip(1)
+a5 <- cf
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.71
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.09
+b4 <- 2f
+setchip(0)
+b4 <- 2f
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.87
+setchip(0)
+a3 <- 8d
+setchip(1)
+a3 <- 8f
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a5 <- b3
+setchip(1)
+a5 <- b5
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.71
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.13
+setchip(0)
+a3 <- 8
+setchip(1)
+a3 <- a
+setchip(0)
+b3 <- 17
+setchip(1)
+b3 <- 17
+b3 <- 37
+setchip(0)
+b3 <- 37
+a4 <- dd
+setchip(1)
+a4 <- df
+setchip(0)
+b4 <- e
+setchip(1)
+b4 <- e
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- 6
+setchip(1)
+a6 <- 8
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+c7 <- e
+setchip(1)
+c7 <- 0
+setchip(0)
+31 <- 0
+setchip(1)
+31 <- 0
+setchip(0)
+71 <- a0
+setchip(1)
+71 <- f3
+setchip(0)
+91 <- 25
+setchip(1)
+91 <- 48
+setchip(0)
+34 <- f
+setchip(1)
+34 <- a
+setchip(0)
+74 <- a1
+setchip(1)
+74 <- c3
+setchip(0)
+94 <- 8
+setchip(1)
+94 <- 9
+setchip(0)
+f4 <- 2
+setchip(1)
+f4 <- 3
+setchip(0)
+51 <- 7
+setchip(1)
+51 <- 2
+setchip(0)
+a7 <- b0
+b7 <- 36
+setchip(1)
+a7 <- b0
+b7 <- 35
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.77
+b7 <- 15
+setchip(0)
+b7 <- 16
+c7 <- c
+setchip(1)
+c7 <- e
+setchip(0)
+31 <- 4
+setchip(1)
+31 <- f
+setchip(0)
+71 <- f7
+setchip(1)
+71 <- fa
+setchip(0)
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+34 <- 5
+setchip(1)
+34 <- 1
+setchip(0)
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+f4 <- 0
+setchip(1)
+f4 <- 0
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+r12.09
+setchip(0)
+a3 <- dd
+setchip(1)
+a3 <- df
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a5 <- cd
+setchip(1)
+a5 <- cf
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.73
+setchip(0)
+a3 <- 8d
+setchip(1)
+a3 <- 8f
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a4 <- 6
+setchip(1)
+a4 <- 8
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a6 <- dd
+setchip(1)
+a6 <- df
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b7 <- e
+setchip(0)
+b7 <- d
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r226.15
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r28.84
+setchip(1)
+b4 <- 12
+setchip(0)
+b4 <- 12
+a5 <- 6
+setchip(1)
+a5 <- 8
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 84
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r787.50
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r221.61
+a7 <- 58
+r230.89
+a7 <- 34
+r226.15
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r221.61
+a7 <- a4
+r232.11
+a7 <- 1c
+b7 <- 2b
+r227.32
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+r229.69
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r4.93
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.51
+setchip(0)
+a3 <- 8
+setchip(1)
+a3 <- a
+setchip(0)
+b3 <- 17
+setchip(1)
+b3 <- 17
+b3 <- 37
+setchip(0)
+b3 <- 37
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.24
+setchip(0)
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+r11.35
+a3 <- e5
+setchip(1)
+a3 <- e7
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+r11.31
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.50
+setchip(0)
+a4 <- 8
+setchip(1)
+a4 <- a
+setchip(0)
+b4 <- f
+setchip(1)
+b4 <- f
+b4 <- 2f
+setchip(0)
+b4 <- 2f
+a5 <- cd
+setchip(1)
+a5 <- cf
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- 25
+setchip(1)
+a6 <- 27
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.67
+b4 <- f
+setchip(0)
+b4 <- f
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+r5.81
+a5 <- b3
+setchip(1)
+a5 <- b5
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.50
+setchip(0)
+a4 <- dd
+setchip(1)
+a4 <- df
+setchip(0)
+b4 <- e
+setchip(1)
+b4 <- e
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- 6
+setchip(1)
+a6 <- 8
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.88
+setchip(0)
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+r11.46
+setchip(0)
+a5 <- cd
+setchip(1)
+a5 <- cf
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.52
+b3 <- 19
+setchip(0)
+b3 <- 19
+setchip(1)
+b4 <- e
+setchip(0)
+b4 <- e
+a5 <- e5
+setchip(1)
+a5 <- e7
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b7 <- e
+setchip(0)
+b7 <- d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.73
+setchip(0)
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+b3 <- 39
+setchip(0)
+b3 <- 39
+setchip(1)
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+setchip(1)
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+r12.07
+a3 <- 8
+setchip(1)
+a3 <- a
+setchip(0)
+b3 <- 17
+setchip(1)
+b3 <- 17
+b3 <- 37
+setchip(0)
+b3 <- 37
+setchip(1)
+b4 <- e
+setchip(0)
+b4 <- e
+a5 <- 6
+setchip(1)
+a5 <- 8
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.74
+setchip(0)
+a3 <- dd
+setchip(1)
+a3 <- df
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.18
+setchip(0)
+a3 <- 8d
+setchip(1)
+a3 <- 8f
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a4 <- 8d
+setchip(1)
+a4 <- 8f
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+a6 <- 68
+setchip(1)
+a6 <- 6a
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+c7 <- e
+setchip(1)
+c7 <- 0
+setchip(0)
+31 <- 0
+setchip(1)
+31 <- 0
+setchip(0)
+71 <- a0
+setchip(1)
+71 <- f3
+setchip(0)
+91 <- 25
+setchip(1)
+91 <- 48
+setchip(0)
+34 <- f
+setchip(1)
+34 <- a
+setchip(0)
+74 <- a1
+setchip(1)
+74 <- c3
+setchip(0)
+94 <- 8
+setchip(1)
+94 <- 9
+setchip(0)
+f4 <- 2
+setchip(1)
+f4 <- 3
+setchip(0)
+51 <- 7
+setchip(1)
+51 <- 2
+setchip(0)
+a7 <- b0
+b7 <- 36
+setchip(1)
+a7 <- b0
+b7 <- 35
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.77
+b7 <- 15
+setchip(0)
+b7 <- 16
+c7 <- c
+setchip(1)
+c7 <- e
+setchip(0)
+31 <- 4
+setchip(1)
+31 <- f
+setchip(0)
+71 <- f7
+setchip(1)
+71 <- fa
+setchip(0)
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+34 <- 5
+setchip(1)
+34 <- 1
+setchip(0)
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+f4 <- 0
+setchip(1)
+f4 <- 0
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+r12.07
+setchip(0)
+a5 <- e5
+setchip(1)
+a5 <- e7
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.71
+b7 <- e
+setchip(0)
+b7 <- d
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r544.44
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r226.15
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r32.96
+a5 <- cd
+setchip(1)
+a5 <- cf
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 84
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r658.21
+setchip(0)
+a7 <- c4
+r226.15
+a7 <- a0
+r221.61
+a7 <- 7c
+r230.89
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r226.15
+a7 <- ec
+b7 <- 2d
+r223.86
+a7 <- c8
+r230.89
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r227.32
+a7 <- d4
+r220.50
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r8.40
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+r11.48
+setchip(0)
+a3 <- 25
+setchip(1)
+a3 <- 27
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+setchip(1)
+b4 <- e
+setchip(0)
+b4 <- e
+a5 <- b3
+setchip(1)
+a5 <- b5
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.87
+b7 <- e
+setchip(0)
+b7 <- d
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r544.44
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r226.15
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r28.90
+a3 <- e5
+setchip(1)
+a3 <- e7
+setchip(0)
+b3 <- 15
+setchip(1)
+b3 <- 15
+b3 <- 35
+setchip(0)
+b3 <- 35
+a4 <- dd
+setchip(1)
+a4 <- df
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- 6
+setchip(1)
+a6 <- 8
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 84
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r221.61
+a7 <- a4
+r232.11
+a7 <- 1c
+b7 <- 2b
+r227.32
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+r229.69
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r4.93
+a5 <- dd
+setchip(1)
+a5 <- df
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.87
+setchip(0)
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 15
+setchip(1)
+b3 <- 15
+b3 <- 35
+setchip(0)
+b3 <- 35
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.55
+b4 <- e
+setchip(0)
+b4 <- e
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.86
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a4 <- 6
+setchip(1)
+a4 <- 8
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+a6 <- dd
+setchip(1)
+a6 <- df
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.89
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.51
+setchip(0)
+a3 <- 25
+setchip(1)
+a3 <- 27
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+a4 <- 8d
+setchip(1)
+a4 <- 8f
+setchip(0)
+b4 <- e
+setchip(1)
+b4 <- e
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+a6 <- 68
+setchip(1)
+a6 <- 6a
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.88
+setchip(0)
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.49
+setchip(0)
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.86
+setchip(0)
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.70
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.12
+setchip(0)
+a4 <- 36
+setchip(1)
+a4 <- 38
+setchip(0)
+b4 <- f
+setchip(1)
+b4 <- f
+b4 <- 2f
+setchip(0)
+b4 <- 2f
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+a6 <- 45
+setchip(1)
+a6 <- 47
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.88
+setchip(0)
+a3 <- 8d
+setchip(1)
+a3 <- 8f
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+a5 <- dd
+setchip(1)
+a5 <- df
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.71
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.13
+setchip(0)
+a3 <- dd
+setchip(1)
+a3 <- df
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+a5 <- 36
+setchip(1)
+a5 <- 38
+setchip(0)
+b5 <- b
+setchip(1)
+b5 <- b
+b5 <- 2b
+setchip(0)
+b5 <- 2b
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.71
+setchip(0)
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+r12.09
+setchip(0)
+a3 <- 8d
+setchip(1)
+a3 <- 8f
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+setchip(1)
+b4 <- f
+setchip(0)
+b4 <- f
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.72
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.51
+setchip(0)
+a3 <- 8
+setchip(1)
+a3 <- a
+setchip(0)
+b3 <- 1b
+setchip(1)
+b3 <- 1b
+b3 <- 3b
+setchip(0)
+b3 <- 3b
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b7 <- e
+setchip(0)
+b7 <- d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.88
+setchip(0)
+a4 <- 8
+setchip(1)
+a4 <- a
+b4 <- 2f
+setchip(0)
+b4 <- 2f
+a6 <- 25
+setchip(1)
+a6 <- 27
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+r11.41
+setchip(1)
+b4 <- f
+setchip(0)
+b4 <- f
+a5 <- cd
+setchip(1)
+a5 <- cf
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.86
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.48
+b4 <- 2f
+setchip(0)
+b4 <- 2f
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.87
+setchip(0)
+a3 <- dd
+setchip(1)
+a3 <- df
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+a5 <- b3
+setchip(1)
+a5 <- b5
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.86
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.51
+setchip(0)
+a3 <- 8d
+setchip(1)
+a3 <- 8f
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+a4 <- dd
+setchip(1)
+a4 <- df
+setchip(0)
+b4 <- e
+setchip(1)
+b4 <- e
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- 6
+setchip(1)
+a6 <- 8
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+c7 <- e
+setchip(1)
+c7 <- 0
+setchip(0)
+31 <- 0
+setchip(1)
+31 <- 0
+setchip(0)
+71 <- a0
+setchip(1)
+71 <- f3
+setchip(0)
+91 <- 25
+setchip(1)
+91 <- 48
+setchip(0)
+34 <- f
+setchip(1)
+34 <- a
+setchip(0)
+74 <- a1
+setchip(1)
+74 <- c3
+setchip(0)
+94 <- 8
+setchip(1)
+94 <- 9
+setchip(0)
+f4 <- 2
+setchip(1)
+f4 <- 3
+setchip(0)
+51 <- 7
+setchip(1)
+51 <- 2
+setchip(0)
+a7 <- b0
+b7 <- 36
+setchip(1)
+a7 <- b0
+b7 <- 35
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.92
+b7 <- 15
+setchip(0)
+b7 <- 16
+c7 <- c
+setchip(1)
+c7 <- e
+setchip(0)
+31 <- 4
+setchip(1)
+31 <- f
+setchip(0)
+71 <- f7
+setchip(1)
+71 <- fa
+setchip(0)
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+34 <- 5
+setchip(1)
+34 <- 1
+setchip(0)
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+f4 <- 0
+setchip(1)
+f4 <- 0
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+r11.48
+setchip(0)
+a3 <- 25
+setchip(1)
+a3 <- 27
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+a5 <- 6
+setchip(1)
+a5 <- 8
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.87
+setchip(0)
+a4 <- 6
+setchip(1)
+a4 <- 8
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a6 <- dd
+setchip(1)
+a6 <- df
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b7 <- e
+setchip(0)
+b7 <- d
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r900.00
+setchip(0)
+a7 <- c4
+r225.00
+a7 <- a0
+r221.61
+a7 <- 7c
+r230.89
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r226.15
+a7 <- ec
+b7 <- 2d
+r223.86
+a7 <- c8
+r230.89
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r228.50
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r28.82
+a3 <- e5
+setchip(1)
+a3 <- e7
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+setchip(1)
+b4 <- 12
+setchip(0)
+b4 <- 12
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 84
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r1102.50
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r226.15
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+r229.69
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r8.75
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+r11.34
+a3 <- 8
+setchip(1)
+a3 <- a
+setchip(0)
+b3 <- 17
+setchip(1)
+b3 <- 17
+b3 <- 37
+setchip(0)
+b3 <- 37
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.88
+setchip(0)
+a3 <- dd
+setchip(1)
+a3 <- df
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.56
+setchip(0)
+a3 <- 8d
+setchip(1)
+a3 <- 8f
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a4 <- 8d
+setchip(1)
+a4 <- 8f
+setchip(0)
+b4 <- e
+setchip(1)
+b4 <- e
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+a6 <- 68
+setchip(1)
+a6 <- 6a
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.88
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.73
+setchip(0)
+a3 <- 25
+setchip(1)
+a3 <- 27
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.17
+setchip(0)
+a4 <- 25
+setchip(1)
+a4 <- 27
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+a6 <- 36
+setchip(1)
+a6 <- 38
+setchip(0)
+b6 <- f
+setchip(1)
+b6 <- f
+b6 <- 2f
+setchip(0)
+b6 <- 2f
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.66
+b4 <- 12
+setchip(0)
+b4 <- 12
+setchip(1)
+b6 <- f
+setchip(0)
+b6 <- f
+r5.81
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.70
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.11
+setchip(0)
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.71
+setchip(0)
+a4 <- dd
+setchip(1)
+a4 <- df
+setchip(0)
+b4 <- e
+setchip(1)
+b4 <- e
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a6 <- 25
+setchip(1)
+a6 <- 27
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+r11.41
+setchip(1)
+b4 <- e
+setchip(0)
+b4 <- e
+a5 <- e5
+setchip(1)
+a5 <- e7
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.86
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.51
+setchip(0)
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 15
+setchip(1)
+b3 <- 15
+b3 <- 35
+setchip(0)
+b3 <- 35
+setchip(1)
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- 8d
+setchip(1)
+a6 <- 8f
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.90
+setchip(0)
+a3 <- cd
+setchip(1)
+a3 <- cf
+setchip(0)
+b3 <- 15
+setchip(1)
+b3 <- 15
+b3 <- 35
+setchip(0)
+b3 <- 35
+r11.34
+a3 <- 6
+setchip(1)
+a3 <- 8
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a5 <- dd
+setchip(1)
+a5 <- df
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.88
+setchip(0)
+a3 <- 68
+setchip(1)
+a3 <- 6a
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.56
+setchip(0)
+a3 <- 25
+setchip(1)
+a3 <- 27
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+setchip(1)
+b4 <- e
+setchip(0)
+b4 <- e
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.87
+setchip(0)
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.48
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- e5
+setchip(1)
+a5 <- e7
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.87
+setchip(0)
+a3 <- 6
+setchip(1)
+a3 <- 8
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a5 <- 6
+setchip(1)
+a5 <- 8
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.86
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.51
+setchip(0)
+a3 <- 25
+setchip(1)
+a3 <- 27
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+setchip(1)
+b4 <- e
+setchip(0)
+b4 <- e
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r226.15
+a7 <- a0
+r221.61
+a7 <- 7c
+r230.89
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r226.15
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r4.83
+a5 <- e5
+setchip(1)
+a5 <- e7
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.72
+setchip(0)
+a3 <- b4
+setchip(1)
+a3 <- b6
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a4 <- e5
+setchip(1)
+a4 <- e7
+setchip(0)
+b4 <- 11
+setchip(1)
+b4 <- 11
+b4 <- 31
+setchip(0)
+b4 <- 31
+a6 <- 25
+setchip(1)
+a6 <- 27
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 84
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r221.61
+a7 <- 58
+r230.89
+a7 <- 34
+r226.15
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r221.61
+a7 <- a4
+r232.11
+a7 <- 1c
+b7 <- 2b
+r227.32
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+r229.69
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r38.45
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+r5.67
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a4 <- 25
+setchip(1)
+a4 <- 27
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a6 <- b4
+setchip(1)
+a6 <- b6
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 84
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r221.61
+a7 <- a4
+r232.11
+a7 <- 1c
+b7 <- 2b
+r227.32
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+r229.69
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r38.41
+a5 <- 8
+setchip(1)
+a5 <- a
+setchip(0)
+b5 <- b
+setchip(1)
+b5 <- b
+b5 <- 2b
+setchip(0)
+b5 <- 2b
+r5.67
+a3 <- e5
+setchip(1)
+a3 <- e7
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a4 <- 45
+setchip(1)
+a4 <- 47
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r226.15
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r33.13
+a3 <- b3
+setchip(1)
+a3 <- b5
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a4 <- 25
+setchip(1)
+a4 <- 27
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a5 <- dd
+setchip(1)
+a5 <- df
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+a6 <- 8d
+setchip(1)
+a6 <- 8f
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 84
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r226.15
+a7 <- a0
+r221.61
+a7 <- 7c
+r230.89
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r226.15
+a7 <- ec
+b7 <- 2d
+r223.86
+a7 <- c8
+r230.89
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r227.32
+a7 <- d4
+r220.50
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r4.93
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.70
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.50
+setchip(0)
+a4 <- 8d
+setchip(1)
+a4 <- 8f
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a5 <- b3
+setchip(1)
+a5 <- b5
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- dd
+setchip(1)
+a6 <- df
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.93
+setchip(0)
+a4 <- 25
+setchip(1)
+a4 <- 27
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a6 <- 8d
+setchip(1)
+a6 <- 8f
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+r11.41
+setchip(1)
+b4 <- 12
+setchip(0)
+b4 <- 12
+a5 <- cd
+setchip(1)
+a5 <- cf
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.18
+b7 <- e
+setchip(0)
+b7 <- d
+r11.29
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.50
+setchip(0)
+a4 <- b3
+setchip(1)
+a4 <- b5
+setchip(0)
+b4 <- 11
+setchip(1)
+b4 <- 11
+b4 <- 31
+setchip(0)
+b4 <- 31
+a5 <- e5
+setchip(1)
+a5 <- e7
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- 68
+setchip(1)
+a6 <- 6a
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.87
+setchip(0)
+a3 <- 68
+setchip(1)
+a3 <- 6a
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a5 <- b3
+setchip(1)
+a5 <- b5
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.86
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.51
+setchip(0)
+a3 <- 8d
+setchip(1)
+a3 <- 8f
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+setchip(1)
+b4 <- 11
+setchip(0)
+b4 <- 11
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r1102.50
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r226.15
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r8.40
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+r11.48
+setchip(0)
+a3 <- dd
+setchip(1)
+a3 <- df
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+a5 <- dd
+setchip(1)
+a5 <- df
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.87
+b7 <- e
+setchip(0)
+b7 <- d
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r544.44
+setchip(0)
+a7 <- c4
+r226.15
+a7 <- a0
+r221.61
+a7 <- 7c
+r230.89
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r226.15
+a7 <- ec
+b7 <- 2d
+r223.86
+a7 <- c8
+r230.89
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r228.50
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r28.82
+a3 <- 36
+setchip(1)
+a3 <- 38
+setchip(0)
+b3 <- 17
+setchip(1)
+b3 <- 17
+b3 <- 37
+setchip(0)
+b3 <- 37
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 84
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r958.70
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r226.15
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+r229.69
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r8.74
+a4 <- e5
+setchip(1)
+a4 <- e7
+b4 <- 31
+setchip(0)
+b4 <- 31
+a6 <- dd
+setchip(1)
+a6 <- df
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+r11.41
+b3 <- 17
+setchip(1)
+b3 <- 17
+b3 <- 37
+setchip(0)
+b3 <- 37
+setchip(1)
+b4 <- 11
+setchip(0)
+b4 <- 11
+a5 <- b3
+setchip(1)
+a5 <- b5
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.88
+setchip(0)
+a3 <- 8
+setchip(1)
+a3 <- a
+setchip(0)
+b3 <- 17
+setchip(1)
+b3 <- 17
+b3 <- 37
+setchip(0)
+b3 <- 37
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.56
+setchip(0)
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a4 <- 9b
+setchip(1)
+a4 <- 9d
+b4 <- 31
+setchip(0)
+b4 <- 31
+a5 <- e5
+setchip(1)
+a5 <- e7
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.89
+setchip(0)
+a5 <- 6
+setchip(1)
+a5 <- 8
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.52
+b7 <- e
+setchip(0)
+b7 <- d
+r11.29
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.12
+setchip(0)
+a4 <- e5
+setchip(1)
+a4 <- e7
+setchip(0)
+b4 <- 11
+setchip(1)
+b4 <- 11
+b4 <- 31
+setchip(0)
+b4 <- 31
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+a6 <- b4
+setchip(1)
+a6 <- b6
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.87
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.70
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.12
+setchip(0)
+a4 <- 45
+setchip(1)
+a4 <- 47
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a5 <- b4
+setchip(1)
+a5 <- b6
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r225.00
+a7 <- a0
+r221.61
+a7 <- 7c
+r230.89
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r226.15
+a7 <- ec
+b7 <- 2d
+r223.86
+a7 <- c8
+r230.89
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r228.50
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r8.12
+a3 <- e5
+setchip(1)
+a3 <- e7
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+r11.51
+setchip(0)
+a5 <- 8
+setchip(1)
+a5 <- a
+setchip(0)
+b5 <- b
+setchip(1)
+b5 <- b
+b5 <- 2b
+setchip(0)
+b5 <- 2b
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.19
+setchip(0)
+a3 <- b3
+setchip(1)
+a3 <- b5
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+r11.34
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+setchip(1)
+b7 <- e
+setchip(0)
+b7 <- d
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r658.21
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r226.15
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r28.90
+a3 <- b3
+setchip(1)
+a3 <- b5
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a4 <- 25
+setchip(1)
+a4 <- 27
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a5 <- dd
+setchip(1)
+a5 <- df
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+a6 <- 8d
+setchip(1)
+a6 <- 8f
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 84
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r226.15
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r221.61
+a7 <- a4
+r232.11
+a7 <- 1c
+b7 <- 2b
+r227.32
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+r229.69
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r4.93
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.50
+setchip(0)
+a4 <- 8d
+setchip(1)
+a4 <- 8f
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a5 <- b3
+setchip(1)
+a5 <- b5
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- dd
+setchip(1)
+a6 <- df
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.93
+setchip(0)
+a4 <- 25
+setchip(1)
+a4 <- 27
+setchip(0)
+b4 <- 12
+setchip(1)
+b4 <- 12
+b4 <- 32
+setchip(0)
+b4 <- 32
+a6 <- 8d
+setchip(1)
+a6 <- 8f
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+r11.41
+setchip(1)
+b4 <- 12
+setchip(0)
+b4 <- 12
+a5 <- cd
+setchip(1)
+a5 <- cf
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.56
+b7 <- e
+setchip(0)
+b7 <- d
+r11.89
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.50
+setchip(0)
+a4 <- b3
+setchip(1)
+a4 <- b5
+setchip(0)
+b4 <- 11
+setchip(1)
+b4 <- 11
+b4 <- 31
+setchip(0)
+b4 <- 31
+a5 <- e5
+setchip(1)
+a5 <- e7
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- 68
+setchip(1)
+a6 <- 6a
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.89
+setchip(0)
+a3 <- 68
+setchip(1)
+a3 <- 6a
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+r11.32
+a5 <- b3
+setchip(1)
+a5 <- b5
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.51
+setchip(0)
+a3 <- 25
+setchip(1)
+a3 <- 27
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+setchip(1)
+b4 <- 11
+setchip(0)
+b4 <- 11
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r1102.50
+setchip(0)
+a7 <- c4
+r226.15
+a7 <- a0
+r221.61
+a7 <- 7c
+r230.89
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r226.15
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r8.43
+a3 <- e5
+setchip(1)
+a3 <- e7
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+r11.51
+setchip(0)
+a5 <- dd
+setchip(1)
+a5 <- df
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.57
+setchip(0)
+a3 <- b3
+setchip(1)
+a3 <- b5
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+r11.30
+setchip(1)
+b7 <- e
+setchip(0)
+b7 <- d
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 8c
+setchip(1)
+54 <- c
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r544.44
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r221.61
+a7 <- 58
+r230.89
+a7 <- 34
+r226.15
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r221.61
+a7 <- a4
+r232.11
+a7 <- 1c
+b7 <- 2b
+r228.50
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r33.13
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a4 <- dd
+setchip(1)
+a4 <- df
+setchip(0)
+b4 <- e
+setchip(1)
+b4 <- e
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+a6 <- 25
+setchip(1)
+a6 <- 27
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+91 <- 2f
+setchip(1)
+91 <- 1d
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 84
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- e8
+b7 <- 2e
+setchip(1)
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r226.15
+a7 <- a0
+r221.61
+a7 <- 7c
+r230.89
+a7 <- 58
+r221.61
+a7 <- 34
+r230.89
+a7 <- 10
+r226.15
+a7 <- ec
+b7 <- 2d
+r223.86
+a7 <- c8
+r230.89
+a7 <- a4
+r222.73
+a7 <- 1c
+b7 <- 2b
+r232.11
+a7 <- f8
+b7 <- 2a
+r227.32
+a7 <- d4
+r220.50
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r4.93
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.70
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.11
+setchip(0)
+a5 <- dd
+setchip(1)
+a5 <- df
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.88
+setchip(0)
+a5 <- 8
+setchip(1)
+a5 <- a
+setchip(0)
+b5 <- b
+setchip(1)
+b5 <- b
+b5 <- 2b
+setchip(0)
+b5 <- 2b
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.70
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.50
+setchip(0)
+b4 <- e
+setchip(1)
+b4 <- e
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 9b
+setchip(1)
+a5 <- 9d
+setchip(0)
+b5 <- d
+setchip(1)
+b5 <- d
+b5 <- 2d
+setchip(0)
+b5 <- 2d
+a6 <- 6
+setchip(1)
+a6 <- 8
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b7 <- e
+setchip(0)
+b7 <- d
+c7 <- a
+31 <- a
+71 <- fc
+91 <- 2f
+f1 <- 1
+34 <- 1
+74 <- f1
+setchip(1)
+74 <- f0
+setchip(0)
+94 <- 1f
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 44
+54 <- 84
+a7 <- e8
+b7 <- 2e
+setchip(1)
+a7 <- 28
+b7 <- 2e
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+setchip(0)
+a7 <- c4
+r221.61
+a7 <- a0
+r230.89
+a7 <- 7c
+r221.61
+a7 <- 58
+r230.89
+a7 <- 34
+r226.15
+a7 <- 10
+r221.61
+a7 <- ec
+b7 <- 2d
+r233.33
+a7 <- c8
+r221.61
+a7 <- a4
+r232.11
+a7 <- 1c
+b7 <- 2b
+r227.32
+a7 <- f8
+b7 <- 2a
+r222.73
+a7 <- d4
+r229.69
+a7 <- b0
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- e
+setchip(0)
+b7 <- a
+r38.58
+setchip(1)
+b4 <- e
+setchip(0)
+b4 <- e
+setchip(1)
+b6 <- e
+setchip(0)
+b6 <- e
+r11.35
+b3 <- 15
+setchip(1)
+b3 <- 15
+b3 <- 35
+setchip(0)
+b3 <- 35
+r11.35
+a3 <- 6
+setchip(1)
+a3 <- 8
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+setchip(1)
+b5 <- d
+setchip(0)
+b5 <- d
+r11.93
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+r11.36
+a3 <- 8d
+setchip(1)
+a3 <- 8f
+setchip(0)
+b3 <- 16
+setchip(1)
+b3 <- 16
+b3 <- 36
+setchip(0)
+b3 <- 36
+r11.34
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+r5.81
+a3 <- cd
+setchip(1)
+a3 <- cf
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+setchip(1)
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 45
+setchip(1)
+a5 <- 47
+setchip(0)
+b5 <- e
+setchip(1)
+b5 <- e
+b5 <- 2e
+setchip(0)
+b5 <- 2e
+setchip(1)
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+c7 <- 8
+31 <- 12
+71 <- f6
+91 <- e3
+setchip(1)
+91 <- 1d
+setchip(0)
+34 <- 11
+74 <- f4
+setchip(1)
+74 <- fe
+setchip(0)
+94 <- 53
+setchip(1)
+94 <- 17
+setchip(0)
+51 <- 18
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 44
+setchip(1)
+54 <- 4
+setchip(0)
+a7 <- 8
+setchip(1)
+a7 <- 8
+setchip(0)
+b7 <- 2f
+setchip(1)
+b7 <- 2f
+r64.66
+setchip(0)
+a7 <- 0
+r56.47
+a7 <- f8
+b7 <- 2e
+r56.39
+a7 <- f0
+r56.90
+a7 <- e8
+r57.57
+a3 <- e5
+setchip(1)
+a3 <- e7
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+setchip(1)
+b7 <- f
+setchip(0)
+b7 <- e
+a7 <- f8
+setchip(1)
+a7 <- f8
+setchip(0)
+b7 <- 2d
+setchip(1)
+b7 <- 2d
+r60.49
+setchip(0)
+a7 <- ee
+r56.47
+a7 <- e4
+r56.25
+a7 <- da
+r56.90
+a7 <- d0
+r56.47
+a7 <- c6
+r56.25
+a7 <- bc
+r56.90
+a7 <- b2
+r56.18
+a7 <- a8
+r56.90
+a7 <- 9e
+r77.23
+a3 <- 6
+setchip(1)
+a3 <- 8
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+r222.73
+a7 <- 30
+b7 <- 2b
+r56.39
+a7 <- 26
+r56.83
+a7 <- 1c
+r56.54
+a7 <- 12
+r56.18
+a7 <- 8
+r77.10
+a3 <- 25
+setchip(1)
+a3 <- 27
+setchip(0)
+b3 <- 1a
+setchip(1)
+b3 <- 1a
+b3 <- 3a
+setchip(0)
+b3 <- 3a
+a4 <- 8d
+setchip(1)
+a4 <- 8f
+setchip(0)
+b4 <- e
+setchip(1)
+b4 <- e
+b4 <- 2e
+setchip(0)
+b4 <- 2e
+a5 <- 25
+setchip(1)
+a5 <- 27
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+a6 <- 68
+setchip(1)
+a6 <- 6a
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b7 <- d
+setchip(0)
+b7 <- b
+r848.08
+b8 <- 36
+setchip(1)
+b8 <- 35
+r177.82
+setchip(0)
+a7 <- fe
+b7 <- 2a
+setchip(1)
+b7 <- 2d
+r57.50
+setchip(0)
+91 <- ff
+setchip(1)
+91 <- ff
+setchip(0)
+94 <- ff
+setchip(1)
+94 <- ff
+setchip(0)
+51 <- ff
+setchip(1)
+51 <- ff
+setchip(0)
+54 <- ff
+setchip(1)
+54 <- ff
+b7 <- d
+setchip(0)
+b7 <- a
+r4.27
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.49
+setchip(0)
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.86
+setchip(0)
+a5 <- 68
+setchip(1)
+a5 <- 6a
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.85
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r11.50
+setchip(0)
+a4 <- 36
+setchip(1)
+a4 <- 38
+setchip(0)
+b4 <- f
+setchip(1)
+b4 <- f
+b4 <- 2f
+setchip(0)
+b4 <- 2f
+a5 <- 8d
+setchip(1)
+a5 <- 8f
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+a6 <- 45
+setchip(1)
+a6 <- 47
+setchip(0)
+b6 <- e
+setchip(1)
+b6 <- e
+b6 <- 2e
+setchip(0)
+b6 <- 2e
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r3.88
+setchip(0)
+a3 <- e5
+setchip(1)
+a3 <- e7
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a5 <- dd
+setchip(1)
+a5 <- df
+setchip(0)
+b5 <- a
+setchip(1)
+b5 <- a
+b5 <- 2a
+setchip(0)
+b5 <- 2a
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.71
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r12.13
+setchip(0)
+a3 <- 9b
+setchip(1)
+a3 <- 9d
+setchip(0)
+b3 <- 19
+setchip(1)
+b3 <- 19
+b3 <- 39
+setchip(0)
+b3 <- 39
+a5 <- 36
+setchip(1)
+a5 <- 38
+setchip(0)
+b5 <- b
+setchip(1)
+b5 <- b
+b5 <- 2b
+setchip(0)
+b5 <- 2b
+setchip(1)
+b8 <- 15
+setchip(0)
+b8 <- 16
+b8 <- 36
+setchip(1)
+b8 <- 35
+r5.71
+setchip(0)
+c7 <- c
+31 <- 4
+71 <- f7
+91 <- 0
+setchip(1)
+91 <- 1d
+setchip(0)
+f1 <- 2
+34 <- 5
+74 <- f9
+setchip(1)
+74 <- ff
+setchip(0)
+94 <- 27
+setchip(1)
+94 <- 7
+setchip(0)
+51 <- 4
+setchip(1)
+51 <- 4
+setchip(0)
+54 <- 4
+setchip(1)
+54 <- 4
