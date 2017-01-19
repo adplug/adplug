@@ -106,6 +106,7 @@ but are included for testing purposes anyway.
 @item @file{BAM}: Bob's Adlib Music Format by Bob
 @item @file{CFF}: BoomTracker 4.0 by CUD
 @item @file{CMF}: Creative Music File Format by Creative Technology
+@item @file{CMF}: SoundFX Macs Opera tracker by Linel
 @item @file{D00}: EdLib by Vibrants
 @itemize @bullet
 @item Bugs: Hard restart SR sometimes sounds wrong
@@ -174,6 +175,10 @@ file's filename
 @item Needs file @file{@var{songname}.ins} in the same directory as
 loaded file, where @var{songname} is the song's filename without
 @file{.sng} extension.
+@end itemize
+@item @file{VGM}: Video Game Music 1.51 by Valley Bell
+@itemize @bullet
+@item Supports OPL2, Dual OPL2 and OPL3 playback.
 @end itemize
 @item @file{XAD}: eXotic ADlib Format by Riven the Mage
 @item @file{XMS}: XMS-Tracker by MaDoKaN/E.S.G
