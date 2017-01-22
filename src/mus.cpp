@@ -418,7 +418,10 @@ uint32_t CmusPlayer::GetTicks()
 	{
 		ticks += OVERFLOW_TICKS;
 		pos++;
-		if (ticks > OVERFLOW_TICKS * 12) // for very long IMS delays
+		// Wraithverge: this check reduces delay and makes loops smoother
+		// in DarkSpyre (*.MUS) songs.  Their loop-point is much closer
+		// to the mark with this condition.
+		if (isIMS && ticks > OVERFLOW_TICKS * 12) // for very long IMS delays
 			ticks = OVERFLOW_TICKS * 12;
 	}
 	if (pos < mH.dataSize)
