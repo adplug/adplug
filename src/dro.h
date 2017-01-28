@@ -21,6 +21,12 @@
  *  by Laurence Dougal Myers <jestarjokin@jestarjokin.net>
  */
 
+/*
+ * Copyright (c) 2012 - 2017 Wraithverge <liam82067@yahoo.com>
+ * - Realigned and re-ordered sections.
+ * - Removed unused garbage.
+ * - Finalized support for displaying arbitrary Tag data.
+ */
 
 #include <stdint.h> // for uintxx_t
 #include "player.h"
@@ -30,14 +36,16 @@ class CdroPlayer: public CPlayer
 	protected:
 		static const uint8_t iCmdDelayS = 0x00; // Wraithverge: fixed this with "static".
 		static const uint8_t iCmdDelayL = 0x01; // Wraithverge: fixed this with "static".
-		int iConvTableLen;
-		uint8_t *piConvTable;
 
 		uint8_t *data;
 		int iLength;
 		int iPos;
 		int iDelay;
 
+	private:
+		char title[40];
+		char author[40];
+		char desc[1023];
 
 	public:
 		static CPlayer *factory(Copl *newopl);
@@ -54,4 +62,8 @@ class CdroPlayer: public CPlayer
 		{
 			return std::string("DOSBox Raw OPL v0.1");
 		}
+
+		std::string gettitle() { return std::string(title, 0, 40); };
+		std::string getauthor() { return std::string(author, 0, 40); };
+		std::string getdesc() { return std::string(desc, 0, 1023); };
 };

@@ -19,6 +19,12 @@
  * adplug.cpp - CAdPlug utility class, by Simon Peter <dn.tlp@gmx.net>
  */
 
+/*
+ * Copyright (c) 2017 Wraithverge <liam82067@yahoo.com>
+ * - Added extension ".rac" for CrawPlayer.
+ * - Corrected 'type' string for CrawPlayer.
+ */
+
 #include <cstring>
 #include <string>
 #include <binfile.h>
@@ -103,7 +109,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CfmcLoader::factory, "Faust Music Creator", ".sng\0"),
   CPlayerDesc(CmtkLoader::factory, "MPU-401 Trakker", ".mtk\0"),
   CPlayerDesc(CradLoader::factory, "Reality Adlib Tracker", ".rad\0"),
-  CPlayerDesc(CrawPlayer::factory, "RdosPlay RAW", ".raw\0"),
+  CPlayerDesc(CrawPlayer::factory, "Raw AdLib Capture", ".rac\0.raw\0"),
   CPlayerDesc(Csa2Loader::factory, "Surprise! Adlib Tracker", ".sat\0.sa2\0"),
   CPlayerDesc(CxadbmfPlayer::factory, "BMF Adlib Tracker", ".xad\0"),
   CPlayerDesc(CxadflashPlayer::factory, "Flash", ".xad\0"),

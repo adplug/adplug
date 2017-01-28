@@ -19,6 +19,11 @@
  * dro2.cpp - DOSBox Raw OPL v2.0 player by Adam Nielsen <malvineous@shikadi.net>
  */
 
+/*
+ * Copyright (c) 2017 Wraithverge <liam82067@yahoo.com>
+ * - Finalized support for displaying arbitrary Tag data.
+ */
+
 #include <cstring>
 #include <stdio.h>
 
@@ -80,8 +85,70 @@ bool Cdro2Player::load(const std::string &filename, const CFileProvider &fp)
 	f->readString((char *)this->piConvTable, this->iConvTableLen);
 
 	this->data = new uint8_t[this->iLength];
-	f->readString((char *)this->data, this->iLength);
+	// Wraithverge: had to disable this.
+	// f->readString((char *)this->data, this->iLength);
 
+	// Added this from DRO v1 handler.
+	// Read the OPL data.
+	for (int i = 0; i < this->iLength; i++) {
+		this->data[i] = f->readInt(1);
+	}
+
+	int tagsize = fp.filesize(f) - f->pos();
+	if (tagsize >= 3)
+	{
+		// The arbitrary Tag Data section begins here.
+		if ((uint8_t)f->readInt(1) != 0xFF ||
+			(uint8_t)f->readInt(1) != 0xFF ||
+			(uint8_t)f->readInt(1) != 0x1A)
+		{
+			// Tag data does not present or truncated.
+			goto end_section;
+		}
+
+		// "title" is maximum 40 characters long.
+		f->readString(title, 40, 0);
+
+		// Safety check, in case "title" is empty, set a
+		// null-terminator as placeholder.
+		if (strlen(title) == 0) memset(title, 0, 1);
+
+		// Skip "author" if Tag marker byte is missing, but first
+		// set a null-terminator as placeholder.
+		if (f->readInt(1) != 0x1B) {
+			memset(author, 0, 1);
+			goto desc_section;
+		}
+
+		// "author" is maximum 40 characters long.
+		f->readString(author, 40, 0);
+
+		// Safety check, in case "author" is empty, set a
+		// null-terminator as placeholder.
+		if (strlen(author) == 0) memset(author, 0, 1);
+
+		// Skip "desc" if Tag marker byte is missing, but first
+		// set a null-terminator as placeholder.
+		if (f->readInt(1) != 0x1C) {
+			memset(desc, 0, 1);
+			goto end_section;
+		}
+		else goto desc_section;
+
+	desc_section:
+		// "desc" is now maximum 1023 characters long (it was 140).
+		f->readString(desc, 1023, 0);
+
+		// Safety check, in case "desc" is empty, set a
+		// null-terminator as placeholder.
+		if (strlen(desc) == 0) {
+			memset(desc, 0, 1);
+			goto end_section;
+		}
+		else goto end_section;
+	}
+
+end_section:
 	fp.close(f);
 	rewind(0);
 
@@ -125,14 +192,14 @@ bool Cdro2Player::update()
 
 	// This won't result in endless-play using Adplay, but IMHO that code belongs
 	// in Adplay itself, not here.
-  return this->iPos < this->iLength;
+	return this->iPos < this->iLength;
 }
 
 void Cdro2Player::rewind(int subsong)
 {
 	this->iDelay = 0;
 	this->iPos = 0;
-  opl->init(); 
+	opl->init(); 
 }
 
 float Cdro2Player::getrefresh()

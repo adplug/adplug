@@ -19,6 +19,13 @@
  * dro2.h - DOSBox Raw OPL v2.0 player by Adam Nielsen <malvineous@shikadi.net>
  */
 
+/*
+ * Copyright (c) 2017 Wraithverge <liam82067@yahoo.com>
+ * - Realigned and re-ordered sections.
+ * - Removed unused garbage.
+ * - Finalized support for displaying arbitrary Tag data.
+ */
+
 #include <stdint.h> // for uintxx_t
 #include "player.h"
 
@@ -34,6 +41,10 @@ class Cdro2Player: public CPlayer
 		int iPos;
 		int iDelay;
 
+	private:
+		char title[40];
+		char author[40];
+		char desc[1023];
 
 	public:
 		static CPlayer *factory(Copl *newopl);
@@ -51,10 +62,7 @@ class Cdro2Player: public CPlayer
 			return std::string("DOSBox Raw OPL v2.0");
 		}
 
-	protected:
-		//unsigned char *data;
-		//unsigned long pos,length;
-		//unsigned long msdone,mstotal;
-		//unsigned short delay;
-		//unsigned char index, opl3_mode;
+		std::string gettitle() { return std::string(title, 0, 40); };
+		std::string getauthor() { return std::string(author, 0, 40); };
+		std::string getdesc() { return std::string(desc, 0, 1023); };
 };

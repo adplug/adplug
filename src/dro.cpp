@@ -26,6 +26,12 @@
  *        10-jun-12: the DRO 1 format is finalized, but capturing is buggy.
  */
 
+/*
+ * Copyright (c) 2012 - 2017 Wraithverge <liam82067@yahoo.com>
+ * - Added Member pointers.
+ * - Fixed incorrect operator.
+ * - Finalized support for displaying arbitrary Tag data.
+ */
 
 #include <cstring>
 #include <stdio.h>
@@ -76,20 +82,76 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 	// OPL type (0 == OPL2, 1 == OPL3, 2 == Dual OPL2)
 	f->ignore(1);	// Type of opl data this can contain - ignored
 	for (i = 0; i < 3; i++) {
-  		data[i]=f->readInt(1);
+  		this->data[i]=f->readInt(1);
 	}
 
-	if ((data[0] == 0) || (data[1] == 0) || (data[2] == 0)) {
+	if (this->data[0] == 0 || this->data[1] == 0 || this->data[2] == 0) {
 		// If we're here then this is a later (more popular) file with
 		// the full four bytes for the hardware-type.
   		i = 0; // so ignore the three bytes we just read and start again
 	}
 
 	// Read the OPL data.
-	for (; i < this->iLength; i++) {
-		data[i]=f->readInt(1);
+	for (; (int)i < this->iLength; i++) {
+		this->data[i]=f->readInt(1);
 	}
 
+	int tagsize = fp.filesize(f) - f->pos();
+
+	if (tagsize >= 3)
+	{
+		// The arbitrary Tag Data section begins here.
+		if ((uint8_t)f->readInt(1) != 0xFF ||
+			(uint8_t)f->readInt(1) != 0xFF ||
+			(uint8_t)f->readInt(1) != 0x1A)
+		{
+			// Tag data does not present or truncated.
+			goto end_section;
+		}
+
+		// "title" is maximum 40 characters long.
+		f->readString(title, 40, 0);
+
+		// Safety check, in case "title" is empty, set a
+		// null-terminator as placeholder.
+		if (strlen(title) == 0) memset(title, 0, 1);
+
+		// Skip "author" if Tag marker byte is missing, but first
+		// set a null-terminator as placeholder.
+		if (f->readInt(1) != 0x1B) {
+			memset(author, 0, 1);
+			goto desc_section;
+		}
+
+		// "author" is maximum 40 characters long.
+		f->readString(author, 40, 0);
+
+		// Safety check, in case "author" is empty, set a
+		// null-terminator as placeholder.
+		if (strlen(author) == 0) memset(author, 0, 1);
+
+		// Skip "desc" if Tag marker byte is missing, but first
+		// set a null-terminator as placeholder.
+		if (f->readInt(1) != 0x1C) {
+			memset(desc, 0, 1);
+			goto end_section;
+		}
+		else goto desc_section;
+
+desc_section:
+		// "desc" is now maximum 1023 characters long (it was 140).
+		f->readString(desc, 1023, 0);
+
+		// Safety check, in case "desc" is empty, set a
+		// null-terminator as placeholder.
+		if (strlen(desc) == 0) {
+			memset(desc, 0, 1);
+			goto end_section;
+		}
+		else goto end_section;
+	}
+
+end_section:
 	fp.close(f);
 	rewind(0);
 
@@ -111,7 +173,7 @@ bool CdroPlayer::update()
 
 		// Long delay
 		} else if (iIndex == this->iCmdDelayL) {
-			iValue = this->data[this->iPos] | (this->data[this->iPos + 1] << 8);
+			iValue = this->data[this->iPos] + (this->data[this->iPos + 1] << 8);
 			this->iPos += 2;
 			this->iDelay = (iValue + 1);
 			return true;
