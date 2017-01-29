@@ -19,6 +19,12 @@
   xad.h - XAD shell player by Riven the Mage <riven@ok.ru>
 */
 
+/*
+ * Copyright (c) 2015 - 2017 Wraithverge <liam82067@yahoo.com>
+ * - Realigned to Tabs.
+ * - Added support for Speed indicator in 'File Info' dialogues.
+ */
+
 #ifndef H_ADPLUG_XAD
 #define H_ADPLUG_XAD
 
@@ -27,21 +33,24 @@
 class CxadPlayer: public CPlayer
 {
 public:
-  static CPlayer *factory(Copl *newopl);
+	static CPlayer *factory(Copl *newopl);
 
-        CxadPlayer(Copl * newopl);
-        ~CxadPlayer();
+	CxadPlayer(Copl * newopl);
+	~CxadPlayer();
 
-        bool	load(const std::string &filename, const CFileProvider &fp);
-        bool	update();
-        void	rewind(int subsong);
-        float	getrefresh();
+	bool	load(const std::string &filename, const CFileProvider &fp);
+	bool	update();
+	void	rewind(int subsong);
+	float	getrefresh();
 
-        std::string     gettype();
-        std::string     gettitle();
-        std::string     getauthor();
-        std::string     getinstrument(unsigned int i);
-        unsigned int    getinstruments();
+	std::string     gettype();
+	std::string     gettitle();
+	std::string     getauthor();
+	std::string     getinstrument(unsigned int i);
+	unsigned int    getinstruments();
+
+	// Wraithverge: added this.
+	unsigned int    getspeed();
 
 protected:
 	virtual void xadplayer_rewind(int subsong) = 0;
@@ -50,48 +59,53 @@ protected:
 	virtual float xadplayer_getrefresh() = 0;
 	virtual std::string xadplayer_gettype() = 0;
 	virtual std::string xadplayer_gettitle()
-	  {
-	    return std::string(xad.title);
-	  }
+	{
+		return std::string(xad.title);
+	}
 	virtual std::string xadplayer_getauthor()
-	  {
-	    return std::string(xad.author);
-	  }
+	{
+		return std::string(xad.author);
+	}
 	virtual std::string xadplayer_getinstrument(unsigned int i)
-	  {
-	    return std::string("");
-	  }
+	{
+		return std::string("");
+	}
 	virtual unsigned int xadplayer_getinstruments()
-	  {
-	    return 0;
-	  }
+	{
+		return 0;
+	}
+
+	// Wraithverge: added this.
+	virtual unsigned int xadplayer_getspeed()
+	{
+		return 0;
+	}
 
 	enum { HYP=1, PSI, FLASH, BMF, RAT, HYBRID };
 
-        struct xad_header
-        {
-	    unsigned long   id;
-            char            title[36];
-            char            author[36];
-            unsigned short  fmt;
-            unsigned char   speed;
-            unsigned char   reserved_a;
-        } xad;
+	struct xad_header
+	{
+		unsigned long   id;
+		char            title[36];
+		char            author[36];
+		unsigned short  fmt;
+		unsigned char   speed;
+		unsigned char   reserved_a;
+	} xad;
 
-        unsigned char * tune;
-        unsigned long   tune_size;
+	unsigned char * tune;
+	unsigned long   tune_size;
 
-        struct
-        {
-            int             playing;
-            int             looping;
-            unsigned char   speed;
-            unsigned char   speed_counter;
-        } plr;
+	struct
+	{
+		int             playing;
+		int             looping;
+		unsigned char   speed;
+		unsigned char   speed_counter;
+	} plr;
 
-        unsigned char   adlib[256];
+	unsigned char   adlib[256];
 
-        void opl_write(int reg, int val);
+	void opl_write(int reg, int val);
 };
-
 #endif
