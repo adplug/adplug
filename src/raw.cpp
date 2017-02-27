@@ -54,6 +54,9 @@ bool CrawPlayer::load(const std::string &filename, const CFileProvider &fp)
   this->length = (fp.filesize(f) - 10) / 2; // Wraithverge: total data-size.
   this->data = new Tdata [this->length];
   bool tagdata = false;
+  title[0] = 0;
+  author[0] = 0;
+  desc[0] = 0;
 
   for (i = 0; i < this->length; i++) {
     // Do not store tag data in track data.
@@ -62,9 +65,13 @@ bool CrawPlayer::load(const std::string &filename, const CFileProvider &fp)
 
     // Continue trying to stop at the RAW EOF data marker.
     if (!tagdata && this->data[i].param == 0xFF && this->data[i].command == 0xFF) {
-      if ((unsigned char)f->readInt(1) == 0x1A) {
+      unsigned char tagCode = f->readInt(1);
+      if (tagCode == 0x1A) {
         // Tag marker found.
         tagdata = true;
+      } else if (tagCode == 0) {
+        // Old comment (music archive 2004)
+        f->readString(desc, 1023, 0);
       } else {
         // This is not tag marker, revert.
         f->seek(-1, binio::Add);
@@ -87,6 +94,16 @@ bool CrawPlayer::load(const std::string &filename, const CFileProvider &fp)
     // set a null-terminator as placeholder.
     if (f->readInt(1) != 0x1B) {
       memset(author, 0, 1);
+      f->seek(-1, binio::Add);
+      // Check for older version tag (e.g. stunts.raw)
+      if (f->readInt(1) >= 0x20) {
+        f->seek(-1, binio::Add);
+        f->readString(author, 60, 0);
+        f->readString(desc, 1023, 0);
+        goto end_section;
+      }
+      else
+        f->seek(-1, binio::Add);
       goto desc_section;
     }
 
@@ -97,15 +114,14 @@ bool CrawPlayer::load(const std::string &filename, const CFileProvider &fp)
     // null-terminator as placeholder.
     if (strlen(author) == 0) memset(author, 0, 1);
 
+desc_section:
     // Skip "desc" if Tag marker byte is missing, but first
     // set a null-terminator as placeholder.
     if (f->readInt(1) != 0x1C) {
       memset(desc, 0, 1);
       goto end_section;
     }
-    else goto desc_section;
 
-desc_section:
     // "desc" is now maximum 1023 characters long (it was 140).
     f->readString(desc, 1023, 0);
 
@@ -171,7 +187,7 @@ bool CrawPlayer::update()
 
 void CrawPlayer::rewind(int subsong)
 {
-  pos = del = 0; speed = clock = 0; songend = false;
+  pos = del = 0; speed = clock; songend = false;
   opl->init(); opl->write(1, 32);	// go to 9 channel mode
 }
 

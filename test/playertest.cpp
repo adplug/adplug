@@ -51,6 +51,7 @@ static const char *filelist[] = {
 //  "fdance03.dmo",	// TwinTrack
   "ice_thnk.sci",	// Sierra
   "inc.raw",		// RAW
+  "crusader.raw",	// RAW (non-standard clock rate)
   "loudness.lds",	// Loudness
   "MARIO.A2M",		// AdLib Tracker 2
   "mi2.laa",		// LucasArts

@@ -96,6 +96,9 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		this->data[i]=f->readInt(1);
 	}
 
+	title[0] = 0;
+	author[0] = 0;
+	desc[0] = 0;
 	int tagsize = fp.filesize(f) - f->pos();
 
 	if (tagsize >= 3)
@@ -120,6 +123,7 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		// set a null-terminator as placeholder.
 		if (f->readInt(1) != 0x1B) {
 			memset(author, 0, 1);
+			f->seek(-1, binio::Add);
 			goto desc_section;
 		}
 
@@ -130,15 +134,14 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		// null-terminator as placeholder.
 		if (strlen(author) == 0) memset(author, 0, 1);
 
+desc_section:
 		// Skip "desc" if Tag marker byte is missing, but first
 		// set a null-terminator as placeholder.
 		if (f->readInt(1) != 0x1C) {
 			memset(desc, 0, 1);
 			goto end_section;
 		}
-		else goto desc_section;
 
-desc_section:
 		// "desc" is now maximum 1023 characters long (it was 140).
 		f->readString(desc, 1023, 0);
 

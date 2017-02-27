@@ -50,7 +50,7 @@ public:
 	std::string gettype() { return std::string("Raw AdLib Capture"); };
 
 	std::string gettitle() { return std::string(title, 0, 40); };
-	std::string getauthor() { return std::string(author, 0, 40); };
+	std::string getauthor() { return std::string(author, 0, 60); };
 	std::string getdesc() { return std::string(desc, 0, 1023); };
 
 protected:
@@ -65,6 +65,6 @@ protected:
 
 private:
 	char title[40];
-	char author[40];
+	char author[60];
 	char desc[1023];
 };
