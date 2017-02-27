@@ -93,6 +93,7 @@ public:
 private:
 	void SetTempo(uint32_t tempo);
 	uint32_t GetVarVal();
+	void executeCommand();
 	CadlibDriver *drv;
 
 protected:
@@ -102,6 +103,7 @@ protected:
 	uint16_t	division;				/* division in PPQN */
 	uint8_t *	data;					/* MIDI data */
 
+	uint32_t	counter;					/* tick counter */
 	uint32_t	ticks;					/* ticks to wait for next event */
 	uint8_t		status;                 /* running status byte */
 	uint8_t		volume[MAX_VOICES];		/* actual volume of all voices */

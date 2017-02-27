@@ -396,7 +396,8 @@ void CmusPlayer::rewind(int subsong)
 
 	for (int i = 0; i < MAX_VOICES; i++)
 		volume[i] = 0;
-	ticks = (uint32_t)-1;
+	counter = 0;
+	ticks = 0;
 
 	drv->SetMode(mH.soundMode);
 	drv->SetPitchRange(mH.pitchBRange);
@@ -418,160 +419,168 @@ uint32_t CmusPlayer::GetTicks()
 	{
 		ticks += OVERFLOW_TICKS;
 		pos++;
-		// Wraithverge: this check reduces delay and makes loops smoother
-		// in DarkSpyre (*.MUS) songs.  Their loop-point is much closer
-		// to the mark with this condition.
-		if (isIMS && ticks > OVERFLOW_TICKS * 12) // for very long IMS delays
-			ticks = OVERFLOW_TICKS * 12;
 	}
 	if (pos < mH.dataSize)
 		ticks += data[pos++];
+	// Wraithverge: this check reduces delay and makes loops smoother
+	// in DarkSpyre (*.MUS) songs.  Their loop-point is much closer
+	// to the mark with this condition.
+	if (ticks / timer > MAX_SEC_DELAY) // for very long delays
+		ticks = timer * MAX_SEC_DELAY;
 	return ticks;
 }
 
-bool CmusPlayer::update()
+void CmusPlayer::executeCommand()
 {
 	uint8_t new_status = 0, voice, haut, vol, timbre;
 	uint16_t pitch;
 
-	if ((int32_t)ticks == -1) // first delay ticks
-		ticks = GetTicks();
-	if (ticks)
+	// execute MIDI command
+	if (data[pos] < NOTE_OFF_BYTE)
 	{
-		ticks--;
-		return !songend;
+		// running status
+		new_status = status;
 	}
-	while (!ticks && pos < mH.dataSize)
+	else
+		new_status = data[pos++];
+	if (new_status == STOP_BYTE)
 	{
-		// execute MIDI command
-		if (data[pos] < NOTE_OFF_BYTE)
+		pos = mH.dataSize;
+	}
+	else if (new_status == SYSTEM_XOR_BYTE)
+	{
+		/*
+		non-standard... this is a tempo multiplier:
+		data format: <F0> <7F> <00> <integer> <frac> <F7>
+		tempo = basicTempo * integerPart + basicTempo * fractionPart/128
+		*/
+		if (data[pos++] != ADLIB_CTRL_BYTE ||
+			data[pos++] != TEMPO_CTRL_BYTE)
 		{
-			// running status
-			new_status = status;
+			/* unknown format ... skip all the XOR message */
+			pos -= 2;
+			while (data[pos++] != EOX_BYTE);
 		}
 		else
-			new_status = data[pos++];
-		if (new_status == STOP_BYTE)
 		{
-			pos = mH.dataSize;
+			uint8_t integer = data[pos++];
+			uint8_t frac = data[pos++];
+			uint16_t tempo = mH.basicTempo;
+			tempo = tempo * integer + ((tempo * frac) >> 7);
+			SetTempo(tempo, mH.tickBeat);
+			pos++;       /* skip EOX_BYTE */
 		}
-		else if (new_status == SYSTEM_XOR_BYTE)
+	}
+	else
+	{
+		status = new_status;
+		voice = status & 0xF;
+		switch (status & 0xF0)
 		{
-			/*
-			non-standard... this is a tempo multiplier:
-			data format: <F0> <7F> <00> <integer> <frac> <F7>
-			tempo = basicTempo * integerPart + basicTempo * fractionPart/128
-			*/
-			if (data[pos++] != ADLIB_CTRL_BYTE ||
-				data[pos++] != TEMPO_CTRL_BYTE)
-			{
-				/* unknown format ... skip all the XOR message */
-				pos -= 2;
-				while (data[pos++] != EOX_BYTE);
-			}
+		case NOTE_ON_BYTE:
+			haut = data[pos++];
+			vol = data[pos++];
+			if (!vol)
+				drv->NoteOff(voice);
 			else
 			{
-				uint8_t integer = data[pos++];
-				uint8_t frac = data[pos++];
-				uint16_t tempo = mH.basicTempo;
-				tempo = tempo * integer + ((tempo * frac) >> 7);
-				SetTempo(tempo, mH.tickBeat);
-				pos++;       /* skip EOX_BYTE */
-			}
-		}
-		else
-		{
-			status = new_status;
-			voice = status & 0xF;
-			switch (status & 0xF0)
-			{
-			case NOTE_ON_BYTE:
-				haut = data[pos++];
-				vol = data[pos++];
-				if (!vol)
-					drv->NoteOff(voice);
-				else
-				{
-					if (vol != volume[voice])
-					{
-						drv->SetVoiceVolume(voice, vol);
-						volume[voice] = vol;
-					}
-					drv->NoteOn(voice, haut);
-				}
-				break;
-			case NOTE_OFF_BYTE:
-				haut = data[pos++];
-				vol = data[pos++];
-				drv->NoteOff(voice);
-				if (isIMS && vol)
-				{
-					if (vol != volume[voice])
-					{
-						drv->SetVoiceVolume(voice, vol);
-						volume[voice] = vol;
-					}
-					drv->NoteOn(voice, haut);
-				}
-				break;
-			case AFTER_TOUCH_BYTE:
-				vol = data[pos++];
 				if (vol != volume[voice])
 				{
 					drv->SetVoiceVolume(voice, vol);
 					volume[voice] = vol;
 				}
-				break;
-			case PROG_CHANGE_BYTE:
-				timbre = data[pos++];
-				if (insts &&
-					timbre < tH.nrTimbre &&
-					insts[timbre].loaded)
+				drv->NoteOn(voice, haut);
+			}
+			break;
+		case NOTE_OFF_BYTE:
+			haut = data[pos++];
+			vol = data[pos++];
+			drv->NoteOff(voice);
+			if (isIMS && vol)
+			{
+				if (vol != volume[voice])
 				{
-					drv->SetVoiceTimbre(voice, &insts[timbre].data[0]);
+					drv->SetVoiceVolume(voice, vol);
+					volume[voice] = vol;
 				}
-				#ifdef DEBUG
-				else
-					AdPlug_LogWrite("Timbre not found: %d\n", timbre);
-				#endif
+				drv->NoteOn(voice, haut);
+			}
+			break;
+		case AFTER_TOUCH_BYTE:
+			vol = data[pos++];
+			if (vol != volume[voice])
+			{
+				drv->SetVoiceVolume(voice, vol);
+				volume[voice] = vol;
+			}
+			break;
+		case PROG_CHANGE_BYTE:
+			timbre = data[pos++];
+			if (insts &&
+				timbre < tH.nrTimbre &&
+				insts[timbre].loaded)
+			{
+				drv->SetVoiceTimbre(voice, &insts[timbre].data[0]);
+			}
+			#ifdef DEBUG
+			else
+				AdPlug_LogWrite("Timbre not found: %d\n", timbre);
+			#endif
+			break;
+		case PITCH_BEND_BYTE:
+			pitch = data[pos++];
+			pitch |= data[pos++] << 7;
+			drv->SetVoicePitch(voice, pitch);
+			break;
+		case CONTROL_CHANGE_BYTE:
+			/* unused */
+			pos += 2;
+			break;
+		case CHANNEL_PRESSURE_BYTE:
+			/* unused */
+			pos++;
+			break;
+		default:
+			/*
+			A bad status byte ( or unimplemented MIDI command) has been encontered.
+			Skip bytes until next timing byte followed by status byte.
+			*/
+			#ifdef DEBUG
+			AdPlug_LogWrite("Bad MIDI status byte: %d\n", status);
+			#endif
+			while (data[pos++] < NOTE_OFF_BYTE && pos < mH.dataSize);
+			if (pos >= mH.dataSize)
 				break;
-			case PITCH_BEND_BYTE:
-				pitch = data[pos++];
-				pitch |= data[pos++] << 7;
-				drv->SetVoicePitch(voice, pitch);
-				break;
-			case CONTROL_CHANGE_BYTE:
-				/* unused */
-				pos += 2;
-				break;
-			case CHANNEL_PRESSURE_BYTE:
-				/* unused */
-				pos++;
-				break;
-			default:
-				/*
-				A bad status byte ( or unimplemented MIDI command) has been encontered.
-				Skip bytes until next timing byte followed by status byte.
-				*/
-				#ifdef DEBUG
-				AdPlug_LogWrite("Bad MIDI status byte: %d\n", status);
-				#endif
-				while (data[pos++] < NOTE_OFF_BYTE && pos < mH.dataSize);
-				if (pos >= mH.dataSize)
-					break;
-				if (data[pos] != OVERFLOW_BYTE)
-					pos--;
+			if (data[pos] != OVERFLOW_BYTE)
+				pos--;
+			break;
+		}
+	}
+}
+
+bool CmusPlayer::update()
+{
+	if (!counter)
+	{
+		ticks = GetTicks();
+	}
+	if (++counter >= ticks)
+	{
+		counter = 0;
+		while (pos < mH.dataSize)
+		{
+			executeCommand();
+			if (pos >= mH.dataSize) {
+				pos = 0;
+				songend = true;
 				break;
 			}
+			else if (!data[pos]) // if next delay is zero
+			{
+				pos++;
+			}
+			else break;
 		}
-		if (pos >= mH.dataSize) {
-			pos = 0;
-			songend = true;
-			ticks = GetTicks();
-			if (!ticks) ticks++; // 1 tick delay for better song end
-		}
-		else
-			ticks = GetTicks();
 	}
 	return !songend;
 }

@@ -57,7 +57,7 @@
 #define TIMBRE_DEF_LEN		ADLIB_INST_LEN
 #define TIMBRE_DEF_SIZE 	(TIMBRE_DEF_LEN * sizeof(int16_t))
 #define OVERFLOW_TICKS		240
-#define DEFAULT_TICK_BEAT	240
+#define MAX_SEC_DELAY		10
 #define HEADER_LEN			70
 #define SND_HEADER_LEN		6
 #define IMS_SIGNATURE		0x7777
@@ -105,7 +105,6 @@ public:
 
 	std::string getinstrument(unsigned int n)
 	{
-		
 		return insts && n < tH.nrTimbre ? (insts[n].loaded ? std::string(insts[n].name) : std::string("[N/A] ").append(insts[n].name)) : std::string();
 	};
 
@@ -115,6 +114,7 @@ private:
 	bool FetchTimbreData(const std::string fname, const CFileProvider &fp);
 	void SetTempo(uint16_t tempo, uint8_t tickBeat);
 	uint32_t GetTicks();
+	void executeCommand();
 	CadlibDriver *drv;
 
 protected:
@@ -167,6 +167,7 @@ protected:
 	TimbreRec *	insts;					/* instrument definitions */
 	bool		isIMS;					/* play as IMS format */
 
+	uint32_t	counter;					/* tick counter */
 	uint32_t	ticks;					/* ticks to wait for next event */
 	uint8_t		status;                 /* running status byte */
 	uint8_t		volume[MAX_VOICES];		/* actual volume of all voices */
