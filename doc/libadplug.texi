@@ -176,6 +176,7 @@ file's filename
 loaded file, where @var{songname} is the song's filename without
 @file{.sng} extension.
 @end itemize
+@item @file{SOP}: Note Sequencer by Lee Ho Bum (sopepos)
 @item @file{VGM}: Video Game Music 1.51 by Valley Bell
 @itemize @bullet
 @item Supports OPL2, Dual OPL2 and OPL3 playback.

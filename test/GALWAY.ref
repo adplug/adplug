@@ -1,0 +1,11108 @@
+init
+1 <- 0
+setchip(1)
+1 <- 0
+setchip(0)
+2 <- 0
+setchip(1)
+2 <- 0
+setchip(0)
+3 <- 0
+setchip(1)
+3 <- 0
+setchip(0)
+4 <- 0
+setchip(1)
+4 <- 0
+setchip(0)
+5 <- 0
+setchip(1)
+5 <- 0
+setchip(0)
+6 <- 0
+setchip(1)
+6 <- 0
+setchip(0)
+7 <- 0
+setchip(1)
+7 <- 0
+setchip(0)
+8 <- 0
+setchip(1)
+8 <- 0
+setchip(0)
+9 <- 0
+setchip(1)
+9 <- 0
+setchip(0)
+a <- 0
+setchip(1)
+a <- 0
+setchip(0)
+b <- 0
+setchip(1)
+b <- 0
+setchip(0)
+c <- 0
+setchip(1)
+c <- 0
+setchip(0)
+d <- 0
+setchip(1)
+d <- 0
+setchip(0)
+e <- 0
+setchip(1)
+e <- 0
+setchip(0)
+f <- 0
+setchip(1)
+f <- 0
+setchip(0)
+10 <- 0
+setchip(1)
+10 <- 0
+setchip(0)
+11 <- 0
+setchip(1)
+11 <- 0
+setchip(0)
+12 <- 0
+setchip(1)
+12 <- 0
+setchip(0)
+13 <- 0
+setchip(1)
+13 <- 0
+setchip(0)
+14 <- 0
+setchip(1)
+14 <- 0
+setchip(0)
+15 <- 0
+setchip(1)
+15 <- 0
+setchip(0)
+16 <- 0
+setchip(1)
+16 <- 0
+setchip(0)
+17 <- 0
+setchip(1)
+17 <- 0
+setchip(0)
+18 <- 0
+setchip(1)
+18 <- 0
+setchip(0)
+19 <- 0
+setchip(1)
+19 <- 0
+setchip(0)
+1a <- 0
+setchip(1)
+1a <- 0
+setchip(0)
+1b <- 0
+setchip(1)
+1b <- 0
+setchip(0)
+1c <- 0
+setchip(1)
+1c <- 0
+setchip(0)
+1d <- 0
+setchip(1)
+1d <- 0
+setchip(0)
+1e <- 0
+setchip(1)
+1e <- 0
+setchip(0)
+1f <- 0
+setchip(1)
+1f <- 0
+setchip(0)
+20 <- 0
+setchip(1)
+20 <- 0
+setchip(0)
+21 <- 0
+setchip(1)
+21 <- 0
+setchip(0)
+22 <- 0
+setchip(1)
+22 <- 0
+setchip(0)
+23 <- 0
+setchip(1)
+23 <- 0
+setchip(0)
+24 <- 0
+setchip(1)
+24 <- 0
+setchip(0)
+25 <- 0
+setchip(1)
+25 <- 0
+setchip(0)
+26 <- 0
+setchip(1)
+26 <- 0
+setchip(0)
+27 <- 0
+setchip(1)
+27 <- 0
+setchip(0)
+28 <- 0
+setchip(1)
+28 <- 0
+setchip(0)
+29 <- 0
+setchip(1)
+29 <- 0
+setchip(0)
+2a <- 0
+setchip(1)
+2a <- 0
+setchip(0)
+2b <- 0
+setchip(1)
+2b <- 0
+setchip(0)
+2c <- 0
+setchip(1)
+2c <- 0
+setchip(0)
+2d <- 0
+setchip(1)
+2d <- 0
+setchip(0)
+2e <- 0
+setchip(1)
+2e <- 0
+setchip(0)
+2f <- 0
+setchip(1)
+2f <- 0
+setchip(0)
+30 <- 0
+setchip(1)
+30 <- 0
+setchip(0)
+31 <- 0
+setchip(1)
+31 <- 0
+setchip(0)
+32 <- 0
+setchip(1)
+32 <- 0
+setchip(0)
+33 <- 0
+setchip(1)
+33 <- 0
+setchip(0)
+34 <- 0
+setchip(1)
+34 <- 0
+setchip(0)
+35 <- 0
+setchip(1)
+35 <- 0
+setchip(0)
+36 <- 0
+setchip(1)
+36 <- 0
+setchip(0)
+37 <- 0
+setchip(1)
+37 <- 0
+setchip(0)
+38 <- 0
+setchip(1)
+38 <- 0
+setchip(0)
+39 <- 0
+setchip(1)
+39 <- 0
+setchip(0)
+3a <- 0
+setchip(1)
+3a <- 0
+setchip(0)
+3b <- 0
+setchip(1)
+3b <- 0
+setchip(0)
+3c <- 0
+setchip(1)
+3c <- 0
+setchip(0)
+3d <- 0
+setchip(1)
+3d <- 0
+setchip(0)
+3e <- 0
+setchip(1)
+3e <- 0
+setchip(0)
+3f <- 0
+setchip(1)
+3f <- 0
+setchip(0)
+40 <- 0
+setchip(1)
+40 <- 0
+setchip(0)
+41 <- 0
+setchip(1)
+41 <- 0
+setchip(0)
+42 <- 0
+setchip(1)
+42 <- 0
+setchip(0)
+43 <- 0
+setchip(1)
+43 <- 0
+setchip(0)
+44 <- 0
+setchip(1)
+44 <- 0
+setchip(0)
+45 <- 0
+setchip(1)
+45 <- 0
+setchip(0)
+46 <- 0
+setchip(1)
+46 <- 0
+setchip(0)
+47 <- 0
+setchip(1)
+47 <- 0
+setchip(0)
+48 <- 0
+setchip(1)
+48 <- 0
+setchip(0)
+49 <- 0
+setchip(1)
+49 <- 0
+setchip(0)
+4a <- 0
+setchip(1)
+4a <- 0
+setchip(0)
+4b <- 0
+setchip(1)
+4b <- 0
+setchip(0)
+4c <- 0
+setchip(1)
+4c <- 0
+setchip(0)
+4d <- 0
+setchip(1)
+4d <- 0
+setchip(0)
+4e <- 0
+setchip(1)
+4e <- 0
+setchip(0)
+4f <- 0
+setchip(1)
+4f <- 0
+setchip(0)
+50 <- 0
+setchip(1)
+50 <- 0
+setchip(0)
+51 <- 0
+setchip(1)
+51 <- 0
+setchip(0)
+52 <- 0
+setchip(1)
+52 <- 0
+setchip(0)
+53 <- 0
+setchip(1)
+53 <- 0
+setchip(0)
+54 <- 0
+setchip(1)
+54 <- 0
+setchip(0)
+55 <- 0
+setchip(1)
+55 <- 0
+setchip(0)
+56 <- 0
+setchip(1)
+56 <- 0
+setchip(0)
+57 <- 0
+setchip(1)
+57 <- 0
+setchip(0)
+58 <- 0
+setchip(1)
+58 <- 0
+setchip(0)
+59 <- 0
+setchip(1)
+59 <- 0
+setchip(0)
+5a <- 0
+setchip(1)
+5a <- 0
+setchip(0)
+5b <- 0
+setchip(1)
+5b <- 0
+setchip(0)
+5c <- 0
+setchip(1)
+5c <- 0
+setchip(0)
+5d <- 0
+setchip(1)
+5d <- 0
+setchip(0)
+5e <- 0
+setchip(1)
+5e <- 0
+setchip(0)
+5f <- 0
+setchip(1)
+5f <- 0
+setchip(0)
+60 <- 0
+setchip(1)
+60 <- 0
+setchip(0)
+61 <- 0
+setchip(1)
+61 <- 0
+setchip(0)
+62 <- 0
+setchip(1)
+62 <- 0
+setchip(0)
+63 <- 0
+setchip(1)
+63 <- 0
+setchip(0)
+64 <- 0
+setchip(1)
+64 <- 0
+setchip(0)
+65 <- 0
+setchip(1)
+65 <- 0
+setchip(0)
+66 <- 0
+setchip(1)
+66 <- 0
+setchip(0)
+67 <- 0
+setchip(1)
+67 <- 0
+setchip(0)
+68 <- 0
+setchip(1)
+68 <- 0
+setchip(0)
+69 <- 0
+setchip(1)
+69 <- 0
+setchip(0)
+6a <- 0
+setchip(1)
+6a <- 0
+setchip(0)
+6b <- 0
+setchip(1)
+6b <- 0
+setchip(0)
+6c <- 0
+setchip(1)
+6c <- 0
+setchip(0)
+6d <- 0
+setchip(1)
+6d <- 0
+setchip(0)
+6e <- 0
+setchip(1)
+6e <- 0
+setchip(0)
+6f <- 0
+setchip(1)
+6f <- 0
+setchip(0)
+70 <- 0
+setchip(1)
+70 <- 0
+setchip(0)
+71 <- 0
+setchip(1)
+71 <- 0
+setchip(0)
+72 <- 0
+setchip(1)
+72 <- 0
+setchip(0)
+73 <- 0
+setchip(1)
+73 <- 0
+setchip(0)
+74 <- 0
+setchip(1)
+74 <- 0
+setchip(0)
+75 <- 0
+setchip(1)
+75 <- 0
+setchip(0)
+76 <- 0
+setchip(1)
+76 <- 0
+setchip(0)
+77 <- 0
+setchip(1)
+77 <- 0
+setchip(0)
+78 <- 0
+setchip(1)
+78 <- 0
+setchip(0)
+79 <- 0
+setchip(1)
+79 <- 0
+setchip(0)
+7a <- 0
+setchip(1)
+7a <- 0
+setchip(0)
+7b <- 0
+setchip(1)
+7b <- 0
+setchip(0)
+7c <- 0
+setchip(1)
+7c <- 0
+setchip(0)
+7d <- 0
+setchip(1)
+7d <- 0
+setchip(0)
+7e <- 0
+setchip(1)
+7e <- 0
+setchip(0)
+7f <- 0
+setchip(1)
+7f <- 0
+setchip(0)
+80 <- 0
+setchip(1)
+80 <- 0
+setchip(0)
+81 <- 0
+setchip(1)
+81 <- 0
+setchip(0)
+82 <- 0
+setchip(1)
+82 <- 0
+setchip(0)
+83 <- 0
+setchip(1)
+83 <- 0
+setchip(0)
+84 <- 0
+setchip(1)
+84 <- 0
+setchip(0)
+85 <- 0
+setchip(1)
+85 <- 0
+setchip(0)
+86 <- 0
+setchip(1)
+86 <- 0
+setchip(0)
+87 <- 0
+setchip(1)
+87 <- 0
+setchip(0)
+88 <- 0
+setchip(1)
+88 <- 0
+setchip(0)
+89 <- 0
+setchip(1)
+89 <- 0
+setchip(0)
+8a <- 0
+setchip(1)
+8a <- 0
+setchip(0)
+8b <- 0
+setchip(1)
+8b <- 0
+setchip(0)
+8c <- 0
+setchip(1)
+8c <- 0
+setchip(0)
+8d <- 0
+setchip(1)
+8d <- 0
+setchip(0)
+8e <- 0
+setchip(1)
+8e <- 0
+setchip(0)
+8f <- 0
+setchip(1)
+8f <- 0
+setchip(0)
+90 <- 0
+setchip(1)
+90 <- 0
+setchip(0)
+91 <- 0
+setchip(1)
+91 <- 0
+setchip(0)
+92 <- 0
+setchip(1)
+92 <- 0
+setchip(0)
+93 <- 0
+setchip(1)
+93 <- 0
+setchip(0)
+94 <- 0
+setchip(1)
+94 <- 0
+setchip(0)
+95 <- 0
+setchip(1)
+95 <- 0
+setchip(0)
+96 <- 0
+setchip(1)
+96 <- 0
+setchip(0)
+97 <- 0
+setchip(1)
+97 <- 0
+setchip(0)
+98 <- 0
+setchip(1)
+98 <- 0
+setchip(0)
+99 <- 0
+setchip(1)
+99 <- 0
+setchip(0)
+9a <- 0
+setchip(1)
+9a <- 0
+setchip(0)
+9b <- 0
+setchip(1)
+9b <- 0
+setchip(0)
+9c <- 0
+setchip(1)
+9c <- 0
+setchip(0)
+9d <- 0
+setchip(1)
+9d <- 0
+setchip(0)
+9e <- 0
+setchip(1)
+9e <- 0
+setchip(0)
+9f <- 0
+setchip(1)
+9f <- 0
+setchip(0)
+a0 <- 0
+setchip(1)
+a0 <- 0
+setchip(0)
+a1 <- 0
+setchip(1)
+a1 <- 0
+setchip(0)
+a2 <- 0
+setchip(1)
+a2 <- 0
+setchip(0)
+a3 <- 0
+setchip(1)
+a3 <- 0
+setchip(0)
+a4 <- 0
+setchip(1)
+a4 <- 0
+setchip(0)
+a5 <- 0
+setchip(1)
+a5 <- 0
+setchip(0)
+a6 <- 0
+setchip(1)
+a6 <- 0
+setchip(0)
+a7 <- 0
+setchip(1)
+a7 <- 0
+setchip(0)
+a8 <- 0
+setchip(1)
+a8 <- 0
+setchip(0)
+a9 <- 0
+setchip(1)
+a9 <- 0
+setchip(0)
+aa <- 0
+setchip(1)
+aa <- 0
+setchip(0)
+ab <- 0
+setchip(1)
+ab <- 0
+setchip(0)
+ac <- 0
+setchip(1)
+ac <- 0
+setchip(0)
+ad <- 0
+setchip(1)
+ad <- 0
+setchip(0)
+ae <- 0
+setchip(1)
+ae <- 0
+setchip(0)
+af <- 0
+setchip(1)
+af <- 0
+setchip(0)
+b0 <- 0
+setchip(1)
+b0 <- 0
+setchip(0)
+b1 <- 0
+setchip(1)
+b1 <- 0
+setchip(0)
+b2 <- 0
+setchip(1)
+b2 <- 0
+setchip(0)
+b3 <- 0
+setchip(1)
+b3 <- 0
+setchip(0)
+b4 <- 0
+setchip(1)
+b4 <- 0
+setchip(0)
+b5 <- 0
+setchip(1)
+b5 <- 0
+setchip(0)
+b6 <- 0
+setchip(1)
+b6 <- 0
+setchip(0)
+b7 <- 0
+setchip(1)
+b7 <- 0
+setchip(0)
+b8 <- 0
+setchip(1)
+b8 <- 0
+setchip(0)
+b9 <- 0
+setchip(1)
+b9 <- 0
+setchip(0)
+ba <- 0
+setchip(1)
+ba <- 0
+setchip(0)
+bb <- 0
+setchip(1)
+bb <- 0
+setchip(0)
+bc <- 0
+setchip(1)
+bc <- 0
+setchip(0)
+bd <- 0
+setchip(1)
+bd <- 0
+setchip(0)
+be <- 0
+setchip(1)
+be <- 0
+setchip(0)
+bf <- 0
+setchip(1)
+bf <- 0
+setchip(0)
+c0 <- 0
+setchip(1)
+c0 <- 0
+setchip(0)
+c1 <- 0
+setchip(1)
+c1 <- 0
+setchip(0)
+c2 <- 0
+setchip(1)
+c2 <- 0
+setchip(0)
+c3 <- 0
+setchip(1)
+c3 <- 0
+setchip(0)
+c4 <- 0
+setchip(1)
+c4 <- 0
+setchip(0)
+c5 <- 0
+setchip(1)
+c5 <- 0
+setchip(0)
+c6 <- 0
+setchip(1)
+c6 <- 0
+setchip(0)
+c7 <- 0
+setchip(1)
+c7 <- 0
+setchip(0)
+c8 <- 0
+setchip(1)
+c8 <- 0
+setchip(0)
+c9 <- 0
+setchip(1)
+c9 <- 0
+setchip(0)
+ca <- 0
+setchip(1)
+ca <- 0
+setchip(0)
+cb <- 0
+setchip(1)
+cb <- 0
+setchip(0)
+cc <- 0
+setchip(1)
+cc <- 0
+setchip(0)
+cd <- 0
+setchip(1)
+cd <- 0
+setchip(0)
+ce <- 0
+setchip(1)
+ce <- 0
+setchip(0)
+cf <- 0
+setchip(1)
+cf <- 0
+setchip(0)
+d0 <- 0
+setchip(1)
+d0 <- 0
+setchip(0)
+d1 <- 0
+setchip(1)
+d1 <- 0
+setchip(0)
+d2 <- 0
+setchip(1)
+d2 <- 0
+setchip(0)
+d3 <- 0
+setchip(1)
+d3 <- 0
+setchip(0)
+d4 <- 0
+setchip(1)
+d4 <- 0
+setchip(0)
+d5 <- 0
+setchip(1)
+d5 <- 0
+setchip(0)
+d6 <- 0
+setchip(1)
+d6 <- 0
+setchip(0)
+d7 <- 0
+setchip(1)
+d7 <- 0
+setchip(0)
+d8 <- 0
+setchip(1)
+d8 <- 0
+setchip(0)
+d9 <- 0
+setchip(1)
+d9 <- 0
+setchip(0)
+da <- 0
+setchip(1)
+da <- 0
+setchip(0)
+db <- 0
+setchip(1)
+db <- 0
+setchip(0)
+dc <- 0
+setchip(1)
+dc <- 0
+setchip(0)
+dd <- 0
+setchip(1)
+dd <- 0
+setchip(0)
+de <- 0
+setchip(1)
+de <- 0
+setchip(0)
+df <- 0
+setchip(1)
+df <- 0
+setchip(0)
+e0 <- 0
+setchip(1)
+e0 <- 0
+setchip(0)
+e1 <- 0
+setchip(1)
+e1 <- 0
+setchip(0)
+e2 <- 0
+setchip(1)
+e2 <- 0
+setchip(0)
+e3 <- 0
+setchip(1)
+e3 <- 0
+setchip(0)
+e4 <- 0
+setchip(1)
+e4 <- 0
+setchip(0)
+e5 <- 0
+setchip(1)
+e5 <- 0
+setchip(0)
+e6 <- 0
+setchip(1)
+e6 <- 0
+setchip(0)
+e7 <- 0
+setchip(1)
+e7 <- 0
+setchip(0)
+e8 <- 0
+setchip(1)
+e8 <- 0
+setchip(0)
+e9 <- 0
+setchip(1)
+e9 <- 0
+setchip(0)
+ea <- 0
+setchip(1)
+ea <- 0
+setchip(0)
+eb <- 0
+setchip(1)
+eb <- 0
+setchip(0)
+ec <- 0
+setchip(1)
+ec <- 0
+setchip(0)
+ed <- 0
+setchip(1)
+ed <- 0
+setchip(0)
+ee <- 0
+setchip(1)
+ee <- 0
+setchip(0)
+ef <- 0
+setchip(1)
+ef <- 0
+setchip(0)
+f0 <- 0
+setchip(1)
+f0 <- 0
+setchip(0)
+f1 <- 0
+setchip(1)
+f1 <- 0
+setchip(0)
+f2 <- 0
+setchip(1)
+f2 <- 0
+setchip(0)
+f3 <- 0
+setchip(1)
+f3 <- 0
+setchip(0)
+f4 <- 0
+setchip(1)
+f4 <- 0
+setchip(0)
+f5 <- 0
+setchip(1)
+f5 <- 0
+setchip(0)
+4 <- 6
+setchip(1)
+5 <- 1
+4 <- 0
+setchip(0)
+bd <- 0
+8 <- 0
+1 <- 20
+setchip(1)
+5 <- 1
+4 <- 0
+4 <- 1
+4 <- 3
+4 <- 7
+4 <- f
+4 <- 1f
+4 <- 3f
+setchip(0)
+bd <- 0
+c3 <- 50
+c0 <- 50
+c0 <- 0
+20 <- 31
+40 <- 0
+60 <- f3
+80 <- 7
+e0 <- 6
+23 <- 31
+43 <- 0
+63 <- 47
+83 <- 46
+e3 <- 3
+c3 <- 0
+28 <- 32
+48 <- 0
+68 <- f0
+88 <- ff
+e8 <- 7
+2b <- 30
+4b <- 0
+6b <- 54
+8b <- 64
+eb <- 6
+c3 <- 51
+40 <- 3f
+4b <- 3f
+48 <- 3f
+c0 <- 51
+a0 <- 59
+b0 <- 11
+40 <- 9
+4b <- 9
+48 <- 9
+c4 <- a0
+c1 <- a0
+c1 <- 0
+21 <- 31
+41 <- 0
+61 <- f3
+81 <- 7
+e1 <- 6
+24 <- 31
+44 <- 0
+64 <- 47
+84 <- 46
+e4 <- 3
+c4 <- 0
+29 <- 32
+49 <- 0
+69 <- f0
+89 <- ff
+e9 <- 7
+2c <- 30
+4c <- 0
+6c <- 54
+8c <- 64
+ec <- 6
+c4 <- a1
+41 <- 3f
+4c <- 3f
+49 <- 3f
+c1 <- a1
+a1 <- 59
+b1 <- 11
+41 <- 10
+4c <- 10
+49 <- 10
+a1 <- 59
+b1 <- 29
+c2 <- 0
+22 <- 20
+42 <- 0
+62 <- f0
+82 <- c4
+e2 <- 1
+25 <- f1
+45 <- d
+65 <- f0
+85 <- 64
+e5 <- 6
+c5 <- 0
+2a <- e0
+4a <- 45
+6a <- 9
+8a <- f7
+ea <- 1
+2d <- 20
+4d <- 11
+6d <- 81
+8d <- 84
+ed <- 6
+c5 <- 31
+4d <- 3f
+45 <- 3f
+c2 <- 30
+a2 <- 59
+b2 <- 11
+4d <- 15
+45 <- 12
+c6 <- 30
+c6 <- 0
+30 <- 20
+50 <- 90
+70 <- f5
+90 <- 9d
+f0 <- 2
+33 <- 11
+53 <- 0
+73 <- f4
+93 <- 78
+f3 <- 3
+53 <- 3f
+c6 <- 3c
+a6 <- 59
+b6 <- 11
+53 <- 1
+a6 <- 59
+b6 <- 2d
+c7 <- 30
+c7 <- 0
+31 <- 20
+51 <- 90
+71 <- f5
+91 <- 9d
+f1 <- 2
+34 <- 11
+54 <- 0
+74 <- f4
+94 <- 78
+f4 <- 3
+54 <- 3f
+c7 <- 3c
+a7 <- 59
+b7 <- 11
+54 <- b
+c8 <- 30
+c8 <- 0
+32 <- 20
+52 <- 90
+72 <- f5
+92 <- 9d
+f2 <- 2
+35 <- 11
+55 <- 0
+75 <- f4
+95 <- 78
+f5 <- 3
+55 <- 3f
+c8 <- 3c
+a8 <- 59
+b8 <- 11
+55 <- 15
+setchip(1)
+c3 <- a0
+c0 <- a0
+c0 <- 0
+20 <- 31
+40 <- 0
+60 <- f3
+80 <- 7
+e0 <- 6
+23 <- 31
+43 <- 0
+63 <- 47
+83 <- 46
+e3 <- 3
+c3 <- 0
+28 <- 32
+48 <- 0
+68 <- f0
+88 <- ff
+e8 <- 7
+2b <- 30
+4b <- 0
+6b <- 54
+8b <- 64
+eb <- 6
+c3 <- a1
+40 <- 3f
+4b <- 3f
+48 <- 3f
+c0 <- a1
+a0 <- 59
+b0 <- 11
+40 <- b
+4b <- b
+48 <- b
+c4 <- 50
+c1 <- 50
+c1 <- 0
+21 <- 31
+41 <- 0
+61 <- f3
+81 <- 7
+e1 <- 6
+24 <- 31
+44 <- 0
+64 <- 47
+84 <- 46
+e4 <- 3
+c4 <- 0
+29 <- 32
+49 <- 0
+69 <- f0
+89 <- ff
+e9 <- 7
+2c <- 30
+4c <- 0
+6c <- 54
+8c <- 64
+ec <- 6
+c4 <- 51
+41 <- 3f
+4c <- 3f
+49 <- 3f
+c1 <- 51
+a1 <- 59
+b1 <- 11
+41 <- 12
+4c <- 12
+49 <- 12
+a1 <- 59
+b1 <- 29
+c2 <- 0
+22 <- 20
+42 <- c0
+62 <- f3
+82 <- a4
+e2 <- 0
+25 <- 30
+45 <- a6
+65 <- f3
+85 <- 73
+e5 <- 0
+c5 <- 0
+2a <- 70
+4a <- 50
+6a <- f4
+8a <- 42
+ea <- 0
+2d <- f0
+4d <- 0
+6d <- f4
+8d <- 11
+ed <- 0
+c5 <- 32
+4d <- 3f
+c2 <- 34
+a2 <- 59
+b2 <- 11
+4d <- 7
+c6 <- 30
+c6 <- 0
+30 <- 20
+50 <- 90
+70 <- f5
+90 <- 9d
+f0 <- 2
+33 <- 11
+53 <- 0
+73 <- f4
+93 <- 78
+f3 <- 3
+53 <- 3f
+c6 <- 3c
+a6 <- 59
+b6 <- 11
+53 <- 1
+a6 <- 59
+b6 <- 31
+c7 <- 30
+c7 <- 0
+31 <- 20
+51 <- 90
+71 <- f5
+91 <- 9d
+f1 <- 2
+34 <- 11
+54 <- 0
+74 <- f4
+94 <- 78
+f4 <- 3
+54 <- 3f
+c7 <- 3c
+a7 <- 59
+b7 <- 11
+54 <- b
+c8 <- 30
+c8 <- 0
+32 <- 20
+52 <- 90
+72 <- f5
+92 <- 9d
+f2 <- 2
+35 <- 11
+55 <- 0
+75 <- f4
+95 <- 78
+f5 <- 3
+55 <- 3f
+c8 <- 3c
+a8 <- 59
+b8 <- 11
+55 <- 15
+r13.67
+r13.67
+setchip(0)
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 5
+b6 <- 2e
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 5
+b6 <- 32
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+a1 <- ab
+b1 <- 26
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a1 <- ab
+b1 <- 26
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+a1 <- a3
+b1 <- 26
+a1 <- 38
+b1 <- 2a
+setchip(1)
+a1 <- a3
+b1 <- 26
+a1 <- 38
+b1 <- 2a
+r13.67
+setchip(0)
+a1 <- 51
+b1 <- 2a
+a1 <- 74
+b1 <- 2a
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+a1 <- 51
+b1 <- 2a
+a1 <- 74
+b1 <- 2a
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+a1 <- 6d
+b1 <- 2a
+setchip(1)
+a1 <- 6d
+b1 <- 2a
+r13.67
+setchip(0)
+a1 <- 67
+b1 <- 2a
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a1 <- 67
+b1 <- 2a
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+a1 <- 60
+b1 <- 2a
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a1 <- 60
+b1 <- 2a
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+a1 <- 5a
+b1 <- 2a
+a1 <- 66
+b1 <- 29
+setchip(1)
+a1 <- 5a
+b1 <- 2a
+a1 <- 66
+b1 <- 29
+r13.67
+setchip(0)
+a1 <- 76
+b1 <- 29
+a1 <- 61
+b1 <- 29
+a2 <- 59
+b2 <- 2d
+b6 <- a
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+a1 <- 76
+b1 <- 29
+a1 <- 61
+b1 <- 29
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+a1 <- 5d
+b1 <- 29
+b2 <- d
+setchip(1)
+a1 <- 5d
+b1 <- 29
+b2 <- d
+r13.67
+setchip(0)
+a1 <- 59
+b1 <- 29
+a2 <- 59
+b2 <- 2d
+b7 <- a
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a1 <- 59
+b1 <- 29
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- a
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- e
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 31
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 31
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 31
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 31
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 31
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 31
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 31
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 31
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- cd
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- cd
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 31
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 31
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 31
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 31
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 31
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 31
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- cd
+b2 <- 29
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+a2 <- cd
+b2 <- 29
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- 9
+setchip(1)
+b2 <- 9
+r13.67
+setchip(0)
+a1 <- ab
+b1 <- 26
+a2 <- cd
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a1 <- ab
+b1 <- 26
+a2 <- cd
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+a1 <- a3
+b1 <- 26
+a1 <- 38
+b1 <- 2a
+b2 <- d
+setchip(1)
+a1 <- a3
+b1 <- 26
+a1 <- 38
+b1 <- 2a
+b2 <- d
+r13.67
+setchip(0)
+a1 <- 51
+b1 <- 2a
+a1 <- 74
+b1 <- 2a
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+a1 <- 51
+b1 <- 2a
+a1 <- 74
+b1 <- 2a
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+a1 <- 6d
+b1 <- 2a
+b2 <- a
+setchip(1)
+a1 <- 6d
+b1 <- 2a
+b2 <- a
+r13.67
+setchip(0)
+a1 <- 67
+b1 <- 2a
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a1 <- 67
+b1 <- 2a
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2e
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2e
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 9a
+b2 <- 2d
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 9a
+b2 <- 2d
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2e
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2e
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2e
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2e
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 9a
+b2 <- 29
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+a2 <- 9a
+b2 <- 29
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- 9
+setchip(1)
+b2 <- 9
+r13.67
+setchip(0)
+a1 <- 6d
+b1 <- 2a
+a2 <- 9a
+b2 <- 2d
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a1 <- 6d
+b1 <- 2a
+a2 <- 9a
+b2 <- 2d
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+a0 <- a7
+b0 <- e
+a0 <- 5d
+b0 <- 32
+a1 <- 74
+b1 <- 2a
+a1 <- 9a
+b1 <- 26
+b2 <- d
+setchip(1)
+a0 <- a7
+b0 <- e
+a0 <- 5d
+b0 <- 32
+a1 <- 74
+b1 <- 2a
+a1 <- 9a
+b1 <- 26
+b2 <- d
+r13.67
+setchip(0)
+a0 <- 60
+b0 <- 32
+a0 <- 84
+b0 <- 32
+a1 <- 7d
+b1 <- 26
+a1 <- a3
+b1 <- 26
+a2 <- 59
+b2 <- 2d
+b6 <- a
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+a0 <- 60
+b0 <- 32
+a0 <- 84
+b0 <- 32
+a1 <- 7d
+b1 <- 26
+a1 <- a3
+b1 <- 26
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+a0 <- 8b
+b0 <- 32
+a0 <- 59
+b0 <- 35
+a1 <- ab
+b1 <- 26
+b2 <- d
+setchip(1)
+a0 <- 8b
+b0 <- 32
+a0 <- 59
+b0 <- 35
+a1 <- ab
+b1 <- 26
+b2 <- d
+r13.67
+setchip(0)
+a1 <- 59
+b1 <- 29
+a2 <- 59
+b2 <- 2d
+b7 <- a
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a1 <- 59
+b1 <- 29
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- a
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- e
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 31
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 31
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 31
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 31
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 31
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 31
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 31
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 31
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- cd
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- cd
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+a0 <- 61
+b0 <- 35
+a0 <- 9a
+b0 <- 32
+b2 <- d
+setchip(1)
+a0 <- 61
+b0 <- 35
+a0 <- 9a
+b0 <- 32
+b2 <- d
+r13.67
+setchip(0)
+a0 <- 92
+b0 <- 32
+a0 <- 6d
+b0 <- 32
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+a0 <- 92
+b0 <- 32
+a0 <- 6d
+b0 <- 32
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+a0 <- 67
+b0 <- 32
+b2 <- d
+setchip(1)
+a0 <- 67
+b0 <- 32
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 31
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 31
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+a0 <- 60
+b0 <- 32
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+a0 <- 60
+b0 <- 32
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+a0 <- 6d
+b0 <- 32
+a0 <- 4b
+b0 <- 32
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+a0 <- 6d
+b0 <- 32
+a0 <- 4b
+b0 <- 32
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+a0 <- 44
+b0 <- 32
+b2 <- d
+setchip(1)
+a0 <- 44
+b0 <- 32
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 2d
+r13.67
+setchip(0)
+b2 <- d
+a2 <- 59
+b2 <- 31
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b2 <- d
+a2 <- 59
+b2 <- 31
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+setchip(0)
+a0 <- 3e
+b0 <- 32
+a0 <- 1e
+b0 <- 32
+b2 <- d
+setchip(1)
+a0 <- 3e
+b0 <- 32
+a0 <- 1e
+b0 <- 32
+b2 <- d
+r13.67
+setchip(0)
+a0 <- 2a
+b0 <- 32
+a0 <- b
+b0 <- 32
+a2 <- 59
+b2 <- 2d
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+a0 <- 2a
+b0 <- 32
+a0 <- b
+b0 <- 32
+a2 <- 59
+b2 <- 2d
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+setchip(0)
+a0 <- 5
+b0 <- 32
+b2 <- d
+setchip(1)
+a0 <- 5
+b0 <- 32
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 2d
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 2d
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 59
+b2 <- 31
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 59
+b2 <- 31
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- 11
+setchip(1)
+b2 <- 11
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- cd
+b2 <- 29
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+a2 <- cd
+b2 <- 29
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- 9
+setchip(1)
+b2 <- 9
+r13.67
+setchip(0)
+a1 <- ab
+b1 <- 26
+a2 <- cd
+b2 <- 2d
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a1 <- ab
+b1 <- 26
+a2 <- cd
+b2 <- 2d
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+a1 <- a3
+b1 <- 26
+a1 <- 38
+b1 <- 2a
+b2 <- d
+setchip(1)
+a1 <- a3
+b1 <- 26
+a1 <- 38
+b1 <- 2a
+b2 <- d
+r13.67
+setchip(0)
+b0 <- 12
+a1 <- 51
+b1 <- 2a
+a1 <- 74
+b1 <- 2a
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b0 <- 12
+a1 <- 51
+b1 <- 2a
+a1 <- 74
+b1 <- 2a
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+a1 <- 6d
+b1 <- 2a
+b2 <- a
+setchip(1)
+a1 <- 6d
+b1 <- 2a
+b2 <- a
+r13.67
+setchip(0)
+a1 <- 67
+b1 <- 2a
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a1 <- 67
+b1 <- 2a
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2e
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2e
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 9a
+b2 <- 2d
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 9a
+b2 <- 2d
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- d
+setchip(1)
+b2 <- d
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2a
+r13.67
+setchip(0)
+b2 <- a
+a2 <- 67
+b2 <- 2e
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b2 <- a
+a2 <- 67
+b2 <- 2e
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2a
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2a
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 67
+b2 <- 2e
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+a2 <- 67
+b2 <- 2e
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2a
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2a
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- a
+setchip(1)
+b2 <- a
+r13.67
+setchip(0)
+a2 <- 24
+b2 <- 2e
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+a2 <- 24
+b2 <- 2e
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+setchip(0)
+b2 <- e
+setchip(1)
+b2 <- e
+r13.67
+setchip(0)
+a2 <- 9a
+b2 <- 29
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+a2 <- 9a
+b2 <- 29
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+setchip(0)
+b2 <- 9
+setchip(1)
+b2 <- 9
+r13.67
+setchip(0)
+a1 <- 6d
+b1 <- 2a
+a2 <- 9a
+b2 <- 2d
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a1 <- 6d
+b1 <- 2a
+a2 <- 9a
+b2 <- 2d
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+setchip(0)
+a1 <- 74
+b1 <- 2a
+a1 <- 51
+b1 <- 2a
+b2 <- d
+setchip(1)
+a1 <- 74
+b1 <- 2a
+a1 <- 51
+b1 <- 2a
+b2 <- d
+r13.67
+setchip(0)
+a1 <- 38
+b1 <- 2a
+a1 <- a3
+b1 <- 26
+b6 <- a
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+a1 <- 38
+b1 <- 2a
+a1 <- a3
+b1 <- 26
+b6 <- e
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+setchip(0)
+a1 <- ab
+b1 <- 26
+setchip(1)
+a1 <- ab
+b1 <- 26
+r13.67
+setchip(0)
+a1 <- 59
+b1 <- 29
+b7 <- a
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a1 <- 59
+b1 <- 29
+b7 <- e
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- a
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- e
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 5
+b6 <- 2e
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 5
+b6 <- 32
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b7 <- 11
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- d
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b8 <- 11
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 59
+b6 <- 31
+b7 <- e
+a7 <- 67
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 59
+b6 <- 35
+b7 <- 12
+a7 <- 67
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 59
+b7 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 59
+b7 <- 35
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- 11
+a6 <- 5
+b6 <- 2e
+b8 <- e
+a8 <- 59
+b8 <- 31
+setchip(1)
+b6 <- 15
+a6 <- 5
+b6 <- 32
+b8 <- 12
+a8 <- 59
+b8 <- 35
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b7 <- 11
+a7 <- 5
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b7 <- 15
+a7 <- 5
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- cd
+b7 <- 2d
+b8 <- 11
+a8 <- 5
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- cd
+b7 <- 31
+b8 <- 15
+a8 <- 5
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- b3
+b6 <- 2d
+b8 <- d
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- b3
+b6 <- 31
+b8 <- 11
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- b3
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- b3
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 59
+b6 <- 2d
+b8 <- d
+a8 <- b3
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 59
+b6 <- 31
+b8 <- 11
+a8 <- b3
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+a1 <- ab
+b1 <- 26
+b7 <- d
+a7 <- 59
+b7 <- 2d
+setchip(1)
+a1 <- ab
+b1 <- 26
+b7 <- 11
+a7 <- 59
+b7 <- 31
+r13.67
+setchip(0)
+a1 <- a3
+b1 <- 26
+a1 <- 38
+b1 <- 2a
+setchip(1)
+a1 <- a3
+b1 <- 26
+a1 <- 38
+b1 <- 2a
+r13.67
+setchip(0)
+a1 <- 51
+b1 <- 2a
+a1 <- 74
+b1 <- 2a
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 59
+b8 <- 2d
+setchip(1)
+a1 <- 51
+b1 <- 2a
+a1 <- 74
+b1 <- 2a
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 59
+b8 <- 31
+r13.67
+setchip(0)
+a1 <- 6d
+b1 <- 2a
+setchip(1)
+a1 <- 6d
+b1 <- 2a
+r13.67
+setchip(0)
+a1 <- 67
+b1 <- 2a
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+a1 <- 67
+b1 <- 2a
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b6 <- a
+a6 <- cd
+b6 <- 2d
+b8 <- a
+a8 <- 67
+b8 <- 2a
+setchip(1)
+b6 <- e
+a6 <- cd
+b6 <- 31
+b8 <- e
+a8 <- 67
+b8 <- 2e
+r13.67
+r13.67
+setchip(0)
+b7 <- a
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b7 <- e
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 24
+b6 <- 2e
+b8 <- a
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 24
+b6 <- 32
+b8 <- e
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- 67
+b6 <- 2e
+b7 <- d
+a7 <- 24
+b7 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- 67
+b6 <- 32
+b7 <- 11
+a7 <- 24
+b7 <- 32
+r13.67
+r13.67
+setchip(0)
+b7 <- e
+a7 <- 67
+b7 <- 2e
+b8 <- d
+a8 <- 24
+b8 <- 2e
+setchip(1)
+b7 <- 12
+a7 <- 67
+b7 <- 32
+b8 <- 11
+a8 <- 24
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- e
+a6 <- cd
+b6 <- 2d
+b8 <- e
+a8 <- 67
+b8 <- 2e
+setchip(1)
+b6 <- 12
+a6 <- cd
+b6 <- 31
+b8 <- 12
+a8 <- 67
+b8 <- 32
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b7 <- e
+a7 <- cd
+b7 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b7 <- 12
+a7 <- cd
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+b8 <- e
+a8 <- cd
+b8 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+b8 <- 12
+a8 <- cd
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 9a
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 9a
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 9a
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 9a
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 83
+b6 <- 2d
+b8 <- d
+a8 <- 9a
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 83
+b6 <- 31
+b8 <- 11
+a8 <- 9a
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 83
+b7 <- 2d
+setchip(1)
+b7 <- 11
+a7 <- 83
+b7 <- 31
+r13.67
+r13.67
+setchip(0)
+b6 <- d
+a6 <- 67
+b6 <- 2a
+b8 <- d
+a8 <- 83
+b8 <- 2d
+setchip(1)
+b6 <- 11
+a6 <- 67
+b6 <- 2e
+b8 <- 11
+a8 <- 83
+b8 <- 31
+r13.67
+r13.67
+setchip(0)
+b7 <- d
+a7 <- 67
+b7 <- 2a
+setchip(1)
+b7 <- 11
+a7 <- 67
+b7 <- 2e
+r13.67
+r13.67
+setchip(0)
+b1 <- a
+b6 <- a
+b7 <- a
+b8 <- d
+setchip(1)
+b1 <- a
+b6 <- e
+b7 <- e
+b8 <- 11
+r13.67

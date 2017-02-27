@@ -84,6 +84,7 @@
     <ClCompile Include="..\..\..\src\nukedopl.c" />
     <ClCompile Include="..\..\..\src\cmfmcsop.cpp" />
     <ClCompile Include="..\..\..\src\vgm.cpp" />
+    <ClCompile Include="..\..\..\src\sop.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\a2m.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="..\..\..\src\nukedopl.h" />
     <ClInclude Include="..\..\..\src\cmfmcsop.h" />
     <ClInclude Include="..\..\..\src\vgm.h" />
+    <ClInclude Include="..\..\..\src\sop.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

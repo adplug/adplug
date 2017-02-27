@@ -95,6 +95,7 @@ static const char *filelist[] = {
   "YsBattle.vgm",	// Video Game Music 1.51 (OPL2)
   "MainBGM5.vgm",	// Video Game Music 1.51 (Dual OPL2)
   "BeyondSN.vgm",	// Video Game Music 1.51 (OPL3)
+  "GALWAY.SOP",	// Note Sequencer by sopepos
   NULL
 };
 
