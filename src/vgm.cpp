@@ -203,7 +203,10 @@ bool CvgmPlayer::update()
 	do
 	{
 		if (pos >= data_sz)
-			return false;
+		{
+			songend = true;
+			break;
+		}
 		uint8_t cmd = vgmData[pos++];
 		switch (cmd)
 		{
@@ -250,10 +253,11 @@ bool CvgmPlayer::update()
 		}
 		if (wait && wait < 40)
 			wait = 0; // skip too short pauses
-		songend = pos >= data_sz;
-		if (songend && loop_ofs >= 0)
+		if (!songend)
+			songend = pos >= data_sz;
+		if (pos >= data_sz && loop_ofs >= 0)
 			pos = loop_ofs;
-	} while (!wait && !songend);
+	} while (!wait);
 	return !songend;
 }
 

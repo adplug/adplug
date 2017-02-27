@@ -6651,3 +6651,9 @@ setchip(0)
 54 <- 4
 setchip(1)
 54 <- 4
+setchip(0)
+a7 <- f8
+b7 <- 2d
+setchip(1)
+a7 <- 18
+b7 <- 2e
