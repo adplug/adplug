@@ -31,4 +31,5 @@ EXTRA_DIST = 2001.MKJ 2001.ref ADAGIO.DFM ADAGIO.ref adlibsp.ref adlibsp.s3m \
 	menu.got menu.ref lines1.mus lines1.snd lines1.ref tafa.mus tafa.tim \
 	tafa.ref revival.ims implay.bnk revival.ref go-_-go.ims go-_-go.bnk \
 	go-_-go.ref Flying.mdi Flying.ref RIK6.MDI RIK6.ref NECRONOM.CMF \
-	NECRONOM.ref YsBattle.vgm YsBattle.ref BeyondSN.vgm BeyondSN.ref
+	NECRONOM.ref YsBattle.vgm YsBattle.ref BeyondSN.vgm BeyondSN.ref \
+	crusader.raw crusader.ref
