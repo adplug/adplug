@@ -260,6 +260,8 @@ void CmidPlayer::sierra_next_section()
        {
        getnext(1);
        curtrack=j; j++;
+       if (curtrack >= 16)
+         break;
        track[curtrack].on=1;
 	   track[curtrack].spos = getnext(1);
 	   track[curtrack].spos += (getnext(1) << 8) + 4;	//4 best usually +3? not 0,1,2 or 5
@@ -1030,7 +1032,7 @@ void CmidPlayer::rewind(int subsong)
 
                 o_sierra_pos=sierra_pos=pos;
                 sierra_next_section();
-                while (datalook(sierra_pos-2)!=0xff)
+                while (datalook(sierra_pos-2) != 0xff && pos < flen)
                     {
                     sierra_next_section();
                     subsongs++;
