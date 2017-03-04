@@ -50,9 +50,9 @@ std::string CmusPlayer::gettype()
 	char tmpstr[30];
 
 	if (isIMS)
-		sprintf(tmpstr, "IMPlay Song Format v%d.%d", mH.majorVersion, mH.minorVersion);
+		sprintf(tmpstr, "IMPlay Song Format v%d.%d", majorVersion, minorVersion);
 	else
-		sprintf(tmpstr, "AdLib MIDI Format v%d.%d", mH.majorVersion, mH.minorVersion);
+		sprintf(tmpstr, "AdLib MIDI Format v%d.%d", majorVersion, minorVersion);
 	return std::string(tmpstr);
 }
 
@@ -75,56 +75,52 @@ bool CmusPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 	// read file header
 	isIMS = false;
-	mH.majorVersion = static_cast<uint8_t>(f->readInt(1));
-	mH.minorVersion = static_cast<uint8_t>(f->readInt(1));
-	mH.tuneId = static_cast<uint32_t>(f->readInt(4));
-	f->readString(mH.tuneName, sizeof(mH.tuneName));
-	mH.tickBeat = static_cast<uint8_t>(f->readInt(1));
-	mH.beatMeasure = static_cast<uint8_t>(f->readInt(1));
-	mH.totalTick = static_cast<uint32_t>(f->readInt(4));
-	mH.dataSize = static_cast<uint32_t>(f->readInt(4));
-	mH.nrCommand = static_cast<uint32_t>(f->readInt(4));
-	f->seek(sizeof(mH.filler), binio::Add);
-	mH.soundMode = static_cast<uint8_t>(f->readInt(1));
-	mH.pitchBRange = static_cast<uint8_t>(f->readInt(1));
-	mH.basicTempo = static_cast<uint16_t>(f->readInt(2));
-	f->seek(sizeof(mH.filler2), binio::Add);
+	majorVersion = static_cast<uint8_t>(f->readInt(1));
+	minorVersion = static_cast<uint8_t>(f->readInt(1));
+	uint32_t tuneId = static_cast<uint32_t>(f->readInt(4));
+	f->readString(tuneName, TUNE_NAME_SIZE);
+	tickBeat = static_cast<uint8_t>(f->readInt(1));
+	uint8_t beatMeasure = static_cast<uint8_t>(f->readInt(1));
+	uint32_t totalTick = static_cast<uint32_t>(f->readInt(4));
+	dataSize = static_cast<uint32_t>(f->readInt(4));
+	uint32_t nrCommand = static_cast<uint32_t>(f->readInt(4));
+	f->seek(FILLER_SIZE, binio::Add);
+	soundMode = static_cast<uint8_t>(f->readInt(1));
+	pitchBRange = static_cast<uint8_t>(f->readInt(1));
+	basicTempo = static_cast<uint16_t>(f->readInt(2));
+	f->seek(FILLER_SIZE, binio::Add);
 
 	// validate header and data size
-	if (mH.majorVersion != 1 ||
-		mH.minorVersion != 0 ||
-		mH.tuneId != 0 ||
-		mH.tickBeat == 0 ||
-		mH.beatMeasure == 0 ||
-		mH.totalTick == 0 ||
-		mH.dataSize == 0 ||
-		mH.nrCommand == 0 ||
-		fp.filesize(f) < (unsigned)(HEADER_LEN + mH.dataSize))
+	if (majorVersion != 1 ||
+		minorVersion != 0 ||
+		tuneId != 0 ||
+		tickBeat == 0 ||
+		beatMeasure == 0 ||
+		totalTick == 0 ||
+		dataSize == 0 ||
+		nrCommand == 0 ||
+		fp.filesize(f) < (unsigned)(HEADER_LEN + dataSize))
 	{
 		fp.close(f);
 		return false;
 	}
 
 	// read MIDI data
-	data = new uint8_t[mH.dataSize];
-	for(int i = 0; i < (int32_t)mH.dataSize; i++) {
-		data[i] = f->readInt(1);
-	}
+	data = new uint8_t[dataSize];
+	f->readString((char *)data, dataSize);
 
 	// read IMS timbre list (if exists)
-	if (fp.filesize(f) >= (unsigned)(HEADER_LEN + mH.dataSize) + 4 &&
+	if (fp.filesize(f) >= (unsigned)(HEADER_LEN + dataSize) + 4 &&
 		f->readInt(2) == IMS_SIGNATURE)
 	{
 		isIMS = true;
-		tH.nrTimbre = f->readInt(2);
+		nrTimbre = f->readInt(2);
 		// validate post-data size
-		if (fp.filesize(f) >= (unsigned)(HEADER_LEN + mH.dataSize) + 4 + tH.nrTimbre * TIMBRE_NAME_SIZE)
+		if (fp.filesize(f) >= (unsigned)(HEADER_LEN + dataSize) + 4 + nrTimbre * TIMBRE_NAME_SIZE)
 		{
-			tH.majorVersion = 1;
-			tH.minorVersion = 0;
-			insts = new TimbreRec[tH.nrTimbre];
+			insts = new mus_inst[nrTimbre];
 			// read timbre names
-			for (int i = 0; i < tH.nrTimbre; i++)
+			for (int i = 0; i < nrTimbre; i++)
 			{
 				f->readString(insts[i].name, TIMBRE_NAME_SIZE);
 				insts[i].name[TIMBRE_NAME_SIZE - 1] = 0;
@@ -132,7 +128,7 @@ bool CmusPlayer::load(const std::string &filename, const CFileProvider &fp)
 			}
 		}
 		else
-			tH.nrTimbre = 0;
+			nrTimbre = 0;
 	}
 
 	fp.close(f);
@@ -230,7 +226,7 @@ bool CmusPlayer::load(const std::string &filename, const CFileProvider &fp)
 bool CmusPlayer::InstsLoaded()
 {
 	if (!insts) return false;
-	for (int i = 0; i < tH.nrTimbre; i++)
+	for (int i = 0; i < nrTimbre; i++)
 		if (!insts[i].loaded)
 			return false;
 	return true;
@@ -255,34 +251,33 @@ bool CmusPlayer::LoadTimbreBank(const std::string fname, const CFileProvider &fp
 		#endif
 		return false;
 	}
- 	tH.majorVersion = static_cast<uint8_t>(f->readInt(1));
-	tH.minorVersion = static_cast<uint8_t>(f->readInt(1));
-	tH.nrTimbre = static_cast<uint16_t>(f->readInt(2));
-	tH.offsetDef = static_cast<uint16_t>(f->readInt(2));
+ 	uint8_t vMaj = static_cast<uint8_t>(f->readInt(1));
+	uint8_t vMin = static_cast<uint8_t>(f->readInt(1));
+	nrTimbre = static_cast<uint16_t>(f->readInt(2));
+	uint16_t offsetDef = static_cast<uint16_t>(f->readInt(2));
 	// validate header and data size
-	if (tH.majorVersion != 1 ||
-		tH.minorVersion != 0 ||
-		tH.offsetDef != SND_HEADER_LEN + tH.nrTimbre * TIMBRE_NAME_SIZE ||
-		fp.filesize(f) < SND_HEADER_LEN + tH.nrTimbre * TIMBRE_NAME_SIZE + tH.nrTimbre * TIMBRE_DEF_SIZE)
+	if (vMaj != 1 || vMin != 0 ||
+		offsetDef != SND_HEADER_LEN + nrTimbre * TIMBRE_NAME_SIZE ||
+		fp.filesize(f) < SND_HEADER_LEN + nrTimbre * TIMBRE_NAME_SIZE + nrTimbre * TIMBRE_DEF_SIZE)
 	{
+		nrTimbre = 0;
 		fp.close(f);
 		#ifdef DEBUG
 		AdPlug_LogWrite("Timbre bank format is incorrect.\n");
 		#endif
 		return false;
 	}
-	insts = new TimbreRec[tH.nrTimbre];
+	insts = new mus_inst[nrTimbre];
 	// read timbre names
-	for (int i = 0; i < tH.nrTimbre; i++)
+	for (int i = 0; i < nrTimbre; i++)
 	{
 		f->readString(insts[i].name, TIMBRE_NAME_SIZE);
 		insts[i].name[TIMBRE_NAME_SIZE - 1] = 0;
 	}
 	// read timbre data
-	for (int i = 0; i < tH.nrTimbre; i++)
+	for (int i = 0; i < nrTimbre; i++)
 	{
-		for (int j = 0; j < TIMBRE_DEF_LEN; j++)
-			insts[i].data[j] = f->readInt(2);
+		f->readString((char *)insts[i].data, TIMBRE_DEF_LEN * 2);
 		insts[i].loaded = true;
 	}
 	fp.close(f);
@@ -349,33 +344,39 @@ bool CmusPlayer::FetchTimbreData(const std::string fname, const CFileProvider &f
 		#endif
 		return false;
 	}
+	f->seek(offsetName);
+	uint8_t * names = new uint8_t[numInst * BNK_NAME_SIZE];
+	f->readString((char *)names, numInst * BNK_NAME_SIZE);
+
+	f->seek(offsetData);
+	uint8_t * instData = new uint8_t[numInst * BNK_INST_SIZE];
+	f->readString((char *)instData, numInst * BNK_INST_SIZE);
+
+	fp.close(f);
+
 	uint16_t index;
-	char instName[9];
+	bool match;
 	for (int i = 0; i < numUsed; i++)
 	{
-		f->seek(offsetName + i * BNK_NAME_SIZE);
-		index = static_cast<uint16_t>(f->readInt(2));
-		f->seek(1, binio::Add); // skip flags
-		instName[TIMBRE_NAME_SIZE - 1] = 0;
-		f->readString(instName, TIMBRE_NAME_SIZE);
-		for (int j = 0; j < tH.nrTimbre; j++)
+		index = *(uint16_t *)(names + i * BNK_NAME_SIZE);
+		for (int j = 0; j < nrTimbre; j++)
 		{
-			char _instName[TIMBRE_NAME_SIZE];
+			match = true;
 			for (int k = 0; k < TIMBRE_NAME_SIZE; k++)
 			{
-				_instName[k] = tolower(insts[j].name[k]);
-				instName[k] = tolower(instName[k]);
+				if (k > 0 && insts[j].name[k - 1] == 0)
+					break;
+				if (tolower(insts[j].name[k]) != tolower(names[i * BNK_NAME_SIZE + 3 + k]))
+				{
+					match = false;
+					break;
+				}
 			}
-			if (!insts[j].loaded &&
-				strcmp(_instName, instName) == 0 &&
-				index < numInst)
+			if (match && !insts[j].loaded && index < numInst)
 			{
-
-				f->seek(offsetData + index * BNK_INST_SIZE);
-				f->seek(2, binio::Add); // skip iPercussive, iVoiceNum
 				for (int k = 0; k < TIMBRE_DEF_LEN; k++)
 				{
-					insts[j].data[k] = (int8_t)f->readInt(1);
+					insts[j].data[k] = instData[index * BNK_INST_SIZE + 2 + k];
 				}
 				insts[j].loaded = true;
 			}
@@ -383,13 +384,14 @@ bool CmusPlayer::FetchTimbreData(const std::string fname, const CFileProvider &f
 		if (InstsLoaded())
 			break;
 	}
-	fp.close(f);
+	delete[] names;
+	delete[] instData;
 	return true;
 }
 
 void CmusPlayer::rewind(int subsong)
 {
-	SetTempo(mH.basicTempo, mH.tickBeat);
+	SetTempo(basicTempo, tickBeat);
 	pos = 0; songend = false;
 	opl->init();
 	drv->SoundWarmInit();
@@ -399,8 +401,8 @@ void CmusPlayer::rewind(int subsong)
 	counter = 0;
 	ticks = 0;
 
-	drv->SetMode(mH.soundMode);
-	drv->SetPitchRange(mH.pitchBRange);
+	drv->SetMode(soundMode);
+	drv->SetPitchRange(pitchBRange);
 }
 
 /*
@@ -408,19 +410,19 @@ void CmusPlayer::rewind(int subsong)
 */
 void CmusPlayer::SetTempo(uint16_t tempo, uint8_t tickBeat)
 {
-	if (!tempo) tempo = mH.basicTempo;
+	if (!tempo) tempo = basicTempo;
 	timer = tempo * tickBeat / 60.0f;
 }
 
 uint32_t CmusPlayer::GetTicks()
 {
 	uint32_t ticks = 0;
-	while (data[pos] == OVERFLOW_BYTE && pos < mH.dataSize)
+	while (data[pos] == OVERFLOW_BYTE && pos < dataSize)
 	{
 		ticks += OVERFLOW_TICKS;
 		pos++;
 	}
-	if (pos < mH.dataSize)
+	if (pos < dataSize)
 		ticks += data[pos++];
 	// Wraithverge: this check reduces delay and makes loops smoother
 	// in DarkSpyre (*.MUS) songs.  Their loop-point is much closer
@@ -446,7 +448,7 @@ void CmusPlayer::executeCommand()
 		new_status = data[pos++];
 	if (new_status == STOP_BYTE)
 	{
-		pos = mH.dataSize;
+		pos = dataSize;
 	}
 	else if (new_status == SYSTEM_XOR_BYTE)
 	{
@@ -466,9 +468,9 @@ void CmusPlayer::executeCommand()
 		{
 			uint8_t integer = data[pos++];
 			uint8_t frac = data[pos++];
-			uint16_t tempo = mH.basicTempo;
+			uint16_t tempo = basicTempo;
 			tempo = tempo * integer + ((tempo * frac) >> 7);
-			SetTempo(tempo, mH.tickBeat);
+			SetTempo(tempo, tickBeat);
 			pos++;       /* skip EOX_BYTE */
 		}
 	}
@@ -518,7 +520,7 @@ void CmusPlayer::executeCommand()
 		case PROG_CHANGE_BYTE:
 			timbre = data[pos++];
 			if (insts &&
-				timbre < tH.nrTimbre &&
+				timbre < nrTimbre &&
 				insts[timbre].loaded)
 			{
 				drv->SetVoiceTimbre(voice, &insts[timbre].data[0]);
@@ -549,8 +551,8 @@ void CmusPlayer::executeCommand()
 			#ifdef DEBUG
 			AdPlug_LogWrite("Bad MIDI status byte: %d\n", status);
 			#endif
-			while (data[pos++] < NOTE_OFF_BYTE && pos < mH.dataSize);
-			if (pos >= mH.dataSize)
+			while (data[pos++] < NOTE_OFF_BYTE && pos < dataSize);
+			if (pos >= dataSize)
 				break;
 			if (data[pos] != OVERFLOW_BYTE)
 				pos--;
@@ -568,10 +570,10 @@ bool CmusPlayer::update()
 	if (++counter >= ticks)
 	{
 		counter = 0;
-		while (pos < mH.dataSize)
+		while (pos < dataSize)
 		{
 			executeCommand();
-			if (pos >= mH.dataSize) {
+			if (pos >= dataSize) {
 				pos = 0;
 				songend = true;
 				break;

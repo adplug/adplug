@@ -93,19 +93,19 @@ public:
 
 	std::string gettitle()
 	{
-		return std::string(mH.tuneName);
+		return std::string(tuneName);
 	};
 
 	std::string gettype();
 
 	unsigned int getinstruments()
 	{
-		return insts ? tH.nrTimbre : 0;
+		return insts ? nrTimbre : 0;
 	};
 
 	std::string getinstrument(unsigned int n)
 	{
-		return insts && n < tH.nrTimbre ? (insts[n].loaded ? std::string(insts[n].name) : std::string("[N/A] ").append(insts[n].name)) : std::string();
+		return insts && n < nrTimbre ? (insts[n].loaded ? std::string(insts[n].name) : std::string("[N/A] ").append(insts[n].name)) : std::string();
 	};
 
 private:
@@ -118,59 +118,38 @@ private:
 	CadlibDriver *drv;
 
 protected:
+	/* variables for playback */
 	unsigned long	pos;
 	bool		songend;
 	float		timer;
-
-	/* structure of music file: */
-	struct MusHeader {
-		uint8_t		majorVersion;
-		uint8_t		minorVersion;
-		int32_t		tuneId;
-		char		tuneName[TUNE_NAME_SIZE];
-		uint8_t		tickBeat;
-		uint8_t		beatMeasure;
-		uint32_t	totalTick;
-		uint32_t	dataSize;
-		uint32_t	nrCommand;
-		uint8_t		filler[FILLER_SIZE];
-
-		uint8_t		soundMode;			/* 0: melodic, 1: percussive */
-		uint8_t		pitchBRange;		/* 1 - 12 */
-		uint16_t	basicTempo;
-		uint8_t		filler2[FILLER_SIZE];
-
-		/* char		data[]; */
-	};
-
-	/* structure of timbre bank file: */
-	struct TimHeader {
-		uint8_t		majorVersion;
-		uint8_t		minorVersion;
-		uint16_t	nrTimbre;	/* # of definitions in bank. */
-		uint16_t	offsetDef;	/* offset in file of first definition */
-
-								/*	char		timbreName[ ][ TIMBRE_NAME_SIZE];  */
-								/*	uint16_t	timbreDef[ ][ TIMBRE_DEF_LEN];  */
-	};
-
-	/* structure of timbre in memory: */
-	struct TimbreRec {
-		char	name[TIMBRE_NAME_SIZE];
-		bool	loaded;
-		int16_t	data[TIMBRE_DEF_LEN];
-	};
-
-	struct		MusHeader mH;			/* header of .MUS file */
-	uint8_t *	data;					/* MIDI data */
-	struct		TimHeader tH;			/* header of .SND / .TIM file */
-	TimbreRec *	insts;					/* instrument definitions */
-	bool		isIMS;					/* play as IMS format */
 
 	uint32_t	counter;					/* tick counter */
 	uint32_t	ticks;					/* ticks to wait for next event */
 	uint8_t		status;                 /* running status byte */
 	uint8_t		volume[MAX_VOICES];		/* actual volume of all voices */
+
+	/* header variables of .MUS file */
+	uint8_t		majorVersion;
+	uint8_t		minorVersion;
+	char		tuneName[TUNE_NAME_SIZE];
+	uint8_t		tickBeat;
+	uint32_t	dataSize;
+	uint8_t		soundMode;			/* 0: melodic, 1: percussive */
+	uint8_t		pitchBRange;		/* 1 - 12 */
+	uint16_t	basicTempo;
+
+	uint8_t *	data;				/* MIDI data */
+	bool		isIMS;					/* play as IMS format */
+
+	/* variables for timbre bank */
+	struct mus_inst {
+		char	name[TIMBRE_NAME_SIZE];
+		bool	loaded;
+		int16_t	data[TIMBRE_DEF_LEN];
+	};
+
+	uint16_t	nrTimbre;			/* # of definitions in bank. */
+	mus_inst *	insts;					/* instrument definitions */
 };
 
 #endif

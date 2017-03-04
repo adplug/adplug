@@ -112,9 +112,7 @@ bool CmdiPlayer::load(const std::string &filename, const CFileProvider &fp)
 	}
 	// load section
 	data = new uint8_t[size];
-	for(unsigned int i = 0; i < size; i++) {
-		data[i] = f->readInt(1);
-	}
+	f->readString((char *)data, size);
 
 	fp.close(f);
 	drv = new CadlibDriver(opl);
