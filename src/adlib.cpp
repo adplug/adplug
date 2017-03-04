@@ -124,7 +124,7 @@ void CadlibDriver::SoundWarmInit()
 	InitSlotVolume();
 	InitFNums();
 	SetMode(0);				/* melodic mode */
-	//SetGParam(0, 0, 0);		/* init global parameters */
+	SetGParam(0, 0, 0);		/* init global parameters */
 	for (int i = 0; i < 9; i++)
 		SoundChut(i);
 	SetPitchRange(1);		/* default pitch range is 1 half-tone */

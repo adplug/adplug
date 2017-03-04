@@ -35,7 +35,7 @@
 #include "mus.h"
 
 #ifdef DEBUG
-#include "adplug/debug.h"
+#include "debug.h"
 #endif
 
 /*** public methods *************************************/
@@ -426,7 +426,8 @@ uint32_t CmusPlayer::GetTicks()
 	// in DarkSpyre (*.MUS) songs.  Their loop-point is much closer
 	// to the mark with this condition.
 	if (ticks / timer > MAX_SEC_DELAY) // for very long delays
-		ticks = timer * MAX_SEC_DELAY;
+		// Wraithverge: added cast.
+		ticks = static_cast<uint32_t>(timer * (float)MAX_SEC_DELAY);
 	return ticks;
 }
 
