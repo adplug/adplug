@@ -2499,8 +2499,7 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
   }
 
   fp.close(f);
-  cursubsong = 2;
-  rewind();
+  cursubsong = -1;
   return true;
 }
 
@@ -2521,6 +2520,9 @@ unsigned int CadlPlayer::getsubsongs()
 
 bool CadlPlayer::update()
 {
+  if (cursubsong == -1)
+    rewind(2);
+
   bool songend = true;
 
 //   if(_trackEntries[cursubsong] == 0xff)
