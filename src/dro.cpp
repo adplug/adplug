@@ -115,14 +115,9 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		// "title" is maximum 40 characters long.
 		f->readString(title, 40, 0);
 
-		// Safety check, in case "title" is empty, set a
-		// null-terminator as placeholder.
-		if (strlen(title) == 0) memset(title, 0, 1);
-
 		// Skip "author" if Tag marker byte is missing, but first
 		// set a null-terminator as placeholder.
 		if (f->readInt(1) != 0x1B) {
-			memset(author, 0, 1);
 			f->seek(-1, binio::Add);
 			goto desc_section;
 		}
@@ -130,25 +125,17 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		// "author" is maximum 40 characters long.
 		f->readString(author, 40, 0);
 
-		// Safety check, in case "author" is empty, set a
-		// null-terminator as placeholder.
-		if (strlen(author) == 0) memset(author, 0, 1);
-
 desc_section:
 		// Skip "desc" if Tag marker byte is missing, but first
 		// set a null-terminator as placeholder.
 		if (f->readInt(1) != 0x1C) {
-			memset(desc, 0, 1);
 			goto end_section;
 		}
 
 		// "desc" is now maximum 1023 characters long (it was 140).
 		f->readString(desc, 1023, 0);
 
-		// Safety check, in case "desc" is empty, set a
-		// null-terminator as placeholder.
 		if (strlen(desc) == 0) {
-			memset(desc, 0, 1);
 			goto end_section;
 		}
 		else goto end_section;
@@ -176,7 +163,7 @@ bool CdroPlayer::update()
 
 		// Long delay
 		} else if (iIndex == this->iCmdDelayL) {
-			iValue = this->data[this->iPos] + (this->data[this->iPos + 1] << 8);
+			iValue = this->data[this->iPos] | (this->data[this->iPos + 1] << 8);
 			this->iPos += 2;
 			this->iDelay = (iValue + 1);
 			return true;
