@@ -57,7 +57,7 @@
 #define TIMBRE_DEF_LEN		ADLIB_INST_LEN
 #define TIMBRE_DEF_SIZE 	(TIMBRE_DEF_LEN * sizeof(int16_t))
 #define OVERFLOW_TICKS		240
-#define MAX_SEC_DELAY		10
+#define MAX_SEC_DELAY		10.0f	/* Wraithverge: changed this to float, to avoid casting */
 #define HEADER_LEN			70
 #define SND_HEADER_LEN		6
 #define IMS_SIGNATURE		0x7777

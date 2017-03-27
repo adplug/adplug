@@ -23,33 +23,33 @@
 
 #include "adlib.h"
 
-const char CadlibDriver::percMasks[5] =
+const uint8_t CadlibDriver::percMasks[5] =
 	{0x10, 0x08, 0x04, 0x02, 0x01};
 
 /* definition of the ELECTRIC-PIANO voice (opr0 & opr1) */
-char CadlibDriver::pianoParamsOp0[nbLocParam] =
+uint8_t CadlibDriver::pianoParamsOp0[nbLocParam] =
 	{ 1, 1, 3, 15, 5, 0, 1, 3, 15, 0, 0, 0, 1, 0 };
-char CadlibDriver::pianoParamsOp1[nbLocParam] =
+uint8_t CadlibDriver::pianoParamsOp1[nbLocParam] =
 	{ 0, 1, 1, 15, 7, 0, 2, 4,  0, 0, 0, 1, 0, 0 };
 
 /* definition of default percussive voices: */
-char CadlibDriver::bdOpr0[nbLocParam] =
+uint8_t CadlibDriver::bdOpr0[nbLocParam] =
 	{ 0,  0, 0, 10,  4, 0, 8, 12, 11, 0, 0, 0, 1, 0 };
-char CadlibDriver::bdOpr1[nbLocParam] =
+uint8_t CadlibDriver::bdOpr1[nbLocParam] =
 	{ 0,  0, 0, 13,  4, 0, 6, 15,  0, 0, 0, 0, 1, 0 };
-char CadlibDriver::sdOpr[nbLocParam] =
+uint8_t CadlibDriver::sdOpr[nbLocParam] =
 	{ 0, 12, 0, 15, 11, 0, 8,  5,  0, 0, 0, 0, 0, 0 };
-char CadlibDriver::tomOpr[nbLocParam] =
+uint8_t CadlibDriver::tomOpr[nbLocParam] =
 	{ 0,  4, 0, 15, 11, 0, 7,  5,  0, 0, 0, 0, 0, 0 };
-char CadlibDriver::cymbOpr[nbLocParam] =
+uint8_t CadlibDriver::cymbOpr[nbLocParam] =
 	{ 0,  1, 0, 15, 11, 0, 5,  5,  0, 0, 0, 0, 0, 0 };
-char CadlibDriver::hhOpr[nbLocParam] =
+uint8_t CadlibDriver::hhOpr[nbLocParam] =
 	{ 0,  1, 0, 15, 11, 0, 7,  5,  0, 0, 0, 0, 0, 0 };
 
 /* Slot numbers as a function of the voice and the operator.
 	( melodic only)
 */
-char CadlibDriver::slotVoice[9][2] = {
+uint8_t CadlibDriver::slotVoice[9][2] = {
 	{ 0, 3 },	/* voix 0 */
 	{ 1, 4 },	/* 1 */
 	{ 2, 5 },	/* 2 */
@@ -64,7 +64,7 @@ char CadlibDriver::slotVoice[9][2] = {
 /* Slot numbers for the percussive voices.
 	0 indicates that there is only one slot.
 */
-char CadlibDriver::slotPerc[5][2] = {
+uint8_t CadlibDriver::slotPerc[5][2] = {
 	{ 12, 15 },		/* Bass Drum: slot 12 et 15 */
 	{ 16, 0 },		/* SD: slot 16 */
 	{ 14, 0 },		/* TOM: slot 14 */
@@ -76,7 +76,7 @@ char CadlibDriver::slotPerc[5][2] = {
 	This table gives the offset of each slot within the chip.
 	offset = fn( slot)
 */
-char CadlibDriver::offsetSlot[18] = {
+uint8_t CadlibDriver::offsetSlot[18] = {
 	0,  1,  2,  3,  4,  5,
 	8,  9, 10, 11, 12, 13,
 	16, 17, 18, 19, 20, 21
@@ -85,7 +85,7 @@ char CadlibDriver::offsetSlot[18] = {
 /* This table indicates if the slot is a modulator (0) or a carrier (1).
 	opr = fn( slot)
 */
-char CadlibDriver::operSlot[18] = {
+uint8_t CadlibDriver::operSlot[18] = {
 	0, 0, 0,		/* 1 2 3 */
 	1, 1, 1,		/* 4 5 6 */
 	0, 0, 0, 		/* 7 8 9 */
@@ -98,7 +98,7 @@ char CadlibDriver::operSlot[18] = {
 	(melodic mode only)
 	voice = fn( slot)
 */
-char CadlibDriver::voiceSlot[18] = {
+uint8_t CadlibDriver::voiceSlot[18] = {
 	0, 1, 2,
 	0, 1, 2,
 	3, 4, 5,
@@ -453,7 +453,7 @@ void CadlibDriver::SetFreq(uint8_t voice, int pitch, uint8_t keyOn)
 	fNbr = *(fNumFreqPtr[voice] + noteMOD12[pitch]);
 	opl->write(0xA0 + voice, fNbr & 0xFF);
 	t1 = keyOn ? 32 : 0;
-	t1 += ((uint8_t)noteDIV12[pitch] << 2) + (0x3 & (fNbr >> 8));
+	t1 += (noteDIV12[pitch] << 2) + (0x3 & (fNbr >> 8));
 	opl->write(0xB0 + voice, t1);
 }
 
@@ -593,7 +593,7 @@ void CadlibDriver::SetSlotParam(uint8_t slot, int16_t * param, uint8_t waveSel)
 	SndSetAllPrm(slot);
 }
 
-void CadlibDriver::SetCharSlotParam(uint8_t slot, char * cParam, uint8_t waveSel)
+void CadlibDriver::SetCharSlotParam(uint8_t slot, uint8_t * cParam, uint8_t waveSel)
 {
 	int16_t param[nbLocParam];
 

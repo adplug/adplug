@@ -125,7 +125,7 @@ private:
 	void SndWaveSelect(uint8_t slot);
 	void SndSetAllPrm(uint8_t slot);
 	void SetSlotParam(uint8_t slot, int16_t * param, uint8_t waveSel);
-	void SetCharSlotParam(uint8_t slot, char * cParam, uint8_t waveSel);
+	void SetCharSlotParam(uint8_t slot, uint8_t * cParam, uint8_t waveSel);
 	void InitSlotParams();
 	void SetFNum(uint16_t * fNumVec, int num, int den);
 	void ChangePitch(int voice, int pitchBend);
@@ -138,38 +138,38 @@ private:
 	int 	pitchRangeStep;		/* == pitchRange * NR_STEP_PITCH */
 	int		modeWaveSel;		/* != 0 if used with the 'wave-select' parameters */
 
-	char percBits;				/* control bits of percussive voices */
-	char notePitch[MAX_VOICES];	/* pitch of last note-on of each voice */
-	char voiceKeyOn[MAX_VOICES];	/* state of keyOn bit of each voice */
+	uint8_t percBits;				/* control bits of percussive voices */
+	uint8_t notePitch[MAX_VOICES];	/* pitch of last note-on of each voice */
+	uint8_t voiceKeyOn[MAX_VOICES];	/* state of keyOn bit of each voice */
 
-	char noteDIV12[96];			/* table of (0..95) DIV 12 */
-	char noteMOD12[96];			/* table of (0..95) MOD 12 */
+	uint8_t noteDIV12[96];			/* table of (0..95) DIV 12 */
+	uint8_t noteMOD12[96];			/* table of (0..95) MOD 12 */
 
-	char slotRelVolume[18];		/* relative volume of slots */
+	uint8_t slotRelVolume[18];		/* relative volume of slots */
 
-	typedef char SLOT_PARAM;
+	typedef uint8_t SLOT_PARAM;
 	SLOT_PARAM paramSlot[18][nbLocParam];	/* all the parameters of slots...  */
 
-	char amDepth;			/* chip global parameters .. */
-	char vibDepth;			/* ... */
-	char noteSel;			/* ... */
-	char percussion;		/* percussion mode parameter */
+	uint8_t amDepth;			/* chip global parameters .. */
+	uint8_t vibDepth;			/* ... */
+	uint8_t noteSel;			/* ... */
+	uint8_t percussion;		/* percussion mode parameter */
 
 protected:
-	static const char percMasks[5];
-	static char pianoParamsOp0[nbLocParam];
-	static char pianoParamsOp1[nbLocParam];
-	static char bdOpr0[nbLocParam];
-	static char bdOpr1[nbLocParam];
-	static char sdOpr[nbLocParam];
-	static char tomOpr[nbLocParam];
-	static char cymbOpr[nbLocParam];
-	static char hhOpr[nbLocParam];
-	static char slotVoice[9][2];
-	static char slotPerc[5][2];
-	static char offsetSlot[18];
-	static char operSlot[18];
-	static char voiceSlot[18];
+	static const uint8_t percMasks[5];
+	static uint8_t pianoParamsOp0[nbLocParam];
+	static uint8_t pianoParamsOp1[nbLocParam];
+	static uint8_t bdOpr0[nbLocParam];
+	static uint8_t bdOpr1[nbLocParam];
+	static uint8_t sdOpr[nbLocParam];
+	static uint8_t tomOpr[nbLocParam];
+	static uint8_t cymbOpr[nbLocParam];
+	static uint8_t hhOpr[nbLocParam];
+	static uint8_t slotVoice[9][2];
+	static uint8_t slotPerc[5][2];
+	static uint8_t offsetSlot[18];
+	static uint8_t operSlot[18];
+	static uint8_t voiceSlot[18];
 };
 
 #endif

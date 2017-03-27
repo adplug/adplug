@@ -428,8 +428,9 @@ uint32_t CmusPlayer::GetTicks()
 	// in DarkSpyre (*.MUS) songs.  Their loop-point is much closer
 	// to the mark with this condition.
 	if (ticks / timer > MAX_SEC_DELAY) // for very long delays
-		// Wraithverge: added cast.
-		ticks = static_cast<uint32_t>(timer * (float)MAX_SEC_DELAY);
+		// Wraithverge: added uint32_t cast, but removed float cast,
+		// because MAX_SEC_DELAY is now float.
+		ticks = static_cast<uint32_t>(timer * MAX_SEC_DELAY);
 	return ticks;
 }
 
