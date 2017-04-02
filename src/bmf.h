@@ -80,6 +80,7 @@ protected:
   std::string     xadplayer_getauthor();
   std::string     xadplayer_getinstrument(unsigned int i);
   unsigned int    xadplayer_getinstruments();
+  unsigned int    xadplayer_getspeed();
   //
 private:
   static const unsigned char bmf_adlib_registers[117];
