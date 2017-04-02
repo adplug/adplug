@@ -81,6 +81,7 @@
 #include "cmfmcsop.h"
 #include "vgm.h"
 #include "sop.h"
+#include "herad.h"
 
 /***** CAdPlug *****/
 
@@ -132,6 +133,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CcmfmacsoperaPlayer::factory, "SoundFX Macs Opera CMF", ".cmf\0"),
   CPlayerDesc(CvgmPlayer::factory, "Video Game Music", ".vgm\0.vgz\0"),
   CPlayerDesc(CsopPlayer::factory, "Note Sequencer by sopepos", ".sop\0"),
+  CPlayerDesc(CheradPlayer::factory, "Herbulot AdLib System", ".hsq\0.sqx\0.sdb\0.agd\0"),
   CPlayerDesc()
 };
 
