@@ -231,7 +231,8 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 	if (!fp.extension(filename, ".hsq") &&
 		!fp.extension(filename, ".sqx") &&
 		!fp.extension(filename, ".sdb") &&
-		!fp.extension(filename, ".agd"))
+		!fp.extension(filename, ".agd") &&
+		!fp.extension(filename, ".ha2"))
 	{
 		#ifdef DEBUG
 		AdPlug_LogWrite("HERAD: Unsupported file extension.\n");
