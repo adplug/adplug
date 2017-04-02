@@ -25,6 +25,7 @@
 #ifndef H_ADPLUG_HERADPLAYER
 #define H_ADPLUG_HERADPLAYER
 
+#include <stdint.h>
 #include "player.h"
 
 #define HERAD_MIN_SIZE		6		/* Minimum file size for compression detection */
