@@ -104,6 +104,7 @@ but are included for testing purposes anyway.
 @item @file{ADL}: Westwood ADL File Format
 @item @file{AMD}: AMUSIC Adlib Tracker by Elyssis
 @item @file{BAM}: Bob's Adlib Music Format by Bob
+@item @file{BMF}: Easy AdLib 1.0 by The Brain
 @item @file{CFF}: BoomTracker 4.0 by CUD
 @item @file{CMF}: Creative Music File Format by Creative Technology
 @item @file{CMF}: SoundFX Macs Opera tracker by Linel

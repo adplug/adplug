@@ -69,6 +69,7 @@ static const char *filelist[] = {
   "TU_BLESS.AMD",	// AMUSIC
   "VIB_VOL3.D00",	// EdLib Packed
   "WONDERIN.WLF",	// Apogee
+  "bmf1_1.bmf",		// BMF (without XAD header)
   "bmf1_2.xad",		// xad: BMF
   "flash.xad",		// xad: flash
   "HIP_D.ROL",		// Visual Composer

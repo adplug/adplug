@@ -47,6 +47,7 @@ bool CxadPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
 	binistream *f = fp.open(filename); if(!f) return false;
 	bool ret = false;
+	bool xad_header = true;
 
 	// load header
 	xad.id = f->readInt(4);
@@ -57,10 +58,32 @@ bool CxadPlayer::load(const std::string &filename, const CFileProvider &fp)
 	xad.reserved_a = f->readInt(1);
 
 	// 'XAD!' - signed ?
-	if (xad.id != 0x21444158) { fp.close(f); return false; }
-
-	// get file size
-	tune_size = fp.filesize(f) - 80;
+	if (xad.id != 0x21444158) {
+		if ((xad.id & 0xFFFFFF) == 4607298) // 'BMF'
+		{
+			xad_header = false;
+			xad.fmt = BMF;
+		}
+		if (xad_header)
+		{
+			fp.close(f);
+			return false;
+		}
+	}
+	if (!xad_header)
+	{
+		xad.title[0] = 0;
+		xad.author[0] = 0;
+		xad.speed = 0;
+		xad.reserved_a = 0;
+		f->seek(0);
+		tune_size = fp.filesize(f);
+	}
+	else
+	{
+		// get file size
+		tune_size = fp.filesize(f) - 80;
+	}
 
 	// load()
 	tune = new unsigned char [tune_size];
