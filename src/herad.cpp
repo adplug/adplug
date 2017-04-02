@@ -462,6 +462,8 @@ void CheradPlayer::executeCommand(uint8_t t)
 			}
 			track[t].note = note;
 			track[t].keyon = true;
+			if (v2 && inst[track[t].playprog].param.mode == HERAD_INSTMODE_KMAP)
+				break;
 			playNote(t, note, par, true);
 			macro = inst[track[t].playprog].param.mc_mod_out_vel;
 			if (macro != 0)
