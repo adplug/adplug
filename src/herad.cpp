@@ -486,6 +486,8 @@ void CheradPlayer::executeCommand(uint8_t t)
 			break;
 		case 0xD0:	// Aftertouch
 			par = track[t].data[track[t].pos++];
+			if (v2) // version 2 ignores this event
+				break;
 			macro = inst[track[t].playprog].param.mc_mod_out_at;
 			if (macro != 0)
 				macroModOutput(t, track[t].playprog, macro, par);
