@@ -49,7 +49,7 @@ public:
 	static CPlayer *factory(Copl *newopl);
 
 	CheradPlayer(Copl *newopl)
-		: CPlayer(newopl), track(0), inst(0)
+		: CPlayer(newopl), track(0), chn(0), inst(0)
 		{ }
 	~CheradPlayer()
 	{
@@ -61,6 +61,7 @@ public:
 			}
 			delete[] track;
 		}
+		if (chn) delete[] chn;
 		if (inst) delete[] inst;
 	};
 
@@ -123,6 +124,8 @@ protected:
 		uint16_t pos;			/* data position */
 		uint32_t counter;			/* tick counter */
 		uint16_t ticks;			/* ticks to wait for next event */
+	};
+	struct herad_chn {
 		uint8_t program;			/* current instrument */
 		uint8_t playprog;			/* current playing instrument (used for keymap) */
 		uint8_t note;			/* current note */
@@ -183,6 +186,7 @@ protected:
 		herad_keymap keymap;			/* keymap structure */
 	};
 	herad_trk * track;				/* event tracks [nTracks] */
+	herad_chn * chn;					/* active channels [nTracks] */
 	herad_inst * inst;				/* instruments [nInsts] */
 };
 

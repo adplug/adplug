@@ -339,6 +339,7 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 		nTracks++;
 	}
 	track = new herad_trk[nTracks];
+	chn = new herad_chn[nTracks];
 	for (int i = 0; i < nTracks; i++)
 	{
 		offset = *(uint16_t *)(data + 2 + i * 2) + 2;
@@ -380,10 +381,10 @@ void CheradPlayer::rewind(int subsong)
 		track[i].pos = 0;
 		track[i].counter = 0;
 		track[i].ticks = 0;
-		track[i].program = 0;
-		track[i].playprog = 0;
-		track[i].note = 24;
-		track[i].keyon = false;
+		chn[i].program = 0;
+		chn[i].playprog = 0;
+		chn[i].note = 24;
+		chn[i].keyon = false;
 	}
 
 	opl->init();
@@ -443,43 +444,43 @@ void CheradPlayer::executeCommand(uint8_t t)
 		case 0x80:	// Note Off
 			note = track[t].data[track[t].pos++];
 			par = (v2 ? 0 : track[t].data[track[t].pos++]);
-			if (note != track[t].note || !track[t].keyon)
+			if (note != chn[t].note || !chn[t].keyon)
 				break;
-			track[t].keyon = false;
+			chn[t].keyon = false;
 			playNote(t, note, par, false);
 			break;
 		case 0x90:	// Note On
 			note = track[t].data[track[t].pos++];
 			par = track[t].data[track[t].pos++];
-			if (track[t].keyon)
+			if (chn[t].keyon)
 			{
 				// turn off last active note
-				track[t].keyon = false;
-				playNote(t, track[t].note, 0, false);
+				chn[t].keyon = false;
+				playNote(t, chn[t].note, 0, false);
 			}
-			if (v2 && inst[track[t].program].param.mode == HERAD_INSTMODE_KMAP)
+			if (v2 && inst[chn[t].program].param.mode == HERAD_INSTMODE_KMAP)
 			{
 				// keymap is used
-				int8_t mp = note - (inst[track[t].program].keymap.offset + 24);
+				int8_t mp = note - (inst[chn[t].program].keymap.offset + 24);
 				if (mp < 0 || mp >= HERAD_INST_SIZE - 4)
 					break; // if not in range, skip note
-				track[t].playprog = inst[track[t].program].keymap.index[mp];
-				changeProgram(t, track[t].playprog);
+				chn[t].playprog = inst[chn[t].program].keymap.index[mp];
+				changeProgram(t, chn[t].playprog);
 			}
-			track[t].note = note;
-			track[t].keyon = true;
-			if (v2 && inst[track[t].playprog].param.mode == HERAD_INSTMODE_KMAP)
+			chn[t].note = note;
+			chn[t].keyon = true;
+			if (v2 && inst[chn[t].playprog].param.mode == HERAD_INSTMODE_KMAP)
 				break;
 			playNote(t, note, par, true);
-			macro = inst[track[t].playprog].param.mc_mod_out_vel;
+			macro = inst[chn[t].playprog].param.mc_mod_out_vel;
 			if (macro != 0)
-				macroModOutput(t, track[t].playprog, macro, par);
-			macro = inst[track[t].playprog].param.mc_car_out_vel;
+				macroModOutput(t, chn[t].playprog, macro, par);
+			macro = inst[chn[t].playprog].param.mc_car_out_vel;
 			if (macro != 0)
-				macroCarOutput(t, track[t].playprog, macro, par);
-			macro = inst[track[t].playprog].param.mc_fb_vel;
+				macroCarOutput(t, chn[t].playprog, macro, par);
+			macro = inst[chn[t].playprog].param.mc_fb_vel;
 			if (macro != 0)
-				macroFeedback(t, track[t].playprog, macro, par);
+				macroFeedback(t, chn[t].playprog, macro, par);
 			break;
 		case 0xA0:	// Unused
 		case 0xB0:	// Unused
@@ -489,23 +490,23 @@ void CheradPlayer::executeCommand(uint8_t t)
 			par = track[t].data[track[t].pos++];
 			if (par >= nInsts)
 				break;
-			track[t].program = par;
-			track[t].playprog = par;
+			chn[t].program = par;
+			chn[t].playprog = par;
 			changeProgram(t, par);
 			break;
 		case 0xD0:	// Aftertouch
 			par = track[t].data[track[t].pos++];
 			if (v2) // version 2 ignores this event
 				break;
-			macro = inst[track[t].playprog].param.mc_mod_out_at;
+			macro = inst[chn[t].playprog].param.mc_mod_out_at;
 			if (macro != 0)
-				macroModOutput(t, track[t].playprog, macro, par);
-			macro = inst[track[t].playprog].param.mc_car_out_at;
+				macroModOutput(t, chn[t].playprog, macro, par);
+			macro = inst[chn[t].playprog].param.mc_car_out_at;
 			if (macro != 0)
-				macroCarOutput(t, track[t].playprog, macro, par);
-			macro = inst[track[t].playprog].param.mc_fb_at;
+				macroCarOutput(t, chn[t].playprog, macro, par);
+			macro = inst[chn[t].playprog].param.mc_fb_at;
 			if (macro != 0)
-				macroFeedback(t, track[t].playprog, macro, par);
+				macroFeedback(t, chn[t].playprog, macro, par);
 			break;
 		case 0xE0:	// Pitch Bend
 			par = track[t].data[track[t].pos++];
@@ -535,7 +536,7 @@ void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t vel, bool on)
  */
 void CheradPlayer::pitchBend(uint8_t c, uint8_t bend)
 {
-	uint8_t note = track[c].note;
+	uint8_t note = chn[c].note;
 	// normalize note and bend
 	if (bend < 0x40)
 	{
@@ -560,12 +561,12 @@ void CheradPlayer::pitchBend(uint8_t c, uint8_t bend)
 	uint16_t freq = FNum[note % 12];
 	uint16_t diff;
 	int8_t coef = bend - 0x40; // -31..+31
-	if (track[c].note % 12 == 0 && bend < 0x40)
+	if (chn[c].note % 12 == 0 && bend < 0x40)
 	{
 		diff = freq - HERAD_FNUM_MIN;
 		freq += diff * coef / 31;
 	}
-	else if (track[c].note % 12 == 11 && bend > 0x40)
+	else if (chn[c].note % 12 == 11 && bend > 0x40)
 	{
 		diff = HERAD_FNUM_MAX - freq;
 		freq += diff * coef / 31;
@@ -582,7 +583,7 @@ void CheradPlayer::pitchBend(uint8_t c, uint8_t bend)
 		}
 		freq += diff * coef / 32;
 	}
-	setFreq(c, oct, freq, track[c].keyon);
+	setFreq(c, oct, freq, chn[c].keyon);
 }
 
 /*
