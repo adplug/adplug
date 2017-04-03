@@ -454,10 +454,11 @@ void CheradPlayer::executeCommand(uint8_t t)
 			par = track[t].data[track[t].pos++];
 			if (v2 && inst[track[t].program].param.mode == HERAD_INSTMODE_KMAP)
 			{
-				uint8_t kmo = inst[track[t].program].keymap.offset;
-				if (note - kmo - 24 < 0 || note - kmo - 24 >= HERAD_INST_SIZE - 4)
-					break;
-				track[t].playprog = inst[track[t].program].keymap.index[note - kmo - 24];
+				// keymap is used
+				int8_t mp = note - (inst[track[t].program].keymap.offset + 24);
+				if (mp < 0 || mp >= HERAD_INST_SIZE - 4)
+					break; // if not in range, skip note
+				track[t].playprog = inst[track[t].program].keymap.index[mp];
 				changeProgram(t, track[t].playprog);
 			}
 			track[t].note = note;
