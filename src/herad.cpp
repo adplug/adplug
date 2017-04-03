@@ -23,7 +23,6 @@
  *
  * TODO:
  * - SQX decompression
- * - Root note transpose
  * - Pitch slide macro (range, duration, fine/coarse tune)
  * - Implement looping
  */
@@ -533,6 +532,8 @@ void CheradPlayer::clipNote(uint8_t * note, bool soft)
  */
 void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t vel, bool on)
 {
+	if (inst[chn[c].playprog].param.mc_transpose != 0)
+		macroTranspose(&note, chn[c].playprog);
 	clipNote(&note);
 	uint8_t oct = note / 12 - 2;
 	uint16_t freq = FNum[note % 12];
@@ -545,6 +546,8 @@ void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t vel, bool on)
 void CheradPlayer::pitchBend(uint8_t c, uint8_t bend)
 {
 	uint8_t note = chn[c].note;
+	if (inst[chn[c].playprog].param.mc_transpose != 0)
+		macroTranspose(&note, chn[c].playprog);
 	// normalize note and bend
 	if (bend < 0x40)
 	{
@@ -788,6 +791,18 @@ void CheradPlayer::macroFeedback(uint8_t c, uint8_t i, int8_t sens, uint8_t leve
 	opl->write(reg, val);
 
 	if (c >= 9) opl->setchip(0);
+}
+
+/*
+ * Macro: Root Note Transpose (note, i - instrument index)
+ */
+void CheradPlayer::macroTranspose(uint8_t * note, uint8_t i)
+{
+	uint8_t tran = (uint8_t)inst[i].param.mc_transpose;
+	if (v2 && (tran >= 0x31) && (tran <= 0xD0))
+		*note = tran;
+	else
+		*note += inst[i].param.mc_transpose;
 }
 
 bool CheradPlayer::update()

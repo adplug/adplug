@@ -97,6 +97,7 @@ private:
 	void macroModOutput(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
 	void macroCarOutput(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
 	void macroFeedback(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
+	void macroTranspose(uint8_t * note, uint8_t i);
 
 	static const uint8_t slot_offset[9];
 	static const uint16_t FNum[12];
