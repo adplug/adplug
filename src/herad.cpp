@@ -25,7 +25,6 @@
  * - SQX decompression
  * - Root note transpose
  * - Pitch slide macro (range, duration, fine/coarse tune)
- * - Fix possible speed issue
  * - Implement looping
  */
 
@@ -373,7 +372,7 @@ good:
 
 void CheradPlayer::rewind(int subsong)
 {
-	timer = 49152.0 / wSpeed;
+	timer = 51968.0 / wSpeed;
 	songend = false;
 
 	for (int i = 0; i < nTracks; i++)
@@ -452,6 +451,12 @@ void CheradPlayer::executeCommand(uint8_t t)
 		case 0x90:	// Note On
 			note = track[t].data[track[t].pos++];
 			par = track[t].data[track[t].pos++];
+			if (track[t].keyon)
+			{
+				// turn off last active note
+				track[t].keyon = false;
+				playNote(t, track[t].note, 0, false);
+			}
 			if (v2 && inst[track[t].program].param.mode == HERAD_INSTMODE_KMAP)
 			{
 				// keymap is used
