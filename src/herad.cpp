@@ -519,13 +519,21 @@ void CheradPlayer::executeCommand(uint8_t t)
 	}
 }
 
+void CheradPlayer::clipNote(uint8_t * note, bool soft)
+{
+	// C2 ~ B9
+	if (*note < 24)
+		*note = 24;
+	if (*note > 119)
+		*note = (soft ? 119 : 24);
+}
+
 /*
  * Play Note (c - channel, note number, velocity, note on)
  */
 void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t vel, bool on)
 {
-	if (note < 24 || note > 119) // C2 ~ B9
-		note = 24;
+	clipNote(&note);
 	uint8_t oct = note / 12 - 2;
 	uint16_t freq = FNum[note % 12];
 	setFreq(c, oct, freq, on);
@@ -554,8 +562,7 @@ void CheradPlayer::pitchBend(uint8_t c, uint8_t bend)
 			bend -= 0x20;
 		}
 	}
-	if (note < 24) note = 24;
-	if (note > 119) note = 119;
+	clipNote(&note, true);
 	// now bend in range 0x21..0x40..0x5F
 	uint8_t oct = note / 12 - 2;
 	uint16_t freq = FNum[note % 12];
