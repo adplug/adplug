@@ -74,6 +74,11 @@ public:
 		return timer;
 	};
 
+	unsigned int getspeed()
+	{
+		return wSpeed;
+	};
+
 	std::string gettype();
 
 	unsigned int getinstruments()

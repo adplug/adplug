@@ -54,8 +54,7 @@ std::string CheradPlayer::gettype()
 	if (comp > HERAD_COMP_NONE)
 		sprintf(scomp, ", %s packed", (comp == HERAD_COMP_HSQ ? "HSQ" : "SQX"));
 	char type[40 + 1];
-	int ver = (v2 ? 2 : 1);
-	sprintf(type, "HERAD System %s (version %d%s)", (AGD ? "AGD" : "SDB"), ver, scomp);
+	sprintf(type, "HERAD System %s (version %d%s)", (AGD ? "AGD" : "SDB"), (v2 ? 2 : 1), scomp);
 	return std::string(type);
 }
 
@@ -835,6 +834,11 @@ bool CheradPlayer::update()
 				}
 				else break;
 			}
+		}
+		else if (track[i].ticks >= 0x8000)
+		{
+			track[i].pos = track[i].size;
+			track[i].counter = track[i].ticks;
 		}
 	}
 	return !songend;
