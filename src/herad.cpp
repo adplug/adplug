@@ -26,7 +26,6 @@
  * - Implement looping
  * - Fix transpose issue
  * - Fix strange AGD sound
- * - Fix HSQ decompression
  */
 
 #include <cstring>
@@ -218,8 +217,11 @@ int HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 			}
 			count += 2;
 			// copy count bytes at (output + offset) to the output
-			memcpy(dst, dst + offset, count);
-			dst += count;
+			while (count--)
+			{
+				*dst = *(dst + offset);
+				dst++;
+			}
 		}
 	}
 	return out_size;
@@ -560,7 +562,7 @@ void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t vel, bool on)
 	if (chn[c].slide_sign != 0)
 	{
 		chn[c].slide_dur = (on ? inst[chn[c].playprog].param.mc_slide_dur : 0);
-		chn[c].slide_coarse = inst[chn[c].playprog].param.mc_slide_coarse & 1 > 0;
+		chn[c].slide_coarse = (inst[chn[c].playprog].param.mc_slide_coarse & 1) > 0;
 		chn[c].slide_step = 0;
 	}
 	setFreq(c, oct, freq, on);
