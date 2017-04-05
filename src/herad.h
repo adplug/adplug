@@ -103,9 +103,11 @@ private:
 	void macroCarOutput(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
 	void macroFeedback(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
 	void macroTranspose(uint8_t * note, uint8_t i);
+	void macroSlide(uint8_t c);
 
 	static const uint8_t slot_offset[9];
 	static const uint16_t FNum[12];
+	static const uint16_t FNum_coarse[12 * 5];
 
 protected:
 	bool songend;
@@ -137,6 +139,10 @@ protected:
 		uint8_t playprog;			/* current playing instrument (used for keymap) */
 		uint8_t note;			/* current note */
 		bool keyon;				/* note is active */
+		int8_t slide_sign;		/* pitch slide sign */
+		uint8_t slide_dur;		/* pitch slide duration */
+		bool slide_coarse;		/* pitch slide coarse */
+		int32_t slide_step;		/* pitch slide step */
 	};
 	struct herad_inst_data {
 		int8_t mode;			/* instrument mode (see HERAD_INSTMODE_*) */

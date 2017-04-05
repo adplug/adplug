@@ -23,8 +23,10 @@
  *
  * TODO:
  * - SQX decompression
- * - Pitch slide macro (range, duration, fine/coarse tune)
  * - Implement looping
+ * - Fix transpose issue
+ * - Fix strange AGD sound
+ * - Fix HSQ decompression
  */
 
 #include <cstring>
@@ -41,6 +43,20 @@ const uint8_t CheradPlayer::slot_offset[9] = {
 };
 const uint16_t CheradPlayer::FNum[12] = {
 	343, 364, 385, 408, 433, 459, 486, 515, 546, 579, 614, 650
+};
+const uint16_t CheradPlayer::FNum_coarse[12 * 5] = {
+	343, 348, 353, 358, 363,
+	364, 369, 374, 379, 384,
+	385, 390, 395, 400, 405,
+	408, 413, 418, 423, 428,
+	433, 438, 443, 448, 453,
+	459, 464, 469, 474, 479,
+	486, 492, 498, 504, 510,
+	515, 521, 527, 533, 539,
+	546, 552, 558, 564, 570,
+	579, 585, 591, 597, 603,
+	614, 620, 626, 632, 638,
+	650, 656, 662, 668, 674
 };
 
 CPlayer *CheradPlayer::factory(Copl *newopl)
@@ -383,6 +399,10 @@ void CheradPlayer::rewind(int subsong)
 		chn[i].playprog = 0;
 		chn[i].note = 24;
 		chn[i].keyon = false;
+		chn[i].slide_sign = 0;
+		chn[i].slide_dur = 0;
+		chn[i].slide_coarse = false;
+		chn[i].slide_step = 0;
 	}
 
 	opl->init();
@@ -500,7 +520,7 @@ void CheradPlayer::executeCommand(uint8_t t)
 			if (macro != 0)
 				macroModOutput(t, chn[t].playprog, macro, par);
 			macro = inst[chn[t].playprog].param.mc_car_out_at;
-			if (macro != 0)
+			if (macro != 0 && inst[chn[t].playprog].param.mc_car_out_vel != 0)
 				macroCarOutput(t, chn[t].playprog, macro, par);
 			macro = inst[chn[t].playprog].param.mc_fb_at;
 			if (macro != 0)
@@ -536,6 +556,13 @@ void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t vel, bool on)
 	clipNote(&note);
 	uint8_t oct = note / 12 - 2;
 	uint16_t freq = FNum[note % 12];
+	chn[c].slide_sign = inst[chn[c].playprog].param.mc_slide_range;
+	if (chn[c].slide_sign != 0)
+	{
+		chn[c].slide_dur = (on ? inst[chn[c].playprog].param.mc_slide_dur : 0);
+		chn[c].slide_coarse = inst[chn[c].playprog].param.mc_slide_coarse & 1 > 0;
+		chn[c].slide_step = 0;
+	}
 	setFreq(c, oct, freq, on);
 }
 
@@ -804,11 +831,58 @@ void CheradPlayer::macroTranspose(uint8_t * note, uint8_t i)
 		*note += inst[i].param.mc_transpose;
 }
 
+/*
+ * Macro: Pitch Bend Slide (c - channel)
+ */
+void CheradPlayer::macroSlide(uint8_t c)
+{
+	if (chn[c].slide_sign < 0)
+		chn[c].slide_step--;
+	else
+		chn[c].slide_step++;
+	uint8_t note = chn[c].note;
+	if (inst[chn[c].playprog].param.mc_transpose != 0)
+		macroTranspose(&note, chn[c].playprog);
+	clipNote(&note, false);
+	uint8_t oct = note / 12 - 2;
+	uint16_t freq = FNum[note % 12];
+	int32_t scaleX;
+	int16_t scale_oct;
+	if (chn[c].slide_coarse)
+	{
+		scaleX = ((note % 12) * 5) + chn[c].slide_step;
+		scale_oct = scaleX / (12 * 5);
+		if (oct + scale_oct < 0 || oct + scale_oct > 7)
+		{
+			chn[c].slide_dur = 0;
+			return;
+		}
+		oct += scale_oct;
+		freq = FNum_coarse[scaleX % (12 * 5)];
+	}
+	else // fine tune
+	{
+		scaleX = freq - HERAD_FNUM_MIN + chn[c].slide_step;
+		scale_oct = scaleX / (HERAD_FNUM_MAX - HERAD_FNUM_MIN + 1);
+		if (oct + scale_oct < 0 || oct + scale_oct > 7)
+		{
+			chn[c].slide_dur = 0;
+			return;
+		}
+		oct += scale_oct;
+		freq = (scaleX % (HERAD_FNUM_MAX - HERAD_FNUM_MIN + 1)) + HERAD_FNUM_MIN;
+	}
+	setFreq(c, oct, freq, chn[c].keyon);
+	chn[c].slide_dur--;
+}
+
 bool CheradPlayer::update()
 {
 	songend = true;
 	for (uint8_t i = 0; i < nTracks; i++)
 	{
+		if (chn[i].slide_dur > 0 && chn[i].keyon)
+			macroSlide(i);
 		if (track[i].pos >= track[i].size)
 			continue;
 		songend = false; // track is not finished
