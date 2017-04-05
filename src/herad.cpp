@@ -22,7 +22,6 @@
  * http://www.vgmpf.com/Wiki/index.php/HERAD
  *
  * TODO:
- * - SQX decompression
  * - Implement looping
  * - Fix transpose issue
  * - Fix strange AGD sound
@@ -229,13 +228,288 @@ int HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 
 int SQX_decompress(uint8_t * data, int size, uint8_t * out)
 {
-	uint16_t word;
-	uint8_t bits = 0;
-	int out_size = 0;
+	int16_t offset, count;
 	uint8_t * src = data;
 	uint8_t * dst = out;
+	bool done = false;
 
-	return out_size;
+	*(uint16_t *)dst = *(uint16_t *)src;
+	src += 6;
+	uint16_t u = 0xFFFF;
+	uint16_t l = u;
+	for (int i = 0; i < data[5]; i++)
+	{
+		u >>= 1;
+		l <<= 1;
+	}
+	uint16_t mask = ~u | ~l;
+	uint16_t queue = 1;
+	int8_t bit, bit_p;
+	while (true)
+	{
+		bit = queue & 1;
+		queue >>= 1;
+		if (queue == 0)
+		{
+			queue = *(uint16_t *)src;
+			src += 2;
+			bit_p = bit;
+			bit = queue & 1;
+			queue >>= 1;
+			if (bit_p)
+				queue |= 0x8000;
+		}
+		if (bit == 0)
+		{
+			switch (data[2])
+			{
+			case 0:
+				*dst++ = *src++;
+				break;
+			case 1:
+				count = 0;
+				bit = queue & 1;
+				queue >>= 1;
+				if (queue == 0)
+				{
+					queue = *(uint16_t *)src;
+					src += 2;
+					bit_p = bit;
+					bit = queue & 1;
+					queue >>= 1;
+					if (bit_p)
+						queue |= 0x8000;
+					count = bit;
+					bit = queue & 1;
+					queue >>= 1;
+				}
+				else
+				{
+					count = bit;
+					bit = queue & 1;
+					queue >>= 1;
+					if (queue == 0)
+					{
+						queue = *(uint16_t *)src;
+						src += 2;
+						bit_p = bit;
+						bit = queue & 1;
+						queue >>= 1;
+						if (bit_p)
+							queue |= 0x8000;
+					}
+				}
+				count = (count << 1) | bit;
+				offset = *(uint8_t *)src;
+				offset -= 256;
+				src++;
+				count += 2;
+				while (count--)
+				{
+					*dst = *(dst + offset);
+					dst++;
+				}
+				break;
+			case 2:
+				count = *(uint16_t *)src;
+				offset = (count >> data[5]) | (mask & 0xFF00);
+				count &= mask & 0xFF;
+				src += 2;
+				if (!count)
+				{
+					count = *(uint8_t *)src;
+					src++;
+				}
+				if (!count)
+				{
+					done = true;
+					break;
+				}
+				count += 2;
+				while (count--)
+				{
+					*dst = *(dst + offset);
+					dst++;
+				}
+				break;
+			}
+			if (done)
+				break;
+			continue;
+		}
+		else
+		{
+			bit = queue & 1;
+			queue >>= 1;
+			if (queue == 0)
+			{
+				queue = *(uint16_t *)src;
+				src += 2;
+				bit_p = bit;
+				bit = queue & 1;
+				queue >>= 1;
+				if (bit_p)
+					queue |= 0x8000;
+			}
+			if (bit == 0)
+			{
+				switch (data[3])
+				{
+				case 0:
+					*dst++ = *src++;
+					break;
+				case 1:
+					count = 0;
+					bit = queue & 1;
+					queue >>= 1;
+					if (queue == 0)
+					{
+						queue = *(uint16_t *)src;
+						src += 2;
+						bit_p = bit;
+						bit = queue & 1;
+						queue >>= 1;
+						if (bit_p)
+							queue |= 0x8000;
+						count = bit;
+						bit = queue & 1;
+						queue >>= 1;
+					}
+					else
+					{
+						count = bit;
+						bit = queue & 1;
+						queue >>= 1;
+						if (queue == 0)
+						{
+							queue = *(uint16_t *)src;
+							src += 2;
+							bit_p = bit;
+							bit = queue & 1;
+							queue >>= 1;
+							if (bit_p)
+								queue |= 0x8000;
+						}
+					}
+					count = (count << 1) | bit;
+					offset = *(uint8_t *)src;
+					offset -= 256;
+					src++;
+					count += 2;
+					while (count--)
+					{
+						*dst = *(dst + offset);
+						dst++;
+					}
+					break;
+				case 2:
+					count = *(uint16_t *)src;
+					offset = (count >> data[5]) | (mask & 0xFF00);
+					count &= mask & 0xFF;
+					src += 2;
+					if (!count)
+					{
+						count = *(uint8_t *)src;
+						src++;
+					}
+					if (!count)
+					{
+						done = true;
+						break;
+					}
+					count += 2;
+					while (count--)
+					{
+						*dst = *(dst + offset);
+						dst++;
+					}
+					break;
+				}
+				if (done)
+					break;
+				continue;
+			}
+			else
+			{
+				switch (data[4])
+				{
+				case 0:
+					*dst++ = *src++;
+					break;
+				case 1:
+					count = 0;
+					bit = queue & 1;
+					queue >>= 1;
+					if (queue == 0)
+					{
+						queue = *(uint16_t *)src;
+						src += 2;
+						bit_p = bit;
+						bit = queue & 1;
+						queue >>= 1;
+						if (bit_p)
+							queue |= 0x8000;
+						count = bit;
+						bit = queue & 1;
+						queue >>= 1;
+					}
+					else
+					{
+						count = bit;
+						bit = queue & 1;
+						queue >>= 1;
+						if (queue == 0)
+						{
+							queue = *(uint16_t *)src;
+							src += 2;
+							bit_p = bit;
+							bit = queue & 1;
+							queue >>= 1;
+							if (bit_p)
+								queue |= 0x8000;
+						}
+					}
+					count = (count << 1) | bit;
+					offset = *(uint8_t *)src;
+					offset -= 256;
+					src++;
+					count += 2;
+					while (count--)
+					{
+						*dst = *(dst + offset);
+						dst++;
+					}
+					break;
+				case 2:
+					count = *(uint16_t *)src;
+					offset = (count >> data[5]) | (mask & 0xFF00);
+					count &= mask & 0xFF;
+					src += 2;
+					if (!count)
+					{
+						count = *(uint8_t *)src;
+						src++;
+					}
+					if (!count)
+					{
+						done = true;
+						break;
+					}
+					count += 2;
+					while (count--)
+					{
+						*dst = *(dst + offset);
+						dst++;
+					}
+					break;
+				}
+				if (done)
+					break;
+				continue;
+			}
+		}
+	}
+	return dst - out;
 }
 
 bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
