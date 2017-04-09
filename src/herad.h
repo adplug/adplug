@@ -42,6 +42,9 @@
 #define HERAD_INSTMODE_KMAP	-1		/* HERAD version 2 keymap */
 #define HERAD_FNUM_MIN		325		/* Minimum note frequency number */
 #define HERAD_FNUM_MAX		685		/* Maximum note frequency number */
+#define HERAD_NOTE_OFF		0
+#define HERAD_NOTE_ON		1
+#define HERAD_NOTE_UPDATE	2
 
 class CheradPlayer: public CPlayer
 {
@@ -95,8 +98,7 @@ private:
 	uint32_t GetTicks(uint8_t t);
 	void executeCommand(uint8_t t);
 	void clipNote(uint8_t * note, bool soft = false);
-	void playNote(uint8_t c, uint8_t note, uint8_t vel, bool on);
-	void pitchBend(uint8_t c, uint8_t bend);
+	void playNote(uint8_t c, uint8_t note, uint8_t state);
 	void setFreq(uint8_t c, uint8_t oct, uint16_t freq, bool on);
 	void changeProgram(uint8_t c, uint8_t i);
 	void macroModOutput(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
@@ -139,6 +141,7 @@ protected:
 		uint8_t playprog;			/* current playing instrument (used for keymap) */
 		uint8_t note;			/* current note */
 		bool keyon;				/* note is active */
+		uint8_t bend;			/* current pitch bend */
 		int8_t slide_sign;		/* pitch slide sign */
 		uint8_t slide_dur;		/* pitch slide duration */
 		bool slide_coarse;		/* pitch slide coarse */

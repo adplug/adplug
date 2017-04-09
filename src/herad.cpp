@@ -64,7 +64,7 @@ CPlayer *CheradPlayer::factory(Copl *newopl)
 
 std::string CheradPlayer::gettype()
 {
-	char scomp[12 + 1] = { 0 };
+	char scomp[12 + 1] = "";
 	if (comp > HERAD_COMP_NONE)
 		sprintf(scomp, ", %s packed", (comp == HERAD_COMP_HSQ ? "HSQ" : "SQX"));
 	char type[40 + 1];
@@ -675,6 +675,7 @@ void CheradPlayer::rewind(int subsong)
 		chn[i].playprog = 0;
 		chn[i].note = 24;
 		chn[i].keyon = false;
+		chn[i].bend = 0x40;
 		chn[i].slide_sign = 0;
 		chn[i].slide_dur = 0;
 		chn[i].slide_coarse = false;
@@ -741,7 +742,7 @@ void CheradPlayer::executeCommand(uint8_t t)
 			if (note != chn[t].note || !chn[t].keyon)
 				break;
 			chn[t].keyon = false;
-			playNote(t, note, par, false);
+			playNote(t, note, HERAD_NOTE_OFF);
 			break;
 		case 0x90:	// Note On
 			note = track[t].data[track[t].pos++];
@@ -750,7 +751,7 @@ void CheradPlayer::executeCommand(uint8_t t)
 			{
 				// turn off last active note
 				chn[t].keyon = false;
-				playNote(t, chn[t].note, 0, false);
+				playNote(t, chn[t].note, HERAD_NOTE_OFF);
 			}
 			if (v2 && inst[chn[t].program].param.mode == HERAD_INSTMODE_KMAP)
 			{
@@ -763,9 +764,10 @@ void CheradPlayer::executeCommand(uint8_t t)
 			}
 			chn[t].note = note;
 			chn[t].keyon = true;
+			chn[t].bend = 0x40;
 			if (v2 && inst[chn[t].playprog].param.mode == HERAD_INSTMODE_KMAP)
 				break;
-			playNote(t, note, par, true);
+			playNote(t, note, HERAD_NOTE_ON);
 			macro = inst[chn[t].playprog].param.mc_mod_out_vel;
 			if (macro != 0)
 				macroModOutput(t, chn[t].playprog, macro, par);
@@ -804,7 +806,9 @@ void CheradPlayer::executeCommand(uint8_t t)
 			break;
 		case 0xE0:	// Pitch Bend
 			par = track[t].data[track[t].pos++];
-			pitchBend(t, par);
+			chn[t].bend = par;
+			if (chn[t].keyon) // update pitch
+				playNote(t, chn[t].note, HERAD_NOTE_UPDATE);
 			break;
 		default:
 			track[t].pos = track[t].size;
@@ -823,79 +827,75 @@ void CheradPlayer::clipNote(uint8_t * note, bool soft)
 }
 
 /*
- * Play Note (c - channel, note number, velocity, note on)
+ * Play Note (c - channel, note number, note state - see HERAD_NOTE_*)
  */
-void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t vel, bool on)
+void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t state)
 {
 	if (inst[chn[c].playprog].param.mc_transpose != 0)
 		macroTranspose(&note, chn[c].playprog);
+	uint8_t bend = chn[c].bend;
+	if (bend != 0x40)
+	{
+		// normalize note and bend
+		if (bend < 0x40)
+		{
+			while (bend <= 0x20)
+			{
+				note--;
+				bend += 0x20;
+			}
+		}
+		if (bend > 0x40)
+		{
+			while (bend >= 0x60)
+			{
+				note++;
+				bend -= 0x20;
+			}
+		}
+		// now bend in range 0x21..0x40..0x5F
+	}
 	clipNote(&note);
 	uint8_t oct = note / 12 - 2;
 	uint16_t freq = FNum[note % 12];
-	chn[c].slide_sign = inst[chn[c].playprog].param.mc_slide_range;
-	if (chn[c].slide_sign != 0)
+	if (bend != 0x40)
 	{
-		chn[c].slide_dur = (on ? inst[chn[c].playprog].param.mc_slide_dur : 0);
-		chn[c].slide_coarse = (inst[chn[c].playprog].param.mc_slide_coarse & 1) > 0;
-		chn[c].slide_step = 0;
-	}
-	setFreq(c, oct, freq, on);
-}
-
-/*
- * Set Pitch Bend (c - channel, pitch bend)
- */
-void CheradPlayer::pitchBend(uint8_t c, uint8_t bend)
-{
-	uint8_t note = chn[c].note;
-	if (inst[chn[c].playprog].param.mc_transpose != 0)
-		macroTranspose(&note, chn[c].playprog);
-	// normalize note and bend
-	if (bend < 0x40)
-	{
-		while (bend <= 0x20)
+		uint16_t diff;
+		int8_t coef = bend - 0x40; // -31..+31
+		if (note % 12 == 0 && bend < 0x40)
 		{
-			note--;
-			bend += 0x20;
+			diff = freq - HERAD_FNUM_MIN;
+			freq += diff * coef / 31;
 		}
-	}
-	if (bend > 0x40)
-	{
-		while (bend >= 0x60)
+		else if (note % 12 == 11 && bend > 0x40)
 		{
-			note++;
-			bend -= 0x20;
-		}
-	}
-	clipNote(&note, true);
-	// now bend in range 0x21..0x40..0x5F
-	uint8_t oct = note / 12 - 2;
-	uint16_t freq = FNum[note % 12];
-	uint16_t diff;
-	int8_t coef = bend - 0x40; // -31..+31
-	if (chn[c].note % 12 == 0 && bend < 0x40)
-	{
-		diff = freq - HERAD_FNUM_MIN;
-		freq += diff * coef / 31;
-	}
-	else if (chn[c].note % 12 == 11 && bend > 0x40)
-	{
-		diff = HERAD_FNUM_MAX - freq;
-		freq += diff * coef / 31;
-	}
-	else
-	{
-		if (bend < 0x40)
-		{
-			diff = freq - FNum[(note - 1) % 12];
+			diff = HERAD_FNUM_MAX - freq;
+			freq += diff * coef / 31;
 		}
 		else
 		{
-			diff = FNum[(note + 1) % 12] - freq;
+			if (bend < 0x40)
+			{
+				diff = freq - FNum[(note - 1) % 12];
+			}
+			else
+			{
+				diff = FNum[(note + 1) % 12] - freq;
+			}
+			freq += diff * coef / 32;
 		}
-		freq += diff * coef / 32;
 	}
-	setFreq(c, oct, freq, chn[c].keyon);
+	if (state != HERAD_NOTE_UPDATE)
+	{
+		chn[c].slide_sign = inst[chn[c].playprog].param.mc_slide_range;
+		if (chn[c].slide_sign != 0)
+		{
+			chn[c].slide_dur = (state == HERAD_NOTE_ON ? inst[chn[c].playprog].param.mc_slide_dur : 0);
+			chn[c].slide_coarse = (inst[chn[c].playprog].param.mc_slide_coarse & 1) > 0;
+			chn[c].slide_step = 0;
+		}
+	}
+	setFreq(c, oct, freq, state != HERAD_NOTE_OFF);
 }
 
 /*
