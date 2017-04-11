@@ -182,7 +182,7 @@ protected:
 		int8_t mc_car_out_vel;		/* macro: modify carrier output level with note velocity */
 		int8_t mc_fb_vel;			/* macro: modify feedback with note velocity */
 		uint8_t mc_slide_coarse;	/* macro: pitch slide coarse tune */
-		int8_t mc_transpose;		/* macro: root note transpose */
+		uint8_t mc_transpose;		/* macro: root note transpose */
 		uint8_t mc_slide_dur;		/* macro: pitch slide duration (in ticks) */
 		int8_t mc_slide_range;		/* macro: pitch slide range */
 		uint8_t dummy;			/* unknown value */

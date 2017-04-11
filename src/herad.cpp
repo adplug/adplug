@@ -1100,11 +1100,12 @@ void CheradPlayer::macroFeedback(uint8_t c, uint8_t i, int8_t sens, uint8_t leve
  */
 void CheradPlayer::macroTranspose(uint8_t * note, uint8_t i)
 {
-	uint8_t tran = (uint8_t)inst[i].param.mc_transpose;
-	if (v2 && (tran >= 0x31) && (tran <= 0xD0))
-		*note = tran;
+	uint8_t tran = inst[i].param.mc_transpose;
+	uint8_t diff = (tran - 0x31) & 0xFF;
+	if (v2 && diff < 0x60)
+		*note = (diff + 0x18) & 0xFF;
 	else
-		*note += inst[i].param.mc_transpose;
+		*note = (*note + tran) & 0xFF;
 }
 
 /*
