@@ -288,8 +288,10 @@ bool CmidPlayer::load(const std::string &filename, const CFileProvider &fp)
     binistream *f = fp.open(filename); if(!f) return false;
     int good;
     unsigned char s[6];
+    uint32_t size;
 
     f->readString((char *)s, 6);
+    size = *(uint32_t *)s; // size of FILE_OLDLUCAS
     good=0;
     subsongs=0;
     switch(s[0])
@@ -312,7 +314,7 @@ bool CmidPlayer::load(const std::string &filename, const CFileProvider &fp)
 	  }
 	  break;
         default:
-            if (s[4]=='A' && s[5]=='D') good=FILE_OLDLUCAS;
+            if (size == fp.filesize(f) && s[4]=='A' && s[5]=='D') good=FILE_OLDLUCAS;
             break;
         }
 
