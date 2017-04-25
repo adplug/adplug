@@ -115,8 +115,7 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		// "title" is maximum 40 characters long.
 		f->readString(title, 40, 0);
 
-		// Skip "author" if Tag marker byte is missing, but first
-		// set a null-terminator as placeholder.
+		// Skip "author" if Tag marker byte is missing.
 		if (f->readInt(1) != 0x1B) {
 			f->seek(-1, binio::Add);
 			goto desc_section;
@@ -126,19 +125,13 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		f->readString(author, 40, 0);
 
 desc_section:
-		// Skip "desc" if Tag marker byte is missing, but first
-		// set a null-terminator as placeholder.
+		// Skip "desc" if Tag marker byte is missing.
 		if (f->readInt(1) != 0x1C) {
 			goto end_section;
 		}
 
 		// "desc" is now maximum 1023 characters long (it was 140).
 		f->readString(desc, 1023, 0);
-
-		if (strlen(desc) == 0) {
-			goto end_section;
-		}
-		else goto end_section;
 	}
 
 end_section:
