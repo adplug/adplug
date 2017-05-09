@@ -663,7 +663,7 @@ good:
 
 void CheradPlayer::rewind(int subsong)
 {
-	timer = 51968.0 / wSpeed;
+	timer = 200.299 * 256.0 / wSpeed;
 	songend = false;
 
 	for (int i = 0; i < nTracks; i++)
