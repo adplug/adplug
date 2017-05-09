@@ -74,7 +74,7 @@ public:
 
 	float getrefresh()
 	{
-		return timer;
+		return 200.299;
 	};
 
 	unsigned int getspeed()
@@ -113,7 +113,7 @@ private:
 
 protected:
 	bool songend;
-	float timer;
+	int16_t wTime;
 
 	uint8_t comp;		/* File compression type (see HERAD_COMP_*) */
 	bool AGD;			/* Whether this is HERAD AGD (OPL3) */

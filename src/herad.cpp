@@ -663,7 +663,7 @@ good:
 
 void CheradPlayer::rewind(int subsong)
 {
-	timer = 200.299 * 256.0 / wSpeed;
+	wTime = 0;
 	songend = false;
 
 	for (int i = 0; i < nTracks; i++)
@@ -1156,41 +1156,47 @@ void CheradPlayer::macroSlide(uint8_t c)
 bool CheradPlayer::update()
 {
 	songend = true;
+	wTime = wTime - 256;
 	for (uint8_t i = 0; i < nTracks; i++)
 	{
-		if (chn[i].slide_dur > 0 && chn[i].keyon)
-			macroSlide(i);
 		if (track[i].pos >= track[i].size)
 			continue;
 		songend = false; // track is not finished
-		if (!track[i].counter)
+		if (wTime < 0)
 		{
-			bool first = track[i].pos == 0;
-			track[i].ticks = GetTicks(i);
-			if (first && track[i].ticks)
-				track[i].ticks++; // workaround to synchronize tracks (there's always 1 excess tick at start)
-		}
-		if (++track[i].counter >= track[i].ticks)
-		{
-			track[i].counter = 0;
-			while (track[i].pos < track[i].size)
+			if (chn[i].slide_dur > 0 && chn[i].keyon)
+				macroSlide(i);
+			if (!track[i].counter)
 			{
-				executeCommand(i);
-				if (track[i].pos >= track[i].size) {
-					break;
-				}
-				else if (!track[i].data[track[i].pos]) // if next delay is zero
+				bool first = track[i].pos == 0;
+				track[i].ticks = GetTicks(i);
+				if (first && track[i].ticks)
+					track[i].ticks++; // workaround to synchronize tracks (there's always 1 excess tick at start)
+			}
+			if (++track[i].counter >= track[i].ticks)
+			{
+				track[i].counter = 0;
+				while (track[i].pos < track[i].size)
 				{
-					track[i].pos++;
+					executeCommand(i);
+					if (track[i].pos >= track[i].size) {
+						break;
+					}
+					else if (!track[i].data[track[i].pos]) // if next delay is zero
+					{
+						track[i].pos++;
+					}
+					else break;
 				}
-				else break;
+			}
+			else if (track[i].ticks >= 0x8000)
+			{
+				track[i].pos = track[i].size;
+				track[i].counter = track[i].ticks;
 			}
 		}
-		else if (track[i].ticks >= 0x8000)
-		{
-			track[i].pos = track[i].size;
-			track[i].counter = track[i].ticks;
-		}
 	}
+	if (wTime < 0)
+		wTime = wTime + wSpeed;
 	return !songend;
 }
