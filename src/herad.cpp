@@ -1153,50 +1153,54 @@ void CheradPlayer::macroSlide(uint8_t c)
 	chn[c].slide_dur--;
 }
 
-bool CheradPlayer::update()
+void CheradPlayer::processEvents()
 {
 	songend = true;
-	wTime = wTime - 256;
 	for (uint8_t i = 0; i < nTracks; i++)
 	{
+		if (chn[i].slide_dur > 0 && chn[i].keyon)
+			macroSlide(i);
 		if (track[i].pos >= track[i].size)
 			continue;
 		songend = false; // track is not finished
-		if (wTime < 0)
+		if (!track[i].counter)
 		{
-			if (chn[i].slide_dur > 0 && chn[i].keyon)
-				macroSlide(i);
-			if (!track[i].counter)
+			bool first = track[i].pos == 0;
+			track[i].ticks = GetTicks(i);
+			if (first && track[i].ticks)
+				track[i].ticks++; // workaround to synchronize tracks (there's always 1 excess tick at start)
+		}
+		if (++track[i].counter >= track[i].ticks)
+		{
+			track[i].counter = 0;
+			while (track[i].pos < track[i].size)
 			{
-				bool first = track[i].pos == 0;
-				track[i].ticks = GetTicks(i);
-				if (first && track[i].ticks)
-					track[i].ticks++; // workaround to synchronize tracks (there's always 1 excess tick at start)
-			}
-			if (++track[i].counter >= track[i].ticks)
-			{
-				track[i].counter = 0;
-				while (track[i].pos < track[i].size)
-				{
-					executeCommand(i);
-					if (track[i].pos >= track[i].size) {
-						break;
-					}
-					else if (!track[i].data[track[i].pos]) // if next delay is zero
-					{
-						track[i].pos++;
-					}
-					else break;
+				executeCommand(i);
+				if (track[i].pos >= track[i].size) {
+					break;
 				}
-			}
-			else if (track[i].ticks >= 0x8000)
-			{
-				track[i].pos = track[i].size;
-				track[i].counter = track[i].ticks;
+				else if (!track[i].data[track[i].pos]) // if next delay is zero
+				{
+					track[i].pos++;
+				}
+				else break;
 			}
 		}
+		else if (track[i].ticks >= 0x8000)
+		{
+			track[i].pos = track[i].size;
+			track[i].counter = track[i].ticks;
+		}
 	}
+}
+
+bool CheradPlayer::update()
+{
+	wTime = wTime - 256;
 	if (wTime < 0)
+	{
 		wTime = wTime + wSpeed;
+		processEvents();
+	}
 	return !songend;
 }
