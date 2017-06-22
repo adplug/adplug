@@ -495,8 +495,8 @@ static Bit16s OPL3_EnvelopeCalcExp(Bit32u level)
 static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 {
     Bit16u envelope = slot->eg_out;
-    Bit16u out = 0;
     Bit16u neg = 0;
+    Bit16u out;
 
     phase &= 0x3ff;
     switch(slot->reg_wf)
@@ -519,8 +519,9 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         if (phase & 0x200)
         {
             out = 0x1000;
+            break;
         }
-        else if (phase & 0x100)
+        if (phase & 0x100)
         {
             out = logsinrom[(phase & 0xff) ^ 0xff];
         }
@@ -550,38 +551,43 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         }
         break;
     case 4:
-        if ((phase & 0x300) == 0x100)
-        {
-            neg = ~0;
-        }
         if (phase & 0x200)
         {
             out = 0x1000;
+            break;
         }
-        else if (phase & 0x80)
+        if (phase & 0x100)
         {
-            out = logsinrom[((phase ^ 0xff) << 1) & 0xff];
+            neg = ~0;
+        }
+        phase <<= 1;
+        if (phase & 0x100)
+        {
+            out = logsinrom[(phase & 0xff) ^ 0xff];
         }
         else
         {
-            out = logsinrom[(phase << 1) & 0xff];
+            out = logsinrom[phase & 0xff];
         }
         break;
     case 5:
         if (phase & 0x200)
         {
             out = 0x1000;
+            break;
         }
-        else if (phase & 0x80)
+        phase <<= 1;
+        if (phase & 0x100)
         {
-            out = logsinrom[((phase ^ 0xff) << 1) & 0xff];
+            out = logsinrom[(phase & 0xff) ^ 0xff];
         }
         else
         {
-            out = logsinrom[(phase << 1) & 0xff];
+            out = logsinrom[phase & 0xff];
         }
         break;
     case 6:
+        out = 0;
         if (phase & 0x200)
         {
             neg = ~0;
@@ -591,7 +597,7 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         if (phase & 0x200)
         {
             neg = ~0;
-            phase = (phase & 0x1ff) ^ 0x1ff;
+            phase ^= 0x3ff;
         }
         out = phase << 3;
         break;
