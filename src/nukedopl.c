@@ -508,12 +508,10 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         }
         if (phase & 0x100)
         {
-            out = logsinrom[(phase & 0xff) ^ 0xff];
+            out = logsinrom[(phase ^ 0xff) & 0xff];
+            break;
         }
-        else
-        {
-            out = logsinrom[phase & 0xff];
-        }
+        out = logsinrom[phase & 0xff];
         break;
     case 1:
         if (phase & 0x200)
@@ -521,34 +519,21 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
             out = 0x1000;
             break;
         }
-        if (phase & 0x100)
-        {
-            out = logsinrom[(phase & 0xff) ^ 0xff];
-        }
-        else
-        {
-            out = logsinrom[phase & 0xff];
-        }
-        break;
     case 2:
         if (phase & 0x100)
         {
-            out = logsinrom[(phase & 0xff) ^ 0xff];
+            out = logsinrom[(phase ^ 0xff) & 0xff];
+            break;
         }
-        else
-        {
-            out = logsinrom[phase & 0xff];
-        }
+        out = logsinrom[phase & 0xff];
         break;
     case 3:
         if (phase & 0x100)
         {
             out = 0x1000;
+            break;
         }
-        else
-        {
-            out = logsinrom[phase & 0xff];
-        }
+        out = logsinrom[phase & 0xff];
         break;
     case 4:
         if (phase & 0x200)
@@ -560,16 +545,6 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         {
             neg = ~0;
         }
-        phase <<= 1;
-        if (phase & 0x100)
-        {
-            out = logsinrom[(phase & 0xff) ^ 0xff];
-        }
-        else
-        {
-            out = logsinrom[phase & 0xff];
-        }
-        break;
     case 5:
         if (phase & 0x200)
         {
@@ -579,12 +554,10 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         phase <<= 1;
         if (phase & 0x100)
         {
-            out = logsinrom[(phase & 0xff) ^ 0xff];
+            out = logsinrom[phase ^ 0x1ff];
+            break;
         }
-        else
-        {
-            out = logsinrom[phase & 0xff];
-        }
+        out = logsinrom[phase];
         break;
     case 6:
         out = 0;
