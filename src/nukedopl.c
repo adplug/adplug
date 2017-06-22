@@ -201,171 +201,13 @@ static const Bit8u ch_slot[18] = {
 // Envelope generator
 //
 
-typedef Bit16s(*envelope_sinfunc)(Bit16u phase, Bit16u envelope);
-typedef void(*envelope_genfunc)(opl3_slot *slott);
-
-static Bit16s OPL3_EnvelopeCalcExp(Bit32u level)
-{
-    if (level > 0x1fff)
-    {
-        level = 0x1fff;
-    }
-    return exprom[level & 0xff] >> (level >> 8);
-}
-
-static Bit16s OPL3_EnvelopeCalcSin0(Bit16u phase, Bit16u envelope)
-{
-    Bit16u out = 0;
-    Bit16u neg = 0;
-    phase &= 0x3ff;
-    if (phase & 0x200)
-    {
-        neg = ~0;
-    }
-    if (phase & 0x100)
-    {
-        out = logsinrom[(phase & 0xff) ^ 0xff];
-    }
-    else
-    {
-        out = logsinrom[phase & 0xff];
-    }
-    return OPL3_EnvelopeCalcExp(out + (envelope << 3)) ^ neg;
-}
-
-static Bit16s OPL3_EnvelopeCalcSin1(Bit16u phase, Bit16u envelope)
-{
-    Bit16u out = 0;
-    phase &= 0x3ff;
-    if (phase & 0x200)
-    {
-        out = 0x1000;
-    }
-    else if (phase & 0x100)
-    {
-        out = logsinrom[(phase & 0xff) ^ 0xff];
-    }
-    else
-    {
-        out = logsinrom[phase & 0xff];
-    }
-    return OPL3_EnvelopeCalcExp(out + (envelope << 3));
-}
-
-static Bit16s OPL3_EnvelopeCalcSin2(Bit16u phase, Bit16u envelope)
-{
-    Bit16u out = 0;
-    phase &= 0x3ff;
-    if (phase & 0x100)
-    {
-        out = logsinrom[(phase & 0xff) ^ 0xff];
-    }
-    else
-    {
-        out = logsinrom[phase & 0xff];
-    }
-    return OPL3_EnvelopeCalcExp(out + (envelope << 3));
-}
-
-static Bit16s OPL3_EnvelopeCalcSin3(Bit16u phase, Bit16u envelope)
-{
-    Bit16u out = 0;
-    phase &= 0x3ff;
-    if (phase & 0x100)
-    {
-        out = 0x1000;
-    }
-    else
-    {
-        out = logsinrom[phase & 0xff];
-    }
-    return OPL3_EnvelopeCalcExp(out + (envelope << 3));
-}
-
-static Bit16s OPL3_EnvelopeCalcSin4(Bit16u phase, Bit16u envelope)
-{
-    Bit16u out = 0;
-    Bit16u neg = 0;
-    phase &= 0x3ff;
-    if ((phase & 0x300) == 0x100)
-    {
-        neg = ~0;
-    }
-    if (phase & 0x200)
-    {
-        out = 0x1000;
-    }
-    else if (phase & 0x80)
-    {
-        out = logsinrom[((phase ^ 0xff) << 1) & 0xff];
-    }
-    else
-    {
-        out = logsinrom[(phase << 1) & 0xff];
-    }
-    return OPL3_EnvelopeCalcExp(out + (envelope << 3)) ^ neg;
-}
-
-static Bit16s OPL3_EnvelopeCalcSin5(Bit16u phase, Bit16u envelope)
-{
-    Bit16u out = 0;
-    phase &= 0x3ff;
-    if (phase & 0x200)
-    {
-        out = 0x1000;
-    }
-    else if (phase & 0x80)
-    {
-        out = logsinrom[((phase ^ 0xff) << 1) & 0xff];
-    }
-    else
-    {
-        out = logsinrom[(phase << 1) & 0xff];
-    }
-    return OPL3_EnvelopeCalcExp(out + (envelope << 3));
-}
-
-static Bit16s OPL3_EnvelopeCalcSin6(Bit16u phase, Bit16u envelope)
-{
-    Bit16u neg = 0;
-    phase &= 0x3ff;
-    if (phase & 0x200)
-    {
-        neg = ~0;
-    }
-    return OPL3_EnvelopeCalcExp(envelope << 3) ^ neg;
-}
-
-static Bit16s OPL3_EnvelopeCalcSin7(Bit16u phase, Bit16u envelope)
-{
-    Bit16u out = 0;
-    Bit16u neg = 0;
-    phase &= 0x3ff;
-    if (phase & 0x200)
-    {
-        neg = ~0;
-        phase = (phase & 0x1ff) ^ 0x1ff;
-    }
-    out = phase << 3;
-    return OPL3_EnvelopeCalcExp(out + (envelope << 3)) ^ neg;
-}
-
-static const envelope_sinfunc envelope_sin[8] = {
-    OPL3_EnvelopeCalcSin0,
-    OPL3_EnvelopeCalcSin1,
-    OPL3_EnvelopeCalcSin2,
-    OPL3_EnvelopeCalcSin3,
-    OPL3_EnvelopeCalcSin4,
-    OPL3_EnvelopeCalcSin5,
-    OPL3_EnvelopeCalcSin6,
-    OPL3_EnvelopeCalcSin7
-};
-
 static void OPL3_EnvelopeGenOff(opl3_slot *slot);
 static void OPL3_EnvelopeGenAttack(opl3_slot *slot);
 static void OPL3_EnvelopeGenDecay(opl3_slot *slot);
 static void OPL3_EnvelopeGenSustain(opl3_slot *slot);
 static void OPL3_EnvelopeGenRelease(opl3_slot *slot);
+
+typedef void(*envelope_genfunc)(opl3_slot *slot);
 
 envelope_genfunc envelope_gen[5] = {
     OPL3_EnvelopeGenOff,
@@ -641,9 +483,120 @@ static void OPL3_SlotWriteE0(opl3_slot *slot, Bit8u data)
     }
 }
 
+static Bit16s OPL3_EnvelopeCalcExp(Bit32u level)
+{
+    if (level > 0x1fff)
+    {
+        level = 0x1fff;
+    }
+    return exprom[level & 0xff] >> (level >> 8);
+}
+
 static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 {
-    slot->out = envelope_sin[slot->reg_wf](phase, slot->eg_out);
+    Bit16u envelope = slot->eg_out;
+    Bit16u out = 0;
+    Bit16u neg = 0;
+
+    phase &= 0x3ff;
+    switch(slot->reg_wf)
+    {
+    default: /* case 0: */
+        if (phase & 0x200)
+        {
+            neg = ~0;
+        }
+        if (phase & 0x100)
+        {
+            out = logsinrom[(phase & 0xff) ^ 0xff];
+        }
+        else
+        {
+            out = logsinrom[phase & 0xff];
+        }
+        break;
+    case 1:
+        if (phase & 0x200)
+        {
+            out = 0x1000;
+        }
+        else if (phase & 0x100)
+        {
+            out = logsinrom[(phase & 0xff) ^ 0xff];
+        }
+        else
+        {
+            out = logsinrom[phase & 0xff];
+        }
+        break;
+    case 2:
+        if (phase & 0x100)
+        {
+            out = logsinrom[(phase & 0xff) ^ 0xff];
+        }
+        else
+        {
+            out = logsinrom[phase & 0xff];
+        }
+        break;
+    case 3:
+        if (phase & 0x100)
+        {
+            out = 0x1000;
+        }
+        else
+        {
+            out = logsinrom[phase & 0xff];
+        }
+        break;
+    case 4:
+        if ((phase & 0x300) == 0x100)
+        {
+            neg = ~0;
+        }
+        if (phase & 0x200)
+        {
+            out = 0x1000;
+        }
+        else if (phase & 0x80)
+        {
+            out = logsinrom[((phase ^ 0xff) << 1) & 0xff];
+        }
+        else
+        {
+            out = logsinrom[(phase << 1) & 0xff];
+        }
+        break;
+    case 5:
+        if (phase & 0x200)
+        {
+            out = 0x1000;
+        }
+        else if (phase & 0x80)
+        {
+            out = logsinrom[((phase ^ 0xff) << 1) & 0xff];
+        }
+        else
+        {
+            out = logsinrom[(phase << 1) & 0xff];
+        }
+        break;
+    case 6:
+        if (phase & 0x200)
+        {
+            neg = ~0;
+        }
+        break;
+    case 7:
+        if (phase & 0x200)
+        {
+            neg = ~0;
+            phase = (phase & 0x1ff) ^ 0x1ff;
+        }
+        out = phase << 3;
+        break;
+    }
+    slot->out = OPL3_EnvelopeCalcExp(out + (envelope << 3)) ^ neg;
 }
 
 static void OPL3_SlotGenerate(opl3_slot *slot)
