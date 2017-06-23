@@ -517,11 +517,11 @@ static void OPL3_SlotWriteE0(opl3_slot *slot, Bit8u data)
 
 static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 {
-    Bit8u  wf = slot->reg_wf;
-    Bit16u envelope;
-    Bit16u neg = 0;
-    Bit16u level;
-    Bit16u out;
+    Bit32u wf = slot->reg_wf;
+    Bit32u envelope;
+    Bit32u neg = 0;
+    Bit32u level;
+    Bit32u out;
 
     // Fast paths for mute segment
     if (  ((phase & 0x200) && ((wf==1)||(wf ==4)||(wf==5)))
