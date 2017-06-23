@@ -527,61 +527,59 @@ static Bit16s OPL3_EnvelopeCalcExp(Bit32u level)
 static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 {
     Bit16u envelope = slot->eg_out;
+    Bit8u  wf = slot->reg_wf;
     Bit16u neg = 0;
     Bit16u out;
 
+    // Fast paths for mute segment
+    switch(wf)
+    {
+    case 1:
+    case 4:
+    case 5:
+        if (phase & 0x200)
+        {
+            slot->out = 0;
+            return;
+        }
+        break;
+    case 3:
+        if (phase & 0x100)
+        {
+            slot->out = 0;
+            return;
+        }
+        break;
+    }
+
     phase &= 0x3ff;
-    switch(slot->reg_wf)
+    switch(wf)
     {
     default: /* case 0: */
         if (phase & 0x200)
         {
             neg = ~0;
         }
-        out = logsinrom[phase & 0x1ff];
-        break;
     case 1:
-        if (phase & 0x200)
-        {
-            out = 0x1000;
-            break;
-        }
     case 2:
-        out = logsinrom[phase & 0x1ff];
-        break;
     case 3:
-        if (phase & 0x100)
-        {
-            out = 0x1000;
-            break;
-        }
         out = logsinrom[phase & 0x1ff];
         break;
     case 4:
-        if (phase & 0x200)
-        {
-            out = 0x1000;
-            break;
-        }
         if (phase & 0x100)
         {
             neg = ~0;
         }
     case 5:
-        if (phase & 0x200)
-        {
-            out = 0x1000;
-            break;
-        }
         phase <<= 1;
         out = logsinrom[phase & 0x1ff];
         break;
     case 6:
-        out = 0;
         if (phase & 0x200)
         {
             neg = ~0;
         }
+        out = 0;
         break;
     case 7:
         if (phase & 0x200)
