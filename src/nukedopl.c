@@ -524,64 +524,48 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
     Bit16u out;
 
     // Fast paths for mute segment
-    switch(wf)
+    if (  ((phase & 0x200) && ((wf==1)||(wf ==4)||(wf==5)))
+        ||((phase & 0x100) &&  (wf==3))  )
     {
-    case 1:
-    case 4:
-    case 5:
-        if (phase & 0x200)
-        {
-            slot->out = 0;
-            return;
-        }
-        break;
-    case 3:
-        if (phase & 0x100)
-        {
-            slot->out = 0;
-            return;
-        }
-        break;
+        slot->out = 0;
+        return;
     }
 
     phase &= 0x3ff;
-    switch(wf)
+    if ( wf < 4 )
     {
-    default: /* case 0: */
-        if (phase & 0x200)
+        if ((wf==0) && (phase & 0x200))
         {
             neg = ~0;
         }
-    case 1:
-    case 2:
-    case 3:
         out = logsinrom[phase & 0x1ff];
-        break;
-    case 4:
-        if (phase & 0x100)
+    }
+    else if( wf < 5)
+    {
+        if ((wf==4) && (phase & 0x100))
         {
             neg = ~0;
         }
-    case 5:
-        phase <<= 1;
-        out = logsinrom[phase & 0x1ff];
-        break;
-    case 6:
-        if (phase & 0x200)
-        {
-            neg = ~0;
-        }
-        out = 0;
-        break;
-    case 7:
+        out = logsinrom[(phase<<1) & 0x1ff];
+    }
+    else if( wf==7 )
+    {
         if (phase & 0x200)
         {
             neg = ~0;
             phase ^= 0x3ff;
         }
         out = phase << 3;
-        break;
     }
+    else
+    {
+        if (phase & 0x200)
+        {
+            neg = ~0;
+        }
+        out = 0;
+    }
+
     envelope = slot->eg_out << 3;
     level =  out + envelope;
     if (level >= 0xc00)
