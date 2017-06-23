@@ -515,20 +515,12 @@ static void OPL3_SlotWriteE0(opl3_slot *slot, Bit8u data)
     }
 }
 
-static Bit16s OPL3_EnvelopeCalcExp(Bit32u level)
-{
-    if (level > 0x1fff)
-    {
-        level = 0x1fff;
-    }
-    return exprom[level & 0xff] >> (level >> 8);
-}
-
 static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 {
-    Bit16u envelope = slot->eg_out;
     Bit8u  wf = slot->reg_wf;
+    Bit16u envelope;
     Bit16u neg = 0;
+    Bit16u level;
     Bit16u out;
 
     // Fast paths for mute segment
@@ -590,7 +582,14 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         out = phase << 3;
         break;
     }
-    slot->out = OPL3_EnvelopeCalcExp(out + (envelope << 3)) ^ neg;
+    envelope = slot->eg_out << 3;
+    level =  out + envelope;
+    if (level >= 0xc00)
+    {
+        slot->out = neg;
+        return;
+    }
+    slot->out = exprom[level & 0xff] >> (level >> 8) ^ neg;
 }
 
 static void OPL3_SlotGenerate(opl3_slot *slot)
