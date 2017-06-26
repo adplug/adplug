@@ -532,33 +532,30 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         return;
     }
 
-    if ( wf < 4 )
-    {
-        if (wf==0)
-        {
-            neg = phsign;
-        }
-        out = logsinrom[phase & 0x1ff];
-    }
-    else if( wf <= 5)
-    {
-        if (wf==4)
-        {
-            neg = ((Bit32s)phase<<(31-8)) >> 31;
-        }
-        out = logsinrom[(phase<<1) & 0x1ff];
-    }
-    else
+    if ( (wf==0)||(wf==6)||(wf==7) )
     {
         neg = phsign;
-        if( wf==7 )
-        {
-            out = ((phase ^ neg) & 0x3ff) << 3;
-        }
-        else /* if( wf==6 ) */
-        {
-            out = 0;
-        }
+    }
+    if ( wf==4 )
+    {
+        neg = ((Bit32s)phase<<(31-8)) >> 31;
+    }
+
+    if ( wf <= 3 )
+    {
+        out = logsinrom[phase & 0x1ff];
+    }
+    if( (wf==4)||(wf==5) )
+    {
+        out = logsinrom[(phase<<1) & 0x1ff];
+    }
+    if( wf==6 )
+    {
+        out = 0;
+    }
+    if( wf==7 )
+    {
+        out = ((phase ^ phsign) & 0x3ff) << 3;
     }
 
     envelope = slot->eg_out << 3;
