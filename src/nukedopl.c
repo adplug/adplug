@@ -519,20 +519,21 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 {
     Bit32u phsign = ((Bit32s)phase<<(31-9)) >> 31;
     Bit32u wf = slot->reg_wf;
+    Bit32u wfbm = 0x30c132 >> wf;
     Bit32u envelope;
     Bit32u neg = 0;
     Bit32u level;
     Bit32u out;
 
     // Fast paths for mute segment
-    if (  ((phase & 0x200) && ((wf==1)||(wf==4)||(wf==5)))
+    if (  ((phase & 0x200) && (wfbm & 1)) // (wf==1)||(wf==4)||(wf==5)
         ||((phase & 0x100) &&  (wf==3))  )
     {
         slot->out = 0;
         return;
     }
 
-    if ( (wf==0)||(wf==6)||(wf==7) )
+    if (wfbm & 0x100) // (wf==0)||(wf==6)||(wf==7)
     {
         neg = phsign;
     }
@@ -545,7 +546,7 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
     {
         out = logsinrom[phase & 0x1ff];
     }
-    if( (wf==4)||(wf==5) )
+    if( wfbm & 0x10000 ) // (wf==4)||(wf==5)
     {
         out = logsinrom[(phase<<1) & 0x1ff];
     }
