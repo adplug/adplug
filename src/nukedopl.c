@@ -540,7 +540,7 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         }
         out = logsinrom[phase & 0x1ff];
     }
-    else if( wf < 5)
+    else if( wf <= 5)
     {
         if (wf==4)
         {
