@@ -78,6 +78,8 @@ struct _opl3_slot {
     Bit8u key;
     Bit32u pg_phase;
     Bit32u timer;
+
+    Bit16u maskzero;
 };
 
 struct _opl3_channel {
