@@ -543,6 +543,17 @@ static void OPL3_SlotWriteE0(opl3_slot *slot, Bit8u data)
         slot->signpos = (31-16);  // set "neg" to zero
         break;
     }
+
+    switch (slot->reg_wf)
+    {
+    case 4:
+    case 5:
+        slot->phaseshift = 1;
+        break;
+    default:
+        slot->phaseshift = 0;
+        break;
+    }
 }
 
 static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
@@ -561,16 +572,13 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
     neg = (Bit32s)((Bit32u)phase << slot->signpos) >> 31;
 
     level = slot->eg_out << 3;  // for (wf==6)
-    if ((wf == 4)||(wf == 5))
-    {
-        phase <<= 1;
-    }
     if (wf == 7)
     {
         level += ((phase ^ neg) & 0x3ff) << 3;
     }
     else if (wf <= 5)                // (wf==0)||(wf==1)||(wf==2)||(wf==3)(wf==4)||(wf==5)
     {
+        phase <<= slot->phaseshift;
         level += logsinrom[phase & 0x1ff];
     }
 

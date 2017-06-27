@@ -81,6 +81,7 @@ struct _opl3_slot {
 
     Bit16u maskzero;
     Bit8u  signpos;
+    Bit8u  phaseshift;
 };
 
 struct _opl3_channel {
