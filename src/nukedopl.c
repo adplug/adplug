@@ -528,12 +528,26 @@ static void OPL3_SlotWriteE0(opl3_slot *slot, Bit8u data)
         slot->maskzero = 0;
         break;
     }
+
+    switch (slot->reg_wf)
+    {
+    case 4:
+        slot->signpos = (31-8);  // sigext of (phase & 0x100)
+        break;
+    case 0:
+    case 6:
+    case 7:
+        slot->signpos = (31-9);  // sigext of (phase & 0x200)
+        break;
+    default:
+        slot->signpos = (31-16);  // set "neg" to zero
+        break;
+    }
 }
 
 static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 {
     Bit32u wf = slot->reg_wf;
-    Bit32u wfbm = 0xc130 >> wf;
     Bit32u level;
     Bit32u neg;
 
@@ -544,25 +558,20 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         return;
     }
 
-    neg = 0;
-    if (wf == 4)
-    {
-        neg = ((Bit32s)phase<<(31-8)) >> 31; // sigext of (phase & 0x100)
-    }
-    if (wfbm & 0x100)                 // (wf==0)||(wf==6)||(wf==7)
-    {
-        neg = ((Bit32s)phase<<(31-9)) >> 31; // sigext of (phase & 0x200)
-    }
+    neg = (Bit32s)((Bit32u)phase << slot->signpos) >> 31;
 
     level = slot->eg_out << 3;  // for (wf==6)
-    if (wf <= 5)                // (wf==0)||(wf==1)||(wf==2)||(wf==3)(wf==4)||(wf==5)
+    if ((wf == 4)||(wf == 5))
     {
-        phase <<= (wfbm & 0x1); // for (wf==4)||(wf==5) do { phase<<=1 }
-        level += logsinrom[phase & 0x1ff];
+        phase <<= 1;
     }
-    else if(wf == 7)
+    if (wf == 7)
     {
         level += ((phase ^ neg) & 0x3ff) << 3;
+    }
+    else if (wf <= 5)                // (wf==0)||(wf==1)||(wf==2)||(wf==3)(wf==4)||(wf==5)
+    {
+        level += logsinrom[phase & 0x1ff];
     }
 
     if (level >= (12<<8))
@@ -1175,6 +1184,7 @@ void OPL3_Reset(opl3_chip *chip, Bit32u samplerate)
         chip->slot[slotnum].eg_out = 0x1ff;
         chip->slot[slotnum].eg_gen = envelope_gen_num_off;
         chip->slot[slotnum].trem = (Bit8u*)&chip->zeromod;
+        chip->slot[slotnum].signpos = (31-9);  // for wf=0 need use sigext of (phase & 0x200)
     }
     for (channum = 0; channum < 18; channum++)
     {

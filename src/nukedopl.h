@@ -80,6 +80,7 @@ struct _opl3_slot {
     Bit32u timer;
 
     Bit16u maskzero;
+    Bit8u  signpos;
 };
 
 struct _opl3_channel {
