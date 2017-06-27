@@ -571,7 +571,14 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 
     neg = (Bit32s)((Bit32u)phase << slot->signpos) >> 31;
 
-    level = slot->eg_out << 3;  // for (wf==6)
+    level = slot->eg_out;
+    if (level >= (12<<(8-3)))
+    {
+        slot->out = neg;
+        return;
+    }
+    level <<= 3;  // for (wf==6) use w/o logsinrom[]
+
     if (wf == 7)
     {
         level += ((phase ^ neg) & 0x3ff) << 3;
@@ -580,12 +587,6 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
     {
         phase <<= slot->phaseshift;
         level += logsinrom[phase & 0x1ff];
-    }
-
-    if (level >= (12<<8))
-    {
-        slot->out = neg;
-        return;
     }
     slot->out = exprom[level & 0xff] >> (level >> 8) ^ neg;
 }
