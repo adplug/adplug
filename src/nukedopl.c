@@ -517,50 +517,44 @@ static void OPL3_SlotWriteE0(opl3_slot *slot, Bit8u data)
 
 static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 {
-    Bit32u phsign = ((Bit32s)phase<<(31-9)) >> 31;
     Bit32u wf = slot->reg_wf;
-    Bit32u wfbm = 0x30c132 >> wf;
-    Bit32u envelope;
-    Bit32u neg = 0;
+    Bit32u wfbm = 0x1826430 >> wf;
     Bit32u level;
-    Bit32u out;
+    Bit32u neg;
 
     // Fast paths for mute segment
-    if (  ((phase & 0x200) && (wfbm & 1)) // (wf==1)||(wf==4)||(wf==5)
-        ||((phase & 0x100) &&  (wf==3))  )
+    if ((phase & 0x100) && (wf == 3))
+    {
+        slot->out = 0;
+        return;
+    }
+    if ((phase & 0x200) & wfbm)      // (wf==1)||(wf==4)||(wf==5)
     {
         slot->out = 0;
         return;
     }
 
-    if (wfbm & 0x100) // (wf==0)||(wf==6)||(wf==7)
+    neg = 0;
+    if (wf == 4)
     {
-        neg = phsign;
+        neg = ((Bit32s)phase<<(31-8)) >> 31; // sigext of (phase & 0x100)
     }
-    if ( wf==4 )
+    if (wfbm & 0x20000)                 // (wf==0)||(wf==6)||(wf==7)
     {
-        neg = ((Bit32s)phase<<(31-8)) >> 31;
-    }
-
-    if ( wf <= 3 )
-    {
-        out = logsinrom[phase & 0x1ff];
-    }
-    if( wfbm & 0x10000 ) // (wf==4)||(wf==5)
-    {
-        out = logsinrom[(phase<<1) & 0x1ff];
-    }
-    if( wf==6 )
-    {
-        out = 0;
-    }
-    if( wf==7 )
-    {
-        out = ((phase ^ phsign) & 0x3ff) << 3;
+        neg = ((Bit32s)phase<<(31-9)) >> 31; // sigext of (phase & 0x200)
     }
 
-    envelope = slot->eg_out << 3;
-    level =  out + envelope;
+    level = slot->eg_out << 3;  // for (wf==6)
+    if (wf <= 5)                // (wf==0)||(wf==1)||(wf==2)||(wf==3)(wf==4)||(wf==5)
+    {
+        phase <<= (wfbm & 0x1); // for (wf==4)||(wf==5) do { phase<<=1 }
+        level += logsinrom[phase & 0x1ff];
+    }
+    else if(wf == 7)
+    {
+        level += ((phase ^ neg) & 0x3ff) << 3;
+    }
+
     if (level >= (12<<8))
     {
         slot->out = neg;
