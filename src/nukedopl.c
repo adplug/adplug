@@ -376,6 +376,12 @@ static void OPL3_EnvelopeCalc(opl3_slot *slot)
     slot->eg_inc = inc;
     slot->eg_out = slot->eg_rout + (slot->reg_tl << 2)
                  + (slot->eg_ksl >> kslshift[slot->reg_ksl]) + *slot->trem;
+    if (slot->eg_out > 0x1ff)  // TODO: Remove this if possible
+    {
+        slot->eg_out = 0x1ff;
+    }
+    slot->eg_out <<= 3;
+
     envelope_gen[slot->eg_gen](slot);
 }
 
@@ -559,34 +565,24 @@ static void OPL3_SlotWriteE0(opl3_slot *slot, Bit8u data)
 static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 {
     Bit32u wf = slot->reg_wf;
-    Bit32u level;
-    Bit32u neg;
+    Bit32u neg = (Bit32s)((Bit32u)phase << slot->signpos) >> 31;
+    Bit32u level = slot->eg_out;  // for (wf==6) used w/o logsinrom[]
 
-    // Fast paths for mute segment
+    // Fast paths for mute segments
     if (phase & slot->maskzero)
     {
         slot->out = 0;
         return;
     }
 
-    neg = (Bit32s)((Bit32u)phase << slot->signpos) >> 31;
-
-    level = slot->eg_out;
-    if (level >= (12<<(8-3)))
-    {
-        slot->out = neg;
-        return;
-    }
-    level <<= 3;  // for (wf==6) use w/o logsinrom[]
-
-    if (wf == 7)
-    {
-        level += ((phase ^ neg) & 0x3ff) << 3;
-    }
-    else if (wf <= 5)                // (wf==0)||(wf==1)||(wf==2)||(wf==3)(wf==4)||(wf==5)
+    if (wf <= 5)
     {
         phase <<= slot->phaseshift;
         level += logsinrom[phase & 0x1ff];
+    }
+    else if (wf == 7)
+    {
+        level += ((phase ^ neg) & 0x3ff) << 3;
     }
     slot->out = exprom[level & 0xff] >> (level >> 8) ^ neg;
 }
@@ -1190,7 +1186,7 @@ void OPL3_Reset(opl3_chip *chip, Bit32u samplerate)
         chip->slot[slotnum].chip = chip;
         chip->slot[slotnum].mod = &chip->zeromod;
         chip->slot[slotnum].eg_rout = 0x1ff;
-        chip->slot[slotnum].eg_out = 0x1ff;
+        chip->slot[slotnum].eg_out = 0x1ff << 3;
         chip->slot[slotnum].eg_gen = envelope_gen_num_off;
         chip->slot[slotnum].trem = (Bit8u*)&chip->zeromod;
         chip->slot[slotnum].signpos = (31-9);  // for wf=0 need use sigext of (phase & 0x200)
