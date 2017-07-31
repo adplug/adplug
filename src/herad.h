@@ -47,6 +47,7 @@
 #define HERAD_NOTE_UPDATE	2
 #define HERAD_NUM_VOICES	9
 #define HERAD_NUM_NOTES		12
+#define HERAD_MEASURE_TICKS	96
 
 class CheradPlayer: public CPlayer
 {
@@ -82,6 +83,21 @@ public:
 	unsigned int getspeed()
 	{
 		return wSpeed;
+	};
+
+	unsigned int getpatterns()
+	{
+		return total_ticks / HERAD_MEASURE_TICKS;
+	};
+
+	unsigned int getpattern()
+	{
+		return ticks_pos / HERAD_MEASURE_TICKS + 1;
+	};
+
+	unsigned int getrow()
+	{
+		return ticks_pos % HERAD_MEASURE_TICKS;
 	};
 
 	std::string gettype();
@@ -122,6 +138,8 @@ private:
 protected:
 	bool songend;
 	int16_t wTime;
+	uint32_t ticks_pos;	/* current tick counter */
+	uint32_t total_ticks;	/* total ticks in song */
 
 	uint8_t comp;		/* File compression type (see HERAD_COMP_*) */
 	bool AGD;			/* Whether this is HERAD AGD (OPL3) */

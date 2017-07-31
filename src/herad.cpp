@@ -663,10 +663,43 @@ good:
 
 void CheradPlayer::rewind(int subsong)
 {
+	int i, j;
 	wTime = 0;
 	songend = false;
 
-	for (int i = 0; i < nTracks; i++)
+	ticks_pos = 0;
+	total_ticks = 0;
+	for (i = 0; i < nTracks; i++)
+	{
+		track[i].pos = 0;
+		j = 0;
+		while (track[i].pos < track[i].size)
+		{
+			j += GetTicks(i);
+			switch (track[i].data[track[i].pos++] & 0xF0)
+			{
+			case 0x80:	// Note Off
+				track[i].pos += (v2 ? 1 : 2);
+				break;
+			case 0x90:	// Note On
+			case 0xA0:	// Unused
+			case 0xB0:	// Unused
+				track[i].pos += 2;
+				break;
+			case 0xC0:	// Program Change
+			case 0xD0:	// Aftertouch
+			case 0xE0:	// Pitch Bend
+				track[i].pos++;
+				break;
+			default:
+				track[i].pos = track[i].size;
+				break;
+			}
+		}
+		if (j > total_ticks)
+			total_ticks = j;
+	}
+	for (i = 0; i < nTracks; i++)
 	{
 		track[i].pos = 0;
 		track[i].counter = 0;
@@ -1220,6 +1253,8 @@ void CheradPlayer::processEvents()
 			track[i].counter = track[i].ticks;
 		}
 	}
+	if (!songend)
+		ticks_pos++;
 }
 
 bool CheradPlayer::update()
