@@ -45,6 +45,8 @@
 #define HERAD_NOTE_OFF		0
 #define HERAD_NOTE_ON		1
 #define HERAD_NOTE_UPDATE	2
+#define HERAD_NUM_VOICES	9
+#define HERAD_NUM_NOTES		12
 
 class CheradPlayer: public CPlayer
 {
@@ -113,9 +115,9 @@ private:
 	void macroTranspose(uint8_t * note, uint8_t i);
 	void macroSlide(uint8_t c);
 
-	static const uint8_t slot_offset[9];
-	static const uint16_t FNum[12];
-	static const uint16_t FNum_coarse[12 * 5];
+	static const uint8_t slot_offset[HERAD_NUM_VOICES];
+	static const uint16_t FNum[HERAD_NUM_NOTES];
+	static const uint16_t FNum_coarse[HERAD_NUM_NOTES * 5];
 
 protected:
 	bool songend;

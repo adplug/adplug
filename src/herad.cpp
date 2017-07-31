@@ -36,13 +36,13 @@
 #include "debug.h"
 #endif
 
-const uint8_t CheradPlayer::slot_offset[9] = {
+const uint8_t CheradPlayer::slot_offset[HERAD_NUM_VOICES] = {
 	0, 1, 2, 8, 9, 10, 16, 17, 18
 };
-const uint16_t CheradPlayer::FNum[12] = {
+const uint16_t CheradPlayer::FNum[HERAD_NUM_NOTES] = {
 	343, 364, 385, 408, 433, 459, 486, 515, 546, 579, 614, 650
 };
-const uint16_t CheradPlayer::FNum_coarse[12 * 5] = {
+const uint16_t CheradPlayer::FNum_coarse[HERAD_NUM_NOTES * 5] = {
 	343, 348, 353, 358, 363,
 	364, 369, 374, 379, 384,
 	385, 390, 395, 400, 405,
@@ -719,7 +719,7 @@ void CheradPlayer::executeCommand(uint8_t t)
 	if (t >= nTracks)
 		return;
 
-	if (t >= (AGD ? 18 : 9))
+	if (t >= (AGD ? HERAD_NUM_VOICES * 2 : HERAD_NUM_VOICES))
 	{
 		track[t].pos = track[t].size;
 		return;
@@ -884,18 +884,18 @@ void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t state)
 		// now bend in range 0x21..0x40..0x5F
 	}
 	clipNote(&note);
-	uint8_t oct = note / 12 - 2;
-	uint16_t freq = FNum[note % 12];
+	uint8_t oct = note / HERAD_NUM_NOTES - 2;
+	uint16_t freq = FNum[note % HERAD_NUM_NOTES];
 	if (bend != 0x40)
 	{
 		uint16_t diff;
 		int8_t coef = bend - 0x40; // -31..+31
-		if (note % 12 == 0 && bend < 0x40)
+		if (note % HERAD_NUM_NOTES == 0 && bend < 0x40)
 		{
 			diff = freq - HERAD_FNUM_MIN;
 			freq += diff * coef / 31;
 		}
-		else if (note % 12 == 11 && bend > 0x40)
+		else if (note % HERAD_NUM_NOTES == 11 && bend > 0x40)
 		{
 			diff = HERAD_FNUM_MAX - freq;
 			freq += diff * coef / 31;
@@ -904,11 +904,11 @@ void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t state)
 		{
 			if (bend < 0x40)
 			{
-				diff = freq - FNum[(note - 1) % 12];
+				diff = freq - FNum[(note - 1) % HERAD_NUM_NOTES];
 			}
 			else
 			{
-				diff = FNum[(note + 1) % 12] - freq;
+				diff = FNum[(note + 1) % HERAD_NUM_NOTES] - freq;
 			}
 			freq += diff * coef / 32;
 		}
@@ -933,18 +933,18 @@ void CheradPlayer::setFreq(uint8_t c, uint8_t oct, uint16_t freq, bool on)
 {
 	uint8_t reg, val;
 
-	if (c >= 9) opl->setchip(1);
+	if (c >= HERAD_NUM_VOICES) opl->setchip(1);
 
-	reg = 0xA0 + (c % 9);
+	reg = 0xA0 + (c % HERAD_NUM_VOICES);
 	val = freq & 0xFF;
 	opl->write(reg, val);
-	reg = 0xB0 + (c % 9);
+	reg = 0xB0 + (c % HERAD_NUM_VOICES);
 	val = ((freq >> 8) & 3) |
 		((oct & 7) << 2) |
 		((on ? 1 : 0) << 5);
 	opl->write(reg, val);
 
-	if (c >= 9) opl->setchip(0);
+	if (c >= HERAD_NUM_VOICES) opl->setchip(0);
 }
 
 /*
@@ -957,10 +957,10 @@ void CheradPlayer::changeProgram(uint8_t c, uint8_t i)
 	if (v2 && inst[i].param.mode == HERAD_INSTMODE_KMAP)
 		return;
 
-	if (c >= 9) opl->setchip(1);
+	if (c >= HERAD_NUM_VOICES) opl->setchip(1);
 
 	// Amp Mod / Vibrato / EG type / Key Scaling / Multiple
-	reg = 0x20 + slot_offset[c % 9];
+	reg = 0x20 + slot_offset[c % HERAD_NUM_VOICES];
 	val = (inst[i].param.mod_mul & 15) |
 		((inst[i].param.mod_ksr & 1) << 4) |
 		((inst[i].param.mod_eg > 0 ? 1 : 0) << 5) |
@@ -976,7 +976,7 @@ void CheradPlayer::changeProgram(uint8_t c, uint8_t i)
 	opl->write(reg, val);
 
 	// Key scaling level / Output level
-	reg = 0x40 + slot_offset[c % 9];
+	reg = 0x40 + slot_offset[c % HERAD_NUM_VOICES];
 	val = (inst[i].param.mod_out & 63) |
 		((inst[i].param.mod_ksl & 3) << 6);
 	opl->write(reg, val);
@@ -986,7 +986,7 @@ void CheradPlayer::changeProgram(uint8_t c, uint8_t i)
 	opl->write(reg, val);
 
 	// Attack Rate / Decay Rate
-	reg = 0x60 + slot_offset[c % 9];
+	reg = 0x60 + slot_offset[c % HERAD_NUM_VOICES];
 	val = (inst[i].param.mod_D & 15) |
 		((inst[i].param.mod_A & 15) << 4);
 	opl->write(reg, val);
@@ -996,7 +996,7 @@ void CheradPlayer::changeProgram(uint8_t c, uint8_t i)
 	opl->write(reg, val);
 
 	// Sustain Level / Release Rate
-	reg = 0x80 + slot_offset[c % 9];
+	reg = 0x80 + slot_offset[c % HERAD_NUM_VOICES];
 	val = (inst[i].param.mod_R & 15) |
 		((inst[i].param.mod_S & 15) << 4);
 	opl->write(reg, val);
@@ -1006,21 +1006,21 @@ void CheradPlayer::changeProgram(uint8_t c, uint8_t i)
 	opl->write(reg, val);
 
 	// Panning / Feedback strength / Connection type
-	reg = 0xC0 + (c % 9);
+	reg = 0xC0 + (c % HERAD_NUM_VOICES);
 	val = (inst[i].param.con > 0 ? 0 : 1) |
 		((inst[i].param.feedback & 7) << 1) |
 		((AGD ? (inst[i].param.pan == 0 || inst[i].param.pan > 3 ? 3 : inst[i].param.pan) : 0) << 4);
 	opl->write(reg, val);
 
 	// Wave Select
-	reg = 0xE0 + slot_offset[c % 9];
+	reg = 0xE0 + slot_offset[c % HERAD_NUM_VOICES];
 	val = inst[i].param.mod_wave & (AGD ? 7 : 3);
 	opl->write(reg, val);
 	reg += 3;
 	val = inst[i].param.car_wave & (AGD ? 7 : 3);
 	opl->write(reg, val);
 
-	if (c >= 9) opl->setchip(0);
+	if (c >= HERAD_NUM_VOICES) opl->setchip(0);
 }
 
 /*
@@ -1045,15 +1045,15 @@ void CheradPlayer::macroModOutput(uint8_t c, uint8_t i, int8_t sens, uint8_t lev
 	output += inst[i].param.mod_out;
 	if (output > 63) output = 63;
 
-	if (c >= 9) opl->setchip(1);
+	if (c >= HERAD_NUM_VOICES) opl->setchip(1);
 
 	// Key scaling level / Output level
-	reg = 0x40 + slot_offset[c % 9];
+	reg = 0x40 + slot_offset[c % HERAD_NUM_VOICES];
 	val = (output & 63) |
 		((inst[i].param.mod_ksl & 3) << 6);
 	opl->write(reg, val);
 
-	if (c >= 9) opl->setchip(0);
+	if (c >= HERAD_NUM_VOICES) opl->setchip(0);
 }
 
 /*
@@ -1078,15 +1078,15 @@ void CheradPlayer::macroCarOutput(uint8_t c, uint8_t i, int8_t sens, uint8_t lev
 	output += inst[i].param.car_out;
 	if (output > 63) output = 63;
 
-	if (c >= 9) opl->setchip(1);
+	if (c >= HERAD_NUM_VOICES) opl->setchip(1);
 
 	// Key scaling level / Output level
-	reg = 0x43 + slot_offset[c % 9];
+	reg = 0x43 + slot_offset[c % HERAD_NUM_VOICES];
 	val = (output & 63) |
 		((inst[i].param.car_ksl & 3) << 6);
 	opl->write(reg, val);
 
-	if (c >= 9) opl->setchip(0);
+	if (c >= HERAD_NUM_VOICES) opl->setchip(0);
 }
 
 /*
@@ -1111,16 +1111,16 @@ void CheradPlayer::macroFeedback(uint8_t c, uint8_t i, int8_t sens, uint8_t leve
 	feedback += inst[i].param.feedback;
 	if (feedback > 7) feedback = 7;
 
-	if (c >= 9) opl->setchip(1);
+	if (c >= HERAD_NUM_VOICES) opl->setchip(1);
 
 	// Panning / Feedback strength / Connection type
-	reg = 0xC0 + (c % 9);
+	reg = 0xC0 + (c % HERAD_NUM_VOICES);
 	val = (inst[i].param.con > 0 ? 0 : 1) |
 		((feedback & 7) << 1) |
 		((AGD ? (inst[i].param.pan == 0 || inst[i].param.pan > 3 ? 3 : inst[i].param.pan) : 0) << 4);
 	opl->write(reg, val);
 
-	if (c >= 9) opl->setchip(0);
+	if (c >= HERAD_NUM_VOICES) opl->setchip(0);
 }
 
 /*
@@ -1149,21 +1149,21 @@ void CheradPlayer::macroSlide(uint8_t c)
 	if (inst[chn[c].playprog].param.mc_transpose != 0)
 		macroTranspose(&note, chn[c].playprog);
 	clipNote(&note, false);
-	uint8_t oct = note / 12 - 2;
-	uint16_t freq = FNum[note % 12];
+	uint8_t oct = note / HERAD_NUM_NOTES - 2;
+	uint16_t freq = FNum[note % HERAD_NUM_NOTES];
 	int32_t scaleX;
 	int16_t scale_oct;
 	if (chn[c].slide_coarse)
 	{
-		scaleX = ((note % 12) * 5) + chn[c].slide_step;
-		scale_oct = scaleX / (12 * 5);
+		scaleX = ((note % HERAD_NUM_NOTES) * 5) + chn[c].slide_step;
+		scale_oct = scaleX / (HERAD_NUM_NOTES * 5);
 		if (oct + scale_oct < 0 || oct + scale_oct > 7)
 		{
 			chn[c].slide_dur = 0;
 			return;
 		}
 		oct += scale_oct;
-		freq = FNum_coarse[scaleX % (12 * 5)];
+		freq = FNum_coarse[scaleX % (HERAD_NUM_NOTES * 5)];
 	}
 	else // fine tune
 	{
