@@ -98,6 +98,11 @@ private:
 	uint32_t GetTicks(uint8_t t);
 	void executeCommand(uint8_t t);
 	void processEvents();
+	void ev_noteOn(uint8_t ch, uint8_t note, uint8_t vel);
+	void ev_noteOff(uint8_t ch, uint8_t note, uint8_t vel);
+	void ev_programChange(uint8_t ch, uint8_t prog);
+	void ev_aftertouch(uint8_t ch, uint8_t vel);
+	void ev_pitchBend(uint8_t ch, uint8_t bend);
 	void clipNote(uint8_t * note, bool soft = false);
 	void playNote(uint8_t c, uint8_t note, uint8_t state);
 	void setFreq(uint8_t c, uint8_t oct, uint16_t freq, bool on);

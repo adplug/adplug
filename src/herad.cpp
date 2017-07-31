@@ -715,7 +715,6 @@ uint32_t CheradPlayer::GetTicks(uint8_t t)
 void CheradPlayer::executeCommand(uint8_t t)
 {
 	uint8_t status, note, par;
-	int8_t macro;
 
 	if (t >= nTracks)
 		return;
@@ -739,44 +738,12 @@ void CheradPlayer::executeCommand(uint8_t t)
 		case 0x80:	// Note Off
 			note = track[t].data[track[t].pos++];
 			par = (v2 ? 0 : track[t].data[track[t].pos++]);
-			if (note != chn[t].note || !chn[t].keyon)
-				break;
-			chn[t].keyon = false;
-			playNote(t, note, HERAD_NOTE_OFF);
+			ev_noteOff(t, note, par);
 			break;
 		case 0x90:	// Note On
 			note = track[t].data[track[t].pos++];
 			par = track[t].data[track[t].pos++];
-			if (chn[t].keyon)
-			{
-				// turn off last active note
-				chn[t].keyon = false;
-				playNote(t, chn[t].note, HERAD_NOTE_OFF);
-			}
-			if (v2 && inst[chn[t].program].param.mode == HERAD_INSTMODE_KMAP)
-			{
-				// keymap is used
-				int8_t mp = note - (inst[chn[t].program].keymap.offset + 24);
-				if (mp < 0 || mp >= HERAD_INST_SIZE - 4)
-					break; // if not in range, skip note
-				chn[t].playprog = inst[chn[t].program].keymap.index[mp];
-				changeProgram(t, chn[t].playprog);
-			}
-			chn[t].note = note;
-			chn[t].keyon = true;
-			chn[t].bend = 0x40;
-			if (v2 && inst[chn[t].playprog].param.mode == HERAD_INSTMODE_KMAP)
-				break;
-			playNote(t, note, HERAD_NOTE_ON);
-			macro = inst[chn[t].playprog].param.mc_mod_out_vel;
-			if (macro != 0)
-				macroModOutput(t, chn[t].playprog, macro, par);
-			macro = inst[chn[t].playprog].param.mc_car_out_vel;
-			if (macro != 0)
-				macroCarOutput(t, chn[t].playprog, macro, par);
-			macro = inst[chn[t].playprog].param.mc_fb_vel;
-			if (macro != 0)
-				macroFeedback(t, chn[t].playprog, macro, par);
+			ev_noteOn(t, note, par);
 			break;
 		case 0xA0:	// Unused
 		case 0xB0:	// Unused
@@ -784,37 +751,98 @@ void CheradPlayer::executeCommand(uint8_t t)
 			break;
 		case 0xC0:	// Program Change
 			par = track[t].data[track[t].pos++];
-			if (par >= nInsts)
-				break;
-			chn[t].program = par;
-			chn[t].playprog = par;
-			changeProgram(t, par);
+			ev_programChange(t, par);
 			break;
 		case 0xD0:	// Aftertouch
 			par = track[t].data[track[t].pos++];
-			if (v2) // version 2 ignores this event
-				break;
-			macro = inst[chn[t].playprog].param.mc_mod_out_at;
-			if (macro != 0)
-				macroModOutput(t, chn[t].playprog, macro, par);
-			macro = inst[chn[t].playprog].param.mc_car_out_at;
-			if (macro != 0 && inst[chn[t].playprog].param.mc_car_out_vel != 0)
-				macroCarOutput(t, chn[t].playprog, macro, par);
-			macro = inst[chn[t].playprog].param.mc_fb_at;
-			if (macro != 0)
-				macroFeedback(t, chn[t].playprog, macro, par);
+			ev_aftertouch(t, par);
 			break;
 		case 0xE0:	// Pitch Bend
 			par = track[t].data[track[t].pos++];
-			chn[t].bend = par;
-			if (chn[t].keyon) // update pitch
-				playNote(t, chn[t].note, HERAD_NOTE_UPDATE);
+			ev_pitchBend(t, par);
 			break;
 		default:
 			track[t].pos = track[t].size;
 			break;
 		}
 	}
+}
+
+void CheradPlayer::ev_noteOn(uint8_t ch, uint8_t note, uint8_t vel)
+{
+	int8_t macro;
+
+	if (chn[ch].keyon)
+	{
+		// turn off last active note
+		chn[ch].keyon = false;
+		playNote(ch, chn[ch].note, HERAD_NOTE_OFF);
+	}
+	if (v2 && inst[chn[ch].program].param.mode == HERAD_INSTMODE_KMAP)
+	{
+		// keymap is used
+		int8_t mp = note - (inst[chn[ch].program].keymap.offset + 24);
+		if (mp < 0 || mp >= HERAD_INST_SIZE - 4)
+			return; // if not in range, skip note
+		chn[ch].playprog = inst[chn[ch].program].keymap.index[mp];
+		changeProgram(ch, chn[ch].playprog);
+	}
+	chn[ch].note = note;
+	chn[ch].keyon = true;
+	chn[ch].bend = 0x40;
+	if (v2 && inst[chn[ch].playprog].param.mode == HERAD_INSTMODE_KMAP)
+		return;
+	playNote(ch, note, HERAD_NOTE_ON);
+	macro = inst[chn[ch].playprog].param.mc_mod_out_vel;
+	if (macro != 0)
+		macroModOutput(ch, chn[ch].playprog, macro, vel);
+	macro = inst[chn[ch].playprog].param.mc_car_out_vel;
+	if (macro != 0)
+		macroCarOutput(ch, chn[ch].playprog, macro, vel);
+	macro = inst[chn[ch].playprog].param.mc_fb_vel;
+	if (macro != 0)
+		macroFeedback(ch, chn[ch].playprog, macro, vel);
+}
+
+void CheradPlayer::ev_noteOff(uint8_t ch, uint8_t note, uint8_t vel)
+{
+	if (note != chn[ch].note || !chn[ch].keyon)
+		return;
+	chn[ch].keyon = false;
+	playNote(ch, note, HERAD_NOTE_OFF);
+}
+
+void CheradPlayer::ev_programChange(uint8_t ch, uint8_t prog)
+{
+	if (prog >= nInsts) // out of index
+		return;
+	chn[ch].program = prog;
+	chn[ch].playprog = prog;
+	changeProgram(ch, prog);
+}
+
+void CheradPlayer::ev_aftertouch(uint8_t ch, uint8_t vel)
+{
+	int8_t macro;
+
+	if (v2) // version 2 ignores this event
+		return;
+	macro = inst[chn[ch].playprog].param.mc_mod_out_at;
+	if (macro != 0)
+		macroModOutput(ch, chn[ch].playprog, macro, vel);
+	macro = inst[chn[ch].playprog].param.mc_car_out_at;
+	if (macro != 0 && inst[chn[ch].playprog].param.mc_car_out_vel != 0)
+		macroCarOutput(ch, chn[ch].playprog, macro, vel);
+	macro = inst[chn[ch].playprog].param.mc_fb_at;
+	if (macro != 0)
+		macroFeedback(ch, chn[ch].playprog, macro, vel);
+}
+
+void CheradPlayer::ev_pitchBend(uint8_t ch, uint8_t bend)
+{
+	chn[ch].bend = bend;
+	if (chn[ch].keyon) // update pitch
+		playNote(ch, chn[ch].note, HERAD_NOTE_UPDATE);
 }
 
 void CheradPlayer::clipNote(uint8_t * note, bool soft)
