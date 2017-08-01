@@ -22,7 +22,6 @@
  * http://www.vgmpf.com/Wiki/index.php/HERAD
  *
  * TODO:
- * - Implement looping
  * - Fix transpose issue
  * - Fix strange AGD sound
  */
@@ -663,13 +662,16 @@ good:
 
 void CheradPlayer::rewind(int subsong)
 {
-	int i, j;
+	uint32_t j;
 	wTime = 0;
 	songend = false;
 
-	ticks_pos = 0;
+	ticks_pos = -1; // there's always 1 excess tick at start
 	total_ticks = 0;
-	for (i = 0; i < nTracks; i++)
+	loop_pos = -1;
+	loop_times = 1;
+
+	for (int i = 0; i < nTracks; i++)
 	{
 		track[i].pos = 0;
 		j = 0;
@@ -698,9 +700,6 @@ void CheradPlayer::rewind(int subsong)
 		}
 		if (j > total_ticks)
 			total_ticks = j;
-	}
-	for (i = 0; i < nTracks; i++)
-	{
 		track[i].pos = 0;
 		track[i].counter = 0;
 		track[i].ticks = 0;
@@ -713,6 +712,12 @@ void CheradPlayer::rewind(int subsong)
 		chn[i].slide_dur = 0;
 		chn[i].slide_coarse = false;
 		chn[i].slide_step = 0;
+	}
+	if (v2)
+	{
+		if (!wLoopStart || wLoopCount) wLoopStart = 1; // if loop not specified, start from beginning
+		if (!wLoopEnd || wLoopCount) wLoopEnd = getpatterns() + 1; // till the end
+		if (wLoopCount) wLoopCount = 0; // repeats forever
 	}
 
 	opl->init();
@@ -1216,8 +1221,20 @@ void CheradPlayer::macroSlide(uint8_t c)
 
 void CheradPlayer::processEvents()
 {
+	uint8_t i;
 	songend = true;
-	for (uint8_t i = 0; i < nTracks; i++)
+
+	if (wLoopStart && wLoopEnd && (ticks_pos + 1) % HERAD_MEASURE_TICKS == 0 && (ticks_pos + 1) / HERAD_MEASURE_TICKS + 1 == wLoopStart)
+	{
+		loop_pos = ticks_pos;
+		for (i = 0; i < nTracks; i++)
+		{
+			loop_data[i].counter = track[i].counter;
+			loop_data[i].ticks = track[i].ticks;
+			loop_data[i].pos = track[i].pos;
+		}
+	}
+	for (i = 0; i < nTracks; i++)
 	{
 		if (chn[i].slide_dur > 0 && chn[i].keyon)
 			macroSlide(i);
@@ -1255,6 +1272,28 @@ void CheradPlayer::processEvents()
 	}
 	if (!songend)
 		ticks_pos++;
+	if (wLoopStart && wLoopEnd && (ticks_pos == total_ticks || (ticks_pos % HERAD_MEASURE_TICKS == 0 && ticks_pos / HERAD_MEASURE_TICKS + 1 == wLoopEnd)))
+	{
+#ifdef HERAD_USE_LOOPING
+		if (!wLoopCount)
+			songend = true;
+		else if (songend && loop_times < wLoopCount)
+			songend = false;
+
+		if (!wLoopCount || loop_times < wLoopCount)
+		{
+			ticks_pos = loop_pos;
+			for (i = 0; i < nTracks; i++)
+			{
+				track[i].counter = loop_data[i].counter;
+				track[i].ticks = loop_data[i].ticks;
+				track[i].pos = loop_data[i].pos;
+			}
+			if (wLoopCount)
+				loop_times++;
+		}
+#endif
+	}
 }
 
 bool CheradPlayer::update()

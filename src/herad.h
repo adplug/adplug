@@ -48,6 +48,7 @@
 #define HERAD_NUM_VOICES	9
 #define HERAD_NUM_NOTES		12
 #define HERAD_MEASURE_TICKS	96
+//#define HERAD_USE_LOOPING			/* Uncomment this to enable looping */
 
 class CheradPlayer: public CPlayer
 {
@@ -77,7 +78,7 @@ public:
 
 	float getrefresh()
 	{
-		return 200.299;
+		return (float)200.299;
 	};
 
 	unsigned int getspeed()
@@ -87,17 +88,17 @@ public:
 
 	unsigned int getpatterns()
 	{
-		return total_ticks / HERAD_MEASURE_TICKS;
+		return total_ticks / HERAD_MEASURE_TICKS + (total_ticks % HERAD_MEASURE_TICKS ? 1 : 0);
 	};
 
 	unsigned int getpattern()
 	{
-		return ticks_pos / HERAD_MEASURE_TICKS + 1;
+		return (ticks_pos <= 0 ? 0: (ticks_pos - 1) / HERAD_MEASURE_TICKS + 1);
 	};
 
 	unsigned int getrow()
 	{
-		return ticks_pos % HERAD_MEASURE_TICKS;
+		return (ticks_pos <= 0 ? 0 : (ticks_pos - 1) % HERAD_MEASURE_TICKS);
 	};
 
 	std::string gettype();
@@ -138,7 +139,7 @@ private:
 protected:
 	bool songend;
 	int16_t wTime;
-	uint32_t ticks_pos;	/* current tick counter */
+	int32_t ticks_pos;	/* current tick counter */
 	uint32_t total_ticks;	/* total ticks in song */
 
 	uint8_t comp;		/* File compression type (see HERAD_COMP_*) */
@@ -230,6 +231,10 @@ protected:
 	herad_trk * track;				/* event tracks [nTracks] */
 	herad_chn * chn;					/* active channels [nTracks] */
 	herad_inst * inst;				/* instruments [nInsts] */
+
+	int32_t loop_pos;
+	uint16_t loop_times;
+	herad_trk loop_data[HERAD_MAX_TRACKS];
 };
 
 #endif
