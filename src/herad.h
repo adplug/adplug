@@ -18,6 +18,11 @@
  *
  * herad.h - Herbulot AdLib Player by Stas'M <binarymaster@mail.ru>
  *
+ * Thanks goes to co-workers: 
+ * - SynaMax (general documentation, reverse-engineering, testing)
+ * - Jepael (timer code sample, DOS driver shell)
+ * - opl2 (pitch slides code sample)
+ *
  * REFERENCES:
  * http://www.vgmpf.com/Wiki/index.php/HERAD
  */
@@ -42,6 +47,7 @@
 #define HERAD_INSTMODE_KMAP	-1		/* HERAD version 2 keymap */
 #define HERAD_FNUM_MIN		325		/* Minimum note frequency number */
 #define HERAD_FNUM_MAX		685		/* Maximum note frequency number */
+#define HERAD_BEND_CENTER	0x40	/* Pitch bend middle value */
 #define HERAD_NOTE_OFF		0
 #define HERAD_NOTE_ON		1
 #define HERAD_NOTE_UPDATE	2
@@ -122,19 +128,19 @@ private:
 	void ev_programChange(uint8_t ch, uint8_t prog);
 	void ev_aftertouch(uint8_t ch, uint8_t vel);
 	void ev_pitchBend(uint8_t ch, uint8_t bend);
-	void clipNote(uint8_t * note, bool soft = false);
-	void playNote(uint8_t c, uint8_t note, uint8_t state);
+	void playNote(uint8_t c, int8_t note, uint8_t state);
 	void setFreq(uint8_t c, uint8_t oct, uint16_t freq, bool on);
 	void changeProgram(uint8_t c, uint8_t i);
 	void macroModOutput(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
 	void macroCarOutput(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
 	void macroFeedback(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
-	void macroTranspose(uint8_t * note, uint8_t i);
+	void macroTranspose(int8_t * note, uint8_t i);
 	void macroSlide(uint8_t c);
 
 	static const uint8_t slot_offset[HERAD_NUM_VOICES];
 	static const uint16_t FNum[HERAD_NUM_NOTES];
-	static const uint16_t FNum_coarse[HERAD_NUM_NOTES * 5];
+	static const uint8_t fine_bend[HERAD_NUM_NOTES + 1];
+	static const uint8_t coarse_bend[10];
 
 protected:
 	bool songend;
@@ -169,10 +175,7 @@ protected:
 		uint8_t note;			/* current note */
 		bool keyon;				/* note is active */
 		uint8_t bend;			/* current pitch bend */
-		int8_t slide_sign;		/* pitch slide sign */
 		uint8_t slide_dur;		/* pitch slide duration */
-		bool slide_coarse;		/* pitch slide coarse */
-		int32_t slide_step;		/* pitch slide step */
 	};
 	struct herad_inst_data {
 		int8_t mode;			/* instrument mode (see HERAD_INSTMODE_*) */
