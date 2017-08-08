@@ -19,9 +19,10 @@
  * herad.h - Herbulot AdLib Player by Stas'M <binarymaster@mail.ru>
  *
  * Thanks goes to co-workers: 
- * - SynaMax (general documentation, reverse-engineering, testing)
- * - Jepael (timer code sample, DOS driver shell)
- * - opl2 (pitch slides code sample)
+ *   -=CHE@TER=- (SQX decompression)
+ *   SynaMax (general documentation, reverse-engineering, testing)
+ *   Jepael (timer code sample, DOS driver shell)
+ *   opl2 (pitch slides code sample)
  *
  * REFERENCES:
  * http://www.vgmpf.com/Wiki/index.php/HERAD

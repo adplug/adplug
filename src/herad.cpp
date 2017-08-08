@@ -19,9 +19,10 @@
  * herad.cpp - Herbulot AdLib Player by Stas'M <binarymaster@mail.ru>
  *
  * Thanks goes to co-workers: 
- * - SynaMax (general documentation, reverse-engineering, testing)
- * - Jepael (timer code sample, DOS driver shell)
- * - opl2 (pitch slides code sample)
+ *   -=CHE@TER=- (SQX decompression)
+ *   SynaMax (general documentation, reverse-engineering, testing)
+ *   Jepael (timer code sample, DOS driver shell)
+ *   opl2 (pitch slides code sample)
  *
  * REFERENCES:
  * http://www.vgmpf.com/Wiki/index.php/HERAD
@@ -704,7 +705,7 @@ void CheradPlayer::rewind(int subsong)
 		track[i].ticks = 0;
 		chn[i].program = 0;
 		chn[i].playprog = 0;
-		chn[i].note = 24;
+		chn[i].note = 0;
 		chn[i].keyon = false;
 		chn[i].bend = HERAD_BEND_CENTER;
 		chn[i].slide_dur = 0;
@@ -825,7 +826,7 @@ void CheradPlayer::ev_noteOn(uint8_t ch, uint8_t note, uint8_t vel)
 	chn[ch].keyon = true;
 	chn[ch].bend = HERAD_BEND_CENTER;
 	if (v2 && inst[chn[ch].playprog].param.mode == HERAD_INSTMODE_KMAP)
-		return;
+		return; // single keymapped instrument can't be keymap (avoid recursion)
 	playNote(ch, note, HERAD_NOTE_ON);
 	macro = inst[chn[ch].playprog].param.mc_mod_out_vel;
 	if (macro != 0)
@@ -889,12 +890,9 @@ void CheradPlayer::playNote(uint8_t c, int8_t note, uint8_t state)
 	note = (note - 24) & 0xFF;
 	int8_t oct = note / HERAD_NUM_NOTES;
 	note %= HERAD_NUM_NOTES;
-	if (state != HERAD_NOTE_UPDATE)
+	if (state != HERAD_NOTE_UPDATE && inst[chn[c].playprog].param.mc_slide_dur)
 	{
-		if (inst[chn[c].playprog].param.mc_slide_range != 0)
-		{
-			chn[c].slide_dur = (state == HERAD_NOTE_ON ? inst[chn[c].playprog].param.mc_slide_dur : 0);
-		}
+		chn[c].slide_dur = (state == HERAD_NOTE_ON ? inst[chn[c].playprog].param.mc_slide_dur : 0);
 	}
 	uint8_t bend = chn[c].bend;
 	int16_t amount, detune = 0;
@@ -918,7 +916,7 @@ void CheradPlayer::playNote(uint8_t c, int8_t note, uint8_t state)
 				note = 0;
 				oct = 0;
 			}
-			detune = ((fine_bend[note] * amount_hi) >> 8) * -1;
+			detune = -1 * ((fine_bend[note] * amount_hi) >> 8);
 		}
 		else
 		{ // slide up
