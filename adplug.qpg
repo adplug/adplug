@@ -70,6 +70,7 @@
          <QPG:Add permissions="0644" file="./src/dtm.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/flash.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/fmc.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/herad.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/hsc.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/hsp.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/hybrid.h" install="/opt/include/adplug/"/>
