@@ -133,12 +133,12 @@ bool isSQX(uint8_t * data)
 	return true;
 }
 
-int HSQ_decompress(uint8_t * data, int size, uint8_t * out)
+uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 {
 	uint32_t queue = 1;
 	int8_t bit;
-	int offset, count;
-	uint16_t out_size = *(uint16_t *)data;
+	int16_t offset;
+	uint16_t count, out_size = *(uint16_t *)data;
 	uint8_t * src = data;
 	uint8_t * dst = out;
 
@@ -225,25 +225,18 @@ int HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 	return out_size;
 }
 
-int SQX_decompress(uint8_t * data, int size, uint8_t * out)
+uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 {
-	int16_t offset, count;
+	int16_t offset;
+	uint16_t count;
 	uint8_t * src = data;
 	uint8_t * dst = out;
 	bool done = false;
 
 	*(uint16_t *)dst = *(uint16_t *)src;
 	src += 6;
-	uint16_t u = 0xFFFF;
-	uint16_t l = u;
-	for (int i = 0; i < data[5]; i++)
-	{
-		u >>= 1;
-		l <<= 1;
-	}
-	uint16_t mask = ~u | ~l;
 	uint16_t queue = 1;
-	int8_t bit, bit_p;
+	uint8_t bit, bit_p;
 	while (true)
 	{
 		bit = queue & 1;
@@ -311,8 +304,8 @@ int SQX_decompress(uint8_t * data, int size, uint8_t * out)
 				break;
 			case 2:
 				count = *(uint16_t *)src;
-				offset = (count >> data[5]) | (mask & 0xFF00);
-				count &= mask & 0xFF;
+				offset = (count >> data[5]) - (1 << (16 - data[5]));
+				count &= (1 << data[5]) - 1;
 				src += 2;
 				if (!count)
 				{
@@ -403,8 +396,8 @@ int SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					break;
 				case 2:
 					count = *(uint16_t *)src;
-					offset = (count >> data[5]) | (mask & 0xFF00);
-					count &= mask & 0xFF;
+					offset = (count >> data[5]) - (1 << (16 - data[5]));
+					count &= (1 << data[5]) - 1;
 					src += 2;
 					if (!count)
 					{
@@ -481,8 +474,8 @@ int SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					break;
 				case 2:
 					count = *(uint16_t *)src;
-					offset = (count >> data[5]) | (mask & 0xFF00);
-					count &= mask & 0xFF;
+					offset = (count >> data[5]) - (1 << (16 - data[5]));
+					count &= (1 << data[5]) - 1;
 					src += 2;
 					if (!count)
 					{
