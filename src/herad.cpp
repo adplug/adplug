@@ -914,6 +914,7 @@ void CheradPlayer::playNote(uint8_t c, int8_t note, uint8_t state)
 		else
 		{ // slide up
 			amount = bend - HERAD_BEND_CENTER;
+			amount += 1; // "inc ax"
 			amount_lo = (amount >> 5);
 			amount_hi = (amount << 3) & 0xFF;
 			note += amount_lo;
