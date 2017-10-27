@@ -129,13 +129,13 @@ private:
 	void ev_programChange(uint8_t ch, uint8_t prog);
 	void ev_aftertouch(uint8_t ch, uint8_t vel);
 	void ev_pitchBend(uint8_t ch, uint8_t bend);
-	void playNote(uint8_t c, int8_t note, uint8_t state);
+	void playNote(uint8_t c, uint8_t note, uint8_t state);
 	void setFreq(uint8_t c, uint8_t oct, uint16_t freq, bool on);
 	void changeProgram(uint8_t c, uint8_t i);
 	void macroModOutput(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
 	void macroCarOutput(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
 	void macroFeedback(uint8_t c, uint8_t i, int8_t sens, uint8_t level);
-	void macroTranspose(int8_t * note, uint8_t i);
+	void macroTranspose(uint8_t * note, uint8_t i);
 	void macroSlide(uint8_t c);
 
 	static const uint8_t slot_offset[HERAD_NUM_VOICES];

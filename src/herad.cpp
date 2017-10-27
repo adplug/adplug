@@ -876,13 +876,13 @@ void CheradPlayer::ev_pitchBend(uint8_t ch, uint8_t bend)
 /*
  * Play Note (c - channel, note number, note state - see HERAD_NOTE_*)
  */
-void CheradPlayer::playNote(uint8_t c, int8_t note, uint8_t state)
+void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t state)
 {
 	if (inst[chn[c].playprog].param.mc_transpose != 0)
 		macroTranspose(&note, chn[c].playprog);
 	note = (note - 24) & 0xFF;
 	int8_t oct = note / HERAD_NUM_NOTES;
-	note %= HERAD_NUM_NOTES;
+	int8_t key = note % HERAD_NUM_NOTES;
 	if (state != HERAD_NOTE_UPDATE && inst[chn[c].playprog].param.mc_slide_dur)
 	{
 		chn[c].slide_dur = (state == HERAD_NOTE_ON ? inst[chn[c].playprog].param.mc_slide_dur : 0);
@@ -897,34 +897,33 @@ void CheradPlayer::playNote(uint8_t c, int8_t note, uint8_t state)
 			amount = HERAD_BEND_CENTER - bend;
 			amount_lo = (amount >> 5);
 			amount_hi = (amount << 3) & 0xFF;
-			note -= amount_lo;
+			key -= amount_lo;
 
-			if (note < 0)
+			if (key < 0)
 			{
-				note += HERAD_NUM_NOTES;
+				key += HERAD_NUM_NOTES;
 				oct--;
 			}
 			if (oct < 0)
 			{
-				note = 0;
+				key = 0;
 				oct = 0;
 			}
-			detune = -1 * ((fine_bend[note] * amount_hi) >> 8);
+			detune = -1 * ((fine_bend[key] * amount_hi) >> 8);
 		}
 		else
 		{ // slide up
-			amount = bend - HERAD_BEND_CENTER;
-			amount += 1; // "inc ax"
+			amount = (bend - HERAD_BEND_CENTER) + 1;
 			amount_lo = (amount >> 5);
 			amount_hi = (amount << 3) & 0xFF;
-			note += amount_lo;
+			key += amount_lo;
 
-			if (note >= HERAD_NUM_NOTES)
+			if (key >= HERAD_NUM_NOTES)
 			{
-				note -= HERAD_NUM_NOTES;
+				key -= HERAD_NUM_NOTES;
 				oct++;
 			}
-			detune = (fine_bend[note + 1] * amount_hi) >> 8;
+			detune = (fine_bend[key + 1] * amount_hi) >> 8;
 		}
 	}
 	else
@@ -933,36 +932,36 @@ void CheradPlayer::playNote(uint8_t c, int8_t note, uint8_t state)
 		if (bend - HERAD_BEND_CENTER < 0)
 		{ // slide down
 			amount = HERAD_BEND_CENTER - bend;
-			note -= amount / 5;
+			key -= amount / 5;
 
-			if (note < 0)
+			if (key < 0)
 			{
-				note += HERAD_NUM_NOTES;
+				key += HERAD_NUM_NOTES;
 				oct--;
 			}
 			if (oct < 0)
 			{
-				note = 0;
+				key = 0;
 				oct = 0;
 			}
-			offset = (amount % 5) + (note >= 6 ? 5 : 0);
+			offset = (amount % 5) + (key >= 6 ? 5 : 0);
 			detune = -1 * coarse_bend[offset];
 		}
 		else
 		{ // slide up
 			amount = bend - HERAD_BEND_CENTER;
-			note += amount / 5;
+			key += amount / 5;
 
-			if (note >= HERAD_NUM_NOTES)
+			if (key >= HERAD_NUM_NOTES)
 			{
-				note -= HERAD_NUM_NOTES;
+				key -= HERAD_NUM_NOTES;
 				oct++;
 			}
-			offset = (amount % 5) + (note >= 6 ? 5 : 0);
+			offset = (amount % 5) + (key >= 6 ? 5 : 0);
 			detune = coarse_bend[offset];
 		}
 	}
-	setFreq(c, oct, FNum[note] + detune, state != HERAD_NOTE_OFF);
+	setFreq(c, oct, FNum[key] + detune, state != HERAD_NOTE_OFF);
 }
 
 /*
@@ -1165,7 +1164,7 @@ void CheradPlayer::macroFeedback(uint8_t c, uint8_t i, int8_t sens, uint8_t leve
 /*
  * Macro: Root Note Transpose (note, i - instrument index)
  */
-void CheradPlayer::macroTranspose(int8_t * note, uint8_t i)
+void CheradPlayer::macroTranspose(uint8_t * note, uint8_t i)
 {
 	uint8_t tran = inst[i].param.mc_transpose;
 	uint8_t diff = (tran - 0x31) & 0xFF;
