@@ -220,11 +220,15 @@ void CmdiPlayer::executeCommand()
 		{
 		case NOTE_OFF:
 			pos += 2;
+			if (voice > MAX_VOICES - 1)
+				break;
 			drv->NoteOff(voice);
 			break;
 		case NOTE_ON:
 			note = data[pos++];
 			vol = data[pos++];
+			if (voice > MAX_VOICES - 1)
+				break;
 			if (!vol)
 			{
 				/* A note-on with a volume of 0 is equivalent to a note-off. */
@@ -245,6 +249,8 @@ void CmdiPlayer::executeCommand()
 		case AFTER_TOUCH:
 			pos++; // skip note
 			vol = data[pos++];
+			if (voice > MAX_VOICES - 1)
+				break;
 			if (vol != volume[voice])
 			{
 				drv->SetVoiceVolume(voice, vol);
@@ -261,6 +267,8 @@ void CmdiPlayer::executeCommand()
 			break;
 		case CHANNEL_PRESSURE:
 			vol = data[pos++];
+			if (voice > MAX_VOICES - 1)
+				break;
 			if (vol != volume[voice])
 			{
 				drv->SetVoiceVolume(voice, vol);
@@ -270,6 +278,8 @@ void CmdiPlayer::executeCommand()
 		case PITCH_BEND:
 			pitch = data[pos++];
 			pitch |= data[pos++] << 7;
+			if (voice > MAX_VOICES - 1)
+				break;
 			drv->SetVoicePitch(voice, pitch);
 			break;
 		default:
