@@ -56,6 +56,7 @@ static const char *filelist[] = {
   "MARIO.A2M",		// AdLib Tracker 2
   "mi2.laa",		// LucasArts
   "michaeld.cmf",	// Creative Music Format
+  "2.CMF",			// Creative Music Format (with transpose effect)
   "PLAYMUS1.SNG",	// SNGPlay
   "rat.xad",		// xad: rat
   "REVELAT.SNG",	// Faust Music Creator
