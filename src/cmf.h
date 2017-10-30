@@ -51,6 +51,7 @@ typedef struct {
 typedef struct {
 	int iPatch; // MIDI patch for this channel
 	int iPitchbend; // Current pitchbend amount for this channel
+	int iTranspose; // Transpose amount for this channel (between -128 and +128)
 } MIDICHANNEL;
 
 typedef struct {
@@ -70,7 +71,6 @@ class CcmfPlayer: public CPlayer
 		SBI *pInstruments;
 		bool bPercussive; // are rhythm-mode instruments enabled?
 		uint8_t iCurrentRegs[256]; // Current values in the OPL chip
-		int iTranspose;  // Transpose amount for entire song (between -128 and +128)
 		uint8_t iPrevCommand; // Previous command (used for repeated MIDI commands, as the seek and playback code need to share this)
 		uint8_t iNotePlaying[16]; // Last note turned on, used for duplicate note check
 		bool bNoteFix[16]; // Fix duplicated Note On / Note Off

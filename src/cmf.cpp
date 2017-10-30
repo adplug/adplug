@@ -93,7 +93,6 @@ CcmfPlayer::CcmfPlayer(Copl *newopl) :
 	data(NULL),
 	pInstruments(NULL),
 	bPercussive(false),
-	iTranspose(0),
 	iPrevCommand(0)
 {
 	assert(OPLOFFSET(1-1) == 0x00);
@@ -439,10 +438,12 @@ void CcmfPlayer::rewind(int subsong)
 
 		this->chMIDI[i].iPatch = -2;
 		this->chMIDI[i].iPitchbend = 8192;
+		this->chMIDI[i].iTranspose = 0;
 	}
 	for (int i = 9; i < 16; i++) {
 		this->chMIDI[i].iPatch = -2;
 		this->chMIDI[i].iPitchbend = 8192;
+		this->chMIDI[i].iTranspose = 0;
 	}
 
 	memset(this->iCurrentRegs, 0, 256);
@@ -535,7 +536,7 @@ void CcmfPlayer::cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
 		(double)iNote + (
 			(this->chMIDI[iChannel].iPitchbend - 8192) / 8192.0
 		) + (
-			this->iTranspose / 128
+			this->chMIDI[iChannel].iTranspose / 128
 		) - 9) / 12.0 - (iBlock - 20))
 		* 440.0 / 32.0 / 50000.0;
 	uint16_t iOPLFNum = (uint16_t)(d+0.5);
@@ -802,13 +803,12 @@ void CcmfPlayer::MIDIcontroller(uint8_t iChannel, uint8_t iController, uint8_t i
 			AdPlug_LogWrite("CMF: Percussive/rhythm mode %s\n", this->bPercussive ? "enabled" : "disabled");
 			break;
 		case 0x68:
-			// TODO: Shouldn't this just affect the one channel, not the whole song?  -- have pitchbends for that
-			this->iTranspose = iValue;
-			AdPlug_LogWrite("CMF: Transposing all notes up by %d * 1/128ths of a semitone.\n", iValue);
+			this->chMIDI[iChannel].iTranspose = iValue;
+			AdPlug_LogWrite("CMF: Transposing all notes up by %d * 1/128ths of a semitone on channel %d.\n", iValue, iChannel + 1);
 			break;
 		case 0x69:
-			this->iTranspose = -iValue;
-			AdPlug_LogWrite("CMF: Transposing all notes down by %d * 1/128ths of a semitone.\n", iValue);
+			this->chMIDI[iChannel].iTranspose = -iValue;
+			AdPlug_LogWrite("CMF: Transposing all notes down by %d * 1/128ths of a semitone on channel %d.\n", iValue, iChannel + 1);
 			break;
 		default:
 			AdPlug_LogWrite("CMF: Unsupported MIDI controller 0x%02X, ignoring.\n", iController);
