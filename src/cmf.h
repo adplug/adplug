@@ -108,6 +108,7 @@ class CcmfPlayer: public CPlayer
 		void getFreq(uint8_t iChannel, uint8_t iNote, uint8_t * iBlock, uint16_t * iOPLFNum);
 		void cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity);
 		void cmfNoteOff(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity);
+		void cmfNoteUpdate(uint8_t iChannel);
 		uint8_t getPercChannel(uint8_t iChannel);
 		void MIDIchangeInstrument(uint8_t iOPLChannel, uint8_t iMIDIChannel, uint8_t iNewInstrument);
 		void MIDIcontroller(uint8_t iChannel, uint8_t iController, uint8_t iValue);

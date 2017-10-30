@@ -300,6 +300,7 @@ bool CcmfPlayer::update()
 				uint16_t iValue = (iMSB << 7) | iLSB;
 				// 8192 is middle/off, 0 is -2 semitones, 16384 is +2 semitones
 				this->chMIDI[iChannel].iPitchbend = iValue;
+				this->cmfNoteUpdate(iChannel);
 				AdPlug_LogWrite("CMF: Channel %d pitchbent to %d (%+.2f)\n", iChannel + 1, iValue, (float)(iValue - 8192) / 8192);
 				break;
 			}
@@ -721,6 +722,37 @@ void CcmfPlayer::cmfNoteOff(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
 	return;
 }
 
+void CcmfPlayer::cmfNoteUpdate(uint8_t iChannel)
+{
+	uint8_t iBlock = 0;
+	uint16_t iOPLFNum = 0;
+
+	// See if we're playing a rhythm mode percussive instrument
+	if ((iChannel > 10) && (this->bPercussive)) {
+		uint8_t iPercChannel = this->getPercChannel(iChannel);
+		getFreq(iChannel, this->chOPL[iPercChannel].iMIDINote, &iBlock, &iOPLFNum);
+
+		// Update note frequency
+		this->writeOPL(BASE_FNUM_L + iPercChannel, iOPLFNum & 0xFF);
+		this->writeOPL(BASE_KEYON_FREQ + iPercChannel, (iBlock << 2) | ((iOPLFNum >> 8) & 0x03));
+
+	} else { // Non rhythm-mode or a normal instrument channel
+
+		// Figure out which OPL channels should be updated
+		int iNumChannels = this->bPercussive ? 6 : 9;
+		for (int i = 0; i < iNumChannels; i++) {
+			// Needed channel and note is playing
+			if (this->chOPL[i].iMIDIChannel == iChannel && this->chOPL[i].iNoteStart > 0) {
+				// Update note frequency
+				getFreq(iChannel, this->chOPL[i].iMIDINote, &iBlock, &iOPLFNum);
+				this->writeOPL(BASE_FNUM_L + i, iOPLFNum & 0xFF);
+				this->writeOPL(BASE_KEYON_FREQ + i, OPLBIT_KEYON | (iBlock << 2) | ((iOPLFNum & 0x300) >> 8));
+			}
+		}
+	}
+	return;
+}
+
 uint8_t CcmfPlayer::getPercChannel(uint8_t iChannel)
 {
 	switch (iChannel) {
@@ -811,10 +843,12 @@ void CcmfPlayer::MIDIcontroller(uint8_t iChannel, uint8_t iController, uint8_t i
 			break;
 		case 0x68:
 			this->chMIDI[iChannel].iTranspose = iValue;
+			this->cmfNoteUpdate(iChannel);
 			AdPlug_LogWrite("CMF: Transposing all notes up by %d * 1/128ths of a semitone on channel %d.\n", iValue, iChannel + 1);
 			break;
 		case 0x69:
 			this->chMIDI[iChannel].iTranspose = -iValue;
+			this->cmfNoteUpdate(iChannel);
 			AdPlug_LogWrite("CMF: Transposing all notes down by %d * 1/128ths of a semitone on channel %d.\n", iValue, iChannel + 1);
 			break;
 		default:
