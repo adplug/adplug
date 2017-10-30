@@ -537,7 +537,7 @@ void CcmfPlayer::getFreq(uint8_t iChannel, uint8_t iNote, uint8_t * iBlock, uint
 		(double)iNote + (
 			(this->chMIDI[iChannel].iPitchbend - 8192) / 8192.0
 		) + (
-			this->chMIDI[iChannel].iTranspose / 128
+			this->chMIDI[iChannel].iTranspose / 256.0
 		) - 9) / 12.0 - (*iBlock - 20))
 		* 440.0 / 32.0 / 50000.0;
 	*iOPLFNum = (uint16_t)(d+0.5);
