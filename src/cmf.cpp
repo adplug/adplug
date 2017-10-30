@@ -526,20 +526,27 @@ void CcmfPlayer::writeOPL(uint8_t iRegister, uint8_t iValue)
 	return;
 }
 
-void CcmfPlayer::cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
+void CcmfPlayer::getFreq(uint8_t iChannel, uint8_t iNote, uint8_t * iBlock, uint16_t * iOPLFNum)
 {
-	uint8_t iBlock = iNote / 12;
-	if (iBlock > 1) iBlock--; // keep in the same range as the Creative player
-	//if (iBlock > 7) iBlock = 7; // don't want to go out of range
+	*iBlock = iNote / 12;
+	if (*iBlock > 1) (*iBlock)--; // keep in the same range as the Creative player
+	//if (*iBlock > 7) *iBlock = 7; // don't want to go out of range
 
 	double d = pow(2, (
 		(double)iNote + (
 			(this->chMIDI[iChannel].iPitchbend - 8192) / 8192.0
 		) + (
 			this->chMIDI[iChannel].iTranspose / 128
-		) - 9) / 12.0 - (iBlock - 20))
+		) - 9) / 12.0 - (*iBlock - 20))
 		* 440.0 / 32.0 / 50000.0;
-	uint16_t iOPLFNum = (uint16_t)(d+0.5);
+	*iOPLFNum = (uint16_t)(d+0.5);
+}
+
+void CcmfPlayer::cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
+{
+	uint8_t iBlock = 0;
+	uint16_t iOPLFNum = 0;
+	getFreq(iChannel, iNote, &iBlock, &iOPLFNum);
 	if (iOPLFNum > 1023) AdPlug_LogWrite("CMF: This note is out of range! (send this song to malvineous@shikadi.net!)\n");
 
 	// See if we're playing a rhythm mode percussive instrument

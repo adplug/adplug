@@ -105,6 +105,7 @@ class CcmfPlayer: public CPlayer
 		uint32_t readMIDINumber();
 		void writeInstrumentSettings(uint8_t iChannel, uint8_t iOperatorSource, uint8_t iOperatorDest, uint8_t iInstrument);
 		void writeOPL(uint8_t iRegister, uint8_t iValue);
+		void getFreq(uint8_t iChannel, uint8_t iNote, uint8_t * iBlock, uint16_t * iOPLFNum);
 		void cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity);
 		void cmfNoteOff(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity);
 		uint8_t getPercChannel(uint8_t iChannel);
