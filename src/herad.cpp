@@ -881,7 +881,8 @@ void CheradPlayer::playNote(uint8_t c, uint8_t note, uint8_t state)
 	if (inst[chn[c].playprog].param.mc_transpose != 0)
 		macroTranspose(&note, chn[c].playprog);
 	note = (note - 24) & 0xFF;
-	if (note >= 0x60) note = 0; // clip too low/high notes
+	if (state != HERAD_NOTE_UPDATE && note >= 0x60)
+		note = 0; // clip too low/high notes
 	int8_t oct = note / HERAD_NUM_NOTES;
 	int8_t key = note % HERAD_NUM_NOTES;
 	if (state != HERAD_NOTE_UPDATE && inst[chn[c].playprog].param.mc_slide_dur)
