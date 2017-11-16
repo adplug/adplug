@@ -421,6 +421,7 @@ void CcmfPlayer::rewind(int subsong)
 	this->bSongEnd = false;
 	this->iPlayPointer = 0;
 	this->iPrevCommand = 0; // just in case
+	this->iNoteCount = 0;
 
 	// Read in the number of ticks until the first event
 	this->iDelayRemaining = this->readMIDINumber();
