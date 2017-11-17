@@ -6,8 +6,7 @@ emutest_SOURCES = emutest.cpp
 
 crctest_SOURCES = crctest.cpp
 
-AM_LDFLAGS = $(top_builddir)/src/.libs/libadplug.la $(libbinio_LIBS)
-
+LDADD = $(top_builddir)/src/.libs/libadplug.la $(libbinio_LIBS)
 AM_CPPFLAGS = $(libbinio_CFLAGS)
 
 TESTS = playertest emutest crctest
@@ -33,4 +32,4 @@ EXTRA_DIST = 2001.MKJ 2001.ref ADAGIO.DFM ADAGIO.ref adlibsp.ref adlibsp.s3m \
 	go-_-go.ref Flying.mdi Flying.ref RIK6.MDI RIK6.ref NECRONOM.CMF \
 	NECRONOM.ref YsBattle.vgm YsBattle.ref BeyondSN.vgm BeyondSN.ref \
 	crusader.raw crusader.ref GALWAY.SOP GALWAY.ref bmf1_1.bmf bmf1_1.ref \
-	2.CMF 2.ref
+	2.CMF 2.ref MainBGM5.vgm MainBGM5.ref

@@ -30,11 +30,17 @@ test-driver
 .deps
 .libs
 adplug.pc
+adplug-*.tar.bz2
 adplugdb/adplugdb
 doc/*.1
 doc/libadplug.info
 doc/version.texi
 doc/stamp-vti
+m4/libtool.m4
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4
 src/version.h
 test/test-suite.log
 test/*.trs

@@ -13,6 +13,7 @@ compiler:
 addons:
   apt:
     packages:
+    - texlive-latex-base
     - texinfo
 
 install:
@@ -23,12 +24,31 @@ install:
   - git clone http://github.com/adplug/libbinio.git
   - pushd libbinio && autoreconf -i && ./configure --prefix="$LOCAL_INSTALL" --enable-maintainer-mode && make && make install && popd
 
+  # Install modern pkg-config for PKG_INSTALLDIR
+  - |
+    if [[ ${TRAVIS_OS_NAME} == linux ]]; then
+      wget https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz && tar -xzf pkg-config-*.tar.gz
+      pushd pkg-config-* && ./configure --prefix="${LOCAL_INSTALL}" && make install && popd
+      export ACLOCAL_PATH="${LOCAL_INSTALL}"/share/aclocal/
+    fi
+
 before_script:
   - autoreconf -i
 
 script:
-  - ./configure --enable-maintainer-mode || cat config.log
-  - make && ulimit -c unlimited -S && make check
+  - ./configure || cat config.log
+  - |
+    if [[ ${TRAVIS_OS_NAME} == osx ]]; then
+      # - macOS's /usr/bin/texi2dvi is broken
+      # - Furthermore, trying to get a working
+      #   TeX installation on macOS in Travis
+      #   is a futile endeavour, hence just run
+      #   tests.
+      export TARGET=check
+    elif [[ ${TRAVIS_OS_NAME} == linux ]]; then
+      export TARGET=distcheck
+    fi
+  - ulimit -c unlimited -S && make "${TARGET}"
 
 after_failure:
   - |-
