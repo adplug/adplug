@@ -26,10 +26,16 @@
 #include "../src/fprovide.h"
 #include "../src/database.h"
 
+#ifdef MSDOS
+#	define DIR_DELIM	"\\"
+#else
+#	define DIR_DELIM	"/"
+#endif
+
 /***** Local variables *****/
 
 // String holding the relative path to the source directory
-static char *srcdir;
+static const char *srcdir;
 
 /***** Local variables *****/
 
@@ -60,7 +66,7 @@ int main(int argc, char *argv[])
 		const CFileProvider &fp = CProvider_Filesystem();
 		for (int i = 0; testlist[i].filename != NULL; i++)
 		{
-			binistream *f = fp.open(testlist[i].filename);
+			binistream *f = fp.open(std::string(srcdir) + DIR_DELIM + testlist[i].filename);
 			if (!f)
 			{
 				std::cerr << "Error opening for reading: " << testlist[i].filename << "\n";
