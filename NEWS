@@ -3,7 +3,7 @@ This is a brief overview of user-visible changes in AdPlug.
 Changes for version 2.3:
 -------------------------
 - Bug fixes:
-  - CMF: Fix uninitialised variable use (thanks Binarymaster)
+  - CMF: Fix uninitialised variable use (thanks binarymaster)
   - CMF: Handle invalid offsets without crashing
   - ROL: Prevent access beyond end of vector
   - MSC: Fix use of uninitialised variable
@@ -16,20 +16,25 @@ Changes for version 2.3:
   - Various other out of bounds array fixes, timing fixes, etc.
 - New formats:
   - BMF: Easy AdLib 1.0
+  - CMF: SoundFX Macs Opera
   - GOT: God of Thunder
-  - MUS/IMS/MDI
+  - HSQ/SQX/SDB/AGD/HA2: Herbulot AdLib System (HERAD)
+  - MUS/IMS/MDI: AdLib Visual Composer ROL derivatives
   - SOP: sopepos' Note Player
-  - VGM
+  - VGM: Video Game Music
 - Allow compilation on platforms that don't support real OPL hardware access
 - Add support for compiling on Appveyor and publishing a NuGet package
 - Add Visual Studio 2015 projects
 - Add support for Travis CI builds
+- Add new CRC16 and CRC32 tests
 - Addition of WoodyOPL from DOSBox SVN (thanks to NY00123)
 - Addition of NukedOPL (thanks to loki666 and nukeykt)
 - Move from SourceForge to GitHub
 - DRO player refactored (thanks to Laurence Myers and William Yates)
 - Add (mono) OPL3 support to the surround/harmonic-effect OPL
 - Fix occasional random noise in right channel when using surround OPL and Satoh synth
+- Add display for ROL comment and instrument names
+- Improve support for different Westwood ADL format versions
 - Improve CMF transpose support (per-channel now)
 - Autotools build environment updated
 
