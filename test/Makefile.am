@@ -32,4 +32,6 @@ EXTRA_DIST = 2001.MKJ 2001.ref ADAGIO.DFM ADAGIO.ref adlibsp.ref adlibsp.s3m \
 	go-_-go.ref Flying.mdi Flying.ref RIK6.MDI RIK6.ref NECRONOM.CMF \
 	NECRONOM.ref YsBattle.vgm YsBattle.ref BeyondSN.vgm BeyondSN.ref \
 	crusader.raw crusader.ref GALWAY.SOP GALWAY.ref bmf1_1.bmf bmf1_1.ref \
-	2.CMF 2.ref MainBGM5.vgm MainBGM5.ref
+	2.CMF 2.ref MainBGM5.vgm MainBGM5.ref MORNING.HSQ MORNING.ref \
+	GORBI2.SQX GORBI2.ref ARRAKIS.SDB ARRAKIS.ref NEWSAN.HSQ NEWSAN.ref \
+	NEWPAGA.HA2 NEWPAGA.ref WORMINTR.AGD WORMINTR.ref

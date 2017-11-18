@@ -85,6 +85,7 @@
     <ClCompile Include="..\..\..\src\cmfmcsop.cpp" />
     <ClCompile Include="..\..\..\src\vgm.cpp" />
     <ClCompile Include="..\..\..\src\sop.cpp" />
+    <ClCompile Include="..\..\..\src\herad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\a2m.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="..\..\..\src\cmfmcsop.h" />
     <ClInclude Include="..\..\..\src\vgm.h" />
     <ClInclude Include="..\..\..\src\sop.h" />
+    <ClInclude Include="..\..\..\src\herad.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

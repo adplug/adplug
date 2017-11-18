@@ -66,6 +66,7 @@
          <QPG:Add permissions="0644" file="./src/fmopl.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/fprovide.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/got.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/herad.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/hsc.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/hsp.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/hybrid.h" install="/opt/include/adplug/"/>
