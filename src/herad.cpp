@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
  * Copyright (C) 1999 - 2008 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
@@ -22,7 +22,7 @@
  *   -=CHE@TER=- (SQX decompression)
  *   SynaMax (general documentation, reverse-engineering, testing)
  *   Jepael (timer code sample, DOS driver shell)
- *   opl2 (pitch slides code sample)
+ *   Daniël van de Burgt "thatdutchguy" (pitch slides code sample)
  *
  * REFERENCES:
  * http://www.vgmpf.com/Wiki/index.php/HERAD
