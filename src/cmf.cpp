@@ -93,7 +93,6 @@ CcmfPlayer::CcmfPlayer(Copl *newopl) :
 	data(NULL),
 	pInstruments(NULL),
 	bPercussive(false),
-	iTranspose(0),
 	iPrevCommand(0)
 {
 	assert(OPLOFFSET(1-1) == 0x00);
@@ -301,6 +300,7 @@ bool CcmfPlayer::update()
 				uint16_t iValue = (iMSB << 7) | iLSB;
 				// 8192 is middle/off, 0 is -2 semitones, 16384 is +2 semitones
 				this->chMIDI[iChannel].iPitchbend = iValue;
+				this->cmfNoteUpdate(iChannel);
 				AdPlug_LogWrite("CMF: Channel %d pitchbent to %d (%+.2f)\n", iChannel + 1, iValue, (float)(iValue - 8192) / 8192);
 				break;
 			}
@@ -421,6 +421,7 @@ void CcmfPlayer::rewind(int subsong)
 	this->bSongEnd = false;
 	this->iPlayPointer = 0;
 	this->iPrevCommand = 0; // just in case
+	this->iNoteCount = 0;
 
 	// Read in the number of ticks until the first event
 	this->iDelayRemaining = this->readMIDINumber();
@@ -439,10 +440,12 @@ void CcmfPlayer::rewind(int subsong)
 
 		this->chMIDI[i].iPatch = -2;
 		this->chMIDI[i].iPitchbend = 8192;
+		this->chMIDI[i].iTranspose = 0;
 	}
 	for (int i = 9; i < 16; i++) {
 		this->chMIDI[i].iPatch = -2;
 		this->chMIDI[i].iPitchbend = 8192;
+		this->chMIDI[i].iTranspose = 0;
 	}
 
 	memset(this->iCurrentRegs, 0, 256);
@@ -525,20 +528,27 @@ void CcmfPlayer::writeOPL(uint8_t iRegister, uint8_t iValue)
 	return;
 }
 
-void CcmfPlayer::cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
+void CcmfPlayer::getFreq(uint8_t iChannel, uint8_t iNote, uint8_t * iBlock, uint16_t * iOPLFNum)
 {
-	uint8_t iBlock = iNote / 12;
-	if (iBlock > 1) iBlock--; // keep in the same range as the Creative player
-	//if (iBlock > 7) iBlock = 7; // don't want to go out of range
+	*iBlock = iNote / 12;
+	if (*iBlock > 1) (*iBlock)--; // keep in the same range as the Creative player
+	//if (*iBlock > 7) *iBlock = 7; // don't want to go out of range
 
 	double d = pow(2, (
 		(double)iNote + (
 			(this->chMIDI[iChannel].iPitchbend - 8192) / 8192.0
 		) + (
-			this->iTranspose / 128
-		) - 9) / 12.0 - (iBlock - 20))
+			this->chMIDI[iChannel].iTranspose / 256.0
+		) - 9) / 12.0 - (*iBlock - 20))
 		* 440.0 / 32.0 / 50000.0;
-	uint16_t iOPLFNum = (uint16_t)(d+0.5);
+	*iOPLFNum = (uint16_t)(d+0.5);
+}
+
+void CcmfPlayer::cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
+{
+	uint8_t iBlock = 0;
+	uint16_t iOPLFNum = 0;
+	getFreq(iChannel, iNote, &iBlock, &iOPLFNum);
 	if (iOPLFNum > 1023) AdPlug_LogWrite("CMF: This note is out of range! (send this song to malvineous@shikadi.net!)\n");
 
 	// See if we're playing a rhythm mode percussive instrument
@@ -713,6 +723,37 @@ void CcmfPlayer::cmfNoteOff(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
 	return;
 }
 
+void CcmfPlayer::cmfNoteUpdate(uint8_t iChannel)
+{
+	uint8_t iBlock = 0;
+	uint16_t iOPLFNum = 0;
+
+	// See if we're playing a rhythm mode percussive instrument
+	if ((iChannel > 10) && (this->bPercussive)) {
+		uint8_t iPercChannel = this->getPercChannel(iChannel);
+		getFreq(iChannel, this->chOPL[iPercChannel].iMIDINote, &iBlock, &iOPLFNum);
+
+		// Update note frequency
+		this->writeOPL(BASE_FNUM_L + iPercChannel, iOPLFNum & 0xFF);
+		this->writeOPL(BASE_KEYON_FREQ + iPercChannel, (iBlock << 2) | ((iOPLFNum >> 8) & 0x03));
+
+	} else { // Non rhythm-mode or a normal instrument channel
+
+		// Figure out which OPL channels should be updated
+		int iNumChannels = this->bPercussive ? 6 : 9;
+		for (int i = 0; i < iNumChannels; i++) {
+			// Needed channel and note is playing
+			if (this->chOPL[i].iMIDIChannel == iChannel && this->chOPL[i].iNoteStart > 0) {
+				// Update note frequency
+				getFreq(iChannel, this->chOPL[i].iMIDINote, &iBlock, &iOPLFNum);
+				this->writeOPL(BASE_FNUM_L + i, iOPLFNum & 0xFF);
+				this->writeOPL(BASE_KEYON_FREQ + i, OPLBIT_KEYON | (iBlock << 2) | ((iOPLFNum & 0x300) >> 8));
+			}
+		}
+	}
+	return;
+}
+
 uint8_t CcmfPlayer::getPercChannel(uint8_t iChannel)
 {
 	switch (iChannel) {
@@ -802,13 +843,14 @@ void CcmfPlayer::MIDIcontroller(uint8_t iChannel, uint8_t iController, uint8_t i
 			AdPlug_LogWrite("CMF: Percussive/rhythm mode %s\n", this->bPercussive ? "enabled" : "disabled");
 			break;
 		case 0x68:
-			// TODO: Shouldn't this just affect the one channel, not the whole song?  -- have pitchbends for that
-			this->iTranspose = iValue;
-			AdPlug_LogWrite("CMF: Transposing all notes up by %d * 1/128ths of a semitone.\n", iValue);
+			this->chMIDI[iChannel].iTranspose = iValue;
+			this->cmfNoteUpdate(iChannel);
+			AdPlug_LogWrite("CMF: Transposing all notes up by %d * 1/128ths of a semitone on channel %d.\n", iValue, iChannel + 1);
 			break;
 		case 0x69:
-			this->iTranspose = -iValue;
-			AdPlug_LogWrite("CMF: Transposing all notes down by %d * 1/128ths of a semitone.\n", iValue);
+			this->chMIDI[iChannel].iTranspose = -iValue;
+			this->cmfNoteUpdate(iChannel);
+			AdPlug_LogWrite("CMF: Transposing all notes down by %d * 1/128ths of a semitone on channel %d.\n", iValue, iChannel + 1);
 			break;
 		default:
 			AdPlug_LogWrite("CMF: Unsupported MIDI controller 0x%02X, ignoring.\n", iController);

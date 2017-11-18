@@ -113,7 +113,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CradLoader::factory, "Reality Adlib Tracker", ".rad\0"),
   CPlayerDesc(CrawPlayer::factory, "Raw AdLib Capture", ".rac\0.raw\0"),
   CPlayerDesc(Csa2Loader::factory, "Surprise! Adlib Tracker", ".sat\0.sa2\0"),
-  CPlayerDesc(CxadbmfPlayer::factory, "BMF Adlib Tracker", ".xad\0"),
+  CPlayerDesc(CxadbmfPlayer::factory, "BMF Adlib Tracker", ".xad\0.bmf\0"),
   CPlayerDesc(CxadflashPlayer::factory, "Flash", ".xad\0"),
   CPlayerDesc(CxadhybridPlayer::factory, "Hybrid", ".xad\0"),
   CPlayerDesc(CxadhypPlayer::factory, "Hypnosis", ".xad\0"),

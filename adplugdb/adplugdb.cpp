@@ -99,7 +99,7 @@ static const struct {
 };
 
 static struct {
-  char				*db_file;
+  std::string				db_file;
   CAdPlugDatabase::CRecord::RecordType	rtype;
   int					message_level;
   bool					usedefaultdb, usercomment, cmdkeys;
@@ -270,7 +270,7 @@ static void db_error(bool dbokay)
 /* Checks if database is open. Exits program otherwise */
 {
   if(!dbokay) {	// Database could not be opened
-    message(MSG_ERROR, "database could not be opened -- %s", cfg.db_file);
+    message(MSG_ERROR, "database could not be opened -- %s", cfg.db_file.c_str());
     exit(EXIT_FAILURE);
   }
 }
@@ -282,22 +282,16 @@ static void db_save(void)
   std::string savedir;
 #endif
 
-  if(!mydb.save(cfg.db_file)) {
+  if(!mydb.save(cfg.db_file.c_str())) {
 #if HAVE_MKDIR
     if(cfg.homedir) {
       savedir = cfg.homedir; savedir += "/" ADPLUG_CONFDIR;
       mkdir(savedir.c_str(), 0755);
-      if(mydb.save(cfg.db_file)) return;
+      if(mydb.save(cfg.db_file.c_str())) return;
     }
 #endif
-    message(MSG_ERROR, "could not save database -- %s", cfg.db_file);
+    message(MSG_ERROR, "could not save database -- %s", cfg.db_file.c_str());
   }
-}
-
-static void shutdown(void)
-{
-  // Free userdb variable, if applicable
-  if(cfg.homedir && !cfg.usedefaultdb) free(cfg.db_file);
 }
 
 /***** Main program *****/
@@ -311,7 +305,6 @@ int main(int argc, char *argv[])
   // Init
   program_name = strrchr(argv[0], '/') ? strrchr(argv[0], '/') + 1 :
 	(strrchr(argv[0], '\\') ? strrchr(argv[0], '\\') + 1 : argv[0]);
-  atexit(shutdown);
 
   // Parse options
   while((opt = getopt(argc, argv, "d:t:qvhVsck")) != -1)
@@ -355,16 +348,14 @@ int main(int argc, char *argv[])
   // Try user's home directory first, before trying the default location.
   cfg.homedir = getenv("HOME");
   if(cfg.homedir && !cfg.usedefaultdb) {
-    cfg.db_file = (char *)malloc(strlen(cfg.homedir) + strlen(ADPLUG_CONFDIR) +
-			 					 strlen(ADPLUGDB_FILE) + 3);
-    strcpy(cfg.db_file, cfg.homedir);
-	strcat(cfg.db_file, "/" ADPLUG_CONFDIR "/");
-	strcat(cfg.db_file, ADPLUGDB_FILE);
+    cfg.db_file = cfg.homedir;
+    cfg.db_file.append("/" ADPLUG_CONFDIR "/");
+    cfg.db_file.append(ADPLUGDB_FILE);
   }
 
   // Load database file
-  message(MSG_DEBUG, "using database -- %s", cfg.db_file);
-  dbokay = mydb.load(cfg.db_file);
+  message(MSG_DEBUG, "using database -- %s", cfg.db_file.c_str());
+  dbokay = mydb.load(cfg.db_file.c_str());
 
   // Parse commands
   if(!strcmp(argv[optind], "add")) {	// Add file to database

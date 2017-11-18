@@ -97,7 +97,7 @@ bool CxadbmfPlayer::xadplayer_load()
   else if (!strncmp((char *)&tune[0],"BMF1.1",6))
   {
     bmf.version = BMF1_1;
-    bmf.timer = 60.0f;
+    bmf.timer = 68.5f;
   }
   else
   {
@@ -406,6 +406,11 @@ unsigned int CxadbmfPlayer::xadplayer_getinstruments()
 std::string CxadbmfPlayer::xadplayer_getinstrument(unsigned int i)
 {
   return std::string(bmf.instruments[i].name);
+}
+
+unsigned int CxadbmfPlayer::xadplayer_getspeed()
+{
+  return plr.speed;
 }
 
 /* -------- Internal Functions ---------------------------- */

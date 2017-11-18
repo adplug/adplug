@@ -10,7 +10,8 @@ lds.cpp realopl.cpp analopl.cpp temuopl.cpp msc.cpp rix.cpp adl.cpp jbm.cpp \
 cmf.cpp surroundopl.cpp dro2.cpp got.cpp woodyopl.cpp nemuopl.cpp nukedopl.c \
 adlib.cpp mus.cpp mdi.cpp cmfmcsop.cpp vgm.cpp sop.cpp herad.cpp
 
-libadplug_la_LDFLAGS = -release @VERSION@ -version-info 0 $(libbinio_LIBS)
+libadplug_la_LDFLAGS = -release @VERSION@ -version-info 0
+libadplug_la_LIBADD = $(libbinio_LIBS)
 
 # -Dstricmp=strcasecmp is a hack. Throughout AdPlug, stricmp() is used to do
 # caseless string comparations. UNIX libcs don't support stricmp(), but do

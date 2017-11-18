@@ -24,11 +24,6 @@
 
 #include "../src/emuopl.h"
 
-/***** Local variables *****/
-
-// String holding the relative path to the source directory
-static char *srcdir;
-
 /***** Local functions *****/
 
 #define BUF_SIZE	1024
@@ -75,10 +70,6 @@ static bool check_emu_output(CEmuopl *emu)
 int main(int argc, char *argv[])
 {
   bool	retval = true;
-
-  // Set path to source directory
-  srcdir = getenv("srcdir");
-  if(!srcdir) srcdir = ".";
 
   {
     CEmuopl emu(8000, true, false);

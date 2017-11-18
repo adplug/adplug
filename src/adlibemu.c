@@ -129,7 +129,7 @@ static void ftol(float f, long *a) {
 #endif
 
 #define ctc ((celltype *)c)      //A rare attempt to make code easier to read!
-void docell4 (void *c, float modulator) { }
+void docell4 (void *c, float modulator) { (void)c; (void)modulator; }
 void docell3 (void *c, float modulator)
 {
     long i;

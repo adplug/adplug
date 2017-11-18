@@ -91,6 +91,15 @@ void CmidPlayer::midiprintf(const char *format, ...)
     }
 #endif
 
+#if !defined(UINT8_MAX)
+typedef signed char    int8_t;
+typedef short          int16_t;
+typedef int            int32_t;
+typedef unsigned char  uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int   uint32_t;
+#endif
+
 #define LUCAS_STYLE   1
 #define CMF_STYLE     2
 #define MIDI_STYLE    4
@@ -288,8 +297,10 @@ bool CmidPlayer::load(const std::string &filename, const CFileProvider &fp)
     binistream *f = fp.open(filename); if(!f) return false;
     int good;
     unsigned char s[6];
+    uint32_t size;
 
     f->readString((char *)s, 6);
+    size = *(uint32_t *)s; // size of FILE_OLDLUCAS
     good=0;
     subsongs=0;
     switch(s[0])
@@ -312,7 +323,7 @@ bool CmidPlayer::load(const std::string &filename, const CFileProvider &fp)
 	  }
 	  break;
         default:
-            if (s[4]=='A' && s[5]=='D') good=FILE_OLDLUCAS;
+            if (size == fp.filesize(f) && s[4]=='A' && s[5]=='D') good=FILE_OLDLUCAS;
             break;
         }
 

@@ -484,6 +484,8 @@ void CmusPlayer::executeCommand()
 		case NOTE_ON_BYTE:
 			haut = data[pos++];
 			vol = data[pos++];
+			if (voice > MAX_VOICES - 1)
+				break;
 			if (!vol)
 				drv->NoteOff(voice);
 			else
@@ -499,6 +501,8 @@ void CmusPlayer::executeCommand()
 		case NOTE_OFF_BYTE:
 			haut = data[pos++];
 			vol = data[pos++];
+			if (voice > MAX_VOICES - 1)
+				break;
 			drv->NoteOff(voice);
 			if (isIMS && vol)
 			{
@@ -512,6 +516,8 @@ void CmusPlayer::executeCommand()
 			break;
 		case AFTER_TOUCH_BYTE:
 			vol = data[pos++];
+			if (voice > MAX_VOICES - 1)
+				break;
 			if (vol != volume[voice])
 			{
 				drv->SetVoiceVolume(voice, vol);
@@ -520,6 +526,8 @@ void CmusPlayer::executeCommand()
 			break;
 		case PROG_CHANGE_BYTE:
 			timbre = data[pos++];
+			if (voice > MAX_VOICES - 1)
+				break;
 			if (insts &&
 				timbre < nrTimbre &&
 				insts[timbre].loaded)
@@ -534,6 +542,8 @@ void CmusPlayer::executeCommand()
 		case PITCH_BEND_BYTE:
 			pitch = data[pos++];
 			pitch |= data[pos++] << 7;
+			if (voice > MAX_VOICES - 1)
+				break;
 			drv->SetVoicePitch(voice, pitch);
 			break;
 		case CONTROL_CHANGE_BYTE:

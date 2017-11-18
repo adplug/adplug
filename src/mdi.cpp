@@ -54,8 +54,6 @@ bool CmdiPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 	char chunk[MIDI_CHUNK_SIZE + 1];
 	chunk[MIDI_CHUNK_SIZE] = 0;
-	uint32_t be32;
-	uint16_t be16;
 
 	// header validation
 	f->readString(chunk, MIDI_CHUNK_SIZE);
@@ -64,33 +62,16 @@ bool CmdiPlayer::load(const std::string &filename, const CFileProvider &fp)
 		fp.close(f);
 		return false;
 	}
-	// chunk size (UINT32_BE)
-	be32  = static_cast<uint8_t>(f->readInt(1)) << 24;
-	be32 |= static_cast<uint8_t>(f->readInt(1)) << 16;
-	be32 |= static_cast<uint8_t>(f->readInt(1)) << 8;
-	be32 |= static_cast<uint8_t>(f->readInt(1));
-	// MIDI Type (UINT16_BE)
-	be16  = static_cast<uint8_t>(f->readInt(1)) << 8;
-	be16 |= static_cast<uint8_t>(f->readInt(1));
-	// must be Type-0
-	if (be32 != MIDI_HEAD_SIZE || be16 != 0)
-	{
-		fp.close(f);
-		return false;
-	}
-	// track count (UINT16_BE)
-	be16  = static_cast<uint8_t>(f->readInt(1)) << 8;
-	be16 |= static_cast<uint8_t>(f->readInt(1));
-	// must be 1
-	if (be16 != 1)
+	f->setFlag(binio::BigEndian, true);
+	if (f->readInt(4) != MIDI_HEAD_SIZE || // chunk size
+		f->readInt(2) != 0 || // MIDI Type must be 0
+		f->readInt(2) != 1)   // track count must be 1
 	{
 		fp.close(f);
 		return false;
 	}
 	// division (UINT16_BE)
-	be16  = static_cast<uint8_t>(f->readInt(1)) << 8;
-	be16 |= static_cast<uint8_t>(f->readInt(1));
-	division = be16;
+	division = f->readInt(2);
 	// track validation
 	f->readString(chunk, MIDI_CHUNK_SIZE);
 	if (strcmp(chunk, "MTrk"))
@@ -99,11 +80,7 @@ bool CmdiPlayer::load(const std::string &filename, const CFileProvider &fp)
 		return false;
 	}
 	// chunk size (UINT32_BE)
-	be32  = static_cast<uint8_t>(f->readInt(1)) << 24;
-	be32 |= static_cast<uint8_t>(f->readInt(1)) << 16;
-	be32 |= static_cast<uint8_t>(f->readInt(1)) << 8;
-	be32 |= static_cast<uint8_t>(f->readInt(1));
-	size = be32;
+	size = f->readInt(4);
 	// data size validation
 	if (fp.filesize(f) < MIDI_MIN_SIZE + size)
 	{
@@ -243,11 +220,15 @@ void CmdiPlayer::executeCommand()
 		{
 		case NOTE_OFF:
 			pos += 2;
+			if (voice > MAX_VOICES - 1)
+				break;
 			drv->NoteOff(voice);
 			break;
 		case NOTE_ON:
 			note = data[pos++];
 			vol = data[pos++];
+			if (voice > MAX_VOICES - 1)
+				break;
 			if (!vol)
 			{
 				/* A note-on with a volume of 0 is equivalent to a note-off. */
@@ -268,6 +249,8 @@ void CmdiPlayer::executeCommand()
 		case AFTER_TOUCH:
 			pos++; // skip note
 			vol = data[pos++];
+			if (voice > MAX_VOICES - 1)
+				break;
 			if (vol != volume[voice])
 			{
 				drv->SetVoiceVolume(voice, vol);
@@ -284,6 +267,8 @@ void CmdiPlayer::executeCommand()
 			break;
 		case CHANNEL_PRESSURE:
 			vol = data[pos++];
+			if (voice > MAX_VOICES - 1)
+				break;
 			if (vol != volume[voice])
 			{
 				drv->SetVoiceVolume(voice, vol);
@@ -293,6 +278,8 @@ void CmdiPlayer::executeCommand()
 		case PITCH_BEND:
 			pitch = data[pos++];
 			pitch |= data[pos++] << 7;
+			if (voice > MAX_VOICES - 1)
+				break;
 			drv->SetVoicePitch(voice, pitch);
 			break;
 		default:

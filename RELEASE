@@ -1,6 +1,20 @@
 Release procedure
 -----------------
- * Update version number in configure.ac and appveyor.yml
+
+Before release:
+
+ * Ensure version numbers are correct in configure.ac, src/version.h, and
+   appveyor.yml.  They should already be set to the version number of the next
+   release, but may need altering e.g. if an unplanned bugfix release is made.
+
  * Update file list in adplug.qpg
+
  * Update NEWS with changes since last release
- * Update ChangeLog
+
+ * Create new tag: `git tag adplug-1.2.3` and `git push adplug-1.2.3 origin/master`
+
+After release:
+
+ * Update version number in configure.ac, src/version.h and appveyor.yml to
+   match the "next" AdPlug release.  This means the git code will always
+   compile as the version number of the next release.

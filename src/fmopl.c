@@ -74,7 +74,7 @@ static int opl_dbg_maxchip,opl_dbg_chip;
 /* final output shift , limit minimum and maximum */
 #define OPL_OUTSB   (TL_BITS+3-16)		/* OPL output final shift 16bit */
 #define OPL_MAXOUT (0x7fff<<OPL_OUTSB)
-#define OPL_MINOUT (-0x8000<<OPL_OUTSB)
+#define OPL_MINOUT (-(0x8000<<OPL_OUTSB))
 
 /* -------------------- quality selection --------------------- */
 
@@ -602,7 +602,7 @@ static void init_timetables( FM_OPL *OPL , int ARRATE , int DRRATE )
 		OPL->AR_TABLE[i] = rate / ARRATE;
 		OPL->DR_TABLE[i] = rate / DRRATE;
 	}
-	for (i = 60;i < 76;i++)
+	for (i = 60;i < 75;i++)
 	{
 		OPL->AR_TABLE[i] = EG_AED-1;
 		OPL->DR_TABLE[i] = OPL->DR_TABLE[60];
@@ -976,7 +976,7 @@ static void OPLWriteReg(FM_OPL *OPL, int r, int v)
 			}
 		}
 		/* update */
-		if(CH->block_fnum != block_fnum)
+		if((int)CH->block_fnum != block_fnum)
 		{
 			int blockRv = 7-(block_fnum>>10);
 			int fnum   = block_fnum&0x3ff;
@@ -1350,7 +1350,9 @@ unsigned char OPLRead(FM_OPL *OPL,int a)
 			if(OPL->keyboardhandler_r)
 				return OPL->keyboardhandler_r(OPL->keyboard_param);
 			else
+			{
 				LOG(LOG_WAR,("OPL:read unmapped KEYBOARD port\n"));
+			}
 		}
 		return 0;
 #if 0
@@ -1363,7 +1365,9 @@ unsigned char OPLRead(FM_OPL *OPL,int a)
 			if(OPL->porthandler_r)
 				return OPL->porthandler_r(OPL->port_param);
 			else
+			{
 				LOG(LOG_WAR,("OPL:read unmapped I/O port\n"));
+			}
 		}
 		return 0;
 	case 0x1a: /* PCM-DATA    */
