@@ -1,3 +1,4 @@
+.dirstamp
 autom4te.cache
 aclocal.m4
 config.guess
@@ -21,8 +22,8 @@ bindist.lst
 compile
 makeall
 INSTALL
-doc/mdate-sh
-doc/texinfo.tex
+mdate-sh
+texinfo.tex
 test-driver
 *.o
 *.lo
@@ -42,7 +43,7 @@ m4/ltsugar.m4
 m4/ltversion.m4
 m4/lt~obsolete.m4
 src/version.h
-test/test-suite.log
+test-suite.log
 test/*.trs
 test/crctest
 test/crctest.log

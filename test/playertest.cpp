@@ -108,7 +108,7 @@ static const char *filelist[] = {
 };
 
 // String holding the relative path to the source directory
-static const char *srcdir;
+static const char *testdir;
 
 /***** Testopl *****/
 
@@ -203,7 +203,7 @@ static bool testplayer(const std::string filename)
    * prerecorded original and returns true if they match, false otherwise.
    */
 {
-  std::string	fn = std::string(srcdir) + DIR_DELIM + filename;
+  std::string	fn = std::string(testdir) + DIR_DELIM + filename;
 #ifdef __WATCOMC__
   std::string	testfn = tmpnam(NULL);
 #else
@@ -246,8 +246,8 @@ int main(int argc, char *argv[])
   bool	retval = true;
 
   // Set path to source directory
-  srcdir = getenv("srcdir");
-  if(!srcdir) srcdir = ".";
+  testdir = getenv("testdir");
+  if(!testdir) testdir = ".";
 
   // Try all files one by one
   if(argc > 1) {

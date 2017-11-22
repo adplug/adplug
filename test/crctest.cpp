@@ -35,7 +35,7 @@
 /***** Local variables *****/
 
 // String holding the relative path to the source directory
-static const char *srcdir;
+static const char *testdir;
 
 /***** Local variables *****/
 
@@ -60,13 +60,13 @@ int main(int argc, char *argv[])
 	bool retval = true;
 
 	// Set path to source directory
-	srcdir = getenv("srcdir");
-	if (!srcdir) srcdir = ".";
+	testdir = getenv("testdir");
+	if (!testdir) testdir = ".";
 	{
 		const CFileProvider &fp = CProvider_Filesystem();
 		for (int i = 0; testlist[i].filename != NULL; i++)
 		{
-			binistream *f = fp.open(std::string(srcdir) + DIR_DELIM + testlist[i].filename);
+			binistream *f = fp.open(std::string(testdir) + DIR_DELIM + testlist[i].filename);
 			if (!f)
 			{
 				std::cerr << "Error opening for reading: " << testlist[i].filename << "\n";
