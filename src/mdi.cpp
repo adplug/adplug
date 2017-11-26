@@ -109,7 +109,7 @@ void CmdiPlayer::rewind(int subsong)
 	ticks = 0;
 
 	opl->init();
-	drv->SoundWarmInit();
+	if (drv) drv->SoundWarmInit();
 }
 
 /*
@@ -196,15 +196,15 @@ void CmdiPlayer::executeCommand()
 						int16_t params[ADLIB_INST_LEN];
 						for (int n = 0; n < ADLIB_INST_LEN; n++)
 							params[n] = (int8_t)data[pos + META_MIN_SIZE + n];
-						drv->SetVoiceTimbre(voice, &params[0]);
+						if (drv) drv->SetVoiceTimbre(voice, &params[0]);
 					}
 					else if (code == ADLIB_RHYTHM) {
 						/* Melo/perc mode code.  0 is melodic, !0 is percussive. */
-						drv->SetMode((int)data[pos + 5]);
+						if (drv) drv->SetMode((int)data[pos + 5]);
 					}
 					else if (code == ADLIB_PITCH) {
 						/* Sets the interval over which pitch bend changes will be applied. */
-						drv->SetPitchRange((int)data[pos + 5]);
+						if (drv) drv->SetPitchRange((int)data[pos + 5]);
 					}
 				}
 			}
@@ -222,7 +222,7 @@ void CmdiPlayer::executeCommand()
 			pos += 2;
 			if (voice > MAX_VOICES - 1)
 				break;
-			drv->NoteOff(voice);
+			if (drv) drv->NoteOff(voice);
 			break;
 		case NOTE_ON:
 			note = data[pos++];
@@ -232,7 +232,7 @@ void CmdiPlayer::executeCommand()
 			if (!vol)
 			{
 				/* A note-on with a volume of 0 is equivalent to a note-off. */
-				drv->NoteOff(voice);
+				if (drv) drv->NoteOff(voice);
 				volume[voice] = vol;
 			}
 			else
@@ -240,10 +240,10 @@ void CmdiPlayer::executeCommand()
 				/* Regular note-on */
 				if (vol != volume[voice])
 				{
-					drv->SetVoiceVolume(voice, vol);
+					if (drv) drv->SetVoiceVolume(voice, vol);
 					volume[voice] = vol;
 				}
-				drv->NoteOn(voice, note);
+				if (drv) drv->NoteOn(voice, note);
 			}
 			break;
 		case AFTER_TOUCH:
@@ -253,7 +253,7 @@ void CmdiPlayer::executeCommand()
 				break;
 			if (vol != volume[voice])
 			{
-				drv->SetVoiceVolume(voice, vol);
+				if (drv) drv->SetVoiceVolume(voice, vol);
 				volume[voice] = vol;
 			}
 			break;
@@ -271,7 +271,7 @@ void CmdiPlayer::executeCommand()
 				break;
 			if (vol != volume[voice])
 			{
-				drv->SetVoiceVolume(voice, vol);
+				if (drv) drv->SetVoiceVolume(voice, vol);
 				volume[voice] = vol;
 			}
 			break;
@@ -280,7 +280,7 @@ void CmdiPlayer::executeCommand()
 			pitch |= data[pos++] << 7;
 			if (voice > MAX_VOICES - 1)
 				break;
-			drv->SetVoicePitch(voice, pitch);
+			if (drv) drv->SetVoicePitch(voice, pitch);
 			break;
 		default:
 			/*

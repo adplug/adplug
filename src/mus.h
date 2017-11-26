@@ -73,7 +73,7 @@ public:
 	static CPlayer *factory(Copl *newopl);
 
 	CmusPlayer(Copl *newopl)
-		: CPlayer(newopl), data(0), insts(0)
+		: CPlayer(newopl), drv(0), data(0), insts(0)
 		{ }
 	~CmusPlayer()
 	{

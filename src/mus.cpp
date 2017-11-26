@@ -394,15 +394,15 @@ void CmusPlayer::rewind(int subsong)
 	SetTempo(basicTempo, tickBeat);
 	pos = 0; songend = false;
 	opl->init();
-	drv->SoundWarmInit();
+	if (drv) drv->SoundWarmInit();
 
 	for (int i = 0; i < MAX_VOICES; i++)
 		volume[i] = 0;
 	counter = 0;
 	ticks = 0;
 
-	drv->SetMode(soundMode);
-	drv->SetPitchRange(pitchBRange);
+	if (drv) drv->SetMode(soundMode);
+	if (drv) drv->SetPitchRange(pitchBRange);
 }
 
 /*
@@ -487,15 +487,17 @@ void CmusPlayer::executeCommand()
 			if (voice > MAX_VOICES - 1)
 				break;
 			if (!vol)
-				drv->NoteOff(voice);
+			{
+				if (drv) drv->NoteOff(voice);
+			}
 			else
 			{
 				if (vol != volume[voice])
 				{
-					drv->SetVoiceVolume(voice, vol);
+					if (drv) drv->SetVoiceVolume(voice, vol);
 					volume[voice] = vol;
 				}
-				drv->NoteOn(voice, haut);
+				if (drv) drv->NoteOn(voice, haut);
 			}
 			break;
 		case NOTE_OFF_BYTE:
@@ -503,15 +505,15 @@ void CmusPlayer::executeCommand()
 			vol = data[pos++];
 			if (voice > MAX_VOICES - 1)
 				break;
-			drv->NoteOff(voice);
+			if (drv) drv->NoteOff(voice);
 			if (isIMS && vol)
 			{
 				if (vol != volume[voice])
 				{
-					drv->SetVoiceVolume(voice, vol);
+					if (drv) drv->SetVoiceVolume(voice, vol);
 					volume[voice] = vol;
 				}
-				drv->NoteOn(voice, haut);
+				if (drv) drv->NoteOn(voice, haut);
 			}
 			break;
 		case AFTER_TOUCH_BYTE:
@@ -520,7 +522,7 @@ void CmusPlayer::executeCommand()
 				break;
 			if (vol != volume[voice])
 			{
-				drv->SetVoiceVolume(voice, vol);
+				if (drv) drv->SetVoiceVolume(voice, vol);
 				volume[voice] = vol;
 			}
 			break;
@@ -532,7 +534,7 @@ void CmusPlayer::executeCommand()
 				timbre < nrTimbre &&
 				insts[timbre].loaded)
 			{
-				drv->SetVoiceTimbre(voice, &insts[timbre].data[0]);
+				if (drv) drv->SetVoiceTimbre(voice, &insts[timbre].data[0]);
 			}
 			#ifdef DEBUG
 			else
@@ -544,7 +546,7 @@ void CmusPlayer::executeCommand()
 			pitch |= data[pos++] << 7;
 			if (voice > MAX_VOICES - 1)
 				break;
-			drv->SetVoicePitch(voice, pitch);
+			if (drv) drv->SetVoicePitch(voice, pitch);
 			break;
 		case CONTROL_CHANGE_BYTE:
 			/* unused */

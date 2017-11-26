@@ -68,7 +68,7 @@ public:
 	static CPlayer *factory(Copl *newopl);
 
 	CmdiPlayer(Copl *newopl)
-		: CPlayer(newopl), data(0)
+		: CPlayer(newopl), drv(0), data(0)
 		{ }
 	~CmdiPlayer()
 	{
