@@ -26,6 +26,7 @@
 #define H_ADPLUG_SOPPLAYER
 
 #include <stdint.h>
+#include <stdio.h>
 #include "player.h"
 
 /*
@@ -121,7 +122,7 @@ protected:
 #define SOP_INST2OP	11	/* size of 2OP instrument data */
 #define SOP_INST4OP	22	/* size of 4OP instrument data */
 #define SOP_MAX_INST	128	/* maximum number of instruments */
-#define SOP_MAX_TRACK	20	/* maximum number of tracks */
+#define SOP_MAX_TRACK	24	/* maximum number of tracks */
 #define SOP_MAX_VOL	127	/* maximum volume */
 
 #define SOP_CHAN_NONE	0	/* unused channel */
@@ -135,6 +136,7 @@ protected:
 #define SOP_INST_TT	8	/* Tom Tom */
 #define SOP_INST_CY	9	/* Cymbal */
 #define SOP_INST_HH	10	/* Hi-Hat */
+#define SOP_INST_WAV	11	/* Wave sample (SOP v2) */
 #define SOP_INST_NONE	12	/* Unused instrument */
 
 #define SOP_EVNT_SPEC	1	/* Special event */
@@ -152,7 +154,7 @@ public:
 	static CPlayer *factory(Copl *newopl);
 
 	CsopPlayer(Copl *newopl)
-		: CPlayer(newopl), chanMode(0), inst(0), track(0)
+		: CPlayer(newopl), drv(0), chanMode(0), inst(0), track(0)
 		{ }
 	~CsopPlayer()
 	{
@@ -190,7 +192,9 @@ public:
 
 	std::string gettype()
 	{
-		return std::string("Note Sequencer by sopepos");
+		char type[36];
+		sprintf(type, "Note Sequencer v%u.%u by sopepos", (version >> 8) & 0xFF, version & 0xFF);
+		return std::string(type);
 	}
 
 	std::string getdesc()
@@ -216,6 +220,7 @@ private:
 protected:
 	bool songend;
 	float timer;
+	uint16_t version;
 	uint8_t cur_tempo;			/* current tempo in BPM */
 	uint8_t volume[SOP_MAX_TRACK];	/* actual volume of all voices */
 	uint8_t lastvol[SOP_MAX_TRACK];	/* last set volume of all voices */
@@ -233,6 +238,20 @@ protected:
 		char longname[SOP_LONGNAME + 1];
 		uint8_t data[SOP_INST4OP];
 	};
+#pragma pack(push, 1)
+	struct sop_sample {
+		uint16_t val1;
+		uint16_t val2;
+		uint16_t length;
+		uint16_t val4;
+		uint16_t base_freq;
+		uint16_t val6;
+		uint16_t val7;
+		uint8_t val8;
+		uint16_t val9;
+		uint16_t val10;
+	};
+#pragma pack(pop)
 	struct sop_trk {
 		// stored variables
 		uint16_t nEvents;			/* event count */

@@ -58,11 +58,12 @@ bool CsopPlayer::load(const std::string &filename, const CFileProvider &fp)
 		return false;
 	}
 	uint32_t check = f->readInt(3);
-	if (check != 0x100)
+	if (check != 0x100 && check != 0x200)
 	{
 		fp.close(f);
 		return false;
 	}
+	version = check;
 	f->readString(fname, SOP_FILENAME);
 	fname[SOP_FILENAME - 1] = 0;
 	f->readString(title, SOP_TITLE);
@@ -125,6 +126,23 @@ bool CsopPlayer::load(const std::string &filename, const CFileProvider &fp)
 		{
 			continue;
 		}
+		else if (inst[i].type == SOP_INST_WAV)
+		{
+			if (fp.filesize(f) - f->pos() < sizeof(sop_sample))
+			{
+				fp.close(f);
+				return false;
+			}
+			sop_sample sample;
+			f->readString((char *)&sample, sizeof(sample));
+			if (fp.filesize(f) - f->pos() < sample.length)
+			{
+				fp.close(f);
+				return false;
+			}
+			f->seek(sample.length, binio::Add);
+			memset(inst[i].data, 0, sizeof(inst[i].data));
+		}
 		else if (inst[i].type == SOP_INST_4OP)
 		{
 			if (fp.filesize(f) - f->pos() < SOP_INST4OP)
@@ -170,8 +188,8 @@ void CsopPlayer::rewind(int subsong)
 	// set default tempo
 	SetTempo(basicTempo);
 	opl->init();
-	drv->SoundWarmInit();
-	drv->SetYM_262_SOP(1);
+	if (drv) drv->SoundWarmInit();
+	if (drv) drv->SetYM_262_SOP(1);
 
 	int i;
 	for (i = 0; i < nTracks + 1; i++)
@@ -192,10 +210,11 @@ void CsopPlayer::rewind(int subsong)
 
 	for (i = 0; i < nTracks; i++)
 	{
+		if (!drv) break;
 		if (chanMode[i] & SOP_CHAN_4OP)
 			drv->Set_4OP_Mode(i, 1);
 	}
-	drv->SetMode_SOP(percussive);
+	if (drv) drv->SetMode_SOP(percussive);
 }
 
 /*
@@ -219,20 +238,23 @@ void CsopPlayer::executeCommand(uint8_t t)
 	switch (event)
 	{
 	case SOP_EVNT_NOTE:
+		if (track[t].pos + 2 >= track[t].size) break;
 		value = track[t].data[track[t].pos++];
 		track[t].dur  = track[t].data[track[t].pos++];
 		track[t].dur |= track[t].data[track[t].pos++] << 8;
 		// skip this event on control track, ignore notes with zero duration
 		if (t == nTracks || !track[t].dur) break;
-		drv->NoteOn_SOP(t, value);
+		if (drv) drv->NoteOn_SOP(t, value);
 		break;
 	case SOP_EVNT_TEMPO:
+		if (track[t].pos >= track[t].size) break;
 		value = track[t].data[track[t].pos++];
 		// process this event only on control track
 		if (t < nTracks) break;
 		SetTempo(value);
 		break;
 	case SOP_EVNT_VOL:
+		if (track[t].pos >= track[t].size) break;
 		value = track[t].data[track[t].pos++];
 		// skip this event on control track
 		if (t == nTracks) break;
@@ -240,29 +262,42 @@ void CsopPlayer::executeCommand(uint8_t t)
 		value = value * master_vol / SOP_MAX_VOL;
 		if (value != volume[t])
 		{
-			drv->SetVoiceVolume_SOP(t, value);
+			if (drv) drv->SetVoiceVolume_SOP(t, value);
 			volume[t] = value;
 		}
 		break;
 	case SOP_EVNT_PITCH:
+		if (track[t].pos >= track[t].size) break;
 		value = track[t].data[track[t].pos++];
 		// skip this event on control track
 		if (t == nTracks) break;
-		drv->SetVoicePitch_SOP(t, value);
+		if (drv) drv->SetVoicePitch_SOP(t, value);
 		break;
 	case SOP_EVNT_INST:
+		if (track[t].pos >= track[t].size) break;
 		value = track[t].data[track[t].pos++];
 		// skip this event on control track, ignore values out of range
 		if (t == nTracks || value >= nInsts) break;
-		drv->SetVoiceTimbre_SOP(t, inst[value].data);
+		if (drv) drv->SetVoiceTimbre_SOP(t, inst[value].data);
 		break;
 	case SOP_EVNT_PAN:
+		if (track[t].pos >= track[t].size) break;
 		value = track[t].data[track[t].pos++];
 		// skip this event on control track
 		if (t == nTracks) break;
-		drv->SetStereoPan_SOP(t, value);
+		if (version == 0x200)
+		{
+			switch (value) // SOP v2 panning
+			{
+			case 0x00: value = 2; break; // left
+			case 0x40: value = 1; break; // middle
+			case 0x80: value = 0; break; // right
+			}
+		}
+		if (drv) drv->SetStereoPan_SOP(t, value);
 		break;
 	case SOP_EVNT_MVOL:
+		if (track[t].pos >= track[t].size) break;
 		value = track[t].data[track[t].pos++];
 		// process this event only on control track
 		if (t < nTracks) break;
@@ -272,7 +307,7 @@ void CsopPlayer::executeCommand(uint8_t t)
 			value = lastvol[i] * master_vol / SOP_MAX_VOL;
 			if (value != volume[i])
 			{
-				drv->SetVoiceVolume_SOP(i, value);
+				if (drv) drv->SetVoiceVolume_SOP(i, value);
 				volume[i] = value;
 			}
 		}
@@ -291,7 +326,7 @@ bool CsopPlayer::update()
 		if (track[i].dur)
 		{
 			songend = false; // there are active notes
-			if (!--track[i].dur) drv->NoteOff_SOP(i);
+			if (drv && !--track[i].dur) drv->NoteOff_SOP(i);
 		}
 		if (track[i].pos >= track[i].size)
 			continue;
@@ -798,7 +833,7 @@ void Cad262Driver::NoteOff_SOP(unsigned chan)
 
 int Cad262Driver::Set_4OP_Mode(unsigned chan, unsigned value)
 {
-	if (chan > 20)
+	if (chan >= maxVoices)
 		return 1;
 
 	if (SlotX[chan + 20] <= 2) {

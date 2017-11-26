@@ -97,7 +97,8 @@ static const char *filelist[] = {
   "YsBattle.vgm",	// Video Game Music 1.51 (OPL2)
   "MainBGM5.vgm",	// Video Game Music 1.51 (Dual OPL2)
   "BeyondSN.vgm",	// Video Game Music 1.51 (OPL3)
-  "GALWAY.SOP",		// Note Sequencer by sopepos
+  "GALWAY.SOP",		// Note Sequencer v1.0 by sopepos
+  "ending.sop",		// Note Sequencer v2.0 by sopepos
   "MORNING.HSQ",	// HERAD SDB v1 (HSQ packed)
   "GORBI2.SQX",		// HERAD SDB v1 (SQX packed)
   "ARRAKIS.SDB",	// HERAD SDB v1

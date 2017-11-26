@@ -279,6 +279,8 @@ EXTRA_DIST += \
 	test/DTM-TRK1.ref \
 	test/DUNE19.ADL \
 	test/DUNE19.ref \
+	test/ending.ref \
+	test/ending.sop \
 	test/EOBSOUND.ADL \
 	test/EOBSOUND.ref \
 	test/fdance03.dmo \
