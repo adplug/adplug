@@ -556,6 +556,12 @@ static void OPL3_SlotWriteE0(opl3_slot *slot, Bit8u data)
     case 5:
         slot->phaseshift = 1;
         break;
+    case 6:
+        slot->phaseshift = 16; // set phase to zero and flag for non-sin wave
+        break;
+    case 7:
+        slot->phaseshift = 32; // no shift (work by mod 32), but flag for non-sin wave
+        break;
     default:
         slot->phaseshift = 0;
         break;
@@ -564,9 +570,8 @@ static void OPL3_SlotWriteE0(opl3_slot *slot, Bit8u data)
 
 static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
 {
-    Bit32u wf = slot->reg_wf;
-    Bit32u neg = (Bit32s)((Bit32u)phase << slot->signpos) >> 31;
-    Bit32u level = slot->eg_out;  // for (wf==6) used w/o logsinrom[]
+    Bit32u neg, level;
+    Bit8u  phaseshift;
 
     // Fast paths for mute segments
     if (phase & slot->maskzero)
@@ -575,12 +580,16 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         return;
     }
 
-    if (wf <= 5)
+    neg = (Bit32s)((Bit32u)phase << slot->signpos) >> 31;
+    phaseshift = slot->phaseshift;
+    level = slot->eg_out;
+
+    phase <<= phaseshift;
+    if (phaseshift <= 1)
     {
-        phase <<= slot->phaseshift;
         level += logsinrom[phase & 0x1ff];
     }
-    else if (wf == 7)
+    else
     {
         level += ((phase ^ neg) & 0x3ff) << 3;
     }
