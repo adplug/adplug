@@ -568,9 +568,9 @@ static void OPL3_SlotWriteE0(opl3_slot *slot, Bit8u data)
     }
 }
 
-static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
+static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase16)
 {
-    Bit32u neg, level;
+    Bit32u neg, level, phase = phase16;
     Bit8u  phaseshift;
 
     // Fast paths for mute segments
@@ -580,7 +580,7 @@ static void OPL3_SlotGeneratePhase(opl3_slot *slot, Bit16u phase)
         return;
     }
 
-    neg = (Bit32s)((Bit32u)phase << slot->signpos) >> 31;
+    neg = (Bit32s)(phase << slot->signpos) >> 31;
     phaseshift = slot->phaseshift;
     level = slot->eg_out;
 
