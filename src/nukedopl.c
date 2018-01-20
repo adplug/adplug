@@ -450,7 +450,7 @@ static void OPL3_PhaseGenerate(opl3_slot *slot)
         f_num += range;
     }
     basefreq = (f_num << slot->channel->block) >> 1;
-    slot->pg_phase += (basefreq * mt[slot->reg_mult]) >> 1;
+    slot->pg_phase += (basefreq * slot->reg_mult_mt) >> 1;
 }
 
 //
@@ -483,7 +483,7 @@ static void OPL3_SlotWrite20(opl3_slot *slot, Bit8u data)
     slot->reg_vib = (data >> 6) & 0x01;
     slot->reg_type = (data >> 5) & 0x01;
     slot->reg_ksr = (data >> 4) & 0x01;
-    slot->reg_mult = data & 0x0f;
+    slot->reg_mult_mt = mt[data & 0x0f];
     OPL3_EnvelopeUpdateRate(slot);
 }
 
@@ -1198,6 +1198,7 @@ void OPL3_Reset(opl3_chip *chip, Bit32u samplerate)
         chip->slot[slotnum].eg_out = 0x1ff << 3;
         chip->slot[slotnum].eg_gen = envelope_gen_num_off;
         chip->slot[slotnum].trem = (Bit8u*)&chip->zeromod;
+        chip->slot[slotnum].reg_mult_mt = mt[0];
         chip->slot[slotnum].signpos = (31-9);  // for wf=0 need use sigext of (phase & 0x200)
     }
     for (channum = 0; channum < 18; channum++)

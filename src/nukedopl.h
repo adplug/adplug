@@ -67,7 +67,7 @@ struct _opl3_slot {
     Bit8u reg_vib;
     Bit8u reg_type;
     Bit8u reg_ksr;
-    Bit8u reg_mult;
+    Bit8u reg_mult_mt;
     Bit8u reg_ksl;
     Bit8u reg_tl;
     Bit8u reg_ar;
