@@ -1234,99 +1234,84 @@ void OPL3_Reset(opl3_chip *chip, Bit32u samplerate)
 void OPL3_WriteReg(opl3_chip *chip, Bit16u reg, Bit8u v)
 {
     Bit8u high = (reg >> 8) & 0x01;
-    Bit8u regm = reg & 0xff;
-    switch (regm & 0xf0)
+    Bit8u ch = reg & 0x00f;
+    Bit8s s;
+
+    switch (reg & 0x0f0)
     {
     case 0x00:
-        if (high)
+        switch (reg)
         {
-            switch (regm & 0x0f)
-            {
-            case 0x04:
-                OPL3_ChannelSet4Op(chip, v);
-                break;
-            case 0x05:
-                chip->newm = v & 0x01;
-                break;
-            }
+        case 0x008:
+            chip->nts = (v >> 6) & 0x01;
+            return;
+        case 0x104:
+            OPL3_ChannelSet4Op(chip, v);
+            return;
+        case 0x105:
+            chip->newm = v & 0x01;
+            return;
         }
-        else
-        {
-            switch (regm & 0x0f)
-            {
-            case 0x08:
-                chip->nts = (v >> 6) & 0x01;
-                break;
-            }
-        }
-        break;
-    case 0x20:
-    case 0x30:
-        if (ad_slot[regm & 0x1f] >= 0)
-        {
-            OPL3_SlotWrite20(&chip->slot[18 * high + ad_slot[regm & 0x1f]], v);
-        }
-        break;
-    case 0x40:
-    case 0x50:
-        if (ad_slot[regm & 0x1f] >= 0)
-        {
-            OPL3_SlotWrite40(&chip->slot[18 * high + ad_slot[regm & 0x1f]], v);
-        }
-        break;
-    case 0x60:
-    case 0x70:
-        if (ad_slot[regm & 0x1f] >= 0)
-        {
-            OPL3_SlotWrite60(&chip->slot[18 * high + ad_slot[regm & 0x1f]], v);
-        }
-        break;
-    case 0x80:
-    case 0x90:
-        if (ad_slot[regm & 0x1f] >= 0)
-        {
-            OPL3_SlotWrite80(&chip->slot[18 * high + ad_slot[regm & 0x1f]], v);
-        }
-        break;
-    case 0xe0:
-    case 0xf0:
-        if (ad_slot[regm & 0x1f] >= 0)
-        {
-            OPL3_SlotWriteE0(&chip->slot[18 * high + ad_slot[regm & 0x1f]], v);
-        }
-        break;
+        return;
     case 0xa0:
-        if ((regm & 0x0f) < 9)
+        if (ch < 9)
         {
-            OPL3_ChannelWriteA0(&chip->channel[9 * high + (regm & 0x0f)], v);
+            OPL3_ChannelWriteA0(&chip->channel[ch + ((high)? 9:0)], v);
         }
-        break;
+        return;
     case 0xb0:
-        if (regm == 0xbd && !high)
+        if (ch < 9)
+        {
+            OPL3_ChannelWriteB0(&chip->channel[ch + ((high)? 9:0)], v);
+            if (v & 0x20)
+            {
+                OPL3_ChannelKeyOn(&chip->channel[ch + ((high)? 9:0)]);
+            }
+            else
+            {
+                OPL3_ChannelKeyOff(&chip->channel[ch + ((high)? 9:0)]);
+            }
+        }
+        if (reg == 0x0bd)
         {
             chip->tremoloshift = (((v >> 7) ^ 1) << 1) + 2;
             chip->vibshift = ((v >> 6) & 0x01) ^ 1;
             OPL3_ChannelUpdateRhythm(chip, v);
         }
-        else if ((regm & 0x0f) < 9)
-        {
-            OPL3_ChannelWriteB0(&chip->channel[9 * high + (regm & 0x0f)], v);
-            if (v & 0x20)
-            {
-                OPL3_ChannelKeyOn(&chip->channel[9 * high + (regm & 0x0f)]);
-            }
-            else
-            {
-                OPL3_ChannelKeyOff(&chip->channel[9 * high + (regm & 0x0f)]);
-            }
-        }
-        break;
+        return;
     case 0xc0:
-        if ((regm & 0x0f) < 9)
+        if (ch < 9)
         {
-            OPL3_ChannelWriteC0(&chip->channel[9 * high + (regm & 0x0f)], v);
+            OPL3_ChannelWriteC0(&chip->channel[ch + ((high)? 9:0)], v);
         }
-        break;
+        return;
+    }
+
+    s = ad_slot[reg & 0x01f];
+    if (s >= 0)
+    {
+        if (high)
+        {
+            s += 18;
+        }
+        switch (reg & 0x0e0)
+        {
+        case 0x20:
+            OPL3_SlotWrite20(&chip->slot[s], v);
+            return;
+        case 0x40:
+            OPL3_SlotWrite40(&chip->slot[s], v);
+            return;
+        case 0x60:
+            OPL3_SlotWrite60(&chip->slot[s], v);
+            return;
+        case 0x80:
+            OPL3_SlotWrite80(&chip->slot[s], v);
+            return;
+        case 0xe0:
+            OPL3_SlotWriteE0(&chip->slot[s], v);
+            return;
+        }
     }
 }
 
