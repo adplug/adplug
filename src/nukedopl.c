@@ -739,32 +739,6 @@ static void OPL3_ChannelWriteA0(opl3_channel *channel, Bit8u data)
     }
 }
 
-static void OPL3_ChannelWriteB0(opl3_channel *channel, Bit8u data)
-{
-    if (channel->chip->newm && channel->chtype == ch_4op2)
-    {
-        return;
-    }
-    channel->f_num = (channel->f_num & 0xff) | ((data & 0x03) << 8);
-    channel->block = (data >> 2) & 0x07;
-    channel->ksv = (channel->block << 1)
-                 | ((channel->f_num >> (0x09 - channel->chip->nts)) & 0x01);
-    OPL3_EnvelopeUpdateKSL(channel->slots[0]);
-    OPL3_EnvelopeUpdateKSL(channel->slots[1]);
-    OPL3_EnvelopeUpdateRate(channel->slots[0]);
-    OPL3_EnvelopeUpdateRate(channel->slots[1]);
-    if (channel->chip->newm && channel->chtype == ch_4op)
-    {
-        channel->pair->f_num = channel->f_num;
-        channel->pair->block = channel->block;
-        channel->pair->ksv = channel->ksv;
-        OPL3_EnvelopeUpdateKSL(channel->pair->slots[0]);
-        OPL3_EnvelopeUpdateKSL(channel->pair->slots[1]);
-        OPL3_EnvelopeUpdateRate(channel->pair->slots[0]);
-        OPL3_EnvelopeUpdateRate(channel->pair->slots[1]);
-    }
-}
-
 static void OPL3_ChannelSetupAlg(opl3_channel *channel)
 {
     if (channel->chtype == ch_drum)
@@ -944,6 +918,39 @@ static void OPL3_ChannelKeyOff(opl3_channel *channel)
     {
         OPL3_EnvelopeKeyOff(channel->slots[0], egk_norm);
         OPL3_EnvelopeKeyOff(channel->slots[1], egk_norm);
+    }
+}
+
+static void OPL3_ChannelWriteB0(opl3_channel *channel, Bit8u data)
+{
+    if ( !(channel->chip->newm && channel->chtype == ch_4op2) )
+    {
+        channel->f_num = (channel->f_num & 0xff) | ((data & 0x03) << 8);
+        channel->block = (data >> 2) & 0x07;
+        channel->ksv = (channel->block << 1)
+                     | ((channel->f_num >> (0x09 - channel->chip->nts)) & 0x01);
+        OPL3_EnvelopeUpdateKSL(channel->slots[0]);
+        OPL3_EnvelopeUpdateKSL(channel->slots[1]);
+        OPL3_EnvelopeUpdateRate(channel->slots[0]);
+        OPL3_EnvelopeUpdateRate(channel->slots[1]);
+        if (channel->chip->newm && channel->chtype == ch_4op)
+        {
+            channel->pair->f_num = channel->f_num;
+            channel->pair->block = channel->block;
+            channel->pair->ksv = channel->ksv;
+            OPL3_EnvelopeUpdateKSL(channel->pair->slots[0]);
+            OPL3_EnvelopeUpdateKSL(channel->pair->slots[1]);
+            OPL3_EnvelopeUpdateRate(channel->pair->slots[0]);
+            OPL3_EnvelopeUpdateRate(channel->pair->slots[1]);
+        }
+    }
+    if (data & 0x20)
+    {
+        OPL3_ChannelKeyOn(channel);
+    }
+    else
+    {
+        OPL3_ChannelKeyOff(channel);
     }
 }
 
@@ -1263,16 +1270,8 @@ void OPL3_WriteReg(opl3_chip *chip, Bit16u reg, Bit8u v)
         if (ch < 9)
         {
             OPL3_ChannelWriteB0(&chip->channel[ch + ((high)? 9:0)], v);
-            if (v & 0x20)
-            {
-                OPL3_ChannelKeyOn(&chip->channel[ch + ((high)? 9:0)]);
-            }
-            else
-            {
-                OPL3_ChannelKeyOff(&chip->channel[ch + ((high)? 9:0)]);
-            }
         }
-        if (reg == 0x0bd)
+        else if (reg == 0x0bd)
         {
             chip->tremoloshift = (((v >> 7) ^ 1) << 1) + 2;
             chip->vibshift = ((v >> 6) & 0x01) ^ 1;
