@@ -1129,21 +1129,20 @@ void OPL3_Generate(opl3_chip *chip, Bit16s *buf)
     if ((chip->timer & 0x3f) == 0x3f)
     {
         chip->tremolopos = (chip->tremolopos + 1) % 210;
-    }
-    if (chip->tremolopos < 105)
-    {
-        chip->tremolo = chip->tremolopos >> chip->tremoloshift;
-    }
-    else
-    {
-        chip->tremolo = (210 - chip->tremolopos) >> chip->tremoloshift;
-    }
+        if (chip->tremolopos < 105)
+        {
+            chip->tremolo = chip->tremolopos >> chip->tremoloshift;
+        }
+        else
+        {
+            chip->tremolo = (210 - chip->tremolopos) >> chip->tremoloshift;
+        }
 
-    if ((chip->timer & 0x3ff) == 0x3ff)
-    {
-        chip->vibpos = (chip->vibpos + 1) & 7;
+        if ((chip->timer & 0x3ff) == 0x3ff)
+        {
+            chip->vibpos = (chip->vibpos + 1) & 7;
+        }
     }
-
     chip->timer++;
 
     while (chip->writebuf[chip->writebuf_cur].time <= chip->writebuf_samplecnt)
@@ -1259,6 +1258,14 @@ void OPL3_WriteReg(opl3_chip *chip, Bit16u reg, Bit8u v)
         else if (reg == 0x0bd)
         {
             chip->tremoloshift = (((v >> 7) ^ 1) << 1) + 2;
+            if (chip->tremolopos < 105)
+            {
+                chip->tremolo = chip->tremolopos >> chip->tremoloshift;
+            }
+            else
+            {
+                chip->tremolo = (210 - chip->tremolopos) >> chip->tremoloshift;
+            }
             chip->vibshift = ((v >> 6) & 0x01) ^ 1;
             OPL3_ChannelUpdateRhythm(chip, v);
         }
