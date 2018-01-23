@@ -743,16 +743,13 @@ static void OPL3_ChannelSetupAlg(opl3_channel *channel)
 {
     if (channel->chtype == ch_drum)
     {
-        switch (channel->alg & 0x01)
+        channel->slots[0]->mod = &channel->slots[0]->fbmod;
+        if (channel->alg & 0x01)
         {
-        case 0x00:
-            channel->slots[0]->mod = &channel->slots[0]->fbmod;
-            channel->slots[1]->mod = &channel->slots[0]->out;
-            break;
-        case 0x01:
-            channel->slots[0]->mod = &channel->slots[0]->fbmod;
             channel->slots[1]->mod = &channel->chip->zeromod;
-            break;
+        } else
+        {
+            channel->slots[1]->mod = &channel->slots[0]->out;
         }
         return;
     }
@@ -760,76 +757,64 @@ static void OPL3_ChannelSetupAlg(opl3_channel *channel)
     {
         return;
     }
+    channel->out[3] = &channel->chip->zeromod;
     if (channel->alg & 0x04)
     {
         channel->pair->out[0] = &channel->chip->zeromod;
         channel->pair->out[1] = &channel->chip->zeromod;
         channel->pair->out[2] = &channel->chip->zeromod;
         channel->pair->out[3] = &channel->chip->zeromod;
+        channel->pair->slots[0]->mod = &channel->pair->slots[0]->fbmod;
         switch (channel->alg & 0x03)
         {
         case 0x00:
-            channel->pair->slots[0]->mod = &channel->pair->slots[0]->fbmod;
             channel->pair->slots[1]->mod = &channel->pair->slots[0]->out;
             channel->slots[0]->mod = &channel->pair->slots[1]->out;
             channel->slots[1]->mod = &channel->slots[0]->out;
             channel->out[0] = &channel->slots[1]->out;
             channel->out[1] = &channel->chip->zeromod;
             channel->out[2] = &channel->chip->zeromod;
-            channel->out[3] = &channel->chip->zeromod;
             break;
         case 0x01:
-            channel->pair->slots[0]->mod = &channel->pair->slots[0]->fbmod;
             channel->pair->slots[1]->mod = &channel->pair->slots[0]->out;
             channel->slots[0]->mod = &channel->chip->zeromod;
             channel->slots[1]->mod = &channel->slots[0]->out;
             channel->out[0] = &channel->pair->slots[1]->out;
             channel->out[1] = &channel->slots[1]->out;
             channel->out[2] = &channel->chip->zeromod;
-            channel->out[3] = &channel->chip->zeromod;
             break;
         case 0x02:
-            channel->pair->slots[0]->mod = &channel->pair->slots[0]->fbmod;
             channel->pair->slots[1]->mod = &channel->chip->zeromod;
             channel->slots[0]->mod = &channel->pair->slots[1]->out;
             channel->slots[1]->mod = &channel->slots[0]->out;
             channel->out[0] = &channel->pair->slots[0]->out;
             channel->out[1] = &channel->slots[1]->out;
             channel->out[2] = &channel->chip->zeromod;
-            channel->out[3] = &channel->chip->zeromod;
             break;
         case 0x03:
-            channel->pair->slots[0]->mod = &channel->pair->slots[0]->fbmod;
             channel->pair->slots[1]->mod = &channel->chip->zeromod;
             channel->slots[0]->mod = &channel->pair->slots[1]->out;
             channel->slots[1]->mod = &channel->chip->zeromod;
             channel->out[0] = &channel->pair->slots[0]->out;
             channel->out[1] = &channel->slots[0]->out;
             channel->out[2] = &channel->slots[1]->out;
-            channel->out[3] = &channel->chip->zeromod;
             break;
         }
     }
     else
     {
-        switch (channel->alg & 0x01)
+        channel->out[2] = &channel->chip->zeromod;
+        channel->slots[0]->mod = &channel->slots[0]->fbmod;
+        if (channel->alg & 0x01)
         {
-        case 0x00:
-            channel->slots[0]->mod = &channel->slots[0]->fbmod;
-            channel->slots[1]->mod = &channel->slots[0]->out;
-            channel->out[0] = &channel->slots[1]->out;
-            channel->out[1] = &channel->chip->zeromod;
-            channel->out[2] = &channel->chip->zeromod;
-            channel->out[3] = &channel->chip->zeromod;
-            break;
-        case 0x01:
-            channel->slots[0]->mod = &channel->slots[0]->fbmod;
             channel->slots[1]->mod = &channel->chip->zeromod;
             channel->out[0] = &channel->slots[0]->out;
             channel->out[1] = &channel->slots[1]->out;
-            channel->out[2] = &channel->chip->zeromod;
-            channel->out[3] = &channel->chip->zeromod;
-            break;
+        } else
+        {
+            channel->slots[1]->mod = &channel->slots[0]->out;
+            channel->out[0] = &channel->slots[1]->out;
+            channel->out[1] = &channel->chip->zeromod;
         }
     }
 }
