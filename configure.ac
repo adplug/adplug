@@ -61,6 +61,10 @@ PKG_CHECK_MODULES([libbinio], [libbinio >= 1.4])
 dnl Check if getopt header is installed on this system
 AC_CHECK_HEADERS([getopt.h], [], [AC_SUBST([GETOPT_OBJECTS], ['adplugdb/getopt.$(OBJEXT)'])])
 
+dnl On some platforms glibc does not provide sys/io.h
+dnl https://bugs.gentoo.org/645296
+AC_CHECK_HEADERS([sys/io.h])
+
 dnl Sanitize some compiler features, which may be broken...
 AC_C_CONST
 AC_C_INLINE
