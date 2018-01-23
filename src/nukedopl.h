@@ -55,7 +55,7 @@ struct _opl3_slot {
     opl3_chip *chip;
     Bit16s out;
     Bit16s fbmod;
-    Bit16s *mod;
+    Bit16s const *mod;
     Bit16s prout;
     Bit16s eg_rout;
     Bit16s eg_out;
@@ -88,7 +88,7 @@ struct _opl3_channel {
     opl3_slot *slots[2];
     opl3_channel *pair;
     opl3_chip *chip;
-    Bit16s *out[4];
+    Bit16s const *out[4];
     Bit8u chtype;
     Bit16u f_num;
     Bit8u block;
@@ -118,7 +118,6 @@ struct _opl3_chip {
     Bit8u tremolopos;
     Bit8u tremoloshift;
     Bit32u noise;
-    Bit16s zeromod;
     Bit32s mixbuff[2];
     //OPL3L
     Bit32s rateratio;

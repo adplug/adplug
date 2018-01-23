@@ -258,6 +258,8 @@ enum envelope_gen_num
     envelope_gen_num_release = 4
 };
 
+static const Bit16s zeromod = 0;
+
 static Bit8u OPL3_EnvelopeCalcRate(opl3_slot *slot, Bit8u reg_rate)
 {
     Bit8u rate;
@@ -478,7 +480,7 @@ static void OPL3_SlotWrite20(opl3_slot *slot, Bit8u data)
     }
     else
     {
-        slot->trem = (Bit8u*)&slot->chip->zeromod;
+        slot->trem = (Bit8u*)&zeromod;
     }
     slot->reg_vib = (data >> 6) & 0x01;
     slot->reg_type = (data >> 5) & 0x01;
@@ -640,8 +642,8 @@ static void OPL3_ChannelUpdateRhythm(opl3_chip *chip, Bit8u data)
         channel8 = &chip->channel[8];
         channel6->out[0] = &channel6->slots[1]->out;
         channel6->out[1] = &channel6->slots[1]->out;
-        channel6->out[2] = &chip->zeromod;
-        channel6->out[3] = &chip->zeromod;
+        channel6->out[2] = &zeromod;
+        channel6->out[3] = &zeromod;
         channel7->out[0] = &channel7->slots[0]->out;
         channel7->out[1] = &channel7->slots[0]->out;
         channel7->out[2] = &channel7->slots[1]->out;
@@ -746,7 +748,7 @@ static void OPL3_ChannelSetupAlg(opl3_channel *channel)
         channel->slots[0]->mod = &channel->slots[0]->fbmod;
         if (channel->alg & 0x01)
         {
-            channel->slots[1]->mod = &channel->chip->zeromod;
+            channel->slots[1]->mod = &zeromod;
         } else
         {
             channel->slots[1]->mod = &channel->slots[0]->out;
@@ -757,13 +759,13 @@ static void OPL3_ChannelSetupAlg(opl3_channel *channel)
     {
         return;
     }
-    channel->out[3] = &channel->chip->zeromod;
+    channel->out[3] = &zeromod;
     if (channel->alg & 0x04)
     {
-        channel->pair->out[0] = &channel->chip->zeromod;
-        channel->pair->out[1] = &channel->chip->zeromod;
-        channel->pair->out[2] = &channel->chip->zeromod;
-        channel->pair->out[3] = &channel->chip->zeromod;
+        channel->pair->out[0] = &zeromod;
+        channel->pair->out[1] = &zeromod;
+        channel->pair->out[2] = &zeromod;
+        channel->pair->out[3] = &zeromod;
         channel->pair->slots[0]->mod = &channel->pair->slots[0]->fbmod;
         switch (channel->alg & 0x03)
         {
@@ -772,29 +774,29 @@ static void OPL3_ChannelSetupAlg(opl3_channel *channel)
             channel->slots[0]->mod = &channel->pair->slots[1]->out;
             channel->slots[1]->mod = &channel->slots[0]->out;
             channel->out[0] = &channel->slots[1]->out;
-            channel->out[1] = &channel->chip->zeromod;
-            channel->out[2] = &channel->chip->zeromod;
+            channel->out[1] = &zeromod;
+            channel->out[2] = &zeromod;
             break;
         case 0x01:
             channel->pair->slots[1]->mod = &channel->pair->slots[0]->out;
-            channel->slots[0]->mod = &channel->chip->zeromod;
+            channel->slots[0]->mod = &zeromod;
             channel->slots[1]->mod = &channel->slots[0]->out;
             channel->out[0] = &channel->pair->slots[1]->out;
             channel->out[1] = &channel->slots[1]->out;
-            channel->out[2] = &channel->chip->zeromod;
+            channel->out[2] = &zeromod;
             break;
         case 0x02:
-            channel->pair->slots[1]->mod = &channel->chip->zeromod;
+            channel->pair->slots[1]->mod = &zeromod;
             channel->slots[0]->mod = &channel->pair->slots[1]->out;
             channel->slots[1]->mod = &channel->slots[0]->out;
             channel->out[0] = &channel->pair->slots[0]->out;
             channel->out[1] = &channel->slots[1]->out;
-            channel->out[2] = &channel->chip->zeromod;
+            channel->out[2] = &zeromod;
             break;
         case 0x03:
-            channel->pair->slots[1]->mod = &channel->chip->zeromod;
+            channel->pair->slots[1]->mod = &zeromod;
             channel->slots[0]->mod = &channel->pair->slots[1]->out;
-            channel->slots[1]->mod = &channel->chip->zeromod;
+            channel->slots[1]->mod = &zeromod;
             channel->out[0] = &channel->pair->slots[0]->out;
             channel->out[1] = &channel->slots[0]->out;
             channel->out[2] = &channel->slots[1]->out;
@@ -803,18 +805,18 @@ static void OPL3_ChannelSetupAlg(opl3_channel *channel)
     }
     else
     {
-        channel->out[2] = &channel->chip->zeromod;
+        channel->out[2] = &zeromod;
         channel->slots[0]->mod = &channel->slots[0]->fbmod;
         if (channel->alg & 0x01)
         {
-            channel->slots[1]->mod = &channel->chip->zeromod;
+            channel->slots[1]->mod = &zeromod;
             channel->out[0] = &channel->slots[0]->out;
             channel->out[1] = &channel->slots[1]->out;
         } else
         {
             channel->slots[1]->mod = &channel->slots[0]->out;
             channel->out[0] = &channel->slots[1]->out;
-            channel->out[1] = &channel->chip->zeromod;
+            channel->out[1] = &zeromod;
         }
     }
 }
@@ -1184,11 +1186,11 @@ void OPL3_Reset(opl3_chip *chip, Bit32u samplerate)
     for (slotnum = 0; slotnum < 36; slotnum++)
     {
         chip->slot[slotnum].chip = chip;
-        chip->slot[slotnum].mod = &chip->zeromod;
+        chip->slot[slotnum].mod = &zeromod;
         chip->slot[slotnum].eg_rout = 0x1ff;
         chip->slot[slotnum].eg_out = 0x1ff << 3;
         chip->slot[slotnum].eg_gen = envelope_gen_num_off;
-        chip->slot[slotnum].trem = (Bit8u*)&chip->zeromod;
+        chip->slot[slotnum].trem = (Bit8u*)&zeromod;
         chip->slot[slotnum].reg_mult_mt = mt[0];
         chip->slot[slotnum].signpos = (31-9);  // for wf=0 need use sigext of (phase & 0x200)
     }
@@ -1207,10 +1209,10 @@ void OPL3_Reset(opl3_chip *chip, Bit32u samplerate)
             chip->channel[channum].pair = &chip->channel[channum - 3];
         }
         chip->channel[channum].chip = chip;
-        chip->channel[channum].out[0] = &chip->zeromod;
-        chip->channel[channum].out[1] = &chip->zeromod;
-        chip->channel[channum].out[2] = &chip->zeromod;
-        chip->channel[channum].out[3] = &chip->zeromod;
+        chip->channel[channum].out[0] = &zeromod;
+        chip->channel[channum].out[1] = &zeromod;
+        chip->channel[channum].out[2] = &zeromod;
+        chip->channel[channum].out[3] = &zeromod;
         chip->channel[channum].chtype = ch_2op;
         chip->channel[channum].cha = ~0;
         chip->channel[channum].chb = ~0;
