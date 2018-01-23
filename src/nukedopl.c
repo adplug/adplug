@@ -432,7 +432,7 @@ static void OPL3_PhaseGenerate(opl3_slot *slot)
         Bit8s range;
         Bit8u vibpos;
 
-        range = (f_num >> 7) & 7;
+        range = (f_num & 0x380) >> slot->chip->vibshift;
         vibpos = slot->chip->vibpos;
 
         if (!(vibpos & 3))
@@ -443,7 +443,6 @@ static void OPL3_PhaseGenerate(opl3_slot *slot)
         {
             range >>= 1;
         }
-        range >>= slot->chip->vibshift;
 
         if (vibpos & 4)
         {
@@ -1221,7 +1220,7 @@ void OPL3_Reset(opl3_chip *chip, Bit32u samplerate)
     chip->noise = 0x306600;
     chip->rateratio = (samplerate << RSM_FRAC) / 49716;
     chip->tremoloshift = 4;
-    chip->vibshift = 1;
+    chip->vibshift = 8;
 }
 
 void OPL3_WriteReg(opl3_chip *chip, Bit16u reg, Bit8u v)
@@ -1268,7 +1267,7 @@ void OPL3_WriteReg(opl3_chip *chip, Bit16u reg, Bit8u v)
             {
                 chip->tremolo = (210 - chip->tremolopos) >> chip->tremoloshift;
             }
-            chip->vibshift = ((v >> 6) & 0x01) ^ 1;
+            chip->vibshift = 8 - ((v >> 6) & 0x01);
             OPL3_ChannelUpdateRhythm(chip, v);
         }
         return;
