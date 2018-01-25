@@ -421,6 +421,10 @@ static void OPL3_EnvelopeKeyOff(opl3_slot *slot, Bit8u type)
 // Phase Generator
 //
 
+static const Bit8u vibpos2shift[8] = {
+    3, 1, 0, 1, 3, 1, 0, 1
+};
+
 static void OPL3_PhaseGenerate(opl3_slot *slot)
 {
     Bit16u f_num;
@@ -435,20 +439,7 @@ static void OPL3_PhaseGenerate(opl3_slot *slot)
         range = (f_num & 0x380) >> slot->chip->vibshift;
         vibpos = slot->chip->vibpos;
 
-        switch (vibpos & 3)
-        {
-        case 0:
-            range >>= 3;
-            break;
-        case 1:
-        case 3:
-            range >>= 1;
-            break;
-        case 2:
-            range >>= 0;
-            break;
-        }
-
+        range >>= vibpos2shift[vibpos];
         if (vibpos & 4)
         {
             range = -range;
