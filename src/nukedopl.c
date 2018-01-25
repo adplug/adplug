@@ -437,11 +437,7 @@ static void OPL3_PhaseGenerate(opl3_slot *slot)
         Bit8u vibpos = slot->chip->vibpos;
 
         range = (f_num & 0x380) >> (vibpos2shift[vibpos] + slot->chip->vibshift);
-        if (vibpos & 4)
-        {
-            range = -range;
-        }
-        f_num += range;
+        f_num = (vibpos & 4)? (f_num - range) : (f_num + range);
     }
     basefreq = (f_num << slot->channel->block) >> 1;
     slot->pg_phase += (basefreq * slot->reg_mult_mt) >> 1;
