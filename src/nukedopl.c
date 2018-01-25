@@ -435,13 +435,18 @@ static void OPL3_PhaseGenerate(opl3_slot *slot)
         range = (f_num & 0x380) >> slot->chip->vibshift;
         vibpos = slot->chip->vibpos;
 
-        if (!(vibpos & 3))
+        switch (vibpos & 3)
         {
-            range = 0;
-        }
-        else if (vibpos & 1)
-        {
+        case 0:
+            range >>= 3;
+            break;
+        case 1:
+        case 3:
             range >>= 1;
+            break;
+        case 2:
+            range >>= 0;
+            break;
         }
 
         if (vibpos & 4)
