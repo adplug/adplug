@@ -185,7 +185,7 @@ info_TEXINFOS = doc/libadplug.texi
 
 doc_libadplug_TEXINFOS = doc/fdl.texi
 
-man_MANS = doc/adplugdb.1
+dist_man_MANS = doc/adplugdb.1
 
 EXTRA_DIST += doc/adplugdb.1.in
 
@@ -204,15 +204,22 @@ DISTCLEANFILES = doc/adplugdb.1
 
 MAINTAINERCLEANFILES = doc/version.texi
 
-edit = $(SED) \
-	-e 's,@sharedstatedir\@,$(sharedstatedir),g' \
-	-e 's,@VERSION\@,$(VERSION),g'
+ADPLUGDB_1_EDIT = $(SED) \
+	-e 's,[@]sharedstatedir[@],$(sharedstatedir),g' \
+	-e 's,[@]VERSION[@],$(VERSION),g'
 
-doc/adplugdb.1: $(top_srcdir)/doc/adplugdb.1.in Makefile
-	rm -f $@ $@.tmp && \
-	$(MKDIR_P) $(@D) && \
-	$(edit) $< > $@.tmp && \
-	mv $@.tmp $@
+# It is tempting to use $< in this rule. Don't do that!
+# Using $< in ordinary Make rules is not portable,
+# in the case of FreeBSD's pmake the variable is empty
+# and OpenBSD's make errors out.
+# https://www.gnu.org/software/autoconf/manual/autoconf.html#g_t_0024_003c-in-Ordinary-Make-Rules
+doc/adplugdb.1: $(top_srcdir)/doc/adplugdb.1.in
+	cd $(top_srcdir) && \
+	$(MKDIR_P) doc && \
+	cd doc && \
+	rm -f adplugdb.1 adplugdb.1.tmp && \
+	$(ADPLUGDB_1_EDIT) adplugdb.1.in > adplugdb.1.tmp && \
+	mv adplugdb.1.tmp adplugdb.1
 
 #########
 # test/ #
