@@ -1,4 +1,4 @@
-version: 2.3-beta{build}
+version: 2.3.1{build}
 
 install:
 - ps: >-
