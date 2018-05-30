@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
  * Copyright (C) 1999 - 2005 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
