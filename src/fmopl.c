@@ -1269,6 +1269,10 @@ FM_OPL *OPLCreate(int type, int clock, int rate)
 /* ----------  Destroy one of vietual YM3812 ----------       */
 void OPLDestroy(FM_OPL *OPL)
 {
+	if(!OPL)
+	{
+		return;
+	}
 #ifdef OPL_OUTPUT_LOG
 	if(opl_dbg_fp)
 	{
