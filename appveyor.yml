@@ -1,4 +1,5 @@
 version: 2.3.2-beta{build}
+image: Visual Studio 2017
 
 install:
 - ps: >-
@@ -49,13 +50,15 @@ before_build:
 
 build_script:
 - cmd: >-
-    "%VS140COMNTOOLS%\VsMSBuildCmd.bat"
+    "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat"
+
+    "%VS150COMNTOOLS%\VsMSBuildCmd.bat"
 
     appveyor-retry nuget restore contrib\vs2015\vs2015.sln
 
     appveyor-retry nuget update contrib\vs2015\vs2015.sln
 
-    FOR %%T IN (v140,v120_xp) DO ( FOR %%P IN (x86,x64) DO ( FOR %%C IN (Debug,Release) DO ( FOR %%F IN (adplug,emutest,crctest,playertest) DO ( echo *** Building %%F as %%T/%%P/%%C *** && msbuild contrib\vs2015\%%F\%%F.vcxproj /p:Configuration=%%C /p:Platform=%%P /p:PlatformToolset=%%T /p:SolutionDir=..\ /v:minimal /nologo || EXIT 1 ) ) ) )
+    FOR %%T IN (v141,v140,v120_xp) DO ( FOR %%P IN (x86,x64) DO ( FOR %%C IN (Debug,Release) DO ( FOR %%F IN (adplug,emutest,crctest,playertest) DO ( echo *** Building %%F as %%T/%%P/%%C *** && msbuild contrib\vs2015\%%F\%%F.vcxproj /p:Configuration=%%C /p:Platform=%%P /p:PlatformToolset=%%T /p:SolutionDir=..\ /v:minimal /nologo || EXIT 1 ) ) ) )
 
 before_deploy:
 - ps: >-

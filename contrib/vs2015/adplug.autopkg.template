@@ -1,6 +1,6 @@
 #define {
 	// Must match the PlatformToolset options in appveyor.yml
-	toolsets: "v140,v120_xp";
+	toolsets: "v141,v140,v120_xp";
 }
 
 configurations {
