@@ -31,7 +31,7 @@ nuget {
 	}
 	dependencies {
 		packages : {
-			libbinio/1.4.16
+			libbinio/1.4.20
 		};
 	}
 	files {
