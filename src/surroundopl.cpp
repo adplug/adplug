@@ -27,12 +27,21 @@
 #include "surroundopl.h"
 #include "debug.h"
 
-CSurroundopl::CSurroundopl(Copl *a, Copl *b, bool use16bit)
-	: use16bit(use16bit),
-		bufsize(4096),
-		a(a), b(b)
+// Convert 8-bit to 16-bit
+#define CV_8_16(a) ((((unsigned short)(a) << 8) | (a)) - 32768)
+
+// Convert 16-bit to 8-bit
+#define CV_16_8(a) (((a) >> 8) + 128)
+
+CSurroundopl::CSurroundopl(COPLprops *a, COPLprops *b, bool output16bit)
+	: oplA(*a),
+	  oplB(*b),
+	  bufsize(4096),
+	  output16bit(output16bit)
 {
-	currType = TYPE_OPL2;
+	// Report our type as the same as the first child OPL
+	currType = a->opl->gettype();
+
 	this->lbuf = new short[this->bufsize];
 	this->rbuf = new short[this->bufsize];
 };
@@ -41,8 +50,8 @@ CSurroundopl::~CSurroundopl()
 {
 	delete[] this->rbuf;
 	delete[] this->lbuf;
-	delete a;
-	delete b;
+	delete this->oplA.opl;
+	delete this->oplB.opl;
 }
 
 void CSurroundopl::update(short *buf, int samples)
@@ -56,24 +65,45 @@ void CSurroundopl::update(short *buf, int samples)
 		this->rbuf = new short[this->bufsize];
 	}
 
-	a->update(this->lbuf, samples);
-	b->update(this->rbuf, samples);
+	this->oplA.opl->update(this->lbuf, samples);
+	this->oplB.opl->update(this->rbuf, samples);
 
 	// Copy the two mono OPL buffers into the stereo buffer
 	for (int i = 0; i < samples; i++) {
-		if (this->use16bit) {
-			buf[i * 2] = this->lbuf[i];
-			buf[i * 2 + 1] = this->rbuf[i];
+		int offsetL = i, offsetR = i;
+		if (this->oplA.stereo) offsetL *= 2;
+		if (this->oplB.stereo) { offsetR *= 2; ++offsetR; }
+
+		short l, r;
+		if (this->oplA.use16bit) {
+			l = this->lbuf[offsetL];
 		} else {
-			((char *)buf)[i * 2] = ((char *)this->lbuf)[i];
-			((char *)buf)[i * 2 + 1] = ((char *)this->rbuf)[i];
+			l = ((unsigned char *)this->lbuf)[offsetL];
+			// If the synths are 8-bit, make the values 16-bit
+			l = CV_8_16(l);
+		}
+		if (this->oplB.use16bit) {
+			r = this->rbuf[offsetR];
+		} else {
+			r = ((unsigned char *)this->rbuf)[offsetR];
+			// If the synths are 8-bit, make the values 16-bit
+			r = CV_8_16(r);
+		}
+
+		if (this->output16bit) {
+			buf[i * 2] = l;
+			buf[i * 2 + 1] = r;
+		} else {
+			// Convert back to 8-bit
+			((unsigned char *)buf)[i * 2] = CV_16_8(l);
+			((unsigned char *)buf)[i * 2 + 1] = CV_16_8(r);
 		}
 	}
 }
 
 void CSurroundopl::write(int reg, int val)
 {
-	a->write(reg, val);
+	this->oplA.opl->write(reg, val);
 
 	// Transpose the other channel to produce the harmonic effect
 	int iChannel = -1;
@@ -159,7 +189,7 @@ void CSurroundopl::write(int reg, int val)
 				// Need to write out low bits
 				uint8_t iAdditionalReg = 0xA0 + iChannel;
 				uint8_t iAdditionalValue = iNewFNum & 0xFF;
-				b->write(iAdditionalReg, iAdditionalValue);
+				this->oplB.opl->write(iAdditionalReg, iAdditionalValue);
 				this->iTweakedFMReg[this->currChip][iAdditionalReg] = iAdditionalValue;
 			}
 		} else if ((iRegister >= 0xA0) && (iRegister <= 0xA8)) {
@@ -177,7 +207,7 @@ void CSurroundopl::write(int reg, int val)
 					iChannel, iFNum, iBlock, iNewFNum, iNewBlock);
 					// The note is already playing, so we need to adjust the upper bits too
 					uint8_t iAdditionalReg = 0xB0 + iChannel;
-					b->write(iAdditionalReg, iNewB0Value);
+					this->oplB.opl->write(iAdditionalReg, iNewB0Value);
 					this->iTweakedFMReg[this->currChip][iAdditionalReg] = iNewB0Value;
 			} // else the note is not playing, the upper bits will be set when the note is next played
 
@@ -186,14 +216,14 @@ void CSurroundopl::write(int reg, int val)
 	} // if (a register we're interested in)
 
 	// Now write to the original register with a possibly modified value
-	b->write(iRegister, iValue);
+	this->oplB.opl->write(iRegister, iValue);
 	this->iTweakedFMReg[this->currChip][iRegister] = iValue;
 }
 
 void CSurroundopl::init()
 {
-	a->init();
-	b->init();
+	this->oplA.opl->init();
+	this->oplB.opl->init();
 	for (int c = 0; c < 2; c++) {
 		for (int i = 0; i < 256; i++) {
 			this->iFMReg[c][i] = 0;
@@ -208,6 +238,6 @@ void CSurroundopl::init()
 
 void CSurroundopl::setchip(int n)
 {
-	a->setchip(n);
-	b->setchip(n);
+	this->oplA.opl->setchip(n);
+	this->oplB.opl->setchip(n);
 }
