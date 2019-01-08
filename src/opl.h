@@ -60,6 +60,9 @@ class Copl
 
   // Emulation only: fill buffer
   virtual void update(short *buf, int samples) {}
+  
+  // Set surroundopl offset
+  virtual void set_offset(double offset) {}
 
  protected:
   int		currChip;		// currently selected OPL chip number

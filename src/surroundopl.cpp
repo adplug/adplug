@@ -44,6 +44,9 @@ CSurroundopl::CSurroundopl(COPLprops *a, COPLprops *b, bool output16bit)
 
 	this->lbuf = new short[this->bufsize];
 	this->rbuf = new short[this->bufsize];
+	
+	// Default frequency offset for surroundopl is defined by FREQ_OFFSET. 
+	this->offset = FREQ_OFFSET;
 };
 
 CSurroundopl::~CSurroundopl()
@@ -127,7 +130,7 @@ void CSurroundopl::write(int reg, int val)
 		// Adjust the frequency and calculate the new FNum
 		//double dbNewFNum = (dbOriginalFreq+(dbOriginalFreq/FREQ_OFFSET)) / (50000.0 * pow(2, iNewBlock - 20));
 		//#define calcFNum() ((dbOriginalFreq+(dbOriginalFreq/FREQ_OFFSET)) / (50000.0 * pow(2, iNewBlock - 20)))
-		#define calcFNum() ((dbOriginalFreq+(dbOriginalFreq/FREQ_OFFSET)) / (49716.0 * pow(2.0, iNewBlock - 20)))
+		#define calcFNum() ((dbOriginalFreq+(dbOriginalFreq/this->offset)) / (49716.0 * pow(2.0, iNewBlock - 20)))
 		double dbNewFNum = calcFNum();
 
 		// Make sure it's in range for the OPL chip
@@ -240,4 +243,12 @@ void CSurroundopl::setchip(int n)
 {
 	this->oplA.opl->setchip(n);
 	this->oplB.opl->setchip(n);
+}
+
+void CSurroundopl::set_offset(double offset)
+{
+	if (offset != 0)
+	{
+		this->offset = offset;
+	}
 }
