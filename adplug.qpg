@@ -91,7 +91,7 @@
          <QPG:Add permissions="0644" file="./src/players.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/protrack.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/psi.h" install="/opt/include/adplug/"/>
-         <QPG:Add permissions="0644" file="./src/rad.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/rad2.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/rat.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/raw.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/realopl.h" install="/opt/include/adplug/"/>

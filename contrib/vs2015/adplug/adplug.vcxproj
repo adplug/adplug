@@ -65,7 +65,7 @@
     <ClCompile Include="..\..\..\src\players.cpp" />
     <ClCompile Include="..\..\..\src\protrack.cpp" />
     <ClCompile Include="..\..\..\src\psi.cpp" />
-    <ClCompile Include="..\..\..\src\rad.cpp" />
+    <ClCompile Include="..\..\..\src\rad2.cpp" />
     <ClCompile Include="..\..\..\src\rat.cpp" />
     <ClCompile Include="..\..\..\src\raw.cpp" />
     <ClCompile Include="..\..\..\src\realopl.cpp" />
@@ -137,7 +137,7 @@
     <ClInclude Include="..\..\..\src\players.h" />
     <ClInclude Include="..\..\..\src\protrack.h" />
     <ClInclude Include="..\..\..\src\psi.h" />
-    <ClInclude Include="..\..\..\src\rad.h" />
+    <ClInclude Include="..\..\..\src\rad2.h" />
     <ClInclude Include="..\..\..\src\rat.h" />
     <ClInclude Include="..\..\..\src\raw.h" />
     <ClInclude Include="..\..\..\src\realopl.h" />

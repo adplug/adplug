@@ -61,7 +61,7 @@ src_libadplug_la_SOURCES = \
 	src/players.cpp \
 	src/protrack.cpp \
 	src/psi.cpp \
-	src/rad.cpp \
+	src/rad2.cpp \
 	src/rat.cpp \
 	src/raw.cpp \
 	src/realopl.cpp \
@@ -110,7 +110,7 @@ pkginclude_HEADERS = \
 	src/mkj.h \
 	src/mtk.h \
 	src/protrack.h \
-	src/rad.h \
+	src/rad2.h \
 	src/raw.h \
 	src/s3m.h \
 	src/sa2.h \
