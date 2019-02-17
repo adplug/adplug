@@ -27,6 +27,7 @@
 #include "rad2.h"
 #include "debug.h"
 #include <stdint.h>
+#include <string.h>
 
 /*
 
