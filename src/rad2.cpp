@@ -1083,7 +1083,14 @@ uint8_t *RADPlayer::SkipToLine(uint8_t *trk, uint8_t linenum, bool chan_riff) {
 		uint8_t chanid;
 		do {
 			chanid = *trk++;
-			trk += NoteSize[(chanid >> 4) & 7];
+			if (Version >= 2)
+				trk += NoteSize[(chanid >> 4) & 7];
+			else if (trk[1] & 0xf)
+				// v1 note with param
+				trk += 3;
+			else
+				// v1 note without param
+				trk += 2;
 		} while (!(chanid & 0x80) && !chan_riff);
 	}
 
@@ -1141,6 +1148,8 @@ void RADPlayer::PlayLine() {
 		// Move to next track in order list
 		Order++;
 		Track = GetTrack();
+		if (Line > 0)
+			Track = SkipToLine(Track, Line, false);
 	}
 }
 
