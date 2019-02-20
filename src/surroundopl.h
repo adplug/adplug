@@ -59,6 +59,7 @@ class CSurroundopl: public Copl
 		uint8_t iTweakedFMReg[2][256];
 		uint8_t iCurrentTweakedBlock[2][9]; // Current value of the Block in the tweaked OPL chip
 		uint8_t iCurrentFNum[2][9];         // Current value of the FNum in the tweaked OPL chip
+		double offset;                      // User configurable frequency offset for surroundopl
 
 	public:
 
@@ -71,6 +72,7 @@ class CSurroundopl: public Copl
 
 		void init();
 		void setchip(int n);
+		void set_offset(double offset);
 };
 
 #endif
