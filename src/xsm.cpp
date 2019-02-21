@@ -93,7 +93,7 @@ void CxsmPlayer::rewind(int subsong)
   int i;
   notenum = last = 0;
   songend = false;
-  opl->init(); // opl->write(1, 32); Should this write be uncommented?  It'll wreck the eXtra Simple Music test.
+  opl->init(); opl->write(1, 32);
   for (i = 0; i < 9; i++) {
     opl->write(0x20 + op_table[i], inst[i].value[0]);
     opl->write(0x23 + op_table[i], inst[i].value[1]);
