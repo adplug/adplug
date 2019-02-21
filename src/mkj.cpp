@@ -36,7 +36,6 @@ bool CmkjPlayer::load(const std::string &filename, const CFileProvider &fp)
   char	id[6];
   float	ver;
   int	i, j;
-  short	inst[8];
 
   // file validation
   f->readString(id, 6);
@@ -46,17 +45,11 @@ bool CmkjPlayer::load(const std::string &filename, const CFileProvider &fp)
 
   // load
   maxchannel = f->readInt(2);
-  opl->init(); opl->write(1, 32);
+  // load and store the channel instruments.
   for(i = 0; i < maxchannel; i++) {
-    for(j = 0; j < 8; j++) inst[j] = f->readInt(2);
-    opl->write(0x20+op_table[i],inst[4]);
-    opl->write(0x23+op_table[i],inst[0]);
-    opl->write(0x40+op_table[i],inst[5]);
-    opl->write(0x43+op_table[i],inst[1]);
-    opl->write(0x60+op_table[i],inst[6]);
-    opl->write(0x63+op_table[i],inst[2]);
-    opl->write(0x80+op_table[i],inst[7]);
-    opl->write(0x83+op_table[i],inst[3]);
+	for (j = 0; j < 8; j++) {
+	  inst[i].value[j] = f->readInt(2);
+	}
   }
   maxnotes = f->readInt(2);
   songbuf = new short [(maxchannel+1)*maxnotes];
@@ -147,12 +140,22 @@ void CmkjPlayer::rewind(int subsong)
 {
   int i;
 
+  opl->init(); opl->write(1, 32);
   for(i = 0; i < maxchannel; i++) {
     channel[i].pstat = 0;
     channel[i].speed = 0;
     channel[i].waveform = 0;
     channel[i].songptr = i;
     channel[i].octave = 4;
+	// Set up channel instruments
+	opl->write(0x20+op_table[i],inst[i].value[4]);
+	opl->write(0x23+op_table[i],inst[i].value[0]);
+	opl->write(0x40+op_table[i],inst[i].value[5]);
+	opl->write(0x43+op_table[i],inst[i].value[1]);
+	opl->write(0x60+op_table[i],inst[i].value[6]);
+	opl->write(0x63+op_table[i],inst[i].value[2]);
+	opl->write(0x80+op_table[i],inst[i].value[7]);
+	opl->write(0x83+op_table[i],inst[i].value[3]);
   }
 
   songend = false;
