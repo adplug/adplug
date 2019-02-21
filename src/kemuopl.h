@@ -32,7 +32,7 @@ class CKemuopl: public Copl
 {
 public:
   CKemuopl(int rate, bool bit16, bool usestereo)
-    : use16bit(bit16), stereo(usestereo)
+    : use16bit(bit16), stereo(usestereo), sampleerate(rate)
     {
       adlibinit(rate, usestereo ? 2 : 1, bit16 ? 2 : 1);
       currType = TYPE_OPL2;
@@ -52,10 +52,14 @@ public:
 	adlib0(reg, val);
     };
 
-  void init() {};
+  void init() {
+    adlibinit(sampleerate, stereo ? 2 : 1, use16bit ? 2 : 1);
+    currChip = 0;
+  };
 
 private:
   bool	use16bit,stereo;
+  int	sampleerate;
 };
 
 #endif
