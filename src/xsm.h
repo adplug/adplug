@@ -42,7 +42,7 @@ private:
   unsigned int		last, notenum;
   bool			songend;
   struct {
-    char	value[11];
+    unsigned char	value[11];
   } inst[9];
 
   void play_note(int c, int note, int octv);
