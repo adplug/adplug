@@ -147,15 +147,15 @@ void CmkjPlayer::rewind(int subsong)
     channel[i].waveform = 0;
     channel[i].songptr = i;
     channel[i].octave = 4;
-	// Set up channel instruments
-	opl->write(0x20+op_table[i],inst[i].value[4]);
-	opl->write(0x23+op_table[i],inst[i].value[0]);
-	opl->write(0x40+op_table[i],inst[i].value[5]);
-	opl->write(0x43+op_table[i],inst[i].value[1]);
-	opl->write(0x60+op_table[i],inst[i].value[6]);
-	opl->write(0x63+op_table[i],inst[i].value[2]);
-	opl->write(0x80+op_table[i],inst[i].value[7]);
-	opl->write(0x83+op_table[i],inst[i].value[3]);
+    // Set up channel instruments
+    opl->write(0x20+op_table[i],inst[i].value[4]);
+    opl->write(0x23+op_table[i],inst[i].value[0]);
+    opl->write(0x40+op_table[i],inst[i].value[5]);
+    opl->write(0x43+op_table[i],inst[i].value[1]);
+    opl->write(0x60+op_table[i],inst[i].value[6]);
+    opl->write(0x63+op_table[i],inst[i].value[2]);
+    opl->write(0x80+op_table[i],inst[i].value[7]);
+    opl->write(0x83+op_table[i],inst[i].value[3]);
   }
 
   songend = false;
