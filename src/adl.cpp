@@ -2320,6 +2320,10 @@ void CadlPlayer::play(uint16_t track) {
     _sfxPlayingSound = -1;
   }
 
+  // Verify that the sound/program offset is valid.
+  // KYRA3A.ADL subsong 2 points to sound 2, but the offset sound 2 is 0xffff.
+  if (READ_LE_UINT16(_soundDataPtr + 2 * soundId) == 0xffff)
+    return;
   int chan = _driver->callback(9, soundId, int(0));
 
   if (chan != 9) {
