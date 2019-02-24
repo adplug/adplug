@@ -52,6 +52,7 @@ class CadlPlayer: public CPlayer
 
  private:
   int numsubsongs, cursubsong;
+  bool loadcursubsong;
 
   AdlibDriver *_driver;
 

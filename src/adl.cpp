@@ -2238,8 +2238,6 @@ CadlPlayer::CadlPlayer(Copl *newopl)
 
   _soundTriggers = _kyra1SoundTriggers;
   _numSoundTriggers = _kyra1NumSoundTriggers;
-
-  init();
 }
 
 CadlPlayer::~CadlPlayer() {
@@ -2435,7 +2433,6 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
   file_data = new uint8 [file_size];
   f->readString((char *)file_data, file_size);
 
-  _driver->callback(8, int(-1));
   _soundDataPtr = 0;
 
   uint8 *p = file_data;
@@ -2499,18 +2496,23 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
   }
 
   fp.close(f);
-  cursubsong = -1;
+  rewind(-1);
   return true;
 }
 
 void CadlPlayer::rewind(int subsong)
 {
-  if(subsong == -1) subsong = cursubsong;
-  opl->init();
-  opl->write(1,32);
-  playSoundEffect(subsong);
+  // rewind(-1) re-initializes the opl.
+  if(subsong == -1)
+  {
+    init();
+    _driver->callback(8, int(-1));
+    opl->init();
+    opl->write(1,32);
+    subsong = 2;
+  }
   cursubsong = subsong;
-  update();
+  loadcursubsong = true;
 }
 
 unsigned int CadlPlayer::getsubsongs()
@@ -2520,9 +2522,11 @@ unsigned int CadlPlayer::getsubsongs()
 
 bool CadlPlayer::update()
 {
-  if (cursubsong == -1)
-    rewind(2);
-
+  if (loadcursubsong)
+  {
+    loadcursubsong = false;
+    playSoundEffect(cursubsong);
+  }
   bool songend = true;
 
 //   if(_trackEntries[cursubsong] == 0xff)
