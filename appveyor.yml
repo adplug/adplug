@@ -1,4 +1,4 @@
-version: 2.3.1{build}
+version: 2.3.1
 
 install:
 - ps: >-
@@ -84,4 +84,4 @@ deploy:
     secure: j1VV7CpBunCGtQ7rINQkkxoSeOd8ptKZEvh/FaGx8DuucNP78uLNn9W+ZVqsEoNm
   artifact: /.*\.nupkg/
   on:
-    branch: master
+    branch: release-2.3.1
