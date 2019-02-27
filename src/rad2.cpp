@@ -1872,12 +1872,15 @@ bool Crad2Player::load(const std::string &filename, const CFileProvider &fp) {
 	file->seek(0, binio::End);
 	size = file->pos();
 
-	newdata = new char[size];
+	// some old tunes have a truncated final note for some reason
+	// add an extra empty byte at the end of the file so they still "work"
+	newdata = new char[size + 1];
+	newdata[size] = '\0';
 	file->seek(0);
 	file->readString(newdata, size);
 	fp.close(file);
 
-	if (!(err = RADValidate(newdata, size))) {
+	if (!(err = RADValidate(newdata, size + 1))) {
 		rad->Init(newdata, writeOPL, opl);
 		// playback timer is < 0 if load failed
 		if (rad->GetHertz() > 0) {
