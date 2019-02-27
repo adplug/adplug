@@ -180,8 +180,10 @@ static const char *RADCheckPatternOld(const uint8_t *&s, const uint8_t *e) {
 			uint8_t note = *s++;
 			uint8_t notenum = note & 15;
 			uint8_t octave = (note >> 4) & 7;
+			/* the replayer handles bad params already and some old tunes do contain them
 			if (notenum == 13 || notenum == 14)
 				return g_RADPattBadNoteNum;
+			*/
 
 			// Check instrument
 			if (s >= e)
@@ -195,7 +197,7 @@ static const char *RADCheckPatternOld(const uint8_t *&s, const uint8_t *e) {
 				uint8_t param = *s++;
 				/* the replayer handles bad params already and some old tunes do contain them
 				if (param > 99)
-				return g_RADPattBadEffect;
+					return g_RADPattBadEffect;
 				*/
 			}
 
@@ -367,7 +369,7 @@ static const char *RADValidate(const void *data, size_t data_size) {
 	}
 	else for (int i = 0; i < 32; i++) {
 		// Version 1 patterns
-		if (s >= e)
+		if (s + 2 > e)
 			return g_RADTruncated;
 
 		int pos = s[0] | (int(s[1]) << 8);
@@ -1450,7 +1452,7 @@ void RADPlayer::PlayNoteOPL3(int channum, int8_t octave, int8_t note) {
 		SetOPL3(0xB0 + o2, GetOPL3(0xB0 + o2) & ~0x20);
 	}
 
-	if (note == 15)
+	if (note > 12)
 		return;
 
 	bool op4 = (UseOPL3 && chan.Instrument && chan.Instrument->Algorithm >= 2);
