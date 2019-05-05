@@ -164,6 +164,7 @@ bool CsopPlayer::load(const std::string &filename, const CFileProvider &fp)
 	}
 	// event tracks
 	track = new sop_trk[nTracks + 1];
+	for (i = 0; i < nTracks + 1; i++) track[i].data = 0;
 	for (i = 0; i < nTracks + 1; i++)
 	{
 		track[i].nEvents = f->readInt(2);
