@@ -84,7 +84,6 @@ bool Cu6mPlayer::load(const std::string &filename, const CFileProvider &fp)
   if (!lzw_decompress(source,destination))
     {
       delete[] compressed_song_data;
-      delete[] song_data;
       return(false);
     }
 
