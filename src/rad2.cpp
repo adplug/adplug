@@ -28,6 +28,7 @@
 #include "debug.h"
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 /*
 
@@ -237,7 +238,7 @@ static const char *RADValidate(const void *data, size_t data_size) {
 	if (Version == 1 && flags & 0x20)
 		return g_RADBadFlags; // Bit 5 is unused in v1
 
-	if (Version >= 2 && flags & 0x40) {
+	if (Version >= 2 && flags & 0x20) {
 		if (s + 2 > e)
 			return g_RADTruncated;
 		uint16_t bpm = s[0] | (uint16_t(s[1]) << 8);
@@ -289,11 +290,11 @@ static const char *RADValidate(const void *data, size_t data_size) {
 
 				// MIDI instrument.  We need to check the version as this can affect the following
 				// data size
-				if (s + 6 > e)
+				if (s + 7 > e)
 					return g_RADTruncated;
 				if (s[2] >> 4)
 					return g_RADUnknownMIDIVersion;
-				s += 6;
+				s += 7;
 
 			}
 			else {
@@ -1195,48 +1196,48 @@ void RADPlayer::PlayNote(int channum, int8_t notenum, int8_t octave, uint16_t in
 		CInstrument *inst = &Instruments[instnum - 1];
 		chan.Instrument = inst;
 
-		// Ignore MIDI instruments
-		if (inst->Algorithm == 7) {
-			Entrances--;
-			return;
-		}
+		if (inst->Algorithm < 7) {
 
-		LoadInstrumentOPL3(channum);
+			LoadInstrumentOPL3(channum);
 
-		// Bounce the channel
-		chan.KeyFlags |= fKeyOff | fKeyOn;
+			// Bounce the channel
+			chan.KeyFlags |= fKeyOff | fKeyOn;
 
-		ResetFX(&chan.IRiff.FX);
+			ResetFX(&chan.IRiff.FX);
 
-		if (src != SIRiff || inst != oldinst) {
+			if (src != SIRiff || inst != oldinst) {
 
-			// Instrument riff?
-			if (inst->Riff && inst->RiffSpeed > 0) {
+				// Instrument riff?
+				if (inst->Riff && inst->RiffSpeed > 0) {
 
-				chan.IRiff.Track = chan.IRiff.TrackStart = inst->Riff;
-				chan.IRiff.Line = 0;
-				chan.IRiff.Speed = inst->RiffSpeed;
-				chan.IRiff.LastInstrument = 0;
+					chan.IRiff.Track = chan.IRiff.TrackStart = inst->Riff;
+					chan.IRiff.Line = 0;
+					chan.IRiff.Speed = inst->RiffSpeed;
+					chan.IRiff.LastInstrument = 0;
 
-				// Note given with riff command is used to transpose the riff
-				if (notenum >= 1 && notenum <= 12) {
-					chan.IRiff.TransposeOctave = octave;
-					chan.IRiff.TransposeNote = notenum;
-					transposing = true;
+					// Note given with riff command is used to transpose the riff
+					if (notenum >= 1 && notenum <= 12) {
+						chan.IRiff.TransposeOctave = octave;
+						chan.IRiff.TransposeNote = notenum;
+						transposing = true;
+					}
+					else {
+						chan.IRiff.TransposeOctave = 3;
+						chan.IRiff.TransposeNote = 12;
+					}
+
+					// Do first tick of riff
+					chan.IRiff.SpeedCnt = 1;
+					TickRiff(channum, chan.IRiff, false);
+
 				}
-				else {
-					chan.IRiff.TransposeOctave = 3;
-					chan.IRiff.TransposeNote = 12;
-				}
-
-				// Do first tick of riff
-				chan.IRiff.SpeedCnt = 1;
-				TickRiff(channum, chan.IRiff, false);
-
+				else
+					chan.IRiff.SpeedCnt = 0;
 			}
-			else
-				chan.IRiff.SpeedCnt = 0;
 		}
+		else
+			// Ignore MIDI instruments
+			chan.Instrument = 0;
 	}
 
 	// Starting a channel riff?
@@ -1916,6 +1917,12 @@ bool Crad2Player::load(const std::string &filename, const CFileProvider &fp) {
 bool Crad2Player::update() { return !rad->Update(); }
 void Crad2Player::rewind(int) { rad->Stop(); }
 float Crad2Player::getrefresh() { return rad->GetHertz(); }
+
+std::string Crad2Player::gettype() {
+	char type[64];
+	snprintf(type, sizeof type, "Reality ADlib Tracker (version %d)", rad->GetVersion());
+	return std::string(type);
+}
 unsigned int Crad2Player::getpatterns() { return rad->GetTunePatterns(); }
 unsigned int Crad2Player::getpattern() { return rad->GetTunePattern(); }
 unsigned int Crad2Player::getorders() { return rad->GetTuneLength(); }
