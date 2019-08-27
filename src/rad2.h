@@ -41,7 +41,7 @@ public:
 	float getrefresh();
 
 	/***** Informational methods *****/
-	std::string gettype()         { return std::string("Reality ADlib Tracker"); }
+	std::string gettype();
 	std::string getdesc()         { return desc; }
 
 	unsigned int getpatterns();
