@@ -41,7 +41,9 @@ static const char *filelist[] = {
   "2001.MKJ",		// MK-Jamz
   "ADAGIO.DFM",		// Digital-FM
   "adlibsp.s3m",	// Scream Tracker 3
-  "ALLOYRUN.RAD",	// Reality AdLib Tracker
+  "ALLOYRUN.RAD",	// Reality AdLib Tracker (v1)
+  "dystopia.rad",   // Reality AdLib Tracker (v2)
+  "canonind.rad",   // Reality AdLib Tracker (v2 + MIDI)
   "ARAB.BAM",		// Bob's AdLib Music
   "BEGIN.KSM",		// Ken Silverman
   "BOOTUP.M",		// Ultima 6
