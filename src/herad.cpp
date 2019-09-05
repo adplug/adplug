@@ -37,6 +37,7 @@
 #include <stdio.h>
 
 #include "herad.h"
+#include "load_helper.h"
 
 #ifdef DEBUG
 #include "debug.h"
@@ -86,7 +87,10 @@ bool isHSQ(uint8_t * data, int size)
 		#endif
 		return false;
 	}
-	if ( *(uint16_t *)(data + 3) != size )
+
+	const uint16_t temp_size = u16_unaligned(data + 3);
+
+	if ( temp_size != size )
 	{
 		#ifdef DEBUG
 		AdPlug_LogWrite("HERAD: Is not HSQ, wrong compressed size.\n");
@@ -148,7 +152,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 		// get next bit of the queue
 		if (queue == 1)
 		{
-			queue = *(uint16_t *)src | 0x10000;
+			queue = u16_unaligned(src) | 0x10000;
 			src += 2;
 		}
 		bit = queue & 1;
@@ -164,7 +168,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 			// get next bit of the queue
 			if (queue == 1)
 			{
-				queue = *(uint16_t *)src | 0x10000;
+				queue = u16_unaligned(src) | 0x10000;
 				src += 2;
 			}
 			bit = queue & 1;
@@ -174,7 +178,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 			{
 				// count = next 3 bits of the input
 				// offset = next 13 bits of the input minus 8192
-				count = *(uint16_t *)src;
+				count = u16_unaligned(src);
 				offset = (count >> 3) - 8192;
 				count &= 7;
 				src += 2;
@@ -194,7 +198,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 				// count = next bit of the queue * 2 + next bit of the queue
 				if (queue == 1)
 				{
-					queue = *(uint16_t *)src | 0x10000;
+					queue = u16_unaligned(src) | 0x10000;
 					src += 2;
 				}
 				bit = queue & 1;
@@ -202,7 +206,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 				count = bit << 1;
 				if (queue == 1)
 				{
-					queue = *(uint16_t *)src | 0x10000;
+					queue = u16_unaligned(src) | 0x10000;
 					src += 2;
 				}
 				bit = queue & 1;
@@ -233,7 +237,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 	uint8_t * dst = out;
 	bool done = false;
 
-	*(uint16_t *)dst = *(uint16_t *)src;
+	std::memcpy(dst, src, sizeof(uint16_t));
 	src += 6;
 	uint16_t queue = 1;
 	uint8_t bit, bit_p;
@@ -243,7 +247,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 		queue >>= 1;
 		if (queue == 0)
 		{
-			queue = *(uint16_t *)src;
+			queue = u16_unaligned(src);
 			src += 2;
 			bit_p = bit;
 			bit = queue & 1;
@@ -264,7 +268,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 				queue >>= 1;
 				if (queue == 0)
 				{
-					queue = *(uint16_t *)src;
+					queue = u16_unaligned(src);
 					src += 2;
 					bit_p = bit;
 					bit = queue & 1;
@@ -282,7 +286,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					queue >>= 1;
 					if (queue == 0)
 					{
-						queue = *(uint16_t *)src;
+						queue = u16_unaligned(src);
 						src += 2;
 						bit_p = bit;
 						bit = queue & 1;
@@ -303,7 +307,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 				}
 				break;
 			case 2:
-				count = *(uint16_t *)src;
+				count = u16_unaligned(src);
 				offset = (count >> data[5]) - (1 << (16 - data[5]));
 				count &= (1 << data[5]) - 1;
 				src += 2;
@@ -335,7 +339,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 			queue >>= 1;
 			if (queue == 0)
 			{
-				queue = *(uint16_t *)src;
+				queue = u16_unaligned(src);
 				src += 2;
 				bit_p = bit;
 				bit = queue & 1;
@@ -356,7 +360,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					queue >>= 1;
 					if (queue == 0)
 					{
-						queue = *(uint16_t *)src;
+						queue = u16_unaligned(src);
 						src += 2;
 						bit_p = bit;
 						bit = queue & 1;
@@ -374,7 +378,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 						queue >>= 1;
 						if (queue == 0)
 						{
-							queue = *(uint16_t *)src;
+							queue = u16_unaligned(src);
 							src += 2;
 							bit_p = bit;
 							bit = queue & 1;
@@ -395,7 +399,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					}
 					break;
 				case 2:
-					count = *(uint16_t *)src;
+					count = u16_unaligned(src);
 					offset = (count >> data[5]) - (1 << (16 - data[5]));
 					count &= (1 << data[5]) - 1;
 					src += 2;
@@ -434,7 +438,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					queue >>= 1;
 					if (queue == 0)
 					{
-						queue = *(uint16_t *)src;
+						queue = u16_unaligned(src);
 						src += 2;
 						bit_p = bit;
 						bit = queue & 1;
@@ -452,7 +456,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 						queue >>= 1;
 						if (queue == 0)
 						{
-							queue = *(uint16_t *)src;
+							queue = u16_unaligned(src);
 							src += 2;
 							bit_p = bit;
 							bit = queue & 1;
@@ -473,7 +477,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					}
 					break;
 				case 2:
-					count = *(uint16_t *)src;
+					count = u16_unaligned(src);
 					offset = (count >> data[5]) - (1 << (16 - data[5]));
 					count &= (1 << data[5]) - 1;
 					src += 2;
