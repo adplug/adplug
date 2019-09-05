@@ -81,6 +81,7 @@
 #include <string.h>
 #include "mid.h"
 #include "mididata.h"
+#include "load_helper.h"
 
 /*#define TESTING*/
 #ifdef TESTING
@@ -300,7 +301,7 @@ bool CmidPlayer::load(const std::string &filename, const CFileProvider &fp)
     uint32_t size;
 
     f->readString((char *)s, 6);
-    size = *(uint32_t *)s; // size of FILE_OLDLUCAS
+    size = u32_unaligned(s); // size of FILE_OLDLUCAS
     good=0;
     subsongs=0;
     switch(s[0])
