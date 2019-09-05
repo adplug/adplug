@@ -411,7 +411,7 @@ void Cd00Player::rewind(int subsong)
   struct Stpoin {
     unsigned short ptr[9];
     unsigned char volume[9],dummy[5];
-  } *tpoin;
+  } tpoin;
   int i;
 
   if(subsong == -1) subsong = cursubsong;
@@ -424,23 +424,25 @@ void Cd00Player::rewind(int subsong)
       return;
 
   memset(channel,0,sizeof(channel));
+  const unsigned char* data = (unsigned char*)filedata + sizeof(Stpoin)*subsong;
   if(version > 1)
-    tpoin = (struct Stpoin *)((char *)filedata + LE_WORD(&header->tpoin));
+    data += LE_WORD(&header->tpoin);
   else
-    tpoin = (struct Stpoin *)((char *)filedata + LE_WORD(&header1->tpoin));
+    data += LE_WORD(&header1->tpoin);
+  memcpy(&tpoin, data, sizeof(Stpoin));
   for(i=0;i<9;i++) {
-    if(LE_WORD(&tpoin[subsong].ptr[i])) {	// track enabled
+    if(LE_WORD(&tpoin.ptr[i])) {	// track enabled
       channel[i].speed = LE_WORD((unsigned short *)
-				 ((char *)filedata + LE_WORD(&tpoin[subsong].ptr[i])));
+				 ((char *)filedata + LE_WORD(&tpoin.ptr[i])));
       channel[i].order = (unsigned short *)
-	((char *)filedata + LE_WORD(&tpoin[subsong].ptr[i]) + 2);
+	((char *)filedata + LE_WORD(&tpoin.ptr[i]) + 2);
     } else {					// track disabled
       channel[i].speed = 0;
       channel[i].order = 0;
     }
     channel[i].ispfx = 0xffff; channel[i].spfx = 0xffff;	// no SpFX
     channel[i].ilevpuls = 0xff; channel[i].levpuls = 0xff;	// no LevelPuls
-    channel[i].cvol = tpoin[subsong].volume[i] & 0x7f;	// our player may savely ignore bit 7
+    channel[i].cvol = tpoin.volume[i] & 0x7f;	// our player may savely ignore bit 7
     channel[i].vol = channel[i].cvol;			// initialize volume
   }
   songend = 0;
