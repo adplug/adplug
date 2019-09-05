@@ -35,6 +35,8 @@ AC_LANG([C++])
 AX_COMPILER_VENDOR
 AX_COMPILER_VERSION
 
+AC_C_BIGENDIAN
+
 AS_IF([test "x${enable_flags_setting}" = "xyes" && test "x${enable_debug}" = "xno"], [
     AC_LANG([C])
     AX_APPEND_COMPILE_FLAGS([-O2 -pipe], [CFLAGS])

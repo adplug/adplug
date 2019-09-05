@@ -160,7 +160,8 @@ pkginclude_HEADERS = \
 	src/cmfmcsop.h \
 	src/vgm.h \
 	src/sop.h \
-	src/herad.h
+	src/herad.h \
+	src/load_helper.h
 
 #############
 # adplugdb/ #
