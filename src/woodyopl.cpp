@@ -33,6 +33,7 @@
 #include <string.h> // memset
 #include "woodyopl.h"
 
+static Bit32u generator_add;	// should be a chip parameter
 
 static fltype recipsamp;	// inverse of sampling rate
 static Bit16s wavtable[WAVEPREC*3];	// wave form table
