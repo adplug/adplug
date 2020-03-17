@@ -41,7 +41,7 @@ class Copl
   virtual void write(int reg, int val) = 0;	// combined register select + data write
   virtual void setchip(int n)			// select OPL chip
     {
-      if(n < 2)
+      if(n >= 0 && n < 2)
 	currChip = n;
     }
 
