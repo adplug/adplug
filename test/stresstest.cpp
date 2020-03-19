@@ -43,7 +43,23 @@
 /***** Local variables *****/
 
 static const char *const filelist[] = {
+	/* Example */
 	"fdance03.dmo",	// TwinTrack sample (skipped in playertest)
+	/* Regression tests */
+	"i-85.bmf",	// Issue #85 (CVE-2019-14690): "Heap-based buffer
+			//    overflow in CxadbmfPlayer::__bmf_convert_stream()"
+	"i-86.dtm",	// Issue #86 (CVE-2019-14691): "Heap-based buffer
+			//            overflow in CdtmLoader::load()"
+	"i-87.mkj",	// Issue #87 (CVE-2019-14692): "Heap-based buffer
+			//            overflow in CmkjPlayer::load()"
+	"i-88_1.a2m",	// Issue #88 (CVE-2019-14732): "Multiple heap-based
+	"i-88_2.a2m",	//            buffer overflows in Ca2mLoader::load()"
+	"i-89_1.rad",	// Issue #89 (CVE-2019-14733): "Multiple heap-based
+	"i-89_2.rad",	//            buffer overflows in CradLoader::load()"
+	"i-90_1.mtk",	// Issue #90 (CVE-2019-14734): "Multiple heap-based
+	"i-90_2.mtk",	//            buffer overflows in CmtkLoader::load()"
+	"i-91.m",	// Issue #91 (CVE-2019-15151): "Double free in
+			//            Cu6mPlayer::~Cu6mPlayer()"
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);

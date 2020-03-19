@@ -393,3 +393,12 @@ EXTRA_DIST += \
 	test/WORMINTR.ref \
 	test/YsBattle.ref \
 	test/YsBattle.vgm
+# Regression tests:
+EXTRA_DIST += \
+	test/i-85.bmf \
+	test/i-86.dtm \
+	test/i-87.mkj \
+	test/i-88_1.a2m test/i-88_2.a2m \
+	test/i-89_1.rad test/i-89_2.rad \
+	test/i-90_1.mtk test/i-90_2.mtk \
+	test/i-91.m
