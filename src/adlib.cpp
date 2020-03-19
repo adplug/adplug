@@ -653,32 +653,14 @@ void CadlibDriver::SetFNum(uint16_t * fNumVec, int num, int den)
 */
 void CadlibDriver::ChangePitch(int voice, int pitchBend)
 {
-	int l, t1, t2, delta;
-	static int oldL = -1;
-	static int oldHt;
-	static uint16_t * oldPtr;
+	int t = (pitchBend - MID_PITCH) * pitchRangeStep / MID_PITCH;
+	int delta = t < 0 ? NR_STEP_PITCH - 1 : 0;
+	t -= delta;
 
-	l = (int)(pitchBend - MID_PITCH) * pitchRangeStep;
-	if (oldL == l) {	/* optimisation ... */
-		fNumFreqPtr[voice] = oldPtr;
-		halfToneOffset[voice] = oldHt;
-	}
-	else {
-		t1 = l / MID_PITCH;
-		if (t1 < 0) {
-			t2 = NR_STEP_PITCH - 1 - t1;
-			oldHt = halfToneOffset[voice] = -(t2 / NR_STEP_PITCH);
-			delta = (t2 - NR_STEP_PITCH + 1) % NR_STEP_PITCH;
-			if (delta)
-				delta = NR_STEP_PITCH - delta;
-		}
-		else {
-			oldHt = halfToneOffset[voice] = t1 / NR_STEP_PITCH;
-			delta = t1 % NR_STEP_PITCH;
-		}
-		oldPtr = fNumFreqPtr[voice] = (uint16_t *)fNumNotes[delta];
-		oldL = l;
-	}
+	halfToneOffset[voice] = t / NR_STEP_PITCH;
+	delta                += t % NR_STEP_PITCH;
+
+	fNumFreqPtr[voice] = fNumNotes[delta];
 }
 
 /*
