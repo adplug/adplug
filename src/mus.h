@@ -79,7 +79,7 @@ public:
 	{
 		if (data) delete [] data;
 		if (insts) delete[] insts;
-		if (drv) drv->~CadlibDriver();
+		if (drv) delete drv;
 	};
 
 	bool load(const std::string &filename, const CFileProvider &fp);

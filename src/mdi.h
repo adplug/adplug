@@ -73,7 +73,7 @@ public:
 	~CmdiPlayer()
 	{
 		if(data) delete [] data;
-		if (drv) drv->~CadlibDriver();
+		if (drv) delete drv;
 	};
 
 	bool load(const std::string &filename, const CFileProvider &fp);

@@ -168,7 +168,7 @@ public:
 			}
 			delete[] track;
 		}
-		if (drv) drv->~Cad262Driver();
+		if (drv) delete drv;
 	};
 
 	bool load(const std::string &filename, const CFileProvider &fp);
