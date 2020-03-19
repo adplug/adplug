@@ -243,8 +243,8 @@ unsigned short CdmoLoader::dmo_unpacker::brand(unsigned short range)
   ax = LOWORD(bseed);
   bx = HIWORD(bseed);
   cx = ax;
-  ax = LOWORD(cx * 0x8405);
-  dx = HIWORD(cx * 0x8405);
+  ax = LOWORD(cx * 0x8405U);
+  dx = HIWORD(cx * 0x8405U);
   cx <<= 3;
   cx = (((HIBYTE(cx) + LOBYTE(cx)) & 0xFF) << 8) + LOBYTE(cx);
   dx += cx;
