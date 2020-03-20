@@ -80,7 +80,7 @@ CPlayer *CxadbmfPlayer::factory(Copl *newopl)
 
 bool CxadbmfPlayer::xadplayer_load()
 {
-  unsigned short ptr = 0;
+  size_t ptr = 0;
   int i;
 
   if(xad.fmt != BMF)
@@ -89,6 +89,8 @@ bool CxadbmfPlayer::xadplayer_load()
 #ifdef DEBUG
   AdPlug_LogWrite("\nbmf_load():\n\n");
 #endif
+  if (tune_size < 6)
+    return false;
   if (!strncmp((char *)&tune[0],"BMF1.2",6))
   {
     bmf.version = BMF1_2;
@@ -110,17 +112,32 @@ bool CxadbmfPlayer::xadplayer_load()
   {
     ptr = 6;
 
-    strncpy(bmf.title,(char *)&tune[ptr],36);
-    bmf.title[35] = 0;
+    // It's unclear whether title/author can be longer than 35 chars. The
+    // implementation reads an arbitrarily long NUL-terminated string and
+    // truncates it to fit in a fixed 36 byte buffer. Doesn't make sense!
+    size_t len = strnlen((char *)tune + ptr, tune_size - ptr);
+    if (ptr + len == tune_size)
+      return false;
+    if (len > 35)
+    {
+      memcpy(bmf.title, tune + ptr, 35);
+      bmf.title[35] = 0;
+    }
+    else
+      memcpy(bmf.title, tune + ptr, len + 1);
+    ptr += len + 1;
 
-    while (tune[ptr]) { ptr++; }
-	ptr++;
-
-    strncpy(bmf.author,(char *)&tune[ptr],36);
-    bmf.author[35] = 0;
-
-    while (tune[ptr]) { ptr++; }
-	ptr++;
+    len = strnlen((char *)tune + ptr, tune_size - ptr);
+    if (ptr + len == tune_size)
+      return false;
+    if (len > 35)
+    {
+      memcpy(bmf.author, tune + ptr, 35);
+      bmf.author[35] = 0;
+    }
+    else
+      memcpy(bmf.author, tune + ptr, len + 1);
+    ptr += len + 1;
   }
   else
   {
@@ -129,6 +146,8 @@ bool CxadbmfPlayer::xadplayer_load()
   }
 
   // speed
+  if (tune_size - ptr < 1)
+    return false;
   if (bmf.version > BMF0_9B)
     bmf.speed = tune[ptr++];
   else
@@ -137,13 +156,19 @@ bool CxadbmfPlayer::xadplayer_load()
   // load instruments
   if (bmf.version > BMF0_9B)
   {
+    if (tune_size - ptr < 4)
+      return false;
     unsigned long iflags = (tune[ptr] << 24) | (tune[ptr+1] << 16) | (tune[ptr+2] << 8) | tune[ptr+3];
     ptr+=4;
 
     for(i=0;i<32;i++)
       if (iflags & (1 << (31-i)))
 	  {
-        strcpy(bmf.instruments[i].name, (char *)&tune[ptr]);
+        if (tune_size - ptr < 24)
+          return false;
+        strncpy(bmf.instruments[i].name, (char *)tune + ptr, 10);
+        // 11th char ignored since name must be 0-terminated
+        bmf.instruments[i].name[10] = 0;
         memcpy(bmf.instruments[i].data, &tune[ptr+11], 13);
         ptr += 24;
 	  }
@@ -163,32 +188,55 @@ bool CxadbmfPlayer::xadplayer_load()
   {
     ptr = 6;
 
-    for(i=0;i<32;i++)
+    if (tune_size - ptr < 32 * 15)
+      return false;
+    // Should unset entries be zero or set to bmf_default_instrument?
+    memset(bmf.instruments, 0, sizeof(bmf.instruments));
+    for (i = 0; i < 32; i++)
     {
-      bmf.instruments[i].name[0] = 0;
-      memcpy(bmf.instruments[tune[ptr]].data, &tune[ptr+2],13); // bug no.1 (no instrument-table-end detection)
-      ptr+=15;
+      size_t ip = ptr + 15 * i;
+      // Original code lacked check and had a comment: "bug no.1 (no
+      // instrument-table-end detection)" - what does that mean?
+      if (tune[ip] < 32)
+        memcpy(bmf.instruments[tune[ip]].data, tune + ip + 2, 13);
+      else // what? continue, return false, or skip rest of the table?
+        break; // Old comment (see above) suggests it's a table end marker.
     }
+    ptr += 32 * 15;
   }
   
   // load streams
   if (bmf.version > BMF0_9B)
   {
+    if (tune_size - ptr < 4)
+      return false;
     unsigned long sflags = (tune[ptr] << 24) | (tune[ptr+1] << 16) | (tune[ptr+2] << 8) | tune[ptr+3];
     ptr+=4;
 
     for(i=0;i<9;i++)
       if (sflags & (1 << (31-i)))
-        ptr+=__bmf_convert_stream(&tune[ptr],i);
+      {
+        long len = __bmf_convert_stream(tune + ptr, i, tune_size - ptr);
+        if (len < 0)
+          return false;
+        ptr += len;
+      }
       else
         bmf.streams[i][0].cmd = 0xFF;
   }
   else
   {
-    for(i=0;i<tune[5];i++)
-      ptr+=__bmf_convert_stream(&tune[ptr],i);
+    if (tune[5] > 9)
+      return false;
+    for (i = 0; i < tune[5]; i++)
+    {
+      long len = __bmf_convert_stream(tune + ptr, i, tune_size - ptr);
+      if (len < 0)
+        return false;
+      ptr += len;
+    }
 
-	for(i=tune[5];i<9;i++)
+    for (i = tune[5]; i < 9; i++)
       bmf.streams[i][0].cmd = 0xFF;
   }
 
@@ -415,18 +463,28 @@ unsigned int CxadbmfPlayer::xadplayer_getspeed()
 
 /* -------- Internal Functions ---------------------------- */
 
-int CxadbmfPlayer::__bmf_convert_stream(unsigned char *stream, int channel)
+long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
+  int channel, unsigned long stream_size)
 {
 #ifdef DEBUG
   AdPlug_LogWrite("channel %02X (note,delay,volume,instrument,command,command_data):\n",channel);
-  unsigned char *last = stream;
+  const unsigned char *last = stream;
 #endif
-  unsigned char *stream_start = stream;
-
+  const unsigned char *stream_start = stream;
+  const unsigned char *stream_end = stream + stream_size;
   int pos = 0;
 
   while (true)
   {
+    if (pos >= sizeof(bmf.streams[0]) / sizeof(bmf.streams[0][0]))
+    {
+      // Stream too long to store.
+      pos--; // Truncate but keep reading until end marker
+      // or: return -1;
+    }
+    if (stream_end - stream < 1)
+      return -1;
+
     memset(&bmf.streams[channel][pos], 0, sizeof(bmf_event));
 
     bool is_cmd = false;
@@ -443,6 +501,8 @@ int CxadbmfPlayer::__bmf_convert_stream(unsigned char *stream, int channel)
     else if (*stream == 0xFC)
 	{
       // 0xFC -> 0xFE xx: Save Loop Position
+      if (stream_end - stream < 2)
+        return -1;
       bmf.streams[channel][pos].cmd = 0xFE;
       bmf.streams[channel][pos].cmd_data = (*(stream+1) & ((bmf.version == BMF0_9B) ? 0x7F : 0x3F)) - 1;
 
@@ -459,6 +519,8 @@ int CxadbmfPlayer::__bmf_convert_stream(unsigned char *stream, int channel)
     {
       if (*stream & 0x80)                           
       {
+        if (stream_end - stream < 2)
+          return -1;
 		if (*(stream+1) & 0x80)
         {
 		  if (*(stream+1) & 0x40)
@@ -506,6 +568,8 @@ int CxadbmfPlayer::__bmf_convert_stream(unsigned char *stream, int channel)
 	// is command ?
     if (is_cmd)
     {
+      if (stream_end - stream < 1)
+        return -1;
 
       /* ALL */
 
@@ -538,46 +602,37 @@ int CxadbmfPlayer::__bmf_convert_stream(unsigned char *stream, int channel)
         /* 1.2 */
 
         if (bmf.version == BMF1_2)
-        if (*stream == 0x01)
-		{
-          // 0x01: Set Modulator Volume -> 0x01
-          bmf.streams[channel][pos].cmd = 0x01;
-          bmf.streams[channel][pos].cmd_data = *(stream+1);
+          if (0x01 <= *stream  && *stream <= 0x06)
+          {
+            if (stream_end - stream < 2)
+              return -1;
 
-		  stream+=2;
-		}
-        else if (*stream == 0x02)
-		{
-          // 0x02: ?
-		  stream+=2;
-		}
-        else if (*stream == 0x03)
-		{
-          // 0x03: ?
-		  stream+=2;
-		}
-        else if (*stream == 0x04)
-		{
-          // 0x04: Set Speed -> 0x10
-          bmf.streams[channel][pos].cmd = 0x10;
-          bmf.streams[channel][pos].cmd_data = *(stream+1);
+            switch (*stream)
+            {
+            case 0x01: // Set Modulator Volume -> 0x01
+              bmf.streams[channel][pos].cmd = 0x01;
+              bmf.streams[channel][pos].cmd_data = stream[1];
+              break;
 
-          stream+=2;
-		}
-        else if (*stream == 0x05)
-		{
-          // 0x05: Set Carrier Volume (port 380)
-          bmf.streams[channel][pos].volume = *(stream+1) + 1;
+            case 0x02: // ?
+            case 0x03: // ?
+              break;
 
-		  stream+=2;
-		}
-        else if (*stream == 0x06)
-		{
-          // 0x06: Set Carrier Volume (port 382)
-          bmf.streams[channel][pos].volume = *(stream+1) + 1;
+            case 0x04: // Set Speed -> 0x10
+              bmf.streams[channel][pos].cmd = 0x10;
+              bmf.streams[channel][pos].cmd_data = stream[1];
+              break;
 
-		  stream+=2;
-		} // if (bmf.version == BMF1_2)
+            case 0x05: // Set Carrier Volume (port 380)
+              bmf.streams[channel][pos].volume = stream[1] + 1;
+              break;
+
+            case 0x06: // Set Carrier Volume (port 382)
+              bmf.streams[channel][pos].volume = stream[1] + 1;
+              break;
+            }
+            stream += 2;
+          } // if (bmf.version == BMF1_2)
 
       } // if ((0x20 <= *stream) && (*stream <= 0x3F))
 
