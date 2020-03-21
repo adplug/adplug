@@ -167,6 +167,7 @@ bool CxadbmfPlayer::xadplayer_load()
     ptr += 4;
 
     for (i = 0; i < 32; i++)
+    {
       if (iflags & (1 << (31-i)))
       {
         if (tune_size - ptr < 24)
@@ -177,17 +178,14 @@ bool CxadbmfPlayer::xadplayer_load()
         memcpy(bmf.instruments[i].data, &tune[ptr+11], 13);
         ptr += 24;
       }
-      else
+      else if (bmf.version == BMF1_1)
       {
-        bmf.instruments[i].name[0] = 0;
-
-        if (bmf.version == BMF1_1)
-          for (int j = 0; j < 13; j++)
-            bmf.instruments[i].data[j] = bmf_default_instrument[j];
-        else
-          for (int j = 0; j < 13; j++)
-            bmf.instruments[i].data[j] = 0;
+        memset(bmf.instruments[i].name, 0, 11);
+        memcpy(bmf.instruments[i].data, bmf_default_instrument, 13);
       }
+      else
+        memset(bmf.instruments + i, 0, sizeof(bmf.instruments[i]));
+    }
   }
   else
   {
@@ -251,15 +249,7 @@ bool CxadbmfPlayer::xadplayer_load()
 
 void CxadbmfPlayer::xadplayer_rewind(int subsong)
 {
-  int i, j;
-
-  for (i = 0; i < 9; i++)
-  {
-    bmf.channel[i].stream_position = 0;
-    bmf.channel[i].delay = 0;
-    bmf.channel[i].loop_position = 0;
-    bmf.channel[i].loop_counter = 0;
-  }
+  memset(bmf.channel, 0, sizeof(bmf.channel));
 
   plr.speed = bmf.speed;
 #ifdef DEBUG
@@ -274,6 +264,7 @@ void CxadbmfPlayer::xadplayer_rewind(int subsong)
     opl_write(0x01, 0x20);
 
     /* 1.1 */
+    int i, j;
     if (bmf.version == BMF1_1)
       for (i = 0; i < 9; i++)
         for (j = 0; j < 13; j++)
@@ -300,12 +291,11 @@ void CxadbmfPlayer::xadplayer_update()
 #ifdef DEBUG
    AdPlug_LogWrite("channel %02X:\n", i);
 #endif
-      bmf_event event;
 
       // process so-called cross-events
       while (true)
       {
-        memcpy(&event, &bmf.streams[i][bmf.channel[i].stream_position], sizeof(bmf_event));
+        bmf_event event = bmf.streams[i][bmf.channel[i].stream_position];
 #ifdef DEBUG
    AdPlug_LogWrite("%02X %02X %02X %02X %02X %02X\n",
            event.note,event.delay,event.volume,event.instrument,
