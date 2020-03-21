@@ -481,6 +481,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
       return -1;
     switch (*stream)
     {
+      /* Cross-Events */
     case 0xFE: // 0xFE -> 0xFF: End of Stream
       event.cmd = 0xFF;
       stream++;
@@ -500,94 +501,65 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
       stream++;
       break;
 
+      /* Normal Events */
     default:
-      bool is_cmd = false;
+      // The event is defined by the next 1 to 4 bytes and consists of
+      // a note, an optional delay, and an optional command (which may
+      // take another data byte as argument).
+      // Bit 0x80 of the first byte indicates the presence of an optional
+      // part; if present, bits 0x80 and 0x40 of the second byte determine
+      // whether we have delay, command, or both. The possible forms are:
+      //   0NNNNNNN                   - 1  byte:  note
+      //   1NNNNNNN 0CCCCCCC          - 2+ bytes: note, command [data]
+      //   1NNNNNNN 10DDDDDD          - 2  bytes: note, delay
+      //   1NNNNNNN 11DDDDDD CCCCCCCC - 3+ bytes: note, delay, command [data]
+      event.note = *stream & 0x7F;
 
+      if (!(*(stream++) & 0x80))
+        break; // 1st byte is 0NNNNNNN: no delay or command; done.
+
+      if (stream_end - stream < 1)
+        return -1;
       if (*stream & 0x80)
       {
-        if (stream_end - stream < 2)
-          return -1;
-        if (stream[1] & 0x80)
-        {
-          if (stream[1] & 0x40)
-          {
-            // byte0: 1aaaaaaa = NOTE
-            event.note = *stream & 0x7F;
-            // byte1: 11bbbbbb = DELAY
-            event.delay = stream[1] & 0x3F;
-            // byte2: cccccccc = COMMAND
+        // 2nd byte is 1xDDDDDD: delay byte present
+        event.delay = *stream & 0x3F;
 
-            stream += 2;
-            is_cmd = true;
-          }
-          else
-          {
-            // byte0: 1aaaaaaa = NOTE
-            event.note = *stream & 0x7F;
-            // byte1: 11bbbbbb = DELAY
-            event.delay = stream[1] & 0x3F;
-
-            stream += 2;
-          } // if (*(stream+1) & 0x40)
-        }
-        else
-        {
-          // byte0: 1aaaaaaa = NOTE
-          event.note = *stream & 0x7F;
-          // byte1: 0bbbbbbb = COMMAND
-
-          stream++;
-          is_cmd = true;
-        } // if (*(stream+1) & 0x80)
+        if (!(*(stream++) & 0x40))
+          break; // 2nd byte is 10DDDDDD: no command; done.
       }
-      else
-      {
-        // byte0: 0aaaaaaa = NOTE
-        event.note = *stream & 0x7F;
 
-        stream++;
-      } // if (*stream & 0x80)
-
-      // is command ?
-      if (!is_cmd)
-        break;
+      // If we reach this point, a command byte follows.
       if (stream_end - stream < 1)
         return -1;
 
-      /* ALL */
-
-      if ((0x20 <= *stream) && (*stream <= 0x3F))
+      if (0x40 <= *stream)
       {
-        // 0x20 or higher; 0x3F or lower: Set Instrument
-        event.instrument = *stream - 0x20 + 1;
-
+        // command 0x40 or higher: Set Volume
+        event.volume = *stream - 0x40 + 1; // masking needed?
         stream++;
       }
-      else if (0x40 <= *stream)
+      else if ((0x20 <= *stream) && (*stream <= 0x3F))
       {
-        // 0x40 or higher: Set Volume
-        event.volume = *stream - 0x40 + 1;
-
+        // command 0x20 to 0x3F: Set Instrument
+        event.instrument = *stream - 0x20 + 1;
         stream++;
       }
       else
       {
-
-        /* 0.9b */
+        // command 0x1F or lower
         if (bmf.version == BMF0_9B)
-        if (*stream < 0x20)
         {
-          // 0x1F or lower: ?
+          // version 0.9b, command 0x1F or lower: ?
           stream++;
         }
-
-        /* 1.2 */
-        if (bmf.version == BMF1_2)
+        else if (bmf.version == BMF1_2)
+        {
+          /* 1.2 */
           if (0x01 <= *stream  && *stream <= 0x06)
           {
             if (stream_end - stream < 2)
               return -1;
-
             switch (*stream)
             {
             case 0x01: // Set Modulator Volume -> 0x01
@@ -605,32 +577,35 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
               break;
 
             case 0x05: // Set Carrier Volume (port 380)
-              event.volume = stream[1] + 1;
+              event.volume = stream[1] + 1; // masking needed?
               break;
 
             case 0x06: // Set Carrier Volume (port 382)
-              event.volume = stream[1] + 1;
+              event.volume = stream[1] + 1; // masking needed?
               break;
             }
             stream += 2;
-          } // if (bmf.version == BMF1_2)
+          } // if (0x01 <= *stream  && *stream <= 0x06)
 
-      } // if ((0x20 <= *stream) && (*stream <= 0x3F))
+        } // if (bmf.version == BMF1_2)
+
+        // The following cases are not handled and don't even
+        // increment the stream pointer (that's probably wrong):
+        // * version 1.1, commands 0x1F or lower
+        // * version 1.2, commands 0x00 and 0x07 to 0x1F
+
+      } // ! if (0x40 <= *stream)
 
     } // switch
 
 #ifdef DEBUG
-   AdPlug_LogWrite("%02X %02X %02X %02X %02X %02X  <---- ",
-                   event.note,
-                   event.delay,
-                   event.volume,
-                   event.instrument,
-                   event.cmd,
-                   event.cmd_data);
-   for (int zz = 0; zz < (stream - last); zz++)
-     AdPlug_LogWrite(" %02X", last[zz]);
-   AdPlug_LogWrite("\n");
-   last = stream;
+    AdPlug_LogWrite("%02X %02X %02X %02X %02X %02X  <---- ",
+                    event.note, event.delay, event.volume,
+                    event.instrument, event.cmd, event.cmd_data);
+    for (int zz = 0; zz < (stream - last); zz++)
+      AdPlug_LogWrite(" %02X", last[zz]);
+    AdPlug_LogWrite("\n");
+    last = stream;
 #endif
   } // for
 
