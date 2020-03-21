@@ -467,23 +467,19 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
 #endif
   const unsigned char *const stream_start = stream;
   const unsigned char *const stream_end = stream + stream_size;
-  int pos = 0;
+  const int last_pos = sizeof(bmf.streams[0]) / sizeof(bmf.streams[0][0]) - 1;
 
-  while (true)
+  // The loop exits when End of Stream (0xFE) is found (or on error).
+  // If the stream is too long to store, truncate it, but keep reading
+  // until the end marker is found and stored.
+  for (int pos = 0; true; pos < last_pos && pos++)
   {
-    if (pos >= sizeof(bmf.streams[0]) / sizeof(bmf.streams[0][0]))
-    {
-      // Stream too long to store.
-      pos--; // Truncate but keep reading until end marker
-      // or: return -1;
-    }
-    if (stream_end - stream < 1)
-      return -1;
-
     memset(&bmf.streams[channel][pos], 0, sizeof(bmf_event));
 
     bool is_cmd = false;
 
+    if (stream_end - stream < 1)
+      return -1;
     if (*stream == 0xFE)
     {
       // 0xFE -> 0xFF: End of Stream
@@ -642,8 +638,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
    AdPlug_LogWrite("\n");
    last = stream;
 #endif
-    pos++;
-  } // while (true)
+  } // for
 
   return stream - stream_start;
 }
