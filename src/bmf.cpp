@@ -95,15 +95,17 @@ bool CxadbmfPlayer::xadplayer_load()
 #endif
   if (tune_size < 6)
     return false;
-  if (!strncmp((char *)&tune[0], "BMF1.2", 6))
+  if (!strncmp((char *)tune, "BMF1.2", 6))
   {
     bmf.version = BMF1_2;
     bmf.timer = 70.0f;
+    ptr = 6;
   }
-  else if (!strncmp((char *)&tune[0], "BMF1.1", 6))
+  else if (!strncmp((char *)tune, "BMF1.1", 6))
   {
     bmf.version = BMF1_1;
     bmf.timer = 68.5f;
+    ptr = 6;
   }
   else
   {
@@ -114,8 +116,6 @@ bool CxadbmfPlayer::xadplayer_load()
   // copy title & author
   if (bmf.version > BMF0_9B)
   {
-    ptr = 6;
-
     // It's unclear whether title/author can be longer than 35 chars. The
     // implementation reads an arbitrarily long NUL-terminated string and
     // truncates it to fit in a fixed 36 byte buffer. Doesn't make sense!
@@ -175,7 +175,7 @@ bool CxadbmfPlayer::xadplayer_load()
         strncpy(bmf.instruments[i].name, (char *)tune + ptr, 10);
         // 11th char ignored since name must be 0-terminated
         bmf.instruments[i].name[10] = 0;
-        memcpy(bmf.instruments[i].data, &tune[ptr+11], 13);
+        memcpy(bmf.instruments[i].data, tune + ptr + 11, 13);
         ptr += 24;
       }
       else if (bmf.version == BMF1_1)
@@ -462,11 +462,12 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
   int channel, unsigned long stream_size)
 {
 #ifdef DEBUG
-  AdPlug_LogWrite("channel %02X (note,delay,volume,instrument,command,command_data):\n",channel);
+  AdPlug_LogWrite("channel %02X (note, delay, volume, instrument, "
+                  "command, command_data):\n", channel);
   const unsigned char *last = stream;
 #endif
-  const unsigned char *stream_start = stream;
-  const unsigned char *stream_end = stream + stream_size;
+  const unsigned char *const stream_start = stream;
+  const unsigned char *const stream_end = stream + stream_size;
   int pos = 0;
 
   while (true)
@@ -499,7 +500,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
         return -1;
       bmf.streams[channel][pos].cmd = 0xFE;
       bmf.streams[channel][pos].cmd_data =
-          (*(stream+1) & ((bmf.version == BMF0_9B) ? 0x7F : 0x3F)) - 1;
+          (stream[1] & ((bmf.version == BMF0_9B) ? 0x7F : 0x3F)) - 1;
 
       stream += 2;
     }
@@ -516,14 +517,14 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
       {
         if (stream_end - stream < 2)
           return -1;
-        if (*(stream+1) & 0x80)
+        if (stream[1] & 0x80)
         {
-          if (*(stream+1) & 0x40)
+          if (stream[1] & 0x40)
           {
             // byte0: 1aaaaaaa = NOTE
             bmf.streams[channel][pos].note = *stream & 0x7F;
             // byte1: 11bbbbbb = DELAY
-            bmf.streams[channel][pos].delay = *(stream+1) & 0x3F;
+            bmf.streams[channel][pos].delay = stream[1] & 0x3F;
             // byte2: cccccccc = COMMAND
 
             stream += 2;
@@ -534,7 +535,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
             // byte0: 1aaaaaaa = NOTE
             bmf.streams[channel][pos].note = *stream & 0x7F;
             // byte1: 11bbbbbb = DELAY
-            bmf.streams[channel][pos].delay = *(stream+1) & 0x3F;
+            bmf.streams[channel][pos].delay = stream[1] & 0x3F;
 
             stream += 2;
           } // if (*(stream+1) & 0x40)
@@ -645,5 +646,5 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
     pos++;
   } // while (true)
 
-  return (stream - stream_start);
+  return stream - stream_start;
 }
