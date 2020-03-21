@@ -477,8 +477,6 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
     bmf_event &event = bmf.streams[channel][pos];
     memset(&event, 0, sizeof(bmf_event));
 
-    bool is_cmd = false;
-
     if (stream_end - stream < 1)
       return -1;
     switch (*stream)
@@ -503,6 +501,8 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
       break;
 
     default:
+      bool is_cmd = false;
+
       if (*stream & 0x80)
       {
         if (stream_end - stream < 2)
@@ -547,11 +547,10 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
 
         stream++;
       } // if (*stream & 0x80)
-    } // switch
 
-    // is command ?
-    if (is_cmd)
-    {
+      // is command ?
+      if (!is_cmd)
+        break;
       if (stream_end - stream < 1)
         return -1;
 
@@ -618,7 +617,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
 
       } // if ((0x20 <= *stream) && (*stream <= 0x3F))
 
-    } // if (is_cmd)
+    } // switch
 
 #ifdef DEBUG
    AdPlug_LogWrite("%02X %02X %02X %02X %02X %02X  <---- ",
