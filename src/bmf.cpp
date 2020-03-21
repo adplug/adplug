@@ -472,7 +472,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
   // The loop exits when End of Stream (0xFE) is found (or on error).
   // If the stream is too long to store, truncate it, but keep reading
   // until the end marker is found and stored.
-  for (int pos = 0; true; pos < last_pos && pos++)
+  for (int pos = 0; pos <= last_pos; pos < last_pos && pos++)
   {
     bmf_event &event = bmf.streams[channel][pos];
     memset(&event, 0, sizeof(bmf_event));
@@ -481,33 +481,28 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
 
     if (stream_end - stream < 1)
       return -1;
-    if (*stream == 0xFE)
+    switch (*stream)
     {
-      // 0xFE -> 0xFF: End of Stream
+    case 0xFE: // 0xFE -> 0xFF: End of Stream
       event.cmd = 0xFF;
-
       stream++;
+      pos = last_pos + 1; // end loop
       break;
-    }
-    else if (*stream == 0xFC)
-    {
-      // 0xFC -> 0xFE xx: Save Loop Position
+
+    case 0xFC: // 0xFC -> 0xFE xx: Save Loop Position
+      event.cmd = 0xFE;
       if (stream_end - stream < 2)
         return -1;
-      event.cmd = 0xFE;
       event.cmd_data = (stream[1] & (bmf.version == BMF0_9B ? 0x7F : 0x3F)) - 1;
-
       stream += 2;
-    }
-    else if (*stream == 0x7D)
-    {
-      // 0x7D -> 0xFD: Loop Saved Position
-      event.cmd = 0xFD;
+      break;
 
+    case 0x7D: // 0x7D -> 0xFD: Loop to Saved Position
+      event.cmd = 0xFD;
       stream++;
-    }
-    else
-    {
+      break;
+
+    default:
       if (*stream & 0x80)
       {
         if (stream_end - stream < 2)
@@ -552,7 +547,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
 
         stream++;
       } // if (*stream & 0x80)
-    } // if (*stream == 0xFE)
+    } // switch
 
     // is command ?
     if (is_cmd)
