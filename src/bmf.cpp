@@ -474,7 +474,8 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
   // until the end marker is found and stored.
   for (int pos = 0; true; pos < last_pos && pos++)
   {
-    memset(&bmf.streams[channel][pos], 0, sizeof(bmf_event));
+    bmf_event &event = bmf.streams[channel][pos];
+    memset(&event, 0, sizeof(bmf_event));
 
     bool is_cmd = false;
 
@@ -483,7 +484,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
     if (*stream == 0xFE)
     {
       // 0xFE -> 0xFF: End of Stream
-      bmf.streams[channel][pos].cmd = 0xFF;
+      event.cmd = 0xFF;
 
       stream++;
       break;
@@ -493,16 +494,15 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
       // 0xFC -> 0xFE xx: Save Loop Position
       if (stream_end - stream < 2)
         return -1;
-      bmf.streams[channel][pos].cmd = 0xFE;
-      bmf.streams[channel][pos].cmd_data =
-          (stream[1] & ((bmf.version == BMF0_9B) ? 0x7F : 0x3F)) - 1;
+      event.cmd = 0xFE;
+      event.cmd_data = (stream[1] & (bmf.version == BMF0_9B ? 0x7F : 0x3F)) - 1;
 
       stream += 2;
     }
     else if (*stream == 0x7D)
     {
       // 0x7D -> 0xFD: Loop Saved Position
-      bmf.streams[channel][pos].cmd = 0xFD;
+      event.cmd = 0xFD;
 
       stream++;
     }
@@ -517,9 +517,9 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
           if (stream[1] & 0x40)
           {
             // byte0: 1aaaaaaa = NOTE
-            bmf.streams[channel][pos].note = *stream & 0x7F;
+            event.note = *stream & 0x7F;
             // byte1: 11bbbbbb = DELAY
-            bmf.streams[channel][pos].delay = stream[1] & 0x3F;
+            event.delay = stream[1] & 0x3F;
             // byte2: cccccccc = COMMAND
 
             stream += 2;
@@ -528,9 +528,9 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
           else
           {
             // byte0: 1aaaaaaa = NOTE
-            bmf.streams[channel][pos].note = *stream & 0x7F;
+            event.note = *stream & 0x7F;
             // byte1: 11bbbbbb = DELAY
-            bmf.streams[channel][pos].delay = stream[1] & 0x3F;
+            event.delay = stream[1] & 0x3F;
 
             stream += 2;
           } // if (*(stream+1) & 0x40)
@@ -538,7 +538,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
         else
         {
           // byte0: 1aaaaaaa = NOTE
-          bmf.streams[channel][pos].note = *stream & 0x7F;
+          event.note = *stream & 0x7F;
           // byte1: 0bbbbbbb = COMMAND
 
           stream++;
@@ -548,7 +548,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
       else
       {
         // byte0: 0aaaaaaa = NOTE
-        bmf.streams[channel][pos].note = *stream & 0x7F;
+        event.note = *stream & 0x7F;
 
         stream++;
       } // if (*stream & 0x80)
@@ -565,14 +565,14 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
       if ((0x20 <= *stream) && (*stream <= 0x3F))
       {
         // 0x20 or higher; 0x3F or lower: Set Instrument
-        bmf.streams[channel][pos].instrument = *stream - 0x20 + 1;
+        event.instrument = *stream - 0x20 + 1;
 
         stream++;
       }
       else if (0x40 <= *stream)
       {
         // 0x40 or higher: Set Volume
-        bmf.streams[channel][pos].volume = *stream - 0x40 + 1;
+        event.volume = *stream - 0x40 + 1;
 
         stream++;
       }
@@ -597,8 +597,8 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
             switch (*stream)
             {
             case 0x01: // Set Modulator Volume -> 0x01
-              bmf.streams[channel][pos].cmd = 0x01;
-              bmf.streams[channel][pos].cmd_data = stream[1];
+              event.cmd = 0x01;
+              event.cmd_data = stream[1];
               break;
 
             case 0x02: // ?
@@ -606,16 +606,16 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
               break;
 
             case 0x04: // Set Speed -> 0x10
-              bmf.streams[channel][pos].cmd = 0x10;
-              bmf.streams[channel][pos].cmd_data = stream[1];
+              event.cmd = 0x10;
+              event.cmd_data = stream[1];
               break;
 
             case 0x05: // Set Carrier Volume (port 380)
-              bmf.streams[channel][pos].volume = stream[1] + 1;
+              event.volume = stream[1] + 1;
               break;
 
             case 0x06: // Set Carrier Volume (port 382)
-              bmf.streams[channel][pos].volume = stream[1] + 1;
+              event.volume = stream[1] + 1;
               break;
             }
             stream += 2;
@@ -627,12 +627,12 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
 
 #ifdef DEBUG
    AdPlug_LogWrite("%02X %02X %02X %02X %02X %02X  <---- ",
-                   bmf.streams[channel][pos].note,
-                   bmf.streams[channel][pos].delay,
-                   bmf.streams[channel][pos].volume,
-                   bmf.streams[channel][pos].instrument,
-                   bmf.streams[channel][pos].cmd,
-                   bmf.streams[channel][pos].cmd_data);
+                   event.note,
+                   event.delay,
+                   event.volume,
+                   event.instrument,
+                   event.cmd,
+                   event.cmd_data);
    for (int zz = 0; zz < (stream - last); zz++)
      AdPlug_LogWrite(" %02X", last[zz]);
    AdPlug_LogWrite("\n");
