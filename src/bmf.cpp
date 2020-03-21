@@ -282,132 +282,130 @@ void CxadbmfPlayer::xadplayer_rewind(int subsong)
 void CxadbmfPlayer::xadplayer_update()
 {
   for (int i = 0; i < 9; i++)
-    if (bmf.channel[i].stream_position != 0xFFFF)
+  {
+    unsigned short &pos = bmf.channel[i].stream_position;
+    if (pos == 0xFFFF)
+      continue;
+
     if (bmf.channel[i].delay)
-      bmf.channel[i].delay--;
-    else
     {
+      bmf.channel[i].delay--;
+      continue;
+    }
+
 #ifdef DEBUG
-   AdPlug_LogWrite("channel %02X:\n", i);
+    AdPlug_LogWrite("channel %02X:\n", i);
 #endif
 
-      // process so-called cross-events
-      while (true)
-      {
-        bmf_event event = bmf.streams[i][bmf.channel[i].stream_position];
+again:
+    const bmf_event &event = bmf.streams[i][pos];
 #ifdef DEBUG
-   AdPlug_LogWrite("%02X %02X %02X %02X %02X %02X\n",
-           event.note,event.delay,event.volume,event.instrument,
-           event.cmd,event.cmd_data);
+    AdPlug_LogWrite("%02X %02X %02X %02X %02X %02X\n",
+                    event.note, event.delay, event.volume,
+                    event.instrument, event.cmd, event.cmd_data);
 #endif
 
-        if (event.cmd == 0xFF)
-        {
-          bmf.channel[i].stream_position = 0xFFFF;
-          bmf.active_streams--;
-          break;
-        }
-        else if (event.cmd == 0xFE)
-        {
-          bmf.channel[i].loop_position = bmf.channel[i].stream_position + 1;
-          bmf.channel[i].loop_counter = event.cmd_data;
-        }
-        else if (event.cmd == 0xFD)
-        {
-          if (bmf.channel[i].loop_counter)
-          {
-            bmf.channel[i].stream_position = bmf.channel[i].loop_position - 1;
-            bmf.channel[i].loop_counter--;
-          }
-        }
-        else
-          break;
+    switch (event.cmd)
+    {
+      // Process so-called Cross-Events
 
-        bmf.channel[i].stream_position++;
-      } // while (true)
+    case 0xFF: // End of Stream
+      pos = 0xFFFF;
+      bmf.active_streams--;
+      continue;
 
-      // process normal event
-      unsigned short pos = bmf.channel[i].stream_position;
+    case 0xFE: // Save Loop Position
+      bmf.channel[i].loop_position = ++pos;
+      bmf.channel[i].loop_counter = event.cmd_data;
+      goto again;
 
-      if (pos != 0xFFFF)
+    case 0xFD: // Loop to Saved Position
+      if (bmf.channel[i].loop_counter)
       {
-        bmf.channel[i].delay = bmf.streams[i][pos].delay;
+        pos = bmf.channel[i].loop_position;
+        bmf.channel[i].loop_counter--;
+      }
+      else
+        pos++;
+      goto again;
 
-        // command ?
-        if (bmf.streams[i][pos].cmd)
-        {
-          unsigned char cmd = bmf.streams[i][pos].cmd;
+      // Process normal event
 
-          // 0x01: Set Modulator Volume
-          if (cmd == 0x01)
-          {
-            unsigned char reg = bmf_adlib_registers[13 * i + 2];
+    case 0x01: // Set Modulator Volume
+      {
+        unsigned char reg = bmf_adlib_registers[13 * i + 2];
+        // Masking cmd_data to avoid out of range writes might be a good idea,
+        // or do it while parsing the file.
+        opl_write(reg, (adlib[reg] | 0x3F) - event.cmd_data);
+      }
+      break;
 
-            opl_write(reg, (adlib[reg] | 0x3F) - bmf.streams[i][pos].cmd_data);
-          }
-          // 0x10: Set Speed
-          else if (cmd == 0x10)
-          {
-            plr.speed = bmf.streams[i][pos].cmd_data;
-            plr.speed_counter = plr.speed;
-          }
-        } // if (bmf.streams[i][pos].cmd)
+    case 0x10: // Set Speed
+      plr.speed = event.cmd_data;
+      plr.speed_counter = plr.speed;
+      break;
+    }
 
-        // instrument ?
-        if (bmf.streams[i][pos].instrument)
-        {
-          unsigned char ins = bmf.streams[i][pos].instrument-1;
+    // Got normal event, pos != 0xFFFF
 
-          if (bmf.version != BMF1_1)
-            opl_write(0xB0 + i, adlib[0xB0 + i] & 0xDF);
+    // Process delay
+    bmf.channel[i].delay = event.delay;
 
-          for (int j = 0; j < 13; j++)
-            opl_write(bmf_adlib_registers[i * 13 + j],
-                      bmf.instruments[ins].data[j]);
-        } // if (bmf.streams[i][pos].instrument)
+    // Process instrument
+    if (event.instrument)
+    {
+      unsigned char ins = event.instrument - 1;
 
-        // volume ?
-        if (bmf.streams[i][pos].volume)
-        {
-          unsigned char vol = bmf.streams[i][pos].volume - 1;
-          unsigned char reg = bmf_adlib_registers[13 * i + 3];
+      if (bmf.version != BMF1_1)
+        opl_write(0xB0 + i, adlib[0xB0 + i] & 0xDF);
 
-          opl_write(reg, (adlib[reg] | 0x3F) - vol);
-        } // if (bmf.streams[i][pos].volume)
+      for (int j = 0; j < 13; j++)
+        opl_write(bmf_adlib_registers[13 * i + j],
+                  bmf.instruments[ins].data[j]);
+    }
 
-        // note ?
-        if (bmf.streams[i][pos].note)
-        {
-          unsigned short note = bmf.streams[i][pos].note;
-          unsigned short freq = 0;
+    // Process volume
+    if (event.volume)
+    {
+      unsigned char vol = event.volume - 1;
+      unsigned char reg = bmf_adlib_registers[13 * i + 3];
 
-          // mute channel
-          opl_write(0xB0 + i, adlib[0xB0 + i] & 0xDF);
+      // Masking cmd_data to avoid out of range writes might be a good idea,
+      // or do it while parsing the file.
+      opl_write(reg, (adlib[reg] | 0x3F) - vol);
+    }
 
-          // get frequency
-          if (bmf.version == BMF1_1)
-          {
-            if (note <= 0x60)
-              freq = bmf_notes_2[--note % 12];
-          }
-          else
-          {
-            if (note != 0x7F)
-              freq = bmf_notes[--note % 12];
-          }
+    // Process note
+    if (event.note)
+    {
+      unsigned short note = event.note - 1;
+      unsigned short freq = 0;
 
-          // play note
-          if (freq)
-          {
-            opl_write(0xB0 + i, (freq >> 8) | ((note / 12) << 2) | 0x20);
-            opl_write(0xA0 + i, freq & 0xFF);
-          }
-        } // if (bmf.streams[i][pos].note)
+      // mute channel
+      opl_write(0xB0 + i, adlib[0xB0 + i] & 0xDF);
 
-        bmf.channel[i].stream_position++;
-      } // if (pos != 0xFFFF)
+      // get frequency
+      if (bmf.version == BMF1_1)
+      {
+        if (note < 0x60)
+          freq = bmf_notes_2[note % 12];
+      }
+      else
+      {
+        if (note != 0x7E) // really?
+          freq = bmf_notes[note % 12];
+      }
 
-    } // if (!bmf.channel[i].delay)
+      // play note
+      if (freq)
+      {
+        opl_write(0xB0 + i, (freq >> 8) | ((note / 12) << 2) | 0x20);
+        opl_write(0xA0 + i, freq & 0xFF);
+      }
+    } // if (event.note)
+
+    pos++;
+  } // for (i)
 
   // is module loop ?
   if (!bmf.active_streams)
