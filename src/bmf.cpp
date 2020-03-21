@@ -152,10 +152,9 @@ bool CxadbmfPlayer::xadplayer_load()
   // speed
   if (tune_size - ptr < 1)
     return false;
-  if (bmf.version > BMF0_9B)
-    bmf.speed = tune[ptr++];
-  else
-    bmf.speed = ((tune[ptr++] << 8) / 3) >> 8; // strange, yeh ?
+  bmf.speed = tune[ptr++];
+  if (bmf.version == BMF0_9B)
+    bmf.speed /= 3; // removed pointless shifts from original code
 
   // load instruments
   if (bmf.version > BMF0_9B)
