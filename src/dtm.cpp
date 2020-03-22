@@ -42,19 +42,24 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
   // read header
   f->readString(header.id, 12);
   header.version = f->readInt(1);
-  f->readString(header.title, 20); f->readString(header.author, 20);
-  header.numpat = f->readInt(1); header.numinst = f->readInt(1);
+  f->readString(header.title, 20);
+  f->readString(header.author, 20);
+  // Ensure title and author are NUL terminated. We may overwrite the
+  // last character because the arrays are too short.
+  header.author[19] = header.title[19] = 0;
+  header.numpat = f->readInt(1);
+  header.numinst = f->readInt(1) + 1;
 
   // signature exists ? good version ?
-  if(memcmp(header.id,"DeFy DTM ",9) || header.version != 0x10)
+  if (memcmp(header.id, "DeFy DTM ", 9) || header.version != 0x10 ||
+      header.numinst > sizeof(instruments) / sizeof(instruments[0]) ||
+      f->error())
     { fp.close (f); return false; }
-
-  header.numinst++;
 
   // load description
   memset(desc,0,80*16);
 
-  char bufstr[80];
+  char *bufstr = desc;
 
   for (i=0;i<16;i++)
     {
@@ -62,9 +67,17 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
       unsigned char bufstr_length = f->readInt(1);
 
       if(bufstr_length > 80) {
+        // "desc" is too small to hold 16 lines with 80 chars each plus
+        // 16 newlines an a NUL terminator. Accept a line length of 80
+        // anyway and truncate the last line if necessary.
+        // Maybe we should grow desc or allocate it dynamically instead.
 	fp.close(f);
 	return false;
       }
+
+      int max_length = desc + sizeof(desc) - 1 - bufstr;
+      int discard = bufstr_length > max_length ? bufstr_length - max_length : 0;
+      bufstr_length -= discard;
 
       // read line
       if (bufstr_length)
@@ -74,14 +87,15 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 	  for (j=0;j<bufstr_length;j++)
 	    if (!bufstr[j])
 	      bufstr[j] = 0x20;
+          bufstr += bufstr_length;
 
-	  bufstr[bufstr_length] = 0;
-
-	  strcat(desc,bufstr);
+	  if (discard)
+            f->ignore(discard);
 	}
-
-      strcat(desc,"\n");
+      if (bufstr_length < max_length)
+        *(bufstr++) = '\n';
     }
+  *bufstr = 0;
 
   // init CmodPlayer
   realloc_instruments(header.numinst);
@@ -130,7 +144,7 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 
       delete [] packed_pattern;
 
-      if (!unpacked_length)
+      if (unpacked_length != 0x480)
 	{
 	  delete [] pattern;
 	  fp.close(f);
@@ -206,6 +220,11 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
     }
 
   delete [] pattern;
+  if (f->error())
+    {
+      fp.close(f);
+      return false;
+    }
   fp.close(f);
 
   // order length
@@ -273,7 +292,7 @@ std::string CdtmLoader::getdesc()
 
 std::string CdtmLoader::getinstrument(unsigned int n)
 {
-  return std::string(instruments[n].name);
+  return n < header.numinst ? std::string(instruments[n].name) : std::string();
 }
 
 unsigned int CdtmLoader::getinstruments()
@@ -301,6 +320,8 @@ long CdtmLoader::unpack_pattern(unsigned char *ibuf, long ilen, unsigned char *o
       if ((repeat_byte & 0xF0) == 0xD0)
 	{
 	  repeat_counter = repeat_byte & 15;
+          if (input_length == ilen)
+            return output_length; // truncated input
 	  repeat_byte = input[input_length++];
 	}
       else
