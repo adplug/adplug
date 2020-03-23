@@ -65,7 +65,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   char id[10];
   int i,j,k,t;
   unsigned int l;
-  unsigned char *org = NULL, *orgptr, flags = 0, numpats, version;
+  unsigned char *org, *orgptr, flags = 0, numpats, version;
   unsigned long crc, alength;
   unsigned short len[9], *secdata, *secptr;
   const unsigned char convfx[16] = {0,1,2,23,24,3,5,4,6,9,17,13,11,19,7,14};
@@ -79,8 +79,9 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   version = f->readInt(1); numpats = f->readInt(1);
 
   // file validation section
-  if(strncmp(id,"_A2module_",10) || (version != 1 && version != 5 &&
-				     version != 4 && version != 8)) {
+  if (memcmp(id, "_A2module_", 10) ||
+      (version != 1 && version != 5 && version != 4 && version != 8) ||
+      numpats > 64) {
     fp.close(f);
     return false;
   }
@@ -96,20 +97,33 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   }
 
   // block 0
-  secdata = new unsigned short [len[0] / 2];
   if(version == 1 || version == 5) {
+    orgptr = org = new unsigned char [MAXBUF];
+    secdata = new unsigned short [len[0] / 2];
     for(i=0;i<len[0]/2;i++) secdata[i] = f->readInt(2);
-    org = new unsigned char [MAXBUF]; orgptr = org;
-    sixdepak(secdata,org,len[0]);
+    // What if len[0] is odd: ignore, skip extra byte, or fail?
+    l = sixdepak(secdata,org,len[0]);
+    delete [] secdata;
   } else {
-    orgptr = (unsigned char *)secdata;
-    for(i=0;i<len[0];i++) orgptr[i] = f->readInt(1);
+    orgptr = org = new unsigned char [len[0]];
+    for(l = 0; l < len[0]; l++) orgptr[l] = f->readInt(1);
   }
+  if (l < 2*43 + 250*(33+13) + 128 + 2 + (version >= 5)) {
+    // Block is too short; fail.
+    delete [] org;
+    fp.close(f);
+    return false;
+  }
+
   memcpy(songname,orgptr,43); orgptr += 43;
   memcpy(author,orgptr,43); orgptr += 43;
   memcpy(instname,orgptr,250*33); orgptr += 250*33;
+  // If string length is invalid, just use the maximum. Should we fail instead?
+  if (songname[0] > 42 || songname[0] < 0) songname[0] = 42;
+  if (author[0] > 42 || author[0] < 0) author[0] = 42;
 
   for(i=0;i<250;i++) {	// instruments
+    if (instname[i][0] > 32 || instname[i][0] < 0) instname[i][0] = 32;
     inst[i].data[0] = *(orgptr+i*13+10);
     inst[i].data[1] = *(orgptr+i*13);
     inst[i].data[2] = *(orgptr+i*13+1);
@@ -141,19 +155,21 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   bpm = *orgptr; orgptr++;
   initspeed = *orgptr; orgptr++;
   if(version >= 5) flags = *orgptr;
-  if(version == 1 || version == 5) delete [] org;
-  delete [] secdata;
+  delete [] org;
 
   // blocks 1-4 or 1-8
   alength = len[1];
-  for(i = 0; i < (version < 5 ? numpats / 16 : numpats / 8); i++)
+  for (i = 0; i < numpats / (version < 5 ? 16 : 8); i++)
     alength += len[i+2];
 
-  secdata = new unsigned short [alength / 2];
   if(version == 1 || version == 5) {
+    org = new unsigned char [MAXBUF * (numpats / (version < 5 ? 16 : 8) + 1)];
+    secdata = new unsigned short [alength / 2];
     for(l=0;l<alength/2;l++) secdata[l] = f->readInt(2);
-    org = new unsigned char [MAXBUF * (numpats / (version == 1 ? 16 : 8) + 1)];
     orgptr = org; secptr = secdata;
+    // FIXME: The number of depacked blocks is inconsistent with the
+    // lengths summed and the size of org (if numpats is a multiple of 16/8).
+    // Also the "secptr += ..." statements below are not guarded by the "if"s!
     orgptr += sixdepak(secptr,orgptr,len[1]); secptr += len[1] / 2;
     if(version == 1) {
       if(numpats > 16)
@@ -161,7 +177,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
       if(numpats > 32)
 	orgptr += sixdepak(secptr,orgptr,len[3]); secptr += len[3] / 2;
       if(numpats > 48)
-	sixdepak(secptr,orgptr,len[4]);
+	orgptr += sixdepak(secptr,orgptr,len[4]);
     } else {
       if(numpats > 8)
 	orgptr += sixdepak(secptr,orgptr,len[2]); secptr += len[2] / 2;
@@ -176,12 +192,19 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
       if(numpats > 48)
 	orgptr += sixdepak(secptr,orgptr,len[7]); secptr += len[7] / 2;
       if(numpats > 56)
-	sixdepak(secptr,orgptr,len[8]);
+	orgptr += sixdepak(secptr,orgptr,len[8]);
     }
     delete [] secdata;
   } else {
-    org = (unsigned char *)secdata;
+    org = new unsigned char [alength];
     for(l=0;l<alength;l++) org[l] = f->readInt(1);
+    orgptr = org + alength;
+  }
+
+  if (orgptr - org < numpats * 64 * t * 4) {
+    delete [] org;
+    fp.close(f);
+    return false;
   }
 
   if(version < 5) {
@@ -193,7 +216,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 
 	  track->note = o[0] == 255 ? 127 : o[0];
 	  track->inst = o[1];
-	  track->command = convfx[o[2]];
+	  track->command = o[2] < sizeof(convfx) ? convfx[o[2]] : 255;
 	  track->param2 = o[3] & 0x0f;
 	  if(track->command != 14)
 	    track->param1 = o[3] >> 4;
@@ -235,7 +258,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 
 	  track->note = o[0] == 255 ? 127 : o[0];
 	  track->inst = o[1];
-	  track->command = newconvfx[o[2]];
+	  track->command = o[2] < sizeof(newconvfx) ? newconvfx[o[2]] : 255;
 	  track->param1 = o[3] >> 4;
 	  track->param2 = o[3] & 0x0f;
 
@@ -259,10 +282,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 
   init_trackord();
 
-  if(version == 1 || version == 5)
-    delete [] org;
-  else
-    delete [] secdata;
+  delete [] org;
 
   // Process flags
   if(version >= 5) {
@@ -270,6 +290,8 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
     if(flags & 8) CmodPlayer::flags |= Tremolo;		// Tremolo depth
     if(flags & 16) CmodPlayer::flags |= Vibrato;	// Vibrato depth
   }
+
+  // Note: crc value is not checked.
 
   fp.close(f);
   rewind(0);

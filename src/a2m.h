@@ -38,13 +38,13 @@ public:
   std::string gettype()
     { return std::string("AdLib Tracker 2"); }
   std::string gettitle()
-    { if(*songname) return std::string(songname,1,*songname); else return std::string(); }
+    { return std::string(songname + 1, *songname); }
   std::string getauthor()
-    { if(*author) return std::string(author,1,*author); else return std::string(); }
+    { return std::string(author + 1, *author); }
   unsigned int getinstruments()
     { return 250; }
   std::string getinstrument(unsigned int n)
-    { return std::string(instname[n],1,*instname[n]); }
+    { return std::string(instname[n] + 1, *instname[n]); }
 
 private:
 
