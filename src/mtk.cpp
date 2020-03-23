@@ -39,6 +39,8 @@ bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
   struct mtkdata {
     char songname[34],composername[34],instname[0x80][34];
     unsigned char insts[0x80][12],order[0x80],dummy,patterns[0x32][0x40][9];
+    // HSC pattern has different type and size from patterns, but that
+    // doesn't matter much since we memcpy() the data. Still confusing.
   } *data;
   unsigned char *cmp,*org;
   unsigned int i;
@@ -51,8 +53,10 @@ bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
   header.size = f->readInt(2);
 
   // file validation section
-  if(strncmp(header.id,"mpu401tr\x92kk\xeer@data",18))
-    { fp.close(f); return false; }
+  if (memcmp(header.id, "mpu401tr\x92kk\xeer@data", 18) ||
+      header.size < sizeof(*data) - sizeof(data->patterns)) {
+    fp.close(f); return false;
+  }
 
   // load section
   cmpsize = fp.filesize(f) - 22;
@@ -64,6 +68,7 @@ bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
   while(cmpptr < cmpsize) {	// decompress
     ctrlmask >>= 1;
     if(!ctrlmask) {
+      if (cmpptr + 2 > cmpsize) goto err;
       ctrlbits = cmp[cmpptr] + (cmp[cmpptr + 1] << 8);
       cmpptr += 2;
       ctrlmask = 0x8000;
@@ -81,37 +86,40 @@ bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
     cmd = (cmp[cmpptr] >> 4) & 0x0f;
     cnt = cmp[cmpptr] & 0x0f;
     cmpptr++;
+    if (cmpptr >= cmpsize) goto err;
     switch(cmd) {
     case 0:
-      if(orgptr + cnt > header.size) goto err;
       cnt += 3;
+      if (orgptr + cnt > header.size) goto err;
       memset(&org[orgptr],cmp[cmpptr],cnt);
       cmpptr++; orgptr += cnt;
       break;
 
     case 1:
-      if(orgptr + cnt > header.size) goto err;
       cnt += (cmp[cmpptr] << 4) + 19;
+      if (orgptr + cnt > header.size || cmpptr >= cmpsize) goto err;
       memset(&org[orgptr],cmp[++cmpptr],cnt);
       cmpptr++; orgptr += cnt;
       break;
 
     case 2:
-      if(orgptr + cnt > header.size) goto err;
+      if (cmpptr + 2 > cmpsize) goto err;
       offs = (cnt+3) + (cmp[cmpptr] << 4);
       cnt = cmp[++cmpptr] + 16; cmpptr++;
+      if (orgptr + cnt > header.size || offs > orgptr) goto err;
       memcpy(&org[orgptr],&org[orgptr - offs],cnt);
       orgptr += cnt;
       break;
 
     default:
-      if(orgptr + cmd > header.size) goto err;
       offs = (cnt+3) + (cmp[cmpptr++] << 4);
+      if (orgptr + cmd > header.size || offs > orgptr) goto err;
       memcpy(&org[orgptr],&org[orgptr-offs],cmd);
       orgptr += cmd;
       break;
     }
   }
+  // orgptr should match header.size; add a check?
   delete [] cmp;
   data = (struct mtkdata *) org;
 
@@ -123,12 +131,14 @@ bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
     strncpy(instname[i],data->instname[i]+1,33);
   memcpy(instr,data->insts,0x80 * 12);
   memcpy(song,data->order,0x80);
-  memcpy(patterns,data->patterns,header.size-6084);
   for (i=0;i<128;i++) {				// correct instruments
     instr[i][2] ^= (instr[i][2] & 0x40) << 1;
     instr[i][3] ^= (instr[i][3] & 0x40) << 1;
     instr[i][11] >>= 4;		// make unsigned
   }
+  cnt = header.size - (sizeof(*data) - sizeof(data->patterns)); // was off by 1
+  if (cnt > sizeof(patterns)) cnt = sizeof(patterns); // fail?
+  memcpy(patterns, data->patterns, cnt);
 
   delete [] org;
   rewind(0);
