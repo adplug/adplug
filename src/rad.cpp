@@ -35,7 +35,6 @@ bool CradLoader::load(const std::string &filename, const CFileProvider &fp)
   binistream *f = fp.open(filename); if(!f) return false;
   char id[16];
   unsigned char buf,ch,c,b,inp;
-  char bufstr[2] = "\0";
   unsigned int i,j;
   unsigned short patofs[32];
   const unsigned char convfx[16] = {255,1,2,3,255,5,255,255,255,255,20,255,17,0xd,255,19};
@@ -47,21 +46,26 @@ bool CradLoader::load(const std::string &filename, const CFileProvider &fp)
 
   // load section
   radflags = f->readInt(1);
+  i = 0;
   if(radflags & 128) {	// description
-    memset(desc,0,80*22);
-    while((buf = f->readInt(1)))
-      if(buf == 1)
-	strcat(desc,"\n");
+    while ((buf = f->readInt(1)) && !f->error()) {
+      if (i >= 80 * 22 - 1)
+        continue;
+      if (buf == 1)
+	desc[i++] = '\n';
+      else if (buf >= 2 && buf <= 0x1f)
+        while (buf-- && i < 80 * 22 - 1)
+          desc[i++] = ' ';
       else
-	if(buf >= 2 && buf <= 0x1f)
-	  for(i=0;i<buf;i++)
-	    strcat(desc," ");
-	else {
-	  *bufstr = buf;
-	  strcat(desc,bufstr);
-	}
+        desc[i++] = buf;
+    }
   }
+  desc[i] = 0;
+
   while((buf = f->readInt(1))) {	// instruments
+    if (buf > 250 || f->error()) {
+      fp.close(f); return false;
+    }
     buf--;
     inst[buf].data[2] = f->readInt(1); inst[buf].data[1] = f->readInt(1);
     inst[buf].data[10] = f->readInt(1); inst[buf].data[9] = f->readInt(1);
@@ -70,9 +74,17 @@ bool CradLoader::load(const std::string &filename, const CFileProvider &fp)
     inst[buf].data[0] = f->readInt(1);
     inst[buf].data[8] = f->readInt(1); inst[buf].data[7] = f->readInt(1);
   }
+
   length = f->readInt(1);
+  if (length > 128) {
+    fp.close(f); return false;
+  }
   for(i = 0; i < length; i++) order[i] = f->readInt(1);	// orderlist
   for(i = 0; i < 32; i++) patofs[i] = f->readInt(2);	// pattern offset table
+  if (f->error()) {
+    fp.close(f); return false;
+  }
+
   init_trackord();		// patterns
   for(i=0;i<32;i++)
     if(patofs[i]) {
@@ -81,6 +93,9 @@ bool CradLoader::load(const std::string &filename, const CFileProvider &fp)
 	buf = f->readInt(1); b = buf & 127;
 	do {
 	  ch = f->readInt(1); c = ch & 127;
+          if (c >= 9 || b >= 64) {
+            fp.close(f); return false;
+          }
 	  inp = f->readInt(1);
 	  tracks[i*9+c][b].note = inp & 127;
 	  tracks[i*9+c][b].inst = (inp & 128) >> 3;
@@ -94,6 +109,9 @@ bool CradLoader::load(const std::string &filename, const CFileProvider &fp)
 	  }
 	} while(!(ch & 128));
       } while(!(buf & 128));
+      if (f->error()) {
+        fp.close(f); return false;
+      }
     } else
       memset(trackord[i],0,9*2);
   fp.close(f);
