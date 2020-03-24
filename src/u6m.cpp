@@ -66,6 +66,7 @@ bool Cu6mPlayer::load(const std::string &filename, const CFileProvider &fp)
     }
 
   // load section
+  delete[] song_data;
   song_data = new unsigned char[decompressed_filesize];
   unsigned char* compressed_song_data = new unsigned char[filesize-3];
 
@@ -74,7 +75,6 @@ bool Cu6mPlayer::load(const std::string &filename, const CFileProvider &fp)
   fp.close(f);
 
   // attempt to decompress the song data
-  // if unsuccessful, deallocate song_data[] on the spot, and return(false)
   data_block source, destination;
   source.size = filesize-4;
   source.data = compressed_song_data;
@@ -84,7 +84,6 @@ bool Cu6mPlayer::load(const std::string &filename, const CFileProvider &fp)
   if (!lzw_decompress(source,destination))
     {
       delete[] compressed_song_data;
-      delete[] song_data;
       return(false);
     }
 
