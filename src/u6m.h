@@ -161,7 +161,7 @@ class Cu6mPlayer: public CPlayer
 
   // protected functions used by load()
   bool lzw_decompress(data_block source, data_block dest);
-  int get_next_codeword (long& bits_read, unsigned char *source, int codeword_size);
+  int get_next_codeword (long& bits_read, data_block& source, int codeword_size);
   void output_root(unsigned char root, unsigned char *destination, long& position);
   void get_string(int codeword, MyDict& dictionary, std::stack<unsigned char>& root_stack);
 };
