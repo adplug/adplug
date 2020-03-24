@@ -60,6 +60,9 @@ static const char *const filelist[] = {
 	"i-90_2.mtk",	//            buffer overflows in CmtkLoader::load()"
 	"i-91.m",	// Issue #91 (CVE-2019-15151): "Double free in
 			//            Cu6mPlayer::~Cu6mPlayer()"
+	"i-92_1.m",	// Issee #92: "Multiple OOB reads in
+	"i-92_2.m",	//            Cu6mPlayer::get_next_codeword()"
+	"i-92_3.m", "i-92_4.m",
 	"i-93_01.bmf",	// Issue #93: "Multiple OOB reads in
 	"i-93_02.bmf",	//            CxadbmfPlayer::xadplayer_load()"
 	"i-93_03.xad", "i-93_04.bmf", "i-93_05.xad", "i-93_06.xad",
