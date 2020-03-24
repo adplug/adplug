@@ -219,7 +219,7 @@ bool Cu6mPlayer::lzw_decompress(Cu6mPlayer::data_block source, Cu6mPlayer::data_
 
   while (!end_marker_reached)
     {
-      cW = get_next_codeword(bits_read, source.data, codeword_size);
+      cW = get_next_codeword(bits_read, source, codeword_size);
       switch (cW)
         {
 	  // re-init the dictionary
@@ -228,13 +228,16 @@ bool Cu6mPlayer::lzw_decompress(Cu6mPlayer::data_block source, Cu6mPlayer::data_
 	  next_free_codeword = 0x102;
 	  dictionary_size = 0x200;
 	  dictionary.reset();
-	  cW = get_next_codeword(bits_read, source.data, codeword_size);
+	  cW = get_next_codeword(bits_read, source, codeword_size);
 	  SAVE_OUTPUT_ROOT((unsigned char)cW, dest, bytes_written);
 	  break;
 	  // end of compressed file has been reached
 	case 0x101:
 	  end_marker_reached = true;
 	  break;
+          // no next code word available, i.e., truncated or invalid data
+        case -1:
+          return false;
 	  // (cW <> 0x100) && (cW <> 0x101)
 	default:
 	  if (cW < next_free_codeword)  // codeword is already in the dictionary
@@ -312,14 +315,19 @@ bool Cu6mPlayer::lzw_decompress(Cu6mPlayer::data_block source, Cu6mPlayer::data_
 
 
 // Read the next code word from the source buffer
-int Cu6mPlayer::get_next_codeword (long& bits_read, unsigned char *source, int codeword_size)
+int Cu6mPlayer::get_next_codeword (long& bits_read, data_block& source, int codeword_size)
 {
   unsigned char b0,b1,b2;
   int codeword;
- 
-  b0 = source[bits_read/8];
-  b1 = source[bits_read/8+1];
-  b2 = source[bits_read/8+2];
+
+  if (source.size - bits_read / 8 < 2 + (bits_read % 8 + codeword_size > 16))
+    {
+      return -1; // source exhausted
+    }
+
+  b0 = source.data[bits_read/8];
+  b1 = source.data[bits_read/8+1];
+  b2 = bits_read % 8 + codeword_size > 16 ? source.data[bits_read/8+2] : 0;
 
   codeword = ((b2 << 16) + (b1 << 8) + b0);
   codeword = codeword >> (bits_read % 8);
