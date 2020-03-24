@@ -402,6 +402,7 @@ EXTRA_DIST += \
 	test/i-89_1.rad test/i-89_2.rad \
 	test/i-90_1.mtk test/i-90_2.mtk \
 	test/i-91.m \
+	test/i-92_1.m test/i-92_2.m test/i-92_3.m test/i-92_4.m \
 	test/i-93_01.bmf test/i-93_02.bmf test/i-93_03.xad test/i-93_04.bmf \
 	test/i-93_05.xad test/i-93_06.xad test/i-93_07.bmf test/i-93_08.xad \
 	test/i-93_09.xad test/i-93_10.xad test/i-93_11.xad test/i-93_12.xad \
