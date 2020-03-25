@@ -69,6 +69,7 @@ static const char *const filelist[] = {
 	"i-93_07.bmf", "i-93_08.xad", "i-93_09.xad", "i-93_10.xad",
 	"i-93_11.xad", "i-93_12.xad", "i-93_13.xad", "i-93_14.xad",
 	"i-93_15.bmf", "i-93_16.xad", "i-93_17.xad", "i-93_18.xad",
+	"i-94.rix",	// Issue #94: "OOB read in CrixPlayer::data_initial()"
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);
