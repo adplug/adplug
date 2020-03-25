@@ -23,11 +23,7 @@
 #include "u6m.h"
 
 // Makes security checks on output buffer before writing
-#define SAVE_OUTPUT_ROOT(c, d, p) \
-if(p < d.size) \
-  output_root(c, d.data, p); \
-else \
-  return false;
+#define SAVE_OUTPUT_ROOT(c, d, p) if(!output_root(c, d, p)) return false;
 
 CPlayer *Cu6mPlayer::factory(Copl *newopl)
 {
@@ -38,7 +34,7 @@ bool Cu6mPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
   // file validation section
   // this section only checks a few *necessary* conditions
-  unsigned long filesize, decompressed_filesize;
+  size_t filesize, decompressed_filesize;
   binistream *f;
 
   f = fp.open(filename); if(!f) return false;
@@ -66,7 +62,7 @@ bool Cu6mPlayer::load(const std::string &filename, const CFileProvider &fp)
     }
 
   // load section
-  delete[] song_data;
+  delete[] song_data; song_size = 0;
   song_data = new unsigned char[decompressed_filesize];
   unsigned char* compressed_song_data = new unsigned char[filesize-3];
 
@@ -90,6 +86,7 @@ bool Cu6mPlayer::load(const std::string &filename, const CFileProvider &fp)
   // deallocation section
   delete[] compressed_song_data;
 
+  song_size = decompressed_filesize;
   rewind(0);
   return (true);
 }
@@ -147,7 +144,6 @@ bool Cu6mPlayer::update()
 
 void Cu6mPlayer::rewind(int subsong)
 {
-  played_ticks = 0;
   songend = false;
 
   // set the driver's internal variables
@@ -205,13 +201,13 @@ bool Cu6mPlayer::lzw_decompress(Cu6mPlayer::data_block source, Cu6mPlayer::data_
 {
   bool end_marker_reached = false;
   int codeword_size = 9;
-  long bits_read = 0;
+  unsigned long bits_read = 0;
   int next_free_codeword = 0x102;
   int dictionary_size = 0x200;
   MyDict dictionary = MyDict();
   std::stack<unsigned char> root_stack;
 
-  long bytes_written = 0;
+  size_t bytes_written = 0;
 
   int cW;
   int pW;
@@ -315,7 +311,8 @@ bool Cu6mPlayer::lzw_decompress(Cu6mPlayer::data_block source, Cu6mPlayer::data_
 
 
 // Read the next code word from the source buffer
-int Cu6mPlayer::get_next_codeword (long& bits_read, data_block& source, int codeword_size)
+int Cu6mPlayer::get_next_codeword (unsigned long& bits_read, data_block& source,
+                                   int codeword_size)
 {
   unsigned char b0,b1,b2;
   int codeword;
@@ -356,10 +353,17 @@ int Cu6mPlayer::get_next_codeword (long& bits_read, data_block& source, int code
 
 
 // output a root to memory
-void Cu6mPlayer::output_root(unsigned char root, unsigned char *destination, long& position)
+bool Cu6mPlayer::output_root(unsigned char root, data_block& destination,
+                             size_t& position)
 {
-  destination[position] = root;
+  if (position >= destination.size)
+    {
+      return false;
+    }
+
+  destination.data[position] = root;
   position++;
+  return true;
 }
 
 
@@ -395,7 +399,7 @@ void Cu6mPlayer::get_string(int codeword, Cu6mPlayer::MyDict& dictionary, std::s
 // This function reads the song data and executes the embedded commands.
 void Cu6mPlayer::command_loop()
 {
-  unsigned char command_byte;   // current command byte
+  int command_byte;             // current command byte
   int command_nibble_hi;        // command byte, bits 4-7
   int command_nibble_lo;        // command byte, bite 0-3
   bool repeat_loop = true;      //
@@ -404,6 +408,11 @@ void Cu6mPlayer::command_loop()
     {
       // extract low and high command nibbles
       command_byte = read_song_byte();   // implicitly increments song_pos
+      if (command_byte < 0)              // handle invalid position
+        {
+          songend = true;
+          break;
+        }
       command_nibble_hi = command_byte >> 4;
       command_nibble_lo = command_byte & 0xf;
  
@@ -453,7 +462,10 @@ void Cu6mPlayer::command_0(int channel)
 
   freq_byte = read_song_byte();
   freq_word = expand_freq_byte(freq_byte);
-  set_adlib_freq(channel,freq_word);
+  if (channel < 9)
+    {
+      set_adlib_freq(channel, freq_word);
+    }
 }
 
 
@@ -464,18 +476,19 @@ void Cu6mPlayer::command_0(int channel)
 // ---------------------------------------------------
 void Cu6mPlayer::command_1(int channel)
 {
-  unsigned char freq_byte;
-  byte_pair freq_word;
+  unsigned char freq_byte = read_song_byte();
+  byte_pair freq_word = expand_freq_byte(freq_byte);
 
-  vb_direction_flag[channel] = 0;
-  vb_current_value[channel] = 0;
+  if (channel < 9)
+    {
+      vb_direction_flag[channel] = 0;
+      vb_current_value[channel] = 0;
  
-  freq_byte = read_song_byte();
-  freq_word = expand_freq_byte(freq_byte);
-  set_adlib_freq(channel,freq_word);
+      set_adlib_freq(channel, freq_word);
 
-  freq_word.hi = freq_word.hi | 0x20; // note on
-  set_adlib_freq(channel,freq_word);
+      freq_word.hi = freq_word.hi | 0x20; // note on
+      set_adlib_freq(channel, freq_word);
+    }
 }
 
 
@@ -492,7 +505,10 @@ void Cu6mPlayer::command_2(int channel)
   freq_byte = read_song_byte();
   freq_word = expand_freq_byte(freq_byte);
   freq_word.hi = freq_word.hi | 0x20; // note on
-  set_adlib_freq(channel,freq_word);
+  if (channel < 9)
+    {
+      set_adlib_freq(channel, freq_word);
+    }
 }
 
 
@@ -503,11 +519,13 @@ void Cu6mPlayer::command_2(int channel)
 // --------------------------------------
 void Cu6mPlayer::command_3(int channel)
 {
-  unsigned char mf_byte;
+  unsigned char mf_byte = read_song_byte();
 
-  carrier_mf_signed_delta[channel] = 0;
-  mf_byte = read_song_byte();
-  set_carrier_mf(channel,mf_byte);
+  if (channel < 9)
+    {
+      carrier_mf_signed_delta[channel] = 0;
+      set_carrier_mf(channel, mf_byte); // apply mask?
+    }
 }
 
 
@@ -518,10 +536,12 @@ void Cu6mPlayer::command_3(int channel)
 // ----------------------------------------
 void Cu6mPlayer::command_4(int channel)
 {
-  unsigned char mf_byte;
+  unsigned char mf_byte = read_song_byte();
 
-  mf_byte = read_song_byte();
-  set_modulator_mf(channel,mf_byte);
+  if (channel < 9)
+    {
+      set_modulator_mf(channel, mf_byte); // apply mask?
+    }
 }
 
 
@@ -532,7 +552,12 @@ void Cu6mPlayer::command_4(int channel)
 // --------------------------------------------
 void Cu6mPlayer::command_5(int channel)
 {
-  channel_freq_signed_delta[channel] = read_signed_song_byte();
+  signed char delta = read_signed_song_byte();
+
+  if (channel < 9)
+    {
+      channel_freq_signed_delta[channel] = delta;
+    }
 }
 
 
@@ -545,11 +570,13 @@ void Cu6mPlayer::command_5(int channel)
 // --------------------------------------------
 void Cu6mPlayer::command_6(int channel)
 {
-  unsigned char vb_parameters;
+  unsigned char vb_parameters = read_song_byte();
 
-  vb_parameters = read_song_byte();
-  vb_double_amplitude[channel] = vb_parameters >> 4; // high nibble
-  vb_multiplier[channel] = vb_parameters & 0xF; // low nibble
+  if (channel < 9)
+    {
+      vb_double_amplitude[channel] = vb_parameters >> 4; // high nibble
+      vb_multiplier[channel] = vb_parameters & 0xF; // low nibble
+    }
 }
 
 
@@ -560,18 +587,23 @@ void Cu6mPlayer::command_6(int channel)
 // ----------------------------------------
 void Cu6mPlayer::command_7(int channel)
 {
-  int instrument_offset = instrument_offsets[read_song_byte()];
-  out_adlib_opcell(channel, false, 0x20, *(song_data + instrument_offset+0));
-  out_adlib_opcell(channel, false, 0x40, *(song_data + instrument_offset+1));
-  out_adlib_opcell(channel, false, 0x60, *(song_data + instrument_offset+2));
-  out_adlib_opcell(channel, false, 0x80, *(song_data + instrument_offset+3));
-  out_adlib_opcell(channel, false, 0xE0, *(song_data + instrument_offset+4));
-  out_adlib_opcell(channel, true, 0x20, *(song_data + instrument_offset+5));
-  out_adlib_opcell(channel, true, 0x40, *(song_data + instrument_offset+6));
-  out_adlib_opcell(channel, true, 0x60, *(song_data + instrument_offset+7));
-  out_adlib_opcell(channel, true, 0x80, *(song_data + instrument_offset+8));
-  out_adlib_opcell(channel, true, 0xE0, *(song_data + instrument_offset+9));
-  out_adlib(0xC0+channel, *(song_data + instrument_offset+10));
+  unsigned char instrument_number = read_song_byte();
+
+  if (channel < 9 && instrument_number < 9)
+    {
+      size_t instrument_offset = instrument_offsets[instrument_number];
+      out_adlib_opcell(channel, false, 0x20, song_data[instrument_offset+0]);
+      out_adlib_opcell(channel, false, 0x40, song_data[instrument_offset+1]);
+      out_adlib_opcell(channel, false, 0x60, song_data[instrument_offset+2]);
+      out_adlib_opcell(channel, false, 0x80, song_data[instrument_offset+3]);
+      out_adlib_opcell(channel, false, 0xE0, song_data[instrument_offset+4]);
+      out_adlib_opcell(channel, true, 0x20, song_data[instrument_offset+5]);
+      out_adlib_opcell(channel, true, 0x40, song_data[instrument_offset+6]);
+      out_adlib_opcell(channel, true, 0x60, song_data[instrument_offset+7]);
+      out_adlib_opcell(channel, true, 0x80, song_data[instrument_offset+8]);
+      out_adlib_opcell(channel, true, 0xE0, song_data[instrument_offset+9]);
+      out_adlib(0xC0+channel, song_data[instrument_offset+10]);
+    }
 }
 
 
@@ -587,9 +619,12 @@ void Cu6mPlayer::command_81()
   subsong_info new_ss_info;
  
   new_ss_info.subsong_repetitions = read_song_byte();
-  new_ss_info.subsong_start = read_song_byte(); new_ss_info.subsong_start += read_song_byte() << 8;
+  new_ss_info.subsong_start = read_song_byte();
+  new_ss_info.subsong_start += read_song_byte() << 8;
   new_ss_info.continue_pos = song_pos;
 
+  // Since the new position is not validated, this could jump after the
+  // end of song_data. Handled by the usual checks.
   subsong_stack.push(new_ss_info);
   song_pos = new_ss_info.subsong_start;
 }
@@ -614,8 +649,12 @@ void Cu6mPlayer::command_82()
 void Cu6mPlayer::command_83()
 {
   unsigned char instrument_number = read_song_byte();
-  instrument_offsets[instrument_number] = song_pos;
-  song_pos += 11;
+
+  if (instrument_number < 9 && song_size > 11 && song_pos < song_size - 11)
+    {
+      instrument_offsets[instrument_number] = song_pos;
+      song_pos += 11;
+    }
 }
 
 
@@ -630,9 +669,13 @@ void Cu6mPlayer::command_85()
   unsigned char data_byte = read_song_byte();
   int channel = data_byte >> 4; // high nibble
   unsigned char slide_delay = data_byte & 0xF; // low nibble
-  carrier_mf_signed_delta[channel] = +1;
-  carrier_mf_mod_delay[channel] = slide_delay + 1;
-  carrier_mf_mod_delay_backup[channel] = slide_delay + 1;
+
+  if (channel < 9)
+    {
+      carrier_mf_signed_delta[channel] = +1;
+      carrier_mf_mod_delay[channel] = slide_delay + 1;
+      carrier_mf_mod_delay_backup[channel] = slide_delay + 1;
+    }
 }
 
 
@@ -647,9 +690,13 @@ void Cu6mPlayer::command_86()
   unsigned char data_byte = read_song_byte();
   int channel = data_byte >> 4; // high nibble
   unsigned char slide_delay = data_byte & 0xF; // low nibble
-  carrier_mf_signed_delta[channel] = -1;
-  carrier_mf_mod_delay[channel] = slide_delay + 1;
-  carrier_mf_mod_delay_backup[channel] = slide_delay + 1;
+
+  if (channel < 9)
+    {
+      carrier_mf_signed_delta[channel] = -1;
+      carrier_mf_mod_delay[channel] = slide_delay + 1;
+      carrier_mf_mod_delay_backup[channel] = slide_delay + 1;
+    }
 }
 
 
@@ -706,31 +753,29 @@ void Cu6mPlayer::dec_clip(int& param)
 
 // Returns the byte at the current song position.
 // Side effect: increments song_pos.
-unsigned char Cu6mPlayer::read_song_byte()
+int Cu6mPlayer::read_song_byte()
 {
-  unsigned char song_byte;
-  song_byte = song_data[song_pos];
-  song_pos++;
-  return(song_byte);
+  if (song_pos < song_size)
+    {
+      return song_data[song_pos++];
+    }
+  else
+    {
+      return -1;
+    }
 }
 
 
 // Same as read_song_byte(), except that it returns a signed byte
 signed char Cu6mPlayer::read_signed_song_byte()
 {
-  unsigned char song_byte;
-  int signed_value;
-  song_byte = *(song_data + song_pos);
-  song_pos++;
-  if (song_byte <= 127)
+  int song_byte = read_song_byte();
+
+  if (song_byte >= 0x80)
     {
-      signed_value = song_byte;
+      song_byte -= 0x100;
     }
-  else
-    {
-      signed_value = (int)song_byte - 0x100;
-    }
-  return((signed char)signed_value);
+  return song_byte;
 }
 
 
