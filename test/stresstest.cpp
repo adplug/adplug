@@ -70,6 +70,8 @@ static const char *const filelist[] = {
 	"i-93_11.xad", "i-93_12.xad", "i-93_13.xad", "i-93_14.xad",
 	"i-93_15.bmf", "i-93_16.xad", "i-93_17.xad", "i-93_18.xad",
 	"i-94.rix",	// Issue #94: "OOB read in CrixPlayer::data_initial()"
+	"i-95_1.ctm",	// Issue #95: "Floating-point exception abort (DoS) in
+	"i-95_2.ctm",	//            CmidPlayer::rewind()"
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);
