@@ -72,6 +72,9 @@ static const char *const filelist[] = {
 	"i-94.rix",	// Issue #94: "OOB read in CrixPlayer::data_initial()"
 	"i-95_1.ctm",	// Issue #95: "Floating-point exception abort (DoS) in
 	"i-95_2.ctm",	//            CmidPlayer::rewind()"
+	"i-96_1.rol",	// Issue #96: "Reachable memory allocation abort (DoS)
+	"i-96_2.rol",	//            in CrolPlayer::load_tempo_events()"
+	"i-96_3.rol",
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);
