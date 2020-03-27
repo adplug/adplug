@@ -615,11 +615,11 @@ void CrolPlayer::send_operator(int const voice, SOPL2Op const & modulator,  SOPL
 //---------------------------------------------------------
 void CrolPlayer::load_tempo_events(binistream *f)
 {
-    int16_t const num_tempo_events = static_cast<uint16_t>(f->readInt(2));
+    uint16_t const num_tempo_events = static_cast<uint16_t>(f->readInt(2));
 
     mTempoEvents.reserve(num_tempo_events);
 
-    for (int i=0; i<num_tempo_events; ++i)
+    for (uint16_t i=0; i<num_tempo_events; ++i)
     {
         STempoEvent event;
 
@@ -684,7 +684,7 @@ void CrolPlayer::load_note_events(binistream *f, CVoiceData & voice)
             note_events.push_back(event);
 
             total_duration += event.duration;
-        } while (total_duration < time_of_last_note);
+        } while (total_duration < time_of_last_note && !f->error());
 
         if (time_of_last_note > mTimeOfLastNote)
         {
@@ -698,17 +698,18 @@ void CrolPlayer::load_note_events(binistream *f, CVoiceData & voice)
 void CrolPlayer::load_instrument_events(binistream *f, CVoiceData & voice,
                                         binistream *bnk_file, SBnkHeader const & bnk_header)
 {
-    int16_t const number_of_instrument_events = static_cast<int16_t>(f->readInt(2));
+    uint16_t const number_of_instrument_events = static_cast<uint16_t>(f->readInt(2));
 
     TInstrumentEvents & instrument_events = voice.instrument_events;
 
     instrument_events.reserve(number_of_instrument_events);
 
-    for (int16_t i = 0; i < number_of_instrument_events; ++i)
+    for (uint16_t i = 0; i < number_of_instrument_events; ++i)
     {
         SInstrumentEvent event;
         event.time = static_cast<int16_t>(f->readInt(2));
         f->readString(event.name, ROL_MAX_NAME_SIZE);
+        event.name[ROL_MAX_NAME_SIZE - 1] = 0;
 
         std::string event_name = event.name;
         if (std::find(usedInstruments.begin(), usedInstruments.end(), event_name) == usedInstruments.end())
@@ -725,13 +726,13 @@ void CrolPlayer::load_instrument_events(binistream *f, CVoiceData & voice,
 //---------------------------------------------------------
 void CrolPlayer::load_volume_events(binistream *f, CVoiceData & voice)
 {
-    int16_t const number_of_volume_events = static_cast<int16_t>(f->readInt(2));
+    uint16_t const number_of_volume_events = static_cast<uint16_t>(f->readInt(2));
 
     TVolumeEvents & volume_events = voice.volume_events;
 
     volume_events.reserve(number_of_volume_events);
 
-    for (int i=0; i<number_of_volume_events; ++i)
+    for (uint16_t i=0; i<number_of_volume_events; ++i)
     {
         SVolumeEvent event;
         event.time       = static_cast<int16_t>(f->readInt(2));
@@ -745,13 +746,13 @@ void CrolPlayer::load_volume_events(binistream *f, CVoiceData & voice)
 //---------------------------------------------------------
 void CrolPlayer::load_pitch_events(binistream *f, CVoiceData & voice)
 {
-    int16_t const number_of_pitch_events = static_cast<int16_t>(f->readInt(2));
+    uint16_t const number_of_pitch_events = static_cast<uint16_t>(f->readInt(2));
 
     TPitchEvents & pitch_events = voice.pitch_events;
 
     pitch_events.reserve(number_of_pitch_events);
 
-    for (int i=0; i<number_of_pitch_events; ++i)
+    for (uint16_t i=0; i<number_of_pitch_events; ++i)
     {
         SPitchEvent event;
         event.time      = static_cast<int16_t>(f->readInt(2));
@@ -785,6 +786,7 @@ bool CrolPlayer::load_bnk_info(binistream *f, SBnkHeader & header)
         instrument.index = static_cast<uint16_t>(f->readInt(2));
         instrument.record_used = static_cast<uint8_t>(f->readInt(1));
         f->readString(instrument.name, ROL_MAX_NAME_SIZE);
+        instrument.name[ROL_MAX_NAME_SIZE - 1] = 0;
 
         ins_name_list.push_back( instrument );
     }
@@ -816,7 +818,7 @@ int CrolPlayer::load_rol_instrument(binistream *f, SBnkHeader const & header, st
 
     if (range.first != range.second)
     {
-        int const seekOffs = header.abs_offset_of_data + (range.first->index * kSizeofDataRecord);
+        long int const seekOffs = header.abs_offset_of_data + (range.first->index * kSizeofDataRecord);
         f->seek(seekOffs, binio::Set);
 
         read_rol_instrument(f, usedInstrument.instrument);
