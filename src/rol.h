@@ -60,7 +60,7 @@ public:
     };
     virtual std::string getinstrument(unsigned int n)
     {
-        return usedInstruments[n];
+        return n < usedInstruments.size() ? usedInstruments[n] : std::string();
     };
     virtual std::string getdesc()
     {
