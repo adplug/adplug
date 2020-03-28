@@ -410,4 +410,5 @@ EXTRA_DIST += \
 	test/i-93_17.xad test/i-93_18.xad \
 	test/i-94.rix \
 	test/i-95_1.ctm test/i-95_2.ctm \
-	test/i-96_1.rol	test/i-96_2.rol	test/i-96_3.rol
+	test/i-96_1.rol	test/i-96_2.rol	test/i-96_3.rol \
+	test/i-98.sng

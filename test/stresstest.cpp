@@ -75,6 +75,8 @@ static const char *const filelist[] = {
 	"i-96_1.rol",	// Issue #96: "Reachable memory allocation abort (DoS)
 	"i-96_2.rol",	//            in CrolPlayer::load_tempo_events()"
 	"i-96_3.rol",
+	"i-98.sng",	// Issue #98: "Floating-point exception abort (DoS) in
+			//            CfmcLoader::load()"
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);
