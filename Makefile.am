@@ -412,4 +412,9 @@ EXTRA_DIST += \
 	test/i-95_1.ctm test/i-95_2.ctm \
 	test/i-96_1.rol	test/i-96_2.rol	test/i-96_3.rol \
 	test/i-98.sng \
-	test/i-99.dro
+	test/i-99.dro \
+	test/i-100_01.xad test/i-100_02.xad test/i-100_03.dro \
+	test/i-100_04.dro test/i-100_05.raw test/i-100_06.raw \
+	test/i-100_07.dro test/i-100_08.dro test/i-100_09.adlib \
+	test/i-100_10.mkj test/i-100_11.mkj test/i-100_12.cmf \
+	test/i-100_13.cmf
