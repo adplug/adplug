@@ -77,6 +77,8 @@ static const char *const filelist[] = {
 	"i-96_3.rol",
 	"i-98.sng",	// Issue #98: "Floating-point exception abort (DoS) in
 			//            CfmcLoader::load()"
+	"i-99.dro",	// Issue #99: "Heap-based OOB write (memory corruption)
+			//            in CdroPlayer::load()"
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);
