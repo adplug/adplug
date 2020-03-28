@@ -79,6 +79,11 @@ static const char *const filelist[] = {
 			//            CfmcLoader::load()"
 	"i-99.dro",	// Issue #99: "Heap-based OOB write (memory corruption)
 			//            in CdroPlayer::load()"
+	"i-100_01.xad",	// Issue #100: "Multiple excessive memory allocations
+	"i-100_02.xad",	//            in loaders"
+	"i-100_03.dro", "i-100_04.dro", "i-100_05.raw", "i-100_06.raw",
+	"i-100_07.dro", "i-100_08.dro", "i-100_09.adlib", "i-100_10.mkj",
+	"i-100_11.mkj", "i-100_12.cmf", "i-100_13.cmf",
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);
