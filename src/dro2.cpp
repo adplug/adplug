@@ -163,7 +163,7 @@ bool Cdro2Player::update()
 			} else {
 			  this->opl->setchip(0);
 			}
-			if (iIndex > this->iConvTableLen) {
+			if (iIndex >= this->iConvTableLen) {
 				printf("DRO2: Error - index beyond end of codemap table!  Corrupted .dro?\n");
 				return false; // EOF
 			}
