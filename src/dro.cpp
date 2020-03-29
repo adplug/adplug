@@ -73,7 +73,7 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 	f->ignore(4);	// Length in milliseconds
 	this->iLength = f->readInt(4); // stored in file as number of bytes
-	if (this->iLength < 3) {
+	if (this->iLength < 3 || this->iLength > fp.filesize(f) - f->pos()) {
 		fp.close(f);
 		return false;
 	}

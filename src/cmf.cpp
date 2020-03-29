@@ -209,6 +209,10 @@ bool CcmfPlayer::load(const std::string &filename, const CFileProvider &fp)
 	// Load the MIDI data into memory
   f->seek(this->cmfHeader.iMusicOffset);
   this->iSongLen = fp.filesize(f) - this->cmfHeader.iMusicOffset;
+  if (this->iSongLen <= 0) { // invalid offset value
+    fp.close(f);
+    return false;
+  }
   this->data = new unsigned char[this->iSongLen];
   f->readString((char *)data, this->iSongLen);
 

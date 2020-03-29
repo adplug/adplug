@@ -89,6 +89,10 @@ bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
   else
     fsize = f->readInt(2);
   flsize = fp.filesize(f);
+  if (mfsize + 4 > flsize || fsize >= flsize - 2 - mfsize || fsize & 3) {
+    fp.close(f);        // truncated file or bad size record
+    return false;
+  }    
   if(!fsize) {		// footerless file (raw music data)
     if(mfsize)
       f->seek(-4, binio::Add);

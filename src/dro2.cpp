@@ -64,7 +64,13 @@ bool Cdro2Player::load(const std::string &filename, const CFileProvider &fp)
 		return false;
 	}
 
-	this->iLength = f->readInt(4) * 2; // stored in file as number of byte pairs
+	this->iLength = f->readInt(4); // should better use an unsigned type
+	if (this->iLength <= 0 || this->iLength >= 1<<30 ||
+	    this->iLength > fp.filesize(f) - f->pos()) {
+		fp.close(f);
+		return false;
+	}
+	this->iLength *= 2; // stored in file as number of byte p
 	f->ignore(4);	// Length in milliseconds
 	f->ignore(1);	/// OPL type (0 == OPL2, 1 == Dual OPL2, 2 == OPL3)
 	int iFormat = f->readInt(1);
