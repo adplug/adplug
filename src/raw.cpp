@@ -135,6 +135,7 @@ bool CrawPlayer::update()
 
   do {
     setspeed = false;
+    if (this->pos >= this->length) return false;
 
     switch(this->data[this->pos].command) {
     case 0:
@@ -144,6 +145,7 @@ bool CrawPlayer::update()
     case 2:
       if (!this->data[this->pos].param) {
         pos++;
+        if (this->pos >= this->length) return false;
         this->speed = this->data[this->pos].param + (this->data[this->pos].command << 8);
         setspeed = true;
       } else
