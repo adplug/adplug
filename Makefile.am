@@ -417,4 +417,5 @@ EXTRA_DIST += \
 	test/i-100_04.dro test/i-100_05.raw test/i-100_06.raw \
 	test/i-100_07.dro test/i-100_08.dro test/i-100_09.adlib \
 	test/i-100_10.mkj test/i-100_11.mkj test/i-100_12.cmf \
-	test/i-100_13.cmf
+	test/i-100_13.cmf \
+	test/i-101_1.d00 test/i-101_2.d00
