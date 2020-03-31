@@ -84,6 +84,8 @@ static const char *const filelist[] = {
 	"i-100_03.dro", "i-100_04.dro", "i-100_05.raw", "i-100_06.raw",
 	"i-100_07.dro", "i-100_08.dro", "i-100_09.adlib", "i-100_10.mkj",
 	"i-100_11.mkj", "i-100_12.cmf", "i-100_13.cmf",
+	"i-101_1.d00",	// Issue #101: "Multiple null pointer dereferences (DoS)
+	"i-101_2.d00",	//            in Cd00Player"
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);
