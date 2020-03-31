@@ -68,7 +68,8 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
 
   // Check for version 2-4 header
   if(strncmp(checkhead->id,"JCH\x26\x02\x66",6) || checkhead->type ||
-     !checkhead->subsongs || checkhead->soundcard) {
+     !checkhead->subsongs || checkhead->soundcard ||
+     checkhead->version < 2 || checkhead->version > 4) {
     // Check for version 0 or 1 header (and .d00 file extension)
     delete checkhead;
     if(!fp.extension(filename, ".d00")) { fp.close(f); return false; }
