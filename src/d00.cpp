@@ -89,25 +89,38 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
   filesize = fp.filesize(f); f->seek(0);
   filedata = new char [filesize + 1];			// 1 byte is needed for old-style DataInfo block
   f->readString((char *)filedata, filesize);
+  filedata[filesize] = 0;
   fp.close(f);
   if(!ver1) {	// version 2 and above
     header = (struct d00header *)filedata;
+    if (filesize < sizeof(d00header) ||
+	filesize < LE_WORD(&header->infoptr) ||
+	filesize < LE_WORD(&header->instptr) ||
+	filesize < LE_WORD(&header->seqptr))
+      return false;
     version = header->version;
     datainfo = (char *)filedata + LE_WORD(&header->infoptr);
     inst = (struct Sinsts *)((char *)filedata + LE_WORD(&header->instptr));
     seqptr = (unsigned short *)((char *)filedata + LE_WORD(&header->seqptr));
-    for(i=31;i>=0;i--)	// erase whitespace
+    header->songname[31] = '\0';
+    for(i=30;i>=0;i--)	// erase whitespace
       if(header->songname[i] == ' ')
 	header->songname[i] = '\0';
       else
 	break;
-    for(i=31;i>=0;i--)
+    header->author[31] = '\0';
+    for(i=30;i>=0;i--)
       if(header->author[i] == ' ')
 	header->author[i] = '\0';
       else
 	break;
   } else {	// version 1
     header1 = (struct d00header1 *)filedata;
+    if (filesize < sizeof(d00header1) ||
+	filesize <= LE_WORD(&header1->infoptr) ||
+	filesize <= LE_WORD(&header1->instptr) ||
+	filesize <= LE_WORD(&header1->seqptr))
+      return false;
     version = header1->version;
     datainfo = (char *)filedata + LE_WORD(&header1->infoptr);
     inst = (struct Sinsts *)((char *)filedata + LE_WORD(&header1->instptr));
@@ -120,10 +133,12 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
     header1->speed = 70;		// v0 files default to 70Hz
     break;
   case 1:
+    if (filesize <= LE_WORD(&header1->lpulptr)) return false;
     levpuls = (struct Slevpuls *)((char *)filedata + LE_WORD(&header1->lpulptr));
     spfx = 0;
     break;
   case 2:
+    if (filesize <= LE_WORD(&header->spfxptr)) return false;
     levpuls = (struct Slevpuls *)((char *)filedata + LE_WORD(&header->spfxptr));
     spfx = 0;
     break;
@@ -132,6 +147,7 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
     levpuls = 0;
     break;
   case 4:
+    if (filesize <= LE_WORD(&header->spfxptr)) return false;
     spfx = (struct Sspfx *)((char *)filedata + LE_WORD(&header->spfxptr));
     levpuls = 0;
     break;
@@ -140,8 +156,6 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
     while((*str == '\xff' || *str == ' ') && str >= datainfo) {
       *str = '\0'; str--;
     }
-  else	// old-style block
-    memset((char *)filedata+filesize,0,1);
 
   rewind(0);
   return true;
