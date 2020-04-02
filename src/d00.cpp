@@ -37,6 +37,9 @@
 #define HIBYTE(val)	(val >> 8)
 #define LOBYTE(val)	(val & 0xff)
 
+#define INDEX_OK(ptr, idx) \
+  (((char*)(ptr) - filedata) + ((idx)+1) * sizeof(*(ptr)) <= filesize)
+
 static const unsigned short notetable[12] =	// D00 note table
   {340,363,385,408,432,458,485,514,544,577,611,647};
 
@@ -58,7 +61,6 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
   binistream	*f = fp.open(filename); if(!f) return false;
   d00header	*checkhead;
   d00header1	*ch;
-  unsigned long	filesize;
   int		i,ver1=0;
   char		*str;
 
@@ -171,11 +173,15 @@ bool Cd00Player::update()
     channel[c].slideval += channel[c].slide; setfreq(c);	// sliding
     vibrato(c);	// vibrato
 
-    if(channel[c].spfx != 0xffff) {	// SpFX
+    if (channel[c].spfx != 0xffff) do {	// SpFX
       if(channel[c].fxdel)
 	channel[c].fxdel--;
       else {
 	channel[c].spfx = LE_WORD(&spfx[channel[c].spfx].ptr);
+	if (channel[c].spfx == 0xffff || !INDEX_OK(spfx, channel[c].spfx)) {
+	  channel[c].spfx = 0xffff;
+	  break;
+	}
 	channel[c].fxdel = spfx[channel[c].spfx].duration;
 	channel[c].inst = LE_WORD(&spfx[channel[c].spfx].instnr) & 0xfff;
 	if(spfx[channel[c].spfx].modlev != 0xff)
@@ -190,16 +196,16 @@ bool Cd00Player::update()
       }
       channel[c].modvol += spfx[channel[c].spfx].modlevadd; channel[c].modvol &= 63;
       setvolume(c);
-    }
+    } while (0);
 
     if(channel[c].levpuls != 0xff) {	// Levelpuls
       if(channel[c].frameskip)
 	channel[c].frameskip--;
-      else {
+      else if (INDEX_OK(inst, channel[c].inst)) {
 	channel[c].frameskip = inst[channel[c].inst].timer;
 	if(channel[c].fxdel)
 	  channel[c].fxdel--;
-	else {
+	else if (INDEX_OK(levpuls, channel[c].levpuls)) {
 	  channel[c].levpuls = levpuls[channel[c].levpuls].ptr - 1;
 	  channel[c].fxdel = levpuls[channel[c].levpuls].duration;
 	  if(levpuls[channel[c].levpuls].level != 0xff)
@@ -244,25 +250,38 @@ bool Cd00Player::update()
 	continue;
       }
     readorder:	// process arrangement (orderlist)
+      if (!INDEX_OK(channel[c].order, channel[c].ordpos)) {
+	channel[c].seqend = 1; continue;
+      }
       ord = LE_WORD(&channel[c].order[channel[c].ordpos]);
       switch(ord) {
       case 0xfffe: channel[c].seqend = 1; continue;	// end of arrangement stream
       case 0xffff:		// jump to order
-	channel[c].ordpos = LE_WORD(&channel[c].order[channel[c].ordpos + 1]);
 	channel[c].seqend = 1;
+	if (!INDEX_OK(channel[c].order, channel[c].ordpos + 1)) continue;
+	channel[c].ordpos = LE_WORD(&channel[c].order[channel[c].ordpos + 1]);
 	goto readorder;
       default:
 	if(ord >= 0x9000) {	// set speed
 	  channel[c].speed = ord & 0xff;
-	  ord = LE_WORD(&channel[c].order[channel[c].ordpos - 1]);
+	  if (channel[c].ordpos > 0)
+	    ord = LE_WORD(&channel[c].order[channel[c].ordpos - 1]);
+	  else
+	    ord = 0;
 	  channel[c].ordpos++;
 	} else
 	  if(ord >= 0x8000) {	// transpose track
 	    channel[c].transpose = ord & 0xff;
 	    if(ord & 0x100)
 	      channel[c].transpose = -channel[c].transpose;
+	    if (!INDEX_OK(channel[c].order, channel[c].ordpos + 1)) {
+	      channel[c].seqend = 1; continue;
+	    }
 	    ord = LE_WORD(&channel[c].order[++channel[c].ordpos]);
 	  }
+	if (!INDEX_OK(seqptr, ord) || LE_WORD(&seqptr[ord]) + 2U > filesize) {
+	  channel[c].seqend = 1; continue;
+	}
 	patt = (unsigned short *)((char *)filedata + LE_WORD(&seqptr[ord]));
 	break;
       }
@@ -270,7 +289,8 @@ bool Cd00Player::update()
     readseq:	// process sequence (pattern)
       if(!version)	// v0: always initialize rhcnt
 	channel[c].rhcnt = channel[c].irhcnt;
-      pattpos = LE_WORD(&patt[channel[c].pattpos]);
+      pattpos = INDEX_OK(patt, channel[c].pattpos) ?
+	LE_WORD(&patt[channel[c].pattpos]) : 0xffff;
       if(pattpos == 0xffff) {	// pattern ended?
 	channel[c].pattpos = 0;
 	channel[c].ordpos++;
@@ -280,7 +300,9 @@ bool Cd00Player::update()
       note = LOBYTE(pattpos);
       fx = pattpos >> 12;
       fxop = pattpos & 0x0fff;
-      channel[c].pattpos++; pattpos = LE_WORD(&patt[channel[c].pattpos]);
+      channel[c].pattpos++;
+      pattpos = INDEX_OK(patt, channel[c].pattpos) ?
+	LE_WORD(&patt[channel[c].pattpos]) : 0;
       channel[c].nextnote = LOBYTE(pattpos) & 0x7f;
       if(version ? cnt < 0x40 : !fx) {	// note event
 	switch(note) {
@@ -310,7 +332,8 @@ bool Cd00Player::update()
 	      note += channel[c].transpose;
 	    channel[c].note = note;	// remember note for SpFX
 
-	    if(channel[c].ispfx != 0xffff && cnt < 0x20) {	// reset SpFX
+	    if (channel[c].ispfx != 0xffff && cnt < 0x20 &&
+		INDEX_OK(spfx, channel[c].ispfx)) {	// reset SpFX
 	      channel[c].spfx = channel[c].ispfx;
 	      if(LE_WORD(&spfx[channel[c].spfx].instnr) & 0x8000)	// locked frequency
 		note = spfx[channel[c].spfx].halfnote;
@@ -324,7 +347,9 @@ bool Cd00Player::update()
 		channel[c].modvol = inst[channel[c].inst].data[7] & 63;
 	    }
 
-	    if(channel[c].ilevpuls != 0xff && cnt < 0x20) {	// reset LevelPuls
+	    if (channel[c].ilevpuls != 0xff && cnt < 0x20 &&
+		INDEX_OK(levpuls, channel[c].ilevpuls) &&
+		INDEX_OK(inst, channel[c].inst)) {	// reset LevelPuls
 	      channel[c].levpuls = channel[c].ilevpuls;
 	      channel[c].fxdel = levpuls[channel[c].levpuls].duration;
 	      channel[c].frameskip = inst[channel[c].inst].timer;
@@ -391,6 +416,11 @@ bool Cd00Player::update()
 	  channel[c].ispfx = 0xffff;
 	  channel[c].spfx = 0xffff;
 	  channel[c].inst = fxop;
+	  if (!INDEX_OK(inst, fxop)) {
+	    channel[c].modvol = 0;
+	    channel[c].levpuls = channel[c].ilevpuls = 0xff;
+	    break;
+	  }
 	  channel[c].modvol = inst[fxop].data[7] & 63;
 	  if(version < 3 && version && inst[fxop].tunelev)	// Set LevelPuls
 	    channel[c].ilevpuls = inst[fxop].tunelev - 1;
@@ -427,26 +457,21 @@ void Cd00Player::rewind(int subsong)
     unsigned short ptr[9];
     unsigned char volume[9],dummy[5];
   } tpoin;
-  int i;
 
-  if(subsong == -1) subsong = cursubsong;
+  if(subsong < 0) subsong = cursubsong;
 
-  if(version > 1) {	// do nothing if subsong > number of subsongs
-    if(subsong >= header->subsongs)
-      return;
-  } else
-    if(subsong >= header1->subsongs)
-      return;
-
-  memset(channel,0,sizeof(channel));
-  const unsigned char* data = (unsigned char*)filedata + sizeof(Stpoin)*subsong;
-  if(version > 1)
-    data += LE_WORD(&header->tpoin);
+  size_t dataofs = subsong * sizeof(Stpoin)
+    + LE_WORD(&(version > 1 ? header->tpoin : header1->tpoin));
+  if (subsong < getsubsongs() && dataofs + sizeof(Stpoin) <= filesize)
+    memcpy(&tpoin, filedata + dataofs, sizeof(Stpoin));
   else
-    data += LE_WORD(&header1->tpoin);
-  memcpy(&tpoin, data, sizeof(Stpoin));
-  for(i=0;i<9;i++) {
-    if(LE_WORD(&tpoin.ptr[i])) {	// track enabled
+    memset(&tpoin, 0, sizeof(Stpoin));
+
+  memset(channel, 0, sizeof(channel));
+
+  for (int i = 0; i < 9; i++) {
+    if (LE_WORD(&tpoin.ptr[i]) &&	// track enabled
+	LE_WORD(&tpoin.ptr[i]) + 4U <= filesize) {
       channel[i].speed = LE_WORD((unsigned short *)
 				 ((char *)filedata + LE_WORD(&tpoin.ptr[i])));
       channel[i].order = (unsigned short *)
@@ -462,7 +487,7 @@ void Cd00Player::rewind(int subsong)
   }
   songend = 0;
   opl->init(); opl->write(1,32);	// reset OPL chip
-  cursubsong = subsong;
+  cursubsong = subsong > 0xff ? 0xff : subsong;
 }
 
 std::string Cd00Player::gettype()
@@ -495,6 +520,7 @@ void Cd00Player::setvolume(unsigned char chan)
 {
   unsigned char	op = op_table[chan];
   unsigned short	insnr = channel[chan].inst;
+  if (!INDEX_OK(inst, insnr)) return;
 
   opl->write(0x43 + op,(int)(63-((63-(inst[insnr].data[2] & 63))/63.0)*(63-channel[chan].vol)) +
 	     (inst[insnr].data[2] & 192));
@@ -509,7 +535,8 @@ void Cd00Player::setfreq(unsigned char chan)
 {
   unsigned short freq = channel[chan].freq;
 
-  if(version == 4)	// v4: apply instrument finetune
+  if (version == 4 &&	// v4: apply instrument finetune
+      INDEX_OK(inst, channel[chan].inst))
     freq += inst[channel[chan].inst].tunelev;
 
   freq += channel[chan].slideval;
@@ -524,6 +551,7 @@ void Cd00Player::setinst(unsigned char chan)
 {
   unsigned char	op = op_table[chan];
   unsigned short	insnr = channel[chan].inst;
+  if (!INDEX_OK(inst, insnr)) return;
 
   // set instrument data
   opl->write(0x63 + op, inst[insnr].data[0]);
