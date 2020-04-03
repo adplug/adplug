@@ -68,8 +68,14 @@ bool CdfmLoader::load(const std::string &filename, const CFileProvider &fp)
     ;
   length = i;
   npats = f->readInt(1);
+  if (npats > 64) {
+    fp.close(f); return false;	// or: realloc_patterns(npats, 64, 9);
+  }
   for(i = 0; i < npats; i++) {
     n = f->readInt(1);
+    if (n >= npats) {
+      fp.close(f); return false;
+    }
     for(r = 0; r < 64; r++)
       for(c = 0; c < 9; c++) {
 	note = f->readInt(1);
