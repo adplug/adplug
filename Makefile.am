@@ -418,4 +418,55 @@ EXTRA_DIST += \
 	test/i-100_07.dro test/i-100_08.dro test/i-100_09.adlib \
 	test/i-100_10.mkj test/i-100_11.mkj test/i-100_12.cmf \
 	test/i-100_13.cmf \
-	test/i-101_1.d00 test/i-101_2.d00
+	test/i-101_1.d00 test/i-101_2.d00 \
+	test/i-102_001.dfm test/i-102_002.dfm test/i-102_003.dfm \
+	test/i-102_004.dfm test/i-102_005.dfm test/i-102_006.dfm \
+	test/i-102_007.dfm test/i-102_008.dfm test/i-102_009.dfm \
+	test/i-102_010.dfm test/i-102_011.dfm test/i-102_012.dfm \
+	test/i-102_013.dfm test/i-102_014.dfm test/i-102_015.dfm \
+	test/i-102_016.dfm test/i-102_017.dfm test/i-102_018.dfm \
+	test/i-102_019.dfm test/i-102_020.dfm test/i-102_021.dfm \
+	test/i-102_022.dfm test/i-102_023.dfm test/i-102_024.dfm \
+	test/i-102_025.dfm test/i-102_026.dfm test/i-102_027.dfm \
+	test/i-102_028.dfm test/i-102_029.dfm test/i-102_030.dfm \
+	test/i-102_031.dfm test/i-102_032.dfm test/i-102_033.dfm \
+	test/i-102_034.dfm test/i-102_035.dfm test/i-102_036.dfm \
+	test/i-102_037.dfm test/i-102_038.dfm test/i-102_039.dfm \
+	test/i-102_040.dfm test/i-102_041.dfm test/i-102_042.dfm \
+	test/i-102_043.dfm test/i-102_044.dfm test/i-102_045.dfm \
+	test/i-102_046.dfm test/i-102_047.dfm test/i-102_048.dfm \
+	test/i-102_049.dfm test/i-102_050.dfm test/i-102_051.dfm \
+	test/i-102_052.dfm test/i-102_053.dfm test/i-102_054.dfm \
+	test/i-102_055.dfm test/i-102_056.dfm test/i-102_057.dfm \
+	test/i-102_058.dfm test/i-102_059.dfm test/i-102_060.dfm \
+	test/i-102_061.dfm test/i-102_062.dfm test/i-102_063.dfm \
+	test/i-102_064.dfm test/i-102_065.dfm test/i-102_066.dfm \
+	test/i-102_067.dfm test/i-102_068.dfm test/i-102_069.dfm \
+	test/i-102_070.dfm test/i-102_071.dfm test/i-102_072.dfm \
+	test/i-102_073.dfm test/i-102_074.dfm test/i-102_075.dfm \
+	test/i-102_076.dfm test/i-102_077.dfm test/i-102_078.dfm \
+	test/i-102_079.dfm test/i-102_080.dfm test/i-102_081.dfm \
+	test/i-102_082.dfm test/i-102_083.dfm test/i-102_084.dfm \
+	test/i-102_085.dfm test/i-102_086.dfm test/i-102_087.dfm \
+	test/i-102_088.dfm test/i-102_089.dfm test/i-102_090.dfm \
+	test/i-102_091.dfm test/i-102_092.dfm test/i-102_093.dfm \
+	test/i-102_094.dfm test/i-102_095.dfm test/i-102_096.dfm \
+	test/i-102_097.dfm test/i-102_098.dfm test/i-102_099.dfm \
+	test/i-102_100.dfm test/i-102_101.dfm test/i-102_102.dfm \
+	test/i-102_103.dfm test/i-102_104.dfm test/i-102_105.dfm \
+	test/i-102_106.dfm test/i-102_107.dfm test/i-102_108.dfm \
+	test/i-102_109.dfm test/i-102_110.dfm test/i-102_111.dfm \
+	test/i-102_112.dfm test/i-102_113.dfm test/i-102_114.dfm \
+	test/i-102_115.dfm test/i-102_116.dfm test/i-102_117.dfm \
+	test/i-102_118.dfm test/i-102_119.dfm test/i-102_120.dfm \
+	test/i-102_121.dfm test/i-102_122.dfm test/i-102_123.dfm \
+	test/i-102_124.dfm test/i-102_125.dfm test/i-102_126.dfm \
+	test/i-102_127.dfm test/i-102_128.dfm test/i-102_129.dfm \
+	test/i-102_130.dfm test/i-102_131.dfm test/i-102_132.dfm \
+	test/i-102_133.dfm test/i-102_134.dfm test/i-102_135.dfm \
+	test/i-102_136.dfm test/i-102_137.dfm test/i-102_138.dfm \
+	test/i-102_139.dfm test/i-102_140.dfm test/i-102_141.dfm \
+	test/i-102_142.dfm test/i-102_143.dfm test/i-102_144.dfm \
+	test/i-102_145.dfm test/i-102_146.dfm test/i-102_147.dfm \
+	test/i-102_148.dfm test/i-102_149.dfm test/i-102_150.dfm \
+	test/i-102_151.dfm
