@@ -47,9 +47,16 @@ bool CdfmLoader::load(const std::string &filename, const CFileProvider &fp)
   restartpos = 0; flags = Standard; bpm = 0;
   init_trackord();
   f->readString(songinfo, 33);
+  if (*songinfo > 32 || *songinfo < 0) {
+    fp.close(f); return false;
+  }
   initspeed = f->readInt(1);
-  for(i = 0; i < 32; i++)
+  for(i = 0; i < 32; i++) {
     f->readString(instname[i], 12);
+    if (*instname[i] > 11 || *instname[i] < 0) {
+      fp.close(f); return false;
+    }
+  }
   for(i = 0; i < 32; i++) {
     inst[i].data[1] = f->readInt(1);
     inst[i].data[2] = f->readInt(1);
