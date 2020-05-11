@@ -51,3 +51,5 @@ test/emutest
 test/emutest.log
 test/playertest
 test/playertest.log
+test/stresstest
+test/stresstest.log
