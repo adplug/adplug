@@ -1,10 +1,12 @@
 This is a brief overview of user-visible changes in AdPlug.
 
-Changes for version 2.3.2-beta:
+Changes for version 2.3.2:
 --------------------------
 - Bug fixes:
   - FMOPL: Fix global variable pointer double-free (CVE-2018-17825)
   - HERAD: Fix compilation on GCC 4.2.1
+  - ADL: Calling rewind() before update() causes access violation
+  - Move OPL reset/init code to rewind() for some players
 
 Changes for version 2.3.1:
 --------------------------
