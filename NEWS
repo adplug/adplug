@@ -2,6 +2,16 @@ This is a brief overview of user-visible changes in AdPlug.
 
 Changes for version 2.3.3:
 --------------------------
+- Bug fixes: (huge thanks to Alexander Miller for these)
+  - CVE-2019-14690 - buffer overflow in .bmf
+  - CVE-2019-14691 - buffer overflow in .dtm
+  - CVE-2019-14692 - buffer overflow in .mkj
+  - CVE-2019-14732 - buffer overflow in .a2m
+  - CVE-2019-14733 - buffer overflow in .rad
+  - CVE-2019-14734 - buffer overflow in .mtk
+  - CVE-2019-15151 - double free and OOB reads in .u6m
+  - OOB reads in .xad
+  - OOB reads in .rix
 
 Changes for version 2.3.2:
 --------------------------
