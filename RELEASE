@@ -11,7 +11,7 @@ Before release:
 
  * Update NEWS with changes since last release
 
- * Create new tag: `git tag adplug-1.2.3` and `git push adplug-1.2.3 origin/master`
+ * Create new tag: `git tag adplug-1.2.3` and `git push origin adplug-1.2.3`
 
 After release:
 
