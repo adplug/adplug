@@ -2,6 +2,7 @@ This is a brief overview of user-visible changes in AdPlug.
 
 Changes for version 2.3.3:
 --------------------------
+- New RAD player replacing the old one
 - Bug fixes: (huge thanks to Alexander Miller for these)
   - CVE-2019-14690 - buffer overflow in .bmf
   - CVE-2019-14691 - buffer overflow in .dtm
