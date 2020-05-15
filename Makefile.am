@@ -469,4 +469,51 @@ EXTRA_DIST += \
 	test/i-102_142.dfm test/i-102_143.dfm test/i-102_144.dfm \
 	test/i-102_145.dfm test/i-102_146.dfm test/i-102_147.dfm \
 	test/i-102_148.dfm test/i-102_149.dfm test/i-102_150.dfm \
-	test/i-102_151.dfm
+	test/i-102_151.dfm \
+	test/i-110_001.dtm test/i-110_002.dtm test/i-110_003.dtm \
+	test/i-110_004.dtm test/i-110_005.a2m test/i-110_006.a2m \
+	test/i-110_007.a2m test/i-110_008.a2m test/i-110_009.a2m \
+	test/i-110_010.a2m test/i-110_011.a2m test/i-110_012.cff \
+	test/i-110_013.cff test/i-110_014.cff test/i-110_015.cff \
+	test/i-110_016.cff test/i-110_017.cff test/i-110_018.cff \
+	test/i-110_019.cff test/i-110_020.cff test/i-110_021.cff \
+	test/i-110_022.cff test/i-110_023.cff test/i-110_024.cff \
+	test/i-110_025.amd test/i-110_026.amd test/i-110_027.amd \
+	test/i-110_028.amd test/i-110_029.amd test/i-110_030.xad \
+	test/i-110_031.dtm test/i-110_032.dtm test/i-110_033.amd \
+	test/i-110_034.xad test/i-110_035.xad test/i-110_036.xad \
+	test/i-110_037.xad test/i-110_038.a2m test/i-110_039.dtm \
+	test/i-110_040.dtm test/i-110_041.a2m test/i-110_042.a2m \
+	test/i-110_043.amd test/i-110_044.a2m test/i-110_045.a2m \
+	test/i-110_046.amd test/i-110_047.sng test/i-110_048.cff \
+	test/i-110_049.sa2 test/i-110_050.sa2 test/i-110_051.amd \
+	test/i-110_052.dtm test/i-110_053.dtm test/i-110_054.dtm \
+	test/i-110_055.dtm test/i-110_056.amd test/i-110_057.mtk \
+	test/i-110_058.xad test/i-110_059.dtm test/i-110_060.dtm \
+	test/i-110_061.dtm test/i-110_062.amd test/i-110_063.dtm \
+	test/i-110_064.dtm test/i-110_065.amd test/i-110_066.sng \
+	test/i-110_067.sat test/i-110_068.amd test/i-110_069.amd \
+	test/i-110_070.xad test/i-110_071.amd test/i-110_072.amd \
+	test/i-110_073.a2m test/i-110_074.a2m test/i-110_075.a2m \
+	test/i-110_076.a2m test/i-110_077.a2m test/i-110_078.a2m \
+	test/i-110_079.sng test/i-110_080.sng test/i-110_081.sa2 \
+	test/i-110_082.sa2 test/i-110_083.amd test/i-110_084.amd \
+	test/i-110_085.amd test/i-110_086.amd test/i-110_087.amd \
+	test/i-110_088.amd test/i-110_089.xad test/i-110_090.xad \
+	test/i-110_091.a2m test/i-110_092.cff test/i-110_093.cff \
+	test/i-110_094.mtk test/i-110_095.xad test/i-110_096.xad \
+	test/i-110_097.cff test/i-110_098.amd test/i-110_099.amd \
+	test/i-110_100.dtm test/i-110_101.cff test/i-110_102.cff \
+	test/i-110_103.cff test/i-110_104.amd test/i-110_105.cff \
+	test/i-110_106.sat test/i-110_107.a2m test/i-110_108.a2m \
+	test/i-110_109.amd test/i-110_110.dtm test/i-110_111.dtm \
+	test/i-110_112.dtm test/i-110_113.dtm test/i-110_114.dtm \
+	test/i-110_115.dtm test/i-110_116.dtm test/i-110_117.dtm \
+	test/i-110_118.dtm test/i-110_119.dtm test/i-110_120.dtm \
+	test/i-110_121.dtm test/i-110_122.dtm test/i-110_123.xad \
+	test/i-110_124.a2m test/i-110_125.dtm test/i-110_126.a2m \
+	test/i-110_127.amd test/i-110_128.dtm test/i-110_129.a2m \
+	test/i-110_130.amd test/i-110_131.amd test/i-110_132.a2m \
+	test/i-110_133.dtm test/i-110_134.sat test/i-110_135.amd \
+	test/i-110_136.amd
+
