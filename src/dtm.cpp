@@ -53,6 +53,7 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
   // signature exists ? good version ?
   if (memcmp(header.id, "DeFy DTM ", 9) || header.version != 0x10 ||
       header.numinst > sizeof(instruments) / sizeof(instruments[0]) ||
+      header.numinst < 9 || // need a default instrument for each channel
       f->error())
     { fp.close (f); return false; }
 
