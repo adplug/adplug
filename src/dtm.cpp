@@ -63,6 +63,7 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
       header.version != 0x10 || // good version?
       header.numinst > MAX_INST ||
       header.numinst < N_CHAN || // need a default instrument for each channel
+      header.numpat == 0 ||
       f->error()) {
     fp.close (f);
     return false;
@@ -118,6 +119,11 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
   for (int i = 0; i < header.numinst; i++) {
       unsigned char name_length = f->readInt(1);
 
+      if (name_length >= sizeof(instruments[i].name)) {
+	fp.close(f);
+	return false; // or truncate the name instead?
+      }
+
       if (name_length)
 	f->readString(instruments[i].name, name_length);
 
@@ -157,7 +163,7 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 
 	      // instrument
 	      if (event->byte0 == 0x80) {
-		  if (event->byte1 <= 0x80)
+		if (event->byte1 < header.numinst) // not <= 0x80 !
 		    tracks[t][k].inst = event->byte1 + 1;
 	      }
 
@@ -219,6 +225,7 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
   fp.close(f);
 
   // order length
+  length = N_ORD;
   for (int i = 0; i < N_ORD; i++) {
       if (order[i] & 0x80) {
 	  length = i;
@@ -228,7 +235,12 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 	  else
 	    restartpos = order[i] - 0x80;
 
+	  if (restartpos >= i) // bad restart position or empty order list
+	    return false;
+
 	  break;
+      } else if (order[i] >= nop) {
+	return false;
       }
   }
 
