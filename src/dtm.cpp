@@ -143,15 +143,7 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
   nop = header.numpat;
   for (int t = 0, i = 0; i < nop; i++) {
       unsigned short packed_length = f->readInt(2);
-      unsigned char *packed_pattern = new unsigned char [packed_length];
-
-      f->readString((char *)packed_pattern, packed_length);
-
-      long unpacked_length = unpack_pattern(packed_pattern, packed_length,
-			            (unsigned char *)pattern, sizeof(pattern));
-      delete [] packed_pattern;
-
-      if (unpacked_length != sizeof(pattern)) {
+      if (!unpack_pattern(f, packed_length, pattern, sizeof(pattern))) {
 	  fp.close(f);
 	  return false;
       }
@@ -302,28 +294,30 @@ unsigned int CdtmLoader::getinstruments()
 
 /* -------- Private Methods ------------------------------- */
 
-long CdtmLoader::unpack_pattern(unsigned char *ibuf, long ilen,
-				unsigned char *obuf, long olen)
+bool CdtmLoader::unpack_pattern(binistream *f, size_t ilen,
+				void *obuf, size_t olen)
 {
-  long input_length = 0;
-  long output_length = 0;
+  unsigned char *outp = (unsigned char *)obuf;
 
   // RLE
-  while (input_length < ilen) {
-    long repeat_counter = 1;
-    unsigned char repeat_byte = ibuf[input_length++];
+  while (ilen--) {
+    size_t repeat_counter = 1;
+    unsigned char repeat_byte = f->readInt(1);
 
     if ((repeat_byte & 0xF0) == 0xD0) {
-      if (input_length == ilen) break; // truncated input
+      if (!ilen--) return false; // truncated input
 
-      repeat_counter = repeat_byte & 15;
-      repeat_byte = ibuf[input_length++];
+      repeat_counter = repeat_byte & 0x0F;
+      repeat_byte = f->readInt(1);
     }
 
-    repeat_counter = std::min(repeat_counter, olen - output_length);
-    memset(obuf + output_length, repeat_byte, repeat_counter);
-    output_length += repeat_counter;
+    // Attempts to generate too much data are normal, ignore the excess data.
+    repeat_counter = std::min(repeat_counter, olen);
+
+    memset(outp, repeat_byte, repeat_counter);
+    outp += repeat_counter;
+    olen -= repeat_counter;
   }
 
-  return output_length;
+  return olen == 0 && !f->error(); // generated enough data?
 }

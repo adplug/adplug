@@ -74,5 +74,5 @@ class CdtmLoader: public CmodPlayer
     unsigned char	byte1;
   };
 
-  long unpack_pattern(unsigned char *ibuf, long ilen, unsigned char *obuf, long olen);
+  bool unpack_pattern(binistream *f, size_t ilen, void *obuf, size_t olen);
 };
