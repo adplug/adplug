@@ -22,6 +22,7 @@
   NOTE: Panning (Ex) effect is ignored.
 */
 
+#include <algorithm>
 #include <cstring>
 #include "dtm.h"
 
@@ -34,43 +35,52 @@ CPlayer *CdtmLoader::factory(Copl *newopl)
 
 bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-  binistream *f = fp.open(filename); if(!f) return false;
-  const unsigned char conv_inst[11] = { 2,1,10,9,4,3,6,5,0,8,7 };
-  const unsigned short conv_note[12] = { 0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287, 0x2AE };
-  int i,j,k,t=0;
+  static const unsigned char conv_inst[11] = {
+    2, 1, 10, 9, 4, 3, 6, 5, 0, 8, 7
+  };
+  static const unsigned short conv_note[12] = {
+    0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5,
+    0x202, 0x220, 0x241, 0x263, 0x287, 0x2AE
+  };
+
+  binistream *f = fp.open(filename);
+  if (!f) return false;
 
   // read header
-  f->readString(header.id, 12);
+  f->readString(header.id, sizeof(header.id));
   header.version = f->readInt(1);
-  f->readString(header.title, 20);
-  f->readString(header.author, 20);
+  f->readString(header.title, sizeof(header.title));
+  f->readString(header.author, sizeof(header.author));
   // Ensure title and author are NUL terminated. We may overwrite the
   // last character because the arrays are too short.
-  header.author[19] = header.title[19] = 0;
+  header.author[sizeof(header.author) - 1] =
+    header.title[sizeof(header.title) - 1] = 0;
   header.numpat = f->readInt(1);
   header.numinst = f->readInt(1) + 1;
 
-  // signature exists ? good version ?
-  if (memcmp(header.id, "DeFy DTM ", 9) || header.version != 0x10 ||
-      header.numinst > sizeof(instruments) / sizeof(instruments[0]) ||
-      header.numinst < 9 || // need a default instrument for each channel
-      f->error())
-    { fp.close (f); return false; }
+  // check header
+  if (memcmp(header.id, "DeFy DTM ", 9) || // signature exists?
+      header.version != 0x10 || // good version?
+      header.numinst > MAX_INST ||
+      header.numinst < N_CHAN || // need a default instrument for each channel
+      f->error()) {
+    fp.close (f);
+    return false;
+  }
 
   // load description
-  memset(desc,0,80*16);
+  memset(desc, 0, sizeof(desc));
 
   char *bufstr = desc;
 
-  for (i=0;i<16;i++)
-    {
+  for (int i = 0; i < DESC_ROWS; i++) {
       // get line length
       unsigned char bufstr_length = f->readInt(1);
 
-      if(bufstr_length > 80) {
-        // "desc" is too small to hold 16 lines with 80 chars each plus
-        // 16 newlines an a NUL terminator. Accept a line length of 80
-        // anyway and truncate the last line if necessary.
+      if (bufstr_length > DESC_COLS) {
+        // "desc" is too small to hold DESC_ROWS lines with DESC_COLS chars
+        // each plus DESC_ROWS newlines and a NUL terminator. Accept a line
+        // length of DESC_COLS anyway and truncate the last line if necessary.
         // Maybe we should grow desc or allocate it dynamically instead.
 	fp.close(f);
 	return false;
@@ -81,33 +91,31 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
       bufstr_length -= discard;
 
       // read line
-      if (bufstr_length)
-	{
+      if (bufstr_length) {
 	  f->readString(bufstr,bufstr_length);
 
-	  for (j=0;j<bufstr_length;j++)
+	  for (int j = 0; j < bufstr_length; j++)
 	    if (!bufstr[j])
 	      bufstr[j] = 0x20;
           bufstr += bufstr_length;
 
 	  if (discard)
             f->ignore(discard);
-	}
+      }
       if (bufstr_length < max_length)
         *(bufstr++) = '\n';
-    }
+  }
   *bufstr = 0;
 
   // init CmodPlayer
   realloc_instruments(header.numinst);
-  realloc_order(100);
-  realloc_patterns(header.numpat,64,9);
+  realloc_order(N_ORD);
+  realloc_patterns(header.numpat, N_ROW, N_CHAN);
   init_notetable(conv_note);
   init_trackord();
 
   // load instruments
-  for (i=0;i<header.numinst;i++)
-    {
+  for (int i = 0; i < header.numinst; i++) {
       unsigned char name_length = f->readInt(1);
 
       if (name_length)
@@ -115,94 +123,80 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 
       instruments[i].name[name_length] = 0;
 
-      for(j = 0; j < 12; j++)
-	instruments[i].data[j] = f->readInt(1);
+      f->readString((char *)instruments[i].data, sizeof(instruments[i].data));
 
-      for (j=0;j<11;j++)
+      for (int j = 0; j < sizeof(conv_inst); j++)
 	inst[i].data[conv_inst[j]] = instruments[i].data[j];
-    }
+  }
 
   // load order
-  for(i = 0; i < 100; i++) order[i] = f->readInt(1);
-
-  nop = header.numpat;
-
-  unsigned char *pattern = new unsigned char [0x480];
+  f->readString((char *)order, N_ORD);
 
   // load tracks
-  for (i=0;i<nop;i++)
-    {
-      unsigned short packed_length;
-
-      packed_length = f->readInt(2);
-
+  dtm_event pattern[N_ROW][N_CHAN];
+  nop = header.numpat;
+  for (int t = 0, i = 0; i < nop; i++) {
+      unsigned short packed_length = f->readInt(2);
       unsigned char *packed_pattern = new unsigned char [packed_length];
 
-      for(j = 0; j < packed_length; j++)
-	packed_pattern[j] = f->readInt(1);
+      f->readString((char *)packed_pattern, packed_length);
 
-      long unpacked_length = unpack_pattern(packed_pattern,packed_length,pattern,0x480);
-
+      long unpacked_length = unpack_pattern(packed_pattern, packed_length,
+			            (unsigned char *)pattern, sizeof(pattern));
       delete [] packed_pattern;
 
-      if (unpacked_length != 0x480)
-	{
-	  delete [] pattern;
+      if (unpacked_length != sizeof(pattern)) {
 	  fp.close(f);
 	  return false;
-	}
+      }
 
       // convert pattern
-      for (j=0;j<9;j++)
-	{
-	  for (k=0;k<64;k++)
-	    {
-	      dtm_event *event = (dtm_event *)&pattern[(k*9+j)*2];
+      for (int j = 0; j < N_CHAN; j++, t++) {
+	  for (int k = 0; k < N_ROW; k++) {
+	      dtm_event *event = &pattern[k][j];
 
 	      // instrument
-	      if (event->byte0 == 0x80)
-		{
+	      if (event->byte0 == 0x80) {
 		  if (event->byte1 <= 0x80)
 		    tracks[t][k].inst = event->byte1 + 1;
-		}
+	      }
 
 	      // note + effect
-	      else
-		{
+	      else {
 		  tracks[t][k].note = event->byte0;
 
 		  if ((event->byte0 != 0) && (event->byte0 != 127))
 		    tracks[t][k].note++;
 
 		  // convert effects
-		  switch (event->byte1 >> 4)
-		    {
+		  unsigned char ev_param = event->byte1 & 0x0F;
+		  switch (event->byte1 >> 4) {
 		    case 0x0: // pattern break
-		      if ((event->byte1 & 15) == 1)
+		      if (ev_param == 1)
 			tracks[t][k].command = 13;
 		      break;
 
 		    case 0x1: // freq. slide up
 		      tracks[t][k].command = 28;
-		      tracks[t][k].param1 = event->byte1 & 15;
+		      tracks[t][k].param1 = ev_param;
 		      break;
 
 		    case 0x2: // freq. slide down
 		      tracks[t][k].command = 28;
-		      tracks[t][k].param2 = event->byte1 & 15;
+		      tracks[t][k].param2 = ev_param;
 		      break;
 
 		    case 0xA: // set carrier volume
 		    case 0xC: // set instrument volume
 		      tracks[t][k].command = 22;
-		      tracks[t][k].param1 = (0x3F - (event->byte1 & 15)) >> 4;
-		      tracks[t][k].param2 = (0x3F - (event->byte1 & 15)) & 15;
+		      tracks[t][k].param1 = (0x3F - ev_param) >> 4; // always 3
+		      tracks[t][k].param2 = (0x3F - ev_param) & 0xF;
 		      break;
 
 		    case 0xB: // set modulator volume
 		      tracks[t][k].command = 21;
-		      tracks[t][k].param1 = (0x3F - (event->byte1 & 15)) >> 4;
-		      tracks[t][k].param2 = (0x3F - (event->byte1 & 15)) & 15;
+		      tracks[t][k].param1 = (0x3F - ev_param) >> 4; // always 3
+		      tracks[t][k].param2 = (0x3F - ev_param) & 0xF;
 		      break;
 
 		    case 0xE: // set panning
@@ -210,29 +204,23 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 
 		    case 0xF: // set speed
 		      tracks[t][k].command = 13;
-		      tracks[t][k].param2 = event->byte1 & 15;
+		      tracks[t][k].param2 = ev_param;
 		      break;
-		    }
-		}
-	    }
+		  }
+	      }
+	  }
+      }
+  }
 
-	  t++;
-	}
-    }
-
-  delete [] pattern;
-  if (f->error())
-    {
+  if (f->error()) {
       fp.close(f);
       return false;
-    }
+  }
   fp.close(f);
 
   // order length
-  for (i=0;i<100;i++)
-    {
-      if (order[i] >= 0x80)
-	{
+  for (int i = 0; i < N_ORD; i++) {
+      if (order[i] & 0x80) {
 	  length = i;
 
 	  if (order[i] == 0xFF)
@@ -241,8 +229,8 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 	    restartpos = order[i] - 0x80;
 
 	  break;
-	}
-    }
+      }
+  }
 
   // initial speed
   initspeed = 2;
@@ -257,13 +245,12 @@ void CdtmLoader::rewind(int subsong)
   CmodPlayer::rewind(subsong);
 
   // default instruments
-  for (int i=0;i<9;i++)
-    {
+  for (int i = 0; i < N_CHAN; i++) {
       channel[i].inst = i;
 
       channel[i].vol1 = 63 - (inst[i].data[10] & 63);
       channel[i].vol2 = 63 - (inst[i].data[9] & 63);
-    }
+  }
 }
 
 float CdtmLoader::getrefresh()
@@ -303,37 +290,28 @@ unsigned int CdtmLoader::getinstruments()
 
 /* -------- Private Methods ------------------------------- */
 
-long CdtmLoader::unpack_pattern(unsigned char *ibuf, long ilen, unsigned char *obuf, long olen)
+long CdtmLoader::unpack_pattern(unsigned char *ibuf, long ilen,
+				unsigned char *obuf, long olen)
 {
-  unsigned char *input = ibuf;
-  unsigned char *output = obuf;
-
   long input_length = 0;
   long output_length = 0;
 
-  unsigned char repeat_byte, repeat_counter;
-
   // RLE
-  while (input_length < ilen)
-    {
-      repeat_byte = input[input_length++];
+  while (input_length < ilen) {
+    long repeat_counter = 1;
+    unsigned char repeat_byte = ibuf[input_length++];
 
-      if ((repeat_byte & 0xF0) == 0xD0)
-	{
-	  repeat_counter = repeat_byte & 15;
-          if (input_length == ilen)
-            return output_length; // truncated input
-	  repeat_byte = input[input_length++];
-	}
-      else
-	repeat_counter = 1;
+    if ((repeat_byte & 0xF0) == 0xD0) {
+      if (input_length == ilen) break; // truncated input
 
-      for (int i=0;i<repeat_counter;i++)
-	{
-	  if (output_length < olen)
-	    output[output_length++] = repeat_byte;
-	}
+      repeat_counter = repeat_byte & 15;
+      repeat_byte = ibuf[input_length++];
     }
+
+    repeat_counter = std::min(repeat_counter, olen - output_length);
+    memset(obuf + output_length, repeat_byte, repeat_counter);
+    output_length += repeat_counter;
+  }
 
   return output_length;
 }
