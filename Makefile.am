@@ -515,5 +515,18 @@ EXTRA_DIST += \
 	test/i-110_127.amd test/i-110_128.dtm test/i-110_129.a2m \
 	test/i-110_130.amd test/i-110_131.amd test/i-110_132.a2m \
 	test/i-110_133.dtm test/i-110_134.sat test/i-110_135.amd \
-	test/i-110_136.amd
-
+	test/i-110_136.amd test/i-110_137.a2m test/i-110_138.a2m \
+	test/i-110_139.dtm test/i-110_140.sat test/i-110_141.amd \
+	test/i-110_142.sat test/i-110_143.dtm test/i-110_144.xad \
+	test/i-110_145.amd test/i-110_146.xad test/i-110_147.amd \
+	test/i-110_148.sa2 test/i-110_149.sa2 test/i-110_150.sa2 \
+	test/i-110_151.amd test/i-110_152.amd test/i-110_153.amd \
+	test/i-110_154.amd test/i-110_155.amd test/i-110_156.amd \
+	test/i-110_157.a2m test/i-110_158.amd test/i-110_159.a2m \
+	test/i-110_160.amd test/i-110_161.xad test/i-110_162.sa2 \
+	test/i-110_163.sa2 test/i-110_164.dtm test/i-110_165.dtm \
+	test/i-110_166.dtm test/i-110_167.sa2 test/i-110_168.a2m \
+	test/i-110_169.amd test/i-110_170.a2m test/i-110_171.amd \
+	test/i-110_172.amd test/i-110_173.xad test/i-110_174.amd \
+	test/i-110_175.amd test/i-110_176.dtm test/i-110_177.amd \
+	test/i-110_178.dtm test/i-110_179.dtm
