@@ -397,7 +397,7 @@ unsigned short Ca2mLoader::inputcode(unsigned short bits)
 
 	for(i=1;i<=bits;i++) {
 		if(!ibitcount) {
-			if(ibitcount == MAXBUF)
+			if(ibufcount == input_size)
 				ibufcount = 0;
 			ibitbuffer = wdbuf[ibufcount];
 			ibufcount++;
@@ -419,7 +419,7 @@ unsigned short Ca2mLoader::uncompress()
 
 	do {
 		if(!ibitcount) {
-			if(ibufcount == MAXBUF)
+			if(ibufcount == input_size)
 				ibufcount = 0;
 			ibitbuffer = wdbuf[ibufcount];
 			ibufcount++;
@@ -496,11 +496,11 @@ void Ca2mLoader::decode()
 unsigned short Ca2mLoader::sixdepak(unsigned short *source, unsigned char *dest,
 				    unsigned short size)
 {
-	if((unsigned int)size + 4096 > MAXBUF)
+	if (size < 2 || size > MAXBUF - 4096) // why the max?
 		return 0;
 
 	buf = new unsigned char [MAXSIZE];
-	input_size = size;
+	input_size = size / 2;
 	ibitcount = 0; ibitbuffer = 0;
 	obufcount = 0; ibufcount = 0;
 	wdbuf = source; obuf = dest;
