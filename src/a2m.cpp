@@ -76,20 +76,20 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   }
 
   // block 0
+  size_t needed = 2*43 + 250*(33+13) + 128 + 2 + (version >= 5);
   if(version == 1 || version == 5) {
-    // Length of decoded data is known, see check below. But sixdepak()
-    // has no output length parameter, so MAXBUF needs to be allocated.
-    orgptr = org = new unsigned char [sixdepak::MAXBUF];
+    // needed bytes are used, so don't allocate or decode more than that.
+    orgptr = org = new unsigned char [needed];
     secdata = new unsigned short [len[0] / 2];
     for(i=0;i<len[0]/2;i++) secdata[i] = f->readInt(2);
     // What if len[0] is odd: ignore, skip extra byte, or fail?
-    l = sixdepak::decode(secdata, len[0], org, sixdepak::MAXBUF);
+    l = sixdepak::decode(secdata, len[0], org, needed);
     delete [] secdata;
   } else {
     orgptr = org = new unsigned char [len[0]];
     for(l = 0; l < len[0]; l++) orgptr[l] = f->readInt(1);
   }
-  if (l < 2*43 + 250*(33+13) + 128 + 2 + (version >= 5)) {
+  if (l < needed) {
     // Block is too short; fail.
     delete [] org;
     fp.close(f);
@@ -145,8 +145,9 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   for (i = 2; i <= blocks; i++)
     alength += len[i];
 
+  needed = numpats * 64 * t * 4;
   if(version == 1 || version == 5) {
-    org = new unsigned char [sixdepak::MAXBUF * blocks]; // again, we know better, but...
+    org = new unsigned char [needed];
     secdata = new unsigned short [alength / 2];
 
     for (l = 0; l < alength / 2; l++)
@@ -154,7 +155,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 
     orgptr = org; secptr = secdata;
     for (i = 1; i <= blocks; i++) {
-      orgptr += sixdepak::decode(secptr, len[i], orgptr, sixdepak::MAXBUF);
+      orgptr += sixdepak::decode(secptr, len[i], orgptr, org + needed - orgptr);
       secptr += len[i] / 2;
     }
     delete [] secdata;
@@ -164,7 +165,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
     orgptr = org + alength;
   }
 
-  if (orgptr - org < numpats * 64 * t * 4) {
+  if (orgptr - org < needed) {
     delete [] org;
     fp.close(f);
     return false;
@@ -493,6 +494,9 @@ size_t Ca2mLoader::sixdepak::decode(
 {
 	if (srcbytes < 2 || srcbytes > MAXBUF - 4096 /*why?*/ || dstbytes < 1)
 		return 0;
+	// There is no real reason to enforce upper bounds, but removing
+	// the checks changes behaviour for non-compliant inputs.
+	if (dstbytes > MAXBUF) dstbytes = MAXBUF;
 
 	// The constructor wants input size in words, not bytes.
 	sixdepak *decoder = new sixdepak(source, srcbytes / 2, dest, dstbytes);
