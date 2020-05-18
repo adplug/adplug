@@ -30,29 +30,8 @@
  */
 
 #include <cstring>
+#include <cassert>
 #include "a2m.h"
-
-const unsigned int Ca2mLoader::MAXFREQ = 2000,
-Ca2mLoader::MINCOPY = ADPLUG_A2M_MINCOPY,
-Ca2mLoader::MAXCOPY = ADPLUG_A2M_MAXCOPY,
-Ca2mLoader::COPYRANGES = ADPLUG_A2M_COPYRANGES,
-Ca2mLoader::CODESPERRANGE = ADPLUG_A2M_CODESPERRANGE,
-Ca2mLoader::TERMINATE = 256,
-Ca2mLoader::FIRSTCODE = ADPLUG_A2M_FIRSTCODE,
-Ca2mLoader::MAXCHAR = FIRSTCODE + COPYRANGES * CODESPERRANGE - 1,
-Ca2mLoader::SUCCMAX = MAXCHAR + 1,
-Ca2mLoader::TWICEMAX = ADPLUG_A2M_TWICEMAX,
-Ca2mLoader::ROOT = 1, Ca2mLoader::MAXBUF = 42 * 1024,
-Ca2mLoader::MAXDISTANCE = 21839, Ca2mLoader::MAXSIZE = MAXDISTANCE + MAXCOPY;
-
-const unsigned short Ca2mLoader::bitvalue[14] =
-  {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192};
-
-const signed short Ca2mLoader::copybits[COPYRANGES] =
-  {4, 6, 8, 10, 12, 14};
-
-const signed short Ca2mLoader::copymin[COPYRANGES] =
-  {0, 16, 80, 336, 1360, 5456};
 
 CPlayer *Ca2mLoader::factory(Copl *newopl)
 {
@@ -100,11 +79,11 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   if(version == 1 || version == 5) {
     // Length of decoded data is known, see check below. But sixdepak()
     // has no output length parameter, so MAXBUF needs to be allocated.
-    orgptr = org = new unsigned char [MAXBUF];
+    orgptr = org = new unsigned char [sixdepak::MAXBUF];
     secdata = new unsigned short [len[0] / 2];
     for(i=0;i<len[0]/2;i++) secdata[i] = f->readInt(2);
     // What if len[0] is odd: ignore, skip extra byte, or fail?
-    l = sixdepak(secdata,org,len[0]);
+    l = sixdepak::decode(secdata, org, len[0]);
     delete [] secdata;
   } else {
     orgptr = org = new unsigned char [len[0]];
@@ -167,7 +146,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
     alength += len[i];
 
   if(version == 1 || version == 5) {
-    org = new unsigned char [MAXBUF * blocks]; // again, we know better, but...
+    org = new unsigned char [sixdepak::MAXBUF * blocks]; // again, we know better, but...
     secdata = new unsigned short [alength / 2];
 
     for (l = 0; l < alength / 2; l++)
@@ -175,7 +154,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 
     orgptr = org; secptr = secdata;
     for (i = 1; i <= blocks; i++) {
-      orgptr += sixdepak(secptr, orgptr, len[i]);
+      orgptr += sixdepak::decode(secptr, orgptr, len[i]);
       secptr += len[i] / 2;
     }
     delete [] secdata;
@@ -290,9 +269,36 @@ float Ca2mLoader::getrefresh()
 		return 18.2f;
 }
 
-/*** private methods *************************************/
+/*** sixdepak methods *************************************/
 
-void Ca2mLoader::inittree()
+unsigned short Ca2mLoader::sixdepak::bitvalue(unsigned short bit)
+{
+	assert(bit < copybits(COPYRANGES - 1));
+	return 1 << bit;
+}
+
+unsigned short Ca2mLoader::sixdepak::copybits(unsigned short range)
+{
+	assert(range < COPYRANGES);
+	return 2 * range + 4; // 4, 6, 8, 10, 12, 14
+}
+
+unsigned short Ca2mLoader::sixdepak::copymin(unsigned short range)
+{
+	assert(range < COPYRANGES);
+	/*
+	if (range > 0 )
+		return bitvalue(copybits(range - 1)) + copymin(range - 1);
+	else
+		return 0;
+	*/
+	static const unsigned short table[COPYRANGES] = {
+		0, 16, 80, 336, 1360, 5456
+	};
+	return table[range];
+}
+
+void Ca2mLoader::sixdepak::inittree()
 {
 	unsigned short i;
 
@@ -307,7 +313,7 @@ void Ca2mLoader::inittree()
 	}
 }
 
-void Ca2mLoader::updatefreq(unsigned short a,unsigned short b)
+void Ca2mLoader::sixdepak::updatefreq(unsigned short a, unsigned short b)
 {
 	do {
 		freq[dad[a]] = freq[a] + freq[b];
@@ -330,7 +336,7 @@ void Ca2mLoader::updatefreq(unsigned short a,unsigned short b)
 			freq[a] >>= 1;
 }
 
-void Ca2mLoader::updatemodel(unsigned short code)
+void Ca2mLoader::sixdepak::updatemodel(unsigned short code)
 {
 	unsigned short a=code+SUCCMAX,b,c,code1,code2;
 
@@ -375,7 +381,7 @@ void Ca2mLoader::updatemodel(unsigned short code)
 	}
 }
 
-unsigned short Ca2mLoader::inputcode(unsigned short bits)
+unsigned short Ca2mLoader::sixdepak::inputcode(unsigned short bits)
 {
 	unsigned short i,code=0;
 
@@ -390,14 +396,14 @@ unsigned short Ca2mLoader::inputcode(unsigned short bits)
 			ibitcount--;
 
 		if(ibitbuffer > 0x7fff)
-			code |= bitvalue[i-1];
+			code |= bitvalue(i - 1);
 		ibitbuffer <<= 1;
 	}
 
 	return code;
 }
 
-unsigned short Ca2mLoader::uncompress()
+unsigned short Ca2mLoader::sixdepak::uncompress()
 {
 	unsigned short a=1;
 
@@ -423,10 +429,12 @@ unsigned short Ca2mLoader::uncompress()
 	return a;
 }
 
-void Ca2mLoader::decode()
+unsigned short Ca2mLoader::sixdepak::do_decode()
 {
 	unsigned short i,j,k,t,c,count=0,dist,len,index;
 
+	ibitcount = 0; ibitbuffer = 0;
+	obufcount = 0; ibufcount = 0;
 	inittree();
 	c = uncompress();
 
@@ -434,10 +442,8 @@ void Ca2mLoader::decode()
 		if(c < 256) {
 			obuf[obufcount] = (unsigned char)c;
 			obufcount++;
-			if(obufcount == MAXBUF) {
-				output_size = MAXBUF;
-				return;
-			}
+			if(obufcount == MAXBUF)
+				return MAXBUF;
 
 			buf[count] = (unsigned char)c;
 			count++;
@@ -447,7 +453,7 @@ void Ca2mLoader::decode()
 			t = c - FIRSTCODE;
 			index = t / CODESPERRANGE;
 			len = t + MINCOPY - index * CODESPERRANGE;
-			dist = inputcode(copybits[index]) + len + copymin[index];
+			dist = inputcode(copybits(index)) + copymin(index) + len;
 
 			j = count;
 			k = count - dist;
@@ -457,10 +463,8 @@ void Ca2mLoader::decode()
 			for(i=0;i<=len-1;i++) {
 				obuf[obufcount] = buf[k];
 				obufcount++;
-				if(obufcount == MAXBUF) {
-					output_size = MAXBUF;
-					return;
-				}
+				if(obufcount == MAXBUF)
+					return MAXBUF;
 
 				buf[j] = buf[k];
 				j++; k++;
@@ -474,22 +478,25 @@ void Ca2mLoader::decode()
 		}
 		c = uncompress();
 	}
-	output_size = obufcount;
+	return obufcount;
 }
 
-unsigned short Ca2mLoader::sixdepak(unsigned short *source, unsigned char *dest,
-				    unsigned short size)
+Ca2mLoader::sixdepak::sixdepak(
+	unsigned short *source, unsigned char *dest, unsigned short isize
+) : wdbuf(source), obuf(dest), input_size(isize)
+{
+}
+
+unsigned short Ca2mLoader::sixdepak::decode(
+	unsigned short *source, unsigned char *dest, unsigned short size)
 {
 	if (size < 2 || size > MAXBUF - 4096) // why the max?
 		return 0;
 
-	buf = new unsigned char [MAXSIZE];
-	input_size = size / 2;
-	ibitcount = 0; ibitbuffer = 0;
-	obufcount = 0; ibufcount = 0;
-	wdbuf = source; obuf = dest;
+	sixdepak *decoder = new sixdepak(source, dest, size / 2);
 
-	decode();
-	delete [] buf;
-	return output_size;
+	unsigned short out_size = decoder->do_decode();
+
+	delete decoder;
+	return out_size;
 }
