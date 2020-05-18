@@ -43,7 +43,7 @@ Ca2mLoader::MAXCHAR = FIRSTCODE + COPYRANGES * CODESPERRANGE - 1,
 Ca2mLoader::SUCCMAX = MAXCHAR + 1,
 Ca2mLoader::TWICEMAX = ADPLUG_A2M_TWICEMAX,
 Ca2mLoader::ROOT = 1, Ca2mLoader::MAXBUF = 42 * 1024,
-Ca2mLoader::MAXDISTANCE = 21389, Ca2mLoader::MAXSIZE = 21389 + MAXCOPY;
+Ca2mLoader::MAXDISTANCE = 21839, Ca2mLoader::MAXSIZE = MAXDISTANCE + MAXCOPY;
 
 const unsigned short Ca2mLoader::bitvalue[14] =
   {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192};
@@ -382,7 +382,7 @@ unsigned short Ca2mLoader::inputcode(unsigned short bits)
 	for(i=1;i<=bits;i++) {
 		if(!ibitcount) {
 			if(ibufcount == input_size)
-				ibufcount = 0;
+				return 0;
 			ibitbuffer = wdbuf[ibufcount];
 			ibufcount++;
 			ibitcount = 15;
@@ -404,7 +404,7 @@ unsigned short Ca2mLoader::uncompress()
 	do {
 		if(!ibitcount) {
 			if(ibufcount == input_size)
-				ibufcount = 0;
+				return TERMINATE;
 			ibitbuffer = wdbuf[ibufcount];
 			ibufcount++;
 			ibitcount = 15;
@@ -436,7 +436,7 @@ void Ca2mLoader::decode()
 			obufcount++;
 			if(obufcount == MAXBUF) {
 				output_size = MAXBUF;
-				obufcount = 0;
+				return;
 			}
 
 			buf[count] = (unsigned char)c;
@@ -459,7 +459,7 @@ void Ca2mLoader::decode()
 				obufcount++;
 				if(obufcount == MAXBUF) {
 					output_size = MAXBUF;
-					obufcount = 0;
+					return;
 				}
 
 				buf[j] = buf[k];
