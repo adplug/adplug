@@ -27,6 +27,7 @@
 #include <cstring>
 #include <string>
 #include <signal.h>
+#include <unistd.h>
 #ifndef WEXITSTATUS
 #include <sys/wait.h>
 #endif
@@ -197,11 +198,16 @@ public:
 
 bool run_test(int argc, const char *const argv[])
 {
+	const int timeout = 60;     // real time
+	const float limit = 3600.f; // simulated playback time
+
 	// For now, a single argument is expected: a file name.
 	// Future test cases may provide additional arguments.
 	if (argc != 1)
 		std::cerr << "Warning: unsupported # of arguments (got "
 			<< argc << ", expected 1)\n";
+
+	alarm(timeout);
 
 	SilentTestopl opl;
 	// Load test file
@@ -211,7 +217,7 @@ bool run_test(int argc, const char *const argv[])
 	if (p) {
 		std::cout << " done\n";
 	} else {
-		std::cout << " failed\n";
+		std::cout << " invalid file\n";
 		return false;
 	}
 
@@ -222,12 +228,23 @@ bool run_test(int argc, const char *const argv[])
 	std::cout << " - description: " << p->getdesc()   << std::endl;
 
 	// Process the file
+	float t = 0;
 	while(p->update()) {
 		float refresh = p->getrefresh();
 		// With a CEmuopl or similar, SAMPLERATE/refresh sound
 		// samples are available and can be read with:
 		//opl.update(buf, n);
+
+		if (refresh > 0) {
+			t += 1.f / refresh;
+		} else {
+			std::cerr << "   bad refresh: " << refresh << std::endl;
+			t += 1.f;
+		}
+		if (t >= limit) break;
 	}
+	std::cout << (t >= limit ? " ! give up after " : " - play time: ")
+		<< t << " sec." << std::endl;
 
 	delete p;
 	return true;
