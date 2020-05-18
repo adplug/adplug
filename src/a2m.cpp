@@ -81,7 +81,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   // file validation section
   if (memcmp(id, "_A2module_", 10) ||
       (version != 1 && version != 5 && version != 4 && version != 8) ||
-      numpats > 64) {
+      numpats < 1 || numpats > 64) {
     fp.close(f);
     return false;
   }
@@ -98,6 +98,8 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 
   // block 0
   if(version == 1 || version == 5) {
+    // Length of decoded data is known, see check below. But sixdepak()
+    // has no output length parameter, so MAXBUF needs to be allocated.
     orgptr = org = new unsigned char [MAXBUF];
     secdata = new unsigned short [len[0] / 2];
     for(i=0;i<len[0]/2;i++) secdata[i] = f->readInt(2);
@@ -158,46 +160,28 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   delete [] org;
 
   // blocks 1-4 or 1-8
+  unsigned char ppb = version < 5 ? 16 : 8; // patterns per block
+  unsigned char blocks = (numpats + ppb - 1) / ppb; // excluding block 0
   alength = len[1];
-  for (i = 0; i < numpats / (version < 5 ? 16 : 8); i++)
-    alength += len[i+2];
+  for (i = 2; i <= blocks; i++)
+    alength += len[i];
 
   if(version == 1 || version == 5) {
-    org = new unsigned char [MAXBUF * (numpats / (version < 5 ? 16 : 8) + 1)];
+    org = new unsigned char [MAXBUF * blocks]; // again, we know better, but...
     secdata = new unsigned short [alength / 2];
-    for(l=0;l<alength/2;l++) secdata[l] = f->readInt(2);
+
+    for (l = 0; l < alength / 2; l++)
+      secdata[l] = f->readInt(2);
+
     orgptr = org; secptr = secdata;
-    // FIXME: The number of depacked blocks is inconsistent with the
-    // lengths summed and the size of org (if numpats is a multiple of 16/8).
-    // Also the "secptr += ..." statements below are not guarded by the "if"s!
-    orgptr += sixdepak(secptr,orgptr,len[1]); secptr += len[1] / 2;
-    if(version == 1) {
-      if(numpats > 16)
-	orgptr += sixdepak(secptr,orgptr,len[2]); secptr += len[2] / 2;
-      if(numpats > 32)
-	orgptr += sixdepak(secptr,orgptr,len[3]); secptr += len[3] / 2;
-      if(numpats > 48)
-	orgptr += sixdepak(secptr,orgptr,len[4]);
-    } else {
-      if(numpats > 8)
-	orgptr += sixdepak(secptr,orgptr,len[2]); secptr += len[2] / 2;
-      if(numpats > 16)
-	orgptr += sixdepak(secptr,orgptr,len[3]); secptr += len[3] / 2;
-      if(numpats > 24)
-	orgptr += sixdepak(secptr,orgptr,len[4]); secptr += len[4] / 2;
-      if(numpats > 32)
-	orgptr += sixdepak(secptr,orgptr,len[5]); secptr += len[5] / 2;
-      if(numpats > 40)
-	orgptr += sixdepak(secptr,orgptr,len[6]); secptr += len[6] / 2;
-      if(numpats > 48)
-	orgptr += sixdepak(secptr,orgptr,len[7]); secptr += len[7] / 2;
-      if(numpats > 56)
-	orgptr += sixdepak(secptr,orgptr,len[8]);
+    for (i = 1; i <= blocks; i++) {
+      orgptr += sixdepak(secptr, orgptr, len[i]);
+      secptr += len[i] / 2;
     }
     delete [] secdata;
   } else {
     org = new unsigned char [alength];
-    for(l=0;l<alength;l++) org[l] = f->readInt(1);
+    f->readString((char *)org, alength);
     orgptr = org + alength;
   }
 
