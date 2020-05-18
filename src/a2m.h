@@ -68,7 +68,7 @@ private:
       MAXBUF = 42 * 1024,
     };
 
-    static unsigned short decode(unsigned short *source, unsigned char *dest, unsigned short size);
+    static size_t decode(unsigned short *source, size_t srcbytes, unsigned char *dest, size_t dstbytes);
 
   private:
     static unsigned short bitvalue(unsigned short bit);
@@ -80,11 +80,11 @@ private:
     void updatemodel(unsigned short code);
     unsigned short inputcode(unsigned short bits);
     unsigned short uncompress();
-    unsigned short do_decode();
-    sixdepak(unsigned short *source, unsigned char *dest, unsigned short isize);
+    size_t do_decode();
+    sixdepak(unsigned short *in, size_t isize, unsigned char *out, size_t osize);
 
     unsigned short ibitcount, ibitbuffer;
-    unsigned short ibufcount, obufcount, input_size, output_size;
+    size_t ibufcount, obufcount, input_size, output_size;
     unsigned short leftc[MAXCHAR + 1], rghtc[MAXCHAR + 1];
     unsigned short dad[TWICEMAX + 1], freq[TWICEMAX + 1];
     unsigned short *wdbuf;
