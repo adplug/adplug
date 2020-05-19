@@ -46,8 +46,7 @@
 #include "bmf.h"
 #include "debug.h"
 
-const unsigned char CxadbmfPlayer::bmf_adlib_registers[117] =
-{
+const unsigned char CxadbmfPlayer::bmf_adlib_registers[117] = {
   0x20, 0x23, 0x40, 0x43, 0x60, 0x63, 0x80, 0x83, 0xA0, 0xB0, 0xC0, 0xE0, 0xE3,
   0x21, 0x24, 0x41, 0x44, 0x61, 0x64, 0x81, 0x84, 0xA1, 0xB1, 0xC1, 0xE1, 0xE4,
   0x22, 0x25, 0x42, 0x45, 0x62, 0x65, 0x82, 0x85, 0xA2, 0xB2, 0xC2, 0xE2, 0xE5,
@@ -59,21 +58,18 @@ const unsigned char CxadbmfPlayer::bmf_adlib_registers[117] =
   0x32, 0x35, 0x52, 0x55, 0x72, 0x75, 0x92, 0x95, 0xA8, 0xB8, 0xC8, 0xF2, 0xF5
 };
 
-const unsigned short CxadbmfPlayer::bmf_notes[12] =
-{
+const unsigned short CxadbmfPlayer::bmf_notes[12] = {
   0x157, 0x16B, 0x181, 0x198, 0x1B0, 0x1CA,
   0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287
 };
 
 /* for 1.1 */
-const unsigned short CxadbmfPlayer::bmf_notes_2[12] =
-{
+const unsigned short CxadbmfPlayer::bmf_notes_2[12] = {
   0x159, 0x16D, 0x183, 0x19A, 0x1B2, 0x1CC,
   0x1E8, 0x205, 0x223, 0x244, 0x267, 0x28B
 };
 
-const unsigned char CxadbmfPlayer::bmf_default_instrument[13] =
-{
+const unsigned char CxadbmfPlayer::bmf_default_instrument[13] = {
   0x01, 0x01, 0x3F, 0x3F, 0x00, 0x00, 0xF0, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
@@ -95,56 +91,47 @@ bool CxadbmfPlayer::xadplayer_load()
 #endif
   if (tune_size < 6)
     return false;
-  if (!memcmp(&tune[0], "BMF1.2", 6))
-  {
+  if (!memcmp(&tune[0], "BMF1.2", 6)) {
     bmf.version = BMF1_2;
     bmf.timer = 70.0f;
     ptr = 6;
-  }
-  else if (!memcmp(&tune[0], "BMF1.1", 6))
-  {
+  } else if (!memcmp(&tune[0], "BMF1.1", 6)) {
     bmf.version = BMF1_1;
     bmf.timer = 68.5f;
     ptr = 6;
-  }
-  else
-  {
+  } else {
     bmf.version = BMF0_9B;
     bmf.timer = 18.2f;
   }
 
   // copy title & author
-  if (bmf.version > BMF0_9B)
-  {
+  if (bmf.version > BMF0_9B) {
     // It's unclear whether title/author can be longer than 35 chars. The
     // implementation reads an arbitrarily long NUL-terminated string and
     // truncates it to fit in a fixed 36 byte buffer. Doesn't make sense!
     size_t len = strnlen((char *)&tune[ptr], tune_size - ptr);
     if (ptr + len == tune_size)
       return false;
-    if (len >= sizeof(bmf.title))
-    {
+    if (len >= sizeof(bmf.title)) {
       memcpy(bmf.title, &tune[ptr], sizeof(bmf.title) - 1);
       bmf.title[sizeof(bmf.title) - 1] = 0;
-    }
-    else
+    } else {
       memcpy(bmf.title, &tune[ptr], len + 1);
+    }
     ptr += len + 1;
 
     len = strnlen((char *)&tune[ptr], tune_size - ptr);
     if (ptr + len == tune_size)
       return false;
-    if (len >= sizeof(bmf.author))
-    {
+    if (len >= sizeof(bmf.author)) {
       memcpy(bmf.author, &tune[ptr], sizeof(bmf.author) - 1);
       bmf.author[sizeof(bmf.author) - 1] = 0;
-    }
-    else
+    } else {
       memcpy(bmf.author, &tune[ptr], len + 1);
+    }
     ptr += len + 1;
-  }
-  else
-  {
+  } else {
+    // bmf.version == BMF0_9B
     strncpy(bmf.title, xad.title, sizeof(bmf.title));
     strncpy(bmf.author, xad.author, sizeof(bmf.author));
   }
@@ -157,18 +144,15 @@ bool CxadbmfPlayer::xadplayer_load()
     bmf.speed /= 3; // removed pointless shifts from original code
 
   // load instruments
-  if (bmf.version > BMF0_9B)
-  {
+  if (bmf.version > BMF0_9B) {
     if (tune_size - ptr < 4)
       return false;
     unsigned long iflags = (tune[ptr] << 24) | (tune[ptr+1] << 16)
                          | (tune[ptr+2] << 8) | tune[ptr+3];
     ptr += 4;
 
-    for (i = 0; i < 32; i++)
-    {
-      if (iflags & (1 << (31-i)))
-      {
+    for (i = 0; i < 32; i++) {
+      if (iflags & (1 << (31-i))) {
         if (tune_size - ptr < sizeof(bmf.instruments[i]))
           return false;
         memcpy(bmf.instruments[i].name, &tune[ptr],
@@ -179,27 +163,23 @@ bool CxadbmfPlayer::xadplayer_load()
                &tune[ptr + sizeof(bmf.instruments[i].name)],
                sizeof(bmf.instruments[i].data));
         ptr += sizeof(bmf.instruments[i]);
-      }
-      else if (bmf.version == BMF1_1)
-      {
+      } else if (bmf.version == BMF1_1) {
         memset(bmf.instruments[i].name, 0, sizeof(bmf.instruments[i].name));
         memcpy(bmf.instruments[i].data, bmf_default_instrument,
                sizeof(bmf.instruments[i].data));
-      }
-      else
+      } else {
         memset(&bmf.instruments[i], 0, sizeof(bmf.instruments[i]));
+      }
     }
-  }
-  else
-  {
+  } else {
+    // bmf.version == BMF0_9B
     ptr = 6;
 
     if (tune_size - ptr < 32 * 15)
       return false;
     // Should unset entries be zero or set to bmf_default_instrument?
     memset(bmf.instruments, 0, sizeof(bmf.instruments));
-    for (i = 0; i < 32; i++)
-    {
+    for (i = 0; i < 32; i++) {
       size_t ip = ptr + 15 * i;
       // Original code lacked check and had a comment: "bug no.1 (no
       // instrument-table-end detection)" - what does that mean?
@@ -213,8 +193,7 @@ bool CxadbmfPlayer::xadplayer_load()
   }
 
   // load streams
-  if (bmf.version > BMF0_9B)
-  {
+  if (bmf.version > BMF0_9B) {
     if (tune_size - ptr < 4)
       return false;
     unsigned long sflags = (tune[ptr] << 24)
@@ -224,22 +203,19 @@ bool CxadbmfPlayer::xadplayer_load()
     ptr += 4;
 
     for (i = 0; i < 9; i++)
-      if (sflags & (1 << (31-i)))
-      {
+      if (sflags & (1 << (31-i))) {
         long len = __bmf_convert_stream(tune + ptr, i, tune_size - ptr);
         if (len < 0)
           return false;
         ptr += len;
-      }
-      else
+      } else {
         bmf.streams[i][0].cmd = 0xFF;
-  }
-  else
-  {
+      }
+  } else {
+    // bmf.version == BMF0_9B
     if (tune[5] > 9)
       return false;
-    for (i = 0; i < tune[5]; i++)
-    {
+    for (i = 0; i < tune[5]; i++) {
       long len = __bmf_convert_stream(tune + ptr, i, tune_size - ptr);
       if (len < 0)
         return false;
@@ -265,8 +241,7 @@ void CxadbmfPlayer::xadplayer_rewind(int subsong)
   bmf.active_streams = 9;
 
   // OPL initialization
-  if (bmf.version > BMF0_9B)
-  {
+  if (bmf.version > BMF0_9B) {
     opl_write(0x01, 0x20);
 
     /* 1.1 */
@@ -288,14 +263,12 @@ void CxadbmfPlayer::xadplayer_rewind(int subsong)
 
 void CxadbmfPlayer::xadplayer_update()
 {
-  for (int i = 0; i < 9; i++)
-  {
+  for (int i = 0; i < 9; i++) {
     unsigned short &pos = bmf.channel[i].stream_position;
     if (pos == 0xFFFF)
       continue;
 
-    if (bmf.channel[i].delay)
-    {
+    if (bmf.channel[i].delay) {
       bmf.channel[i].delay--;
       continue;
     }
@@ -312,8 +285,7 @@ again:
                     event.instrument, event.cmd, event.cmd_data);
 #endif
 
-    switch (event.cmd)
-    {
+    switch (event.cmd) {
       // Process so-called Cross-Events
 
     case 0xFF: // End of Stream
@@ -327,13 +299,12 @@ again:
       goto again;
 
     case 0xFD: // Loop to Saved Position
-      if (bmf.channel[i].loop_counter)
-      {
+      if (bmf.channel[i].loop_counter) {
         pos = bmf.channel[i].loop_position;
         bmf.channel[i].loop_counter--;
-      }
-      else
+      } else {
         pos++;
+      }
       goto again;
 
       // Process normal event
@@ -359,8 +330,7 @@ again:
     bmf.channel[i].delay = event.delay;
 
     // Process instrument
-    if (event.instrument)
-    {
+    if (event.instrument) {
       unsigned char ins = event.instrument - 1;
 
       if (bmf.version != BMF1_1)
@@ -372,8 +342,7 @@ again:
     }
 
     // Process volume
-    if (event.volume)
-    {
+    if (event.volume) {
       unsigned char vol = event.volume - 1;
       unsigned char reg = bmf_adlib_registers[13 * i + 3];
 
@@ -383,8 +352,7 @@ again:
     }
 
     // Process note
-    if (event.note)
-    {
+    if (event.note) {
       unsigned short note = event.note - 1;
       unsigned short freq = 0;
 
@@ -392,20 +360,16 @@ again:
       opl_write(0xB0 + i, adlib[0xB0 + i] & 0xDF);
 
       // get frequency
-      if (bmf.version == BMF1_1)
-      {
+      if (bmf.version == BMF1_1) {
         if (note < 0x60)
           freq = bmf_notes_2[note % 12];
-      }
-      else
-      {
+      } else {
         if (note != 0x7E) // really?
           freq = bmf_notes[note % 12];
       }
 
       // play note
-      if (freq)
-      {
+      if (freq) {
         opl_write(0xB0 + i, (freq >> 8) | ((note / 12) << 2) | 0x20);
         opl_write(0xA0 + i, freq & 0xFF);
       }
@@ -415,8 +379,7 @@ again:
   } // for (i)
 
   // is module loop ?
-  if (!bmf.active_streams)
-  {
+  if (!bmf.active_streams) {
     for (int j = 0; j < 9; j++)
       bmf.channel[j].stream_position = 0;
 
@@ -477,15 +440,13 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
   // The loop exits when End of Stream (0xFE) is found (or on error).
   // If the stream is too long to store, truncate it, but keep reading
   // until the end marker is found and stored.
-  for (int pos = 0; pos <= last_pos; pos < last_pos && pos++)
-  {
+  for (int pos = 0; pos <= last_pos; pos < last_pos && pos++) {
     bmf_event &event = bmf.streams[channel][pos];
     memset(&event, 0, sizeof(bmf_event));
 
     if (stream_end - stream < 1)
       return -1;
-    switch (*stream)
-    {
+    switch (*stream) {
       /* Cross-Events */
     case 0xFE: // 0xFE -> 0xFF: End of Stream
       event.cmd = 0xFF;
@@ -525,8 +486,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
 
       if (stream_end - stream < 1)
         return -1;
-      if (*stream & 0x80)
-      {
+      if (*stream & 0x80) {
         // 2nd byte is 1xDDDDDD: delay byte present
         event.delay = *stream & 0x3F;
 
@@ -538,35 +498,25 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
       if (stream_end - stream < 1)
         return -1;
 
-      if (0x40 <= *stream)
-      {
+      if (0x40 <= *stream) {
         // command 0x40 or higher: Set Volume
         event.volume = *stream - 0x40 + 1; // masking needed?
         stream++;
-      }
-      else if ((0x20 <= *stream) && (*stream <= 0x3F))
-      {
+      } else if ((0x20 <= *stream) && (*stream <= 0x3F)) {
         // command 0x20 to 0x3F: Set Instrument
         event.instrument = *stream - 0x20 + 1;
         stream++;
-      }
-      else
-      {
+      } else {
         // command 0x1F or lower
-        if (bmf.version == BMF0_9B)
-        {
+        if (bmf.version == BMF0_9B) {
           // version 0.9b, command 0x1F or lower: ?
           stream++;
-        }
-        else if (bmf.version == BMF1_2)
-        {
+        } else if (bmf.version == BMF1_2) {
           /* 1.2 */
-          if (0x01 <= *stream  && *stream <= 0x06)
-          {
+          if (0x01 <= *stream  && *stream <= 0x06) {
             if (stream_end - stream < 2)
               return -1;
-            switch (*stream)
-            {
+            switch (*stream) {
             case 0x01: // Set Modulator Volume -> 0x01
               event.cmd = 0x01;
               event.cmd_data = stream[1];
