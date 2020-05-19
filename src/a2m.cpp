@@ -432,10 +432,10 @@ unsigned short Ca2mLoader::sixdepak::uncompress()
 
 size_t Ca2mLoader::sixdepak::do_decode()
 {
-	unsigned short i,j,k,t,c,count=0,dist,len,index;
+	unsigned short t,c,dist,len,index;
 
 	ibitcount = 0; ibitbuffer = 0;
-	obufcount = 0; ibufcount = 0;
+	size_t obufcount = ibufcount = 0;
 	inittree();
 	c = uncompress();
 
@@ -445,37 +445,21 @@ size_t Ca2mLoader::sixdepak::do_decode()
 			obufcount++;
 			if (obufcount == output_size)
 				return output_size;
-
-			buf[count] = (unsigned char)c;
-			count++;
-			if(count == MAXSIZE)
-				count = 0;
 		} else {
 			t = c - FIRSTCODE;
 			index = t / CODESPERRANGE;
 			len = t + MINCOPY - index * CODESPERRANGE;
 			dist = inputcode(copybits(index)) + copymin(index) + len;
 
-			j = count;
-			k = count - dist;
-			if(count < dist)
-				k += MAXSIZE;
-
-			for(i=0;i<=len-1;i++) {
-				obuf[obufcount] = buf[k];
+			for (int i = 0; i < len; i++) {
+				if (dist <= obufcount)
+					obuf[obufcount] = obuf[obufcount - dist];
+				else
+					obuf[obufcount] = 0;
 				obufcount++;
 				if (obufcount == output_size)
 					return output_size;
-
-				buf[j] = buf[k];
-				j++; k++;
-				if(j == MAXSIZE) j = 0;
-				if(k == MAXSIZE) k = 0;
 			}
-
-			count += len;
-			if(count >= MAXSIZE)
-				count -= MAXSIZE;
 		}
 		c = uncompress();
 	}
