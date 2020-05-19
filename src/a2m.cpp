@@ -264,10 +264,10 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 
 float Ca2mLoader::getrefresh()
 {
-	if(tempo != 18)
-		return (float) (tempo);
-	else
+	if (tempo == 18)
 		return 18.2f;
+	else
+		return (float) (tempo);
 }
 
 /*** sixdepak methods *************************************/
@@ -303,12 +303,12 @@ void Ca2mLoader::sixdepak::inittree()
 {
 	unsigned short i;
 
-	for(i=2;i<=TWICEMAX;i++) {
+	for (i = 2; i <= TWICEMAX; i++) {
 		dad[i] = i / 2;
 		freq[i] = 1;
 	}
 
-	for(i=1;i<=MAXCHAR;i++) {
+	for (i = 1; i <= MAXCHAR; i++) {
 		leftc[i] = 2 * i;
 		rghtc[i] = 2 * i + 1;
 	}
@@ -316,24 +316,20 @@ void Ca2mLoader::sixdepak::inittree()
 
 void Ca2mLoader::sixdepak::updatefreq(unsigned short a, unsigned short b)
 {
-	do {
+	for (;;) {
 		freq[dad[a]] = freq[a] + freq[b];
 		a = dad[a];
-		if(a != ROOT)
-		{
-			if(leftc[dad[a]] == a)
-			{
-				b = rghtc[dad[a]];
-			}
-			else
-			{
-				b = leftc[dad[a]];
-			}
-		}
-	} while(a != ROOT);
 
-	if(freq[ROOT] == MAXFREQ)
-		for(a=1;a<=TWICEMAX;a++)
+		if (a == ROOT) break;
+
+		if (leftc[dad[a]] == a)
+			b = rghtc[dad[a]];
+		else
+			b = leftc[dad[a]];
+	}
+
+	if (freq[ROOT] == MAXFREQ)
+		for(a = 1; a <= TWICEMAX; a++)
 			freq[a] >>= 1;
 }
 
@@ -342,9 +338,9 @@ void Ca2mLoader::sixdepak::updatemodel(unsigned short code)
 	unsigned short a=code+SUCCMAX,b,c,code1,code2;
 
 	freq[a]++;
-	if(dad[a] != ROOT) {
+	if (dad[a] != ROOT) {
 		code1 = dad[a];
-		if(leftc[code1] == a)
+		if (leftc[code1] == a)
 			updatefreq(a,rghtc[code1]);
 		else
 			updatefreq(a,leftc[code1]);
@@ -356,13 +352,13 @@ void Ca2mLoader::sixdepak::updatemodel(unsigned short code)
 			else
 				b = leftc[code2];
 
-			if(freq[a] > freq[b]) {
-				if(leftc[code2] == code1)
+			if (freq[a] > freq[b]) {
+				if (leftc[code2] == code1)
 					rghtc[code2] = a;
 				else
 					leftc[code2] = a;
 
-				if(leftc[code1] == a) {
+				if (leftc[code1] == a) {
 					leftc[code1] = b;
 					c = rghtc[code1];
 				} else {
@@ -378,7 +374,7 @@ void Ca2mLoader::sixdepak::updatemodel(unsigned short code)
 
 			a = dad[a];
 			code1 = dad[a];
-		} while(code1 != ROOT);
+		} while (code1 != ROOT);
 	}
 }
 
@@ -386,9 +382,9 @@ unsigned short Ca2mLoader::sixdepak::inputcode(unsigned short bits)
 {
 	unsigned short i,code=0;
 
-	for(i=1;i<=bits;i++) {
-		if(!ibitcount) {
-			if(ibufcount == input_size)
+	for (i = 1; i <= bits; i++) {
+		if (!ibitcount) {
+			if (ibufcount == input_size)
 				return 0;
 			ibitbuffer = wdbuf[ibufcount];
 			ibufcount++;
@@ -396,7 +392,7 @@ unsigned short Ca2mLoader::sixdepak::inputcode(unsigned short bits)
 		} else
 			ibitcount--;
 
-		if(ibitbuffer > 0x7fff)
+		if (ibitbuffer & 0x8000)
 			code |= bitvalue(i - 1);
 		ibitbuffer <<= 1;
 	}
@@ -409,8 +405,8 @@ unsigned short Ca2mLoader::sixdepak::uncompress()
 	unsigned short a=1;
 
 	do {
-		if(!ibitcount) {
-			if(ibufcount == input_size)
+		if (!ibitcount) {
+			if (ibufcount == input_size)
 				return TERMINATE;
 			ibitbuffer = wdbuf[ibufcount];
 			ibufcount++;
@@ -418,12 +414,12 @@ unsigned short Ca2mLoader::sixdepak::uncompress()
 		} else
 			ibitcount--;
 
-		if(ibitbuffer > 0x7fff)
+		if (ibitbuffer & 0x8000)
 			a = rghtc[a];
 		else
 			a = leftc[a];
 		ibitbuffer <<= 1;
-	} while(a <= MAXCHAR);
+	} while (a <= MAXCHAR);
 
 	a -= SUCCMAX;
 	updatemodel(a);
@@ -432,38 +428,39 @@ unsigned short Ca2mLoader::sixdepak::uncompress()
 
 size_t Ca2mLoader::sixdepak::do_decode()
 {
-	unsigned short t,c,dist,len,index;
-
-	ibitcount = 0; ibitbuffer = 0;
 	size_t obufcount = ibufcount = 0;
-	inittree();
-	c = uncompress();
+	ibitcount = 0;
+	ibitbuffer = 0;
 
-	while(c != TERMINATE) {
-		if(c < 256) {
-			obuf[obufcount] = (unsigned char)c;
-			obufcount++;
+	inittree();
+
+	for (;;) {
+		unsigned short c = uncompress();
+
+		if (c == TERMINATE) {
+			return obufcount;
+		} else if (c < 256) {
 			if (obufcount == output_size)
 				return output_size;
+
+			obuf[obufcount++] = (unsigned char)c;
 		} else {
-			t = c - FIRSTCODE;
-			index = t / CODESPERRANGE;
-			len = t + MINCOPY - index * CODESPERRANGE;
-			dist = inputcode(copybits(index)) + copymin(index) + len;
+			unsigned short t = c - FIRSTCODE,
+				index = t / CODESPERRANGE,
+				len = t + MINCOPY - index * CODESPERRANGE,
+				dist = inputcode(copybits(index))
+					+ copymin(index) + len;
 
 			for (int i = 0; i < len; i++) {
-				if (dist <= obufcount)
-					obuf[obufcount] = obuf[obufcount - dist];
-				else
-					obuf[obufcount] = 0;
-				obufcount++;
 				if (obufcount == output_size)
 					return output_size;
+
+				obuf[obufcount] = dist > obufcount ? 0 :
+					obuf[obufcount - dist];
+				obufcount++;
 			}
 		}
-		c = uncompress();
 	}
-	return obufcount;
 }
 
 Ca2mLoader::sixdepak::sixdepak(
