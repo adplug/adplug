@@ -95,13 +95,13 @@ bool CxadbmfPlayer::xadplayer_load()
 #endif
   if (tune_size < 6)
     return false;
-  if (!strncmp((char *)tune, "BMF1.2", 6))
+  if (!memcmp(&tune[0], "BMF1.2", 6))
   {
     bmf.version = BMF1_2;
     bmf.timer = 70.0f;
     ptr = 6;
   }
-  else if (!strncmp((char *)tune, "BMF1.1", 6))
+  else if (!memcmp(&tune[0], "BMF1.1", 6))
   {
     bmf.version = BMF1_1;
     bmf.timer = 68.5f;
@@ -119,34 +119,34 @@ bool CxadbmfPlayer::xadplayer_load()
     // It's unclear whether title/author can be longer than 35 chars. The
     // implementation reads an arbitrarily long NUL-terminated string and
     // truncates it to fit in a fixed 36 byte buffer. Doesn't make sense!
-    size_t len = strnlen((char *)tune + ptr, tune_size - ptr);
+    size_t len = strnlen((char *)&tune[ptr], tune_size - ptr);
     if (ptr + len == tune_size)
       return false;
-    if (len > 35)
+    if (len >= sizeof(bmf.title))
     {
-      memcpy(bmf.title, tune + ptr, 35);
-      bmf.title[35] = 0;
+      memcpy(bmf.title, &tune[ptr], sizeof(bmf.title) - 1);
+      bmf.title[sizeof(bmf.title) - 1] = 0;
     }
     else
-      memcpy(bmf.title, tune + ptr, len + 1);
+      memcpy(bmf.title, &tune[ptr], len + 1);
     ptr += len + 1;
 
-    len = strnlen((char *)tune + ptr, tune_size - ptr);
+    len = strnlen((char *)&tune[ptr], tune_size - ptr);
     if (ptr + len == tune_size)
       return false;
-    if (len > 35)
+    if (len >= sizeof(bmf.author))
     {
-      memcpy(bmf.author, tune + ptr, 35);
-      bmf.author[35] = 0;
+      memcpy(bmf.author, &tune[ptr], sizeof(bmf.author) - 1);
+      bmf.author[sizeof(bmf.author) - 1] = 0;
     }
     else
-      memcpy(bmf.author, tune + ptr, len + 1);
+      memcpy(bmf.author, &tune[ptr], len + 1);
     ptr += len + 1;
   }
   else
   {
-    strncpy(bmf.title, xad.title, 36);
-    strncpy(bmf.author, xad.author, 36);
+    strncpy(bmf.title, xad.title, sizeof(bmf.title));
+    strncpy(bmf.author, xad.author, sizeof(bmf.author));
   }
 
   // speed
@@ -169,21 +169,25 @@ bool CxadbmfPlayer::xadplayer_load()
     {
       if (iflags & (1 << (31-i)))
       {
-        if (tune_size - ptr < 24)
+        if (tune_size - ptr < sizeof(bmf.instruments[i]))
           return false;
-        strncpy(bmf.instruments[i].name, (char *)tune + ptr, 10);
-        // 11th char ignored since name must be 0-terminated
-        bmf.instruments[i].name[10] = 0;
-        memcpy(bmf.instruments[i].data, tune + ptr + 11, 13);
-        ptr += 24;
+        memcpy(bmf.instruments[i].name, &tune[ptr],
+                sizeof(bmf.instruments[i].name) - 1);
+        // last char ignored since name must be 0-terminated
+        bmf.instruments[i].name[sizeof(bmf.instruments[i].name) - 1] = 0;
+        memcpy(bmf.instruments[i].data,
+               &tune[ptr + sizeof(bmf.instruments[i].name)],
+               sizeof(bmf.instruments[i].data));
+        ptr += sizeof(bmf.instruments[i]);
       }
       else if (bmf.version == BMF1_1)
       {
-        memset(bmf.instruments[i].name, 0, 11);
-        memcpy(bmf.instruments[i].data, bmf_default_instrument, 13);
+        memset(bmf.instruments[i].name, 0, sizeof(bmf.instruments[i].name));
+        memcpy(bmf.instruments[i].data, bmf_default_instrument,
+               sizeof(bmf.instruments[i].data));
       }
       else
-        memset(bmf.instruments + i, 0, sizeof(bmf.instruments[i]));
+        memset(&bmf.instruments[i], 0, sizeof(bmf.instruments[i]));
     }
   }
   else
@@ -200,7 +204,8 @@ bool CxadbmfPlayer::xadplayer_load()
       // Original code lacked check and had a comment: "bug no.1 (no
       // instrument-table-end detection)" - what does that mean?
       if (tune[ip] < 32)
-        memcpy(bmf.instruments[tune[ip]].data, tune + ip + 2, 13);
+        memcpy(bmf.instruments[tune[ip]].data, &tune[ip + 2],
+               sizeof(bmf.instruments[tune[ip]].data));
       else // what? continue, return false, or skip rest of the table?
         break; // Old comment (see above) suggests it's a table end marker.
     }
@@ -212,8 +217,10 @@ bool CxadbmfPlayer::xadplayer_load()
   {
     if (tune_size - ptr < 4)
       return false;
-    unsigned long sflags = (tune[ptr] << 24) | (tune[ptr+1] << 16)
-                         | (tune[ptr+2] << 8) | tune[ptr+3];
+    unsigned long sflags = (tune[ptr] << 24)
+                         | (tune[ptr+1] << 16)
+                         | (tune[ptr+2] << 8)
+                         | tune[ptr+3];
     ptr += 4;
 
     for (i = 0; i < 9; i++)
@@ -513,7 +520,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
       //   1NNNNNNN 11DDDDDD CCCCCCCC - 3+ bytes: note, delay, command [data]
       event.note = *stream & 0x7F;
 
-      if (!(*(stream++) & 0x80))
+      if (!(*stream++ & 0x80))
         break; // 1st byte is 0NNNNNNN: no delay or command; done.
 
       if (stream_end - stream < 1)
@@ -523,7 +530,7 @@ long int CxadbmfPlayer::__bmf_convert_stream(const unsigned char *stream,
         // 2nd byte is 1xDDDDDD: delay byte present
         event.delay = *stream & 0x3F;
 
-        if (!(*(stream++) & 0x40))
+        if (!(*stream++ & 0x40))
           break; // 2nd byte is 10DDDDDD: no command; done.
       }
 
