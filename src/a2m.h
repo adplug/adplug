@@ -84,12 +84,11 @@ private:
     sixdepak(unsigned short *in, size_t isize, unsigned char *out, size_t osize);
 
     unsigned short ibitcount, ibitbuffer;
-    size_t ibufcount, obufcount, input_size, output_size;
     unsigned short leftc[MAXCHAR + 1], rghtc[MAXCHAR + 1];
     unsigned short dad[TWICEMAX + 1], freq[TWICEMAX + 1];
+    size_t ibufcount, input_size, output_size;
     unsigned short *wdbuf;
     unsigned char *obuf;
-    unsigned char buf[MAXSIZE];
   };
 };
 
