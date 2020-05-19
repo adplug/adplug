@@ -33,6 +33,12 @@
 #include <cassert>
 #include "a2m.h"
 
+// Limit length byte not to exceed size of the string
+#define fixstringlength(s) __fixlength((s)[0], sizeof(s) - 1);
+static void __fixlength(char &len, size_t max) {
+  if ((unsigned char)len > max) len = (char)max;
+}
+
 CPlayer *Ca2mLoader::factory(Copl *newopl)
 {
   return new Ca2mLoader(newopl);
@@ -40,53 +46,69 @@ CPlayer *Ca2mLoader::factory(Copl *newopl)
 
 bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-  binistream *f = fp.open(filename); if(!f) return false;
-  char id[10];
-  int i,j,k,t;
+  binistream *f = fp.open(filename); if (!f) return false;
+  int i, j, k, t;
   unsigned int l;
-  unsigned char *org, *orgptr, flags = 0, numpats, version;
-  unsigned long crc, alength;
+  unsigned char *org, *orgptr, flags = 0;
+  unsigned long alength;
   unsigned short len[9], *secdata, *secptr;
-  const unsigned char convfx[16] = {0,1,2,23,24,3,5,4,6,9,17,13,11,19,7,14};
-  const unsigned char convinf1[16] = {0,1,2,6,7,8,9,4,5,3,10,11,12,13,14,15};
-  const unsigned char newconvfx[] = {0,1,2,3,4,5,6,23,24,21,10,11,17,13,7,19,
-				     255,255,22,25,255,15,255,255,255,255,255,
-				     255,255,255,255,255,255,255,255,14,255};
+  static const unsigned char convfx[16] = {
+	0, 1, 2, 23, 24, 3, 5, 4, 6, 9, 17, 13, 11, 19, 7, 14
+  };
+  static const unsigned char convinf1[16] = {
+	0, 1, 2, 6, 7, 8, 9, 4, 5, 3, 10, 11, 12, 13, 14, 15
+  };
+  static const unsigned char newconvfx[] = {
+	0, 1, 2, 3, 4, 5, 6, 23, 24, 21, 10, 11, 17, 13, 7, 19,
+	255, 255, 22, 25, 255, 15, 255, 255, 255, 255, 255,
+	255, 255, 255, 255, 255, 255, 255, 255, 14, 255
+  };
 
   // read header
-  f->readString(id, 10); crc = f->readInt(4);
-  version = f->readInt(1); numpats = f->readInt(1);
+  char id[10];
+  f->readString(id, sizeof(id));
+  unsigned long crc = f->readInt(4);
+  unsigned char version = f->readInt(1);
+  unsigned char numpats = f->readInt(1);
 
   // file validation section
-  if (memcmp(id, "_A2module_", 10) ||
+  if (memcmp(id, "_A2module_", sizeof(id)) ||
       (version != 1 && version != 5 && version != 4 && version != 8) ||
       numpats < 1 || numpats > 64) {
     fp.close(f);
     return false;
   }
 
+  nop = numpats;
+  length = 128;
+  restartpos = 0;
+
   // load, depack & convert section
-  nop = numpats; length = 128; restartpos = 0;
-  if(version < 5) {
-    for(i=0;i<5;i++) len[i] = f->readInt(2);
+  if (version < 5) {
+    for (i = 0; i < 5; i++) len[i] = f->readInt(2);
     t = 9;
   } else {	// version >= 5
-    for(i=0;i<9;i++) len[i] = f->readInt(2);
+    for (i = 0; i < 9; i++) len[i] = f->readInt(2);
     t = 18;
   }
 
   // block 0
-  size_t needed = 2*43 + 250*(33+13) + 128 + 2 + (version >= 5);
-  if(version == 1 || version == 5) {
+  size_t needed = sizeof(songname) + sizeof(author) + sizeof(instname)
+    + NUMINST * INSTDATASIZE + length + 2 + (version >= 5);
+  if (version == 1 || version == 5) {
     // needed bytes are used, so don't allocate or decode more than that.
     orgptr = org = new unsigned char [needed];
     secdata = new unsigned short [len[0] / 2];
-    for(i=0;i<len[0]/2;i++) secdata[i] = f->readInt(2);
+
+    for (i = 0; i < len[0] / 2; i++) secdata[i] = f->readInt(2);
+
     // What if len[0] is odd: ignore, skip extra byte, or fail?
     l = sixdepak::decode(secdata, len[0], org, needed);
+
     delete [] secdata;
   } else {
     orgptr = org = new unsigned char [len[0]];
+
     for(l = 0; l < len[0]; l++) orgptr[l] = f->readInt(1);
   }
   if (l < needed) {
@@ -96,46 +118,52 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
     return false;
   }
 
-  memcpy(songname,orgptr,43); orgptr += 43;
-  memcpy(author,orgptr,43); orgptr += 43;
-  memcpy(instname,orgptr,250*33); orgptr += 250*33;
-  // If string length is invalid, just use the maximum. Should we fail instead?
-  if (songname[0] > 42 || songname[0] < 0) songname[0] = 42;
-  if (author[0] > 42 || author[0] < 0) author[0] = 42;
+  memcpy(songname, orgptr, sizeof(songname));
+  orgptr += sizeof(songname);
+  fixstringlength(songname);
+  memcpy(author, orgptr, sizeof(author));
+  orgptr += sizeof(author);
+  fixstringlength(author);
+  memcpy(instname, orgptr, sizeof(instname));
+  orgptr += sizeof(instname);
 
-  for(i=0;i<250;i++) {	// instruments
-    if (instname[i][0] > 32 || instname[i][0] < 0) instname[i][0] = 32;
-    inst[i].data[0] = *(orgptr+i*13+10);
-    inst[i].data[1] = *(orgptr+i*13);
-    inst[i].data[2] = *(orgptr+i*13+1);
-    inst[i].data[3] = *(orgptr+i*13+4);
-    inst[i].data[4] = *(orgptr+i*13+5);
-    inst[i].data[5] = *(orgptr+i*13+6);
-    inst[i].data[6] = *(orgptr+i*13+7);
-    inst[i].data[7] = *(orgptr+i*13+8);
-    inst[i].data[8] = *(orgptr+i*13+9);
-    inst[i].data[9] = *(orgptr+i*13+2);
-    inst[i].data[10] = *(orgptr+i*13+3);
+  for (i = 0; i < NUMINST; i++) {  // instrument data
+    fixstringlength(instname[i]);
 
-    if(version < 5)
-      inst[i].misc = *(orgptr+i*13+11);
+    inst[i].data[0] = orgptr[i * INSTDATASIZE + 10];
+    inst[i].data[1] = orgptr[i * INSTDATASIZE + 0];
+    inst[i].data[2] = orgptr[i * INSTDATASIZE + 1];
+    inst[i].data[3] = orgptr[i * INSTDATASIZE + 4];
+    inst[i].data[4] = orgptr[i * INSTDATASIZE + 5];
+    inst[i].data[5] = orgptr[i * INSTDATASIZE + 6];
+    inst[i].data[6] = orgptr[i * INSTDATASIZE + 7];
+    inst[i].data[7] = orgptr[i * INSTDATASIZE + 8];
+    inst[i].data[8] = orgptr[i * INSTDATASIZE + 9];
+    inst[i].data[9] = orgptr[i * INSTDATASIZE + 2];
+    inst[i].data[10] = orgptr[i * INSTDATASIZE + 3];
+
+    if (version < 5)
+      inst[i].misc = orgptr[i * INSTDATASIZE + 11];
     else {	// version >= 5 -> OPL3 format
-      int pan = *(orgptr+i*13+11);
+      int pan = orgptr[i * INSTDATASIZE + 11];
 
-      if(pan)
+      if (pan)
 	inst[i].data[0] |= (pan & 3) << 4;	// set pan
       else
-	inst[i].data[0] |= 48;			// enable both speakers
+	inst[i].data[0] |= 0x30;		// enable both speakers
     }
 
-    inst[i].slide = *(orgptr+i*13+12);
+    inst[i].slide = orgptr[i * INSTDATASIZE + 12];
   }
+  orgptr += NUMINST * INSTDATASIZE;
 
-  orgptr += 250*13;
-  memcpy(order,orgptr,128); orgptr += 128;
-  bpm = *orgptr; orgptr++;
-  initspeed = *orgptr; orgptr++;
-  if(version >= 5) flags = *orgptr;
+  memcpy(order, orgptr, length);
+  orgptr += length;
+
+  bpm = *orgptr++;
+  initspeed = *orgptr++;
+  if (version >= 5) flags = *orgptr;
+
   delete [] org;
 
   // blocks 1-4 or 1-8

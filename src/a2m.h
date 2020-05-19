@@ -42,12 +42,13 @@ public:
   std::string getauthor()
     { return std::string(author + 1, *author); }
   unsigned int getinstruments()
-    { return 250; }
+    { return NUMINST; }
   std::string getinstrument(unsigned int n)
-    { return std::string(instname[n] + 1, *instname[n]); }
+  { return n < NUMINST ? std::string(instname[n] + 1, *instname[n]) : std::string(); }
 
 private:
-  char songname[43], author[43], instname[250][33];
+  enum {NUMINST = 250, INSTDATASIZE = 13};
+  char songname[43], author[43], instname[NUMINST][33];
 
   class sixdepak {
   public:
