@@ -174,7 +174,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
     alength += len[i];
 
   needed = numpats * 64 * t * 4;
-  if(version == 1 || version == 5) {
+  if (version == 1 || version == 5) {
     org = new unsigned char [needed];
     secdata = new unsigned short [alength / 2];
 
@@ -199,54 +199,57 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
     return false;
   }
 
-  if(version < 5) {
-    for(i=0;i<numpats;i++)
-      for(j=0;j<64;j++)
-	for(k=0;k<9;k++) {
-	  struct Tracks	*track = &tracks[i * 9 + k][j];
-	  unsigned char	*o = &org[i*64*t*4+j*t*4+k*4];
+  if (version < 5) {
+    for (i = 0; i < numpats; i++)	// pattern
+      for (j = 0; j < 64; j++)		// row
+	for(k = 0; k < t /*9*/; k++) {	// channel
+	  struct Tracks	*track = &tracks[i * t + k][j];
+	  unsigned char	*o = &org[(i * 64 * t + j * t + k) * 4];
 
 	  track->note = o[0] == 255 ? 127 : o[0];
 	  track->inst = o[1] <= NUMINST ? o[1] : 0; // ignore invalid instrument
 	  track->command = o[2] < sizeof(convfx) ? convfx[o[2]] : 255;
 	  track->param2 = o[3] & 0x0f;
-	  if(track->command != 14)
-	    track->param1 = o[3] >> 4;
-	  else {
-	    track->param1 = convinf1[o[3] >> 4];
-	    if(track->param1 == 15 && !track->param2) {	// convert key-off
-	      track->command = 8;
-	      track->param1 = 0;
-	      track->param2 = 0;
-	    }
-	  }
-	  if(track->command == 14) {
+	  track->param1 = o[3] >> 4;
+
+	  if (track->command == 14) {
+	    track->param1 = convinf1[track->param1];
 	    switch(track->param1) {
 	    case 2: // convert define waveform
 	      track->command = 25;
 	      track->param1 = track->param2;
 	      track->param2 = 0xf;
 	      break;
+
 	    case 8: // convert volume slide up
 	      track->command = 26;
 	      track->param1 = track->param2;
 	      track->param2 = 0;
 	      break;
+
 	    case 9: // convert volume slide down
 	      track->command = 26;
 	      track->param1 = 0;
+	      break;
+
+	    case 15: // convert key-off
+	      if(!track->param2) {
+		track->command = 8;
+		track->param1 = 0;
+		// param2 is already zero
+	      }
 	      break;
 	    }
 	  }
 	}
   } else {	// version >= 5
-    realloc_patterns(64, 64, 18);
+    realloc_patterns(numpats, 64, t);
 
-    for(i=0;i<numpats;i++)
-      for(j=0;j<18;j++)
-	for(k=0;k<64;k++) {
-	  struct Tracks	*track = &tracks[i * 18 + j][k];
-	  unsigned char	*o = &org[i*64*t*4+j*64*4+k*4];
+    for (i = 0; i < numpats; i++)	// pattern
+      for (j = 0; j < t /*18*/; j++)	// channel
+	for (k = 0; k < 64; k++) {	// row
+	  struct Tracks	*track = &tracks[i * t + j][k];
+	  unsigned char	*o = &org[(i * 64 * t + j * 64 + k) * 4];
 
 	  track->note = o[0] == 255 ? 127 : o[0];
 	  track->inst = o[1] <= NUMINST ? o[1] : 0; // ignore invalid instrument
@@ -255,7 +258,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 	  track->param2 = o[3] & 0x0f;
 
 	  // Convert '&' command
-	  if(o[2] == 36)
+	  if (o[2] == 36)
 	    switch(track->param1) {
 	    case 0:	// pattern delay (frames)
 	      track->command = 29;
@@ -277,10 +280,10 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   delete [] org;
 
   // Process flags
-  if(version >= 5) {
+  if (version >= 5) {
     CmodPlayer::flags |= Opl3;				// All versions >= 5 are OPL3
-    if(flags & 8) CmodPlayer::flags |= Tremolo;		// Tremolo depth
-    if(flags & 16) CmodPlayer::flags |= Vibrato;	// Vibrato depth
+    if (flags & 8) CmodPlayer::flags |= Tremolo;	// Tremolo depth
+    if (flags & 16) CmodPlayer::flags |= Vibrato;	// Vibrato depth
   }
 
   // Note: crc value is not checked.
