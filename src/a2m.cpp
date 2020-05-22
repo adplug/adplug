@@ -207,7 +207,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 	  unsigned char	*o = &org[i*64*t*4+j*t*4+k*4];
 
 	  track->note = o[0] == 255 ? 127 : o[0];
-	  track->inst = o[1];
+	  track->inst = o[1] <= NUMINST ? o[1] : 0; // ignore invalid instrument
 	  track->command = o[2] < sizeof(convfx) ? convfx[o[2]] : 255;
 	  track->param2 = o[3] & 0x0f;
 	  if(track->command != 14)
@@ -249,7 +249,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 	  unsigned char	*o = &org[i*64*t*4+j*64*4+k*4];
 
 	  track->note = o[0] == 255 ? 127 : o[0];
-	  track->inst = o[1];
+	  track->inst = o[1] <= NUMINST ? o[1] : 0; // ignore invalid instrument
 	  track->command = o[2] < sizeof(newconvfx) ? newconvfx[o[2]] : 255;
 	  track->param1 = o[3] >> 4;
 	  track->param2 = o[3] & 0x0f;
