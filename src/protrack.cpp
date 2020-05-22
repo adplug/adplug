@@ -680,22 +680,15 @@ void CmodPlayer::playnote(unsigned char chan)
 
 void CmodPlayer::setnote(unsigned char chan, int note)
 {
-  if(note > 96) {
-    if(note == 127) {	// key off
-      channel[chan].key = 0;
-      setfreq(chan);
-      return;
-    } else
-      note = 96;
+  if(note == 127) {	// key off
+    channel[chan].key = 0;
+    setfreq(chan);
+    return;
   }
+  if(note > 96) note = 96;
+  else if (note < 1) note = 1;
 
-  if(note < 13)
-    channel[chan].freq = notetable[note - 1];
-  else
-    if(note % 12 > 0)
-      channel[chan].freq = notetable[(note % 12) - 1];
-    else
-      channel[chan].freq = notetable[11];
+  channel[chan].freq = notetable[(note - 1) % 12];
   channel[chan].oct = (note - 1) / 12;
   channel[chan].freq += inst[channel[chan].inst].slide;	// apply pre-slide
 }
