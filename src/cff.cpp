@@ -370,6 +370,11 @@ long CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
 	{
 	  code_length++;
 
+	  if (code_length > 16) {
+	    output_length = 0;
+	    goto out;
+	  }
+
 	  continue;
 	}
 
@@ -386,7 +391,9 @@ long CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
 
 	  unsigned long repeat_counter = get_code();
 
-	  if(output_length + repeat_counter * repeat_length > 0x10000) {
+	  if (repeat_length > output_length ||
+	      repeat_counter > 0x10000 ||
+	      output_length + repeat_counter * repeat_length > 0x10000) {
 	    output_length = 0;
 	    goto out;
 	  }
@@ -445,16 +452,17 @@ long CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
 unsigned long CcffLoader::cff_unpacker::get_code()
 {
   unsigned long code;
+  // shifts of bits_buffer by 32 can be undefined (with 32 bit long)
+  unsigned long long bits = bits_buffer;
 
-  while (bits_left < code_length)
-    {
-      bits_buffer |= ((*input++) << bits_left);
-      bits_left += 8;
-    }
+  while (bits_left < code_length) {
+    bits |= (unsigned long long)*input++ << bits_left;
+    bits_left += 8;
+  }
 
-  code = bits_buffer & ((1 << code_length) - 1);
+  code = bits & ((1ULL << code_length) - 1);
 
-  bits_buffer >>= code_length;
+  bits_buffer = (unsigned long)(bits >> code_length);
   bits_left -= code_length;
 
   return code;
@@ -464,7 +472,11 @@ void CcffLoader::cff_unpacker::translate_code(unsigned long code, unsigned char 
 {
   unsigned char translated_string[256];
 
-  if (code >= 0x104)
+  if (code >= 0x104 + dictionary_length) // invalid code
+    {
+      translated_string[0] = translated_string[1] = 0;
+    }
+  else if (code >= 0x104)
     {
       memcpy(translated_string,dictionary[code - 0x104],(*(dictionary[code - 0x104])) + 1);
     }
@@ -507,7 +519,7 @@ int CcffLoader::cff_unpacker::startup()
 
 void CcffLoader::cff_unpacker::expand_dictionary(unsigned char *string)
 {
-  if (string[0] >= 0xF0)
+  if (string[0] >= 0xF0 || heap_length + string[0] + 1 > 0x10000)
     return;
 
   memcpy(&heap[heap_length],string,string[0] + 1);
