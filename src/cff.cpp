@@ -44,6 +44,7 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
   const unsigned short conv_note[12] = { 0x16B, 0x181, 0x198, 0x1B0, 0x1CA, 0x1E5, 0x202, 0x220, 0x241, 0x263, 0x287, 0x2AE };
 
   int i,j,k,t=0;
+  long module_size;
 
   // '<CUD-FM-File>' - signed ?
   f->readString(header.id, 16);
@@ -66,7 +67,8 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
       f->readString((char *)packed_module, header.size);
       fp.close(f);
 
-      if (!unpacker->unpack(packed_module,module))
+      module_size = unpacker->unpack(packed_module,module);
+      if (!module_size)
 	{
 	  delete unpacker;
 	  delete [] packed_module;
@@ -86,6 +88,7 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
   else
     {
       f->readString((char *)module, header.size);
+      module_size = header.size;
       fp.close(f);
     }
 
@@ -109,6 +112,10 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
 
   // number of patterns
   nop = module[0x5E0];
+  if (nop < 1 || nop > 36 || 0x669 + nop * 64 * 9 * 3 > module_size) {
+    delete [] module;
+    return false;
+  }
 
   // load title & author
   memcpy(song_title,&module[0x614],20);
