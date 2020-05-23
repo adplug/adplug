@@ -151,7 +151,8 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
 	      switch (event->byte1)
 		{
 		case 'I': // set instrument
-		  tracks[t][k].inst = event->byte2 + 1;
+		  if (event->byte2 < 47) // ignore invalid instruments
+		    tracks[t][k].inst = event->byte2 + 1;
 		  tracks[t][k].param1 = tracks[t][k].param2 = 0;
 		  break;
 
