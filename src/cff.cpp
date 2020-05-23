@@ -58,6 +58,10 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
   // packed ?
   if (header.packed)
     {
+      if (header.size < 16) { // not enough room for unpacker's id
+	delete [] module;
+	return false;
+      }
       cff_unpacker *unpacker = new cff_unpacker;
 
       unsigned char *packed_module = new unsigned char [header.size + 4];
