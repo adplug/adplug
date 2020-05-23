@@ -63,12 +63,10 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
 	return false;
       }
       cff_unpacker *unpacker = new cff_unpacker;
-
-      unsigned char *packed_module = new unsigned char [header.size + 4];
-
-      memset(packed_module,0,header.size + 4);
+      unsigned char *packed_module = new unsigned char [header.size + 8];
 
       f->readString((char *)packed_module, header.size);
+      memset(packed_module + header.size, 0, 8);
       fp.close(f);
 
       module_size = unpacker->unpack(packed_module,module);
