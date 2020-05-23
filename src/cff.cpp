@@ -244,6 +244,7 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
   restartpos = 0;
 
   // order length
+  length = 64;
   for (i=0;i<64;i++)
     {
       if (order[i] >= 0x80)
