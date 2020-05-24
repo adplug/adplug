@@ -63,7 +63,7 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
 
   // always allocate padding needed for unpacker
   unsigned char *module = new unsigned char[header.size + 8];
-  long module_size = header.size;
+  size_t module_size = header.size;
   f->readString((char *)module, header.size);
   fp.close(f);
 
@@ -291,8 +291,6 @@ unsigned int CcffLoader::getinstruments()
   return 47;
 }
 
-/* -------- Private Methods ------------------------------- */
-
 #ifdef _WIN32
 #pragma warning(disable:4244)
 #pragma warning(disable:4018)
@@ -301,7 +299,7 @@ unsigned int CcffLoader::getinstruments()
 /*
   Lempel-Ziv-Tyr ;-)
 */
-long CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
+size_t CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
 {
   if (memcmp(ibuf, "YsComp\007CUD1997\x1A\x04", 16))
     return 0;
@@ -314,19 +312,17 @@ long CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
   heap = new unsigned char[0x10000];
   dictionary = new unsigned char *[0x8000];
 
-  cleanup();
-  if(!startup())
+  if(!start_block())
     goto fail;
 
   // LZW
   for (;;) {
-    switch (new_code = get_code()) {
+    switch (unsigned long new_code = get_code()) {
     case 0x00: // end of data
       goto done;
 
     case 0x01: // end of block
-      cleanup();
-      if (!startup()) goto fail;
+      if (!start_block()) goto fail;
       break;
 
     case 0x02: // expand code length
@@ -335,29 +331,20 @@ long CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
       break;
 
     case 0x03: { // RLE
-	  unsigned char old_code_length = code_length;
+	unsigned char repeat_length = get_code(2) + 1;
 
-	  code_length = 2;
-	  unsigned char repeat_length = get_code() + 1;
+	unsigned char length = 4 << get_code(2);
+	size_t repeat_counter = get_code(length);
 
-	  code_length = 4 << get_code();
-	  unsigned long repeat_counter = get_code();
+	size_t end = output_length + repeat_counter * repeat_length;
+	if (repeat_length > output_length ||
+	    repeat_counter > 0x10000 || end > 0x10000)
+	  goto fail;
 
-	  size_t end = output_length + repeat_counter * repeat_length;
-	  if (repeat_length > output_length ||
-	      repeat_counter > 0x10000 || end > 0x10000)
-	    goto fail;
+	while (output_length < end)
+	  put_string(&output[output_length - repeat_length], repeat_length);
 
-	  while (output_length < end) {
-	    memcpy(&output[output_length],
-		   &output[output_length - repeat_length],
-		   repeat_length);
-	    output_length += repeat_length;
-	  }
-
-	  code_length = old_code_length;
-
-	  if (!startup()) goto fail;
+	if (!start_string()) goto fail;
       }
       break;
 
@@ -378,10 +365,7 @@ long CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
 
       // output <- new.code.string
       translate_code(new_code, the_string);
-
-      if (output_length + the_string[0] > 0x10000) goto fail;
-      memcpy(&output[output_length], &the_string[1], the_string[0]);
-      output_length += the_string[0];
+      if (!put_string()) goto fail;
       break;
     }
   }
@@ -393,21 +377,23 @@ long CcffLoader::cff_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf)
   return output_length;
 }
 
-unsigned long CcffLoader::cff_unpacker::get_code()
+/* -------- Private cff_unpacker Methods ------------------------------- */
+
+unsigned long CcffLoader::cff_unpacker::get_code(unsigned char bitlength)
 {
   unsigned long code;
   // shifts of bits_buffer by 32 can be undefined (with 32 bit long)
   unsigned long long bits = bits_buffer;
 
-  while (bits_left < code_length) {
+  while (bits_left < bitlength) {
     bits |= (unsigned long long)*input++ << bits_left;
     bits_left += 8;
   }
 
-  code = bits & ((1ULL << code_length) - 1);
+  code = bits & ((1ULL << bitlength) - 1);
 
-  bits_buffer = (unsigned long)(bits >> code_length);
-  bits_left -= code_length;
+  bits_buffer = (unsigned long)(bits >> bitlength);
+  bits_left -= bitlength;
 
   return code;
 }
@@ -424,7 +410,17 @@ void CcffLoader::cff_unpacker::translate_code(unsigned long code, unsigned char 
   }
 }
 
-void CcffLoader::cff_unpacker::cleanup()
+bool CcffLoader::cff_unpacker::put_string(unsigned char *string, size_t length)
+{
+  if (output_length + length > 0x10000) return false;
+
+  memcpy(&output[output_length], string, length);
+  output_length += length;
+
+  return true;
+}
+
+bool CcffLoader::cff_unpacker::start_block()
 {
   code_length = 9;
 
@@ -433,18 +429,14 @@ void CcffLoader::cff_unpacker::cleanup()
 
   heap_length = 0;
   dictionary_length = 0;
+
+  return start_string();
 }
 
-int CcffLoader::cff_unpacker::startup()
+bool CcffLoader::cff_unpacker::start_string()
 {
   translate_code(get_code(), the_string);
-
-  if (output_length + the_string[0] > 0x10000) return 0;
-
-  memcpy(&output[output_length], &the_string[1], the_string[0]);
-  output_length += the_string[0];
-
-  return 1;
+  return put_string();
 }
 
 void CcffLoader::cff_unpacker::expand_dictionary(unsigned char *string)
