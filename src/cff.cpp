@@ -280,7 +280,10 @@ std::string CcffLoader::getauthor()
 
 std::string CcffLoader::getinstrument(unsigned int n)
 {
-  return std::string(instruments[n].name);
+  if (n < getinstruments())
+    return std::string(instruments[n].name);
+  else
+    return std::string();
 }
 
 unsigned int CcffLoader::getinstruments()
