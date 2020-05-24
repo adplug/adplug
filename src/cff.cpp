@@ -77,15 +77,10 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
       module_size = unpacker->unpack(packed_module,module);
       delete unpacker;
       delete [] packed_module;
-
-      if (! module_size ||
-	  memcmp(&module[0x5E1], "CUD-FM-File - SEND A POSTCARD -", 31)) {
-	  delete [] module;
-	  return false;
-      }
   }
 
-  if (module_size < 0x669 + 64 * 9 * 3) {
+  if (module_size < 0x669 + 64 * 9 * 3 ||
+      memcmp(&module[0x5E1], "CUD-FM-File - SEND A POSTCARD -", 31)) {
     delete [] module;
     return false;
   }
