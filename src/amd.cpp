@@ -172,9 +172,11 @@ bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
 
       // fix volume
       if(tracks[i][j].command == 17) {
-	int vol = convvol[tracks[i][j].param1 * 10 + tracks[i][j].param2];
+	int vol = tracks[i][j].param1 * 10 + tracks[i][j].param2;
 
-	if(vol > 63) vol = 63;
+	if (vol > 63) vol = 63;
+	else vol = convvol[vol];
+
 	tracks[i][j].param1 = vol / 10;
 	tracks[i][j].param2 = vol % 10;
       }
