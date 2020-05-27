@@ -155,7 +155,11 @@ bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
   }
   for(i=0;i<maxi;i++)	// convert patterns
     for(j=0;j<64;j++) {
-      tracks[i][j].command = convfx[tracks[i][j].command];
+      if (tracks[i][j].command < 10)
+	tracks[i][j].command = convfx[tracks[i][j].command];
+      else
+	tracks[i][j].command = 0; // ignore invalid commands
+
       // extended command
       if(tracks[i][j].command == 14) {
 	if(tracks[i][j].param1 == 2) {
