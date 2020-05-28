@@ -90,9 +90,11 @@ bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
       t += 9;
     }
   } else {			// packed module
-    for(i=0;i<nop;i++)
-      for(j=0;j<9;j++)
+    for (i = 0; i < nop; i++)
+      for (j = 0; j < 9; j++) {
 	trackord[i][j] = f->readInt(2) + 1;
+	if (trackord[i][j] > 64 * 9) trackord[i][j] = 0; // or fail?
+      }
     numtrax = f->readInt(2);
     for(k=0;k<numtrax;k++) {
       i = f->readInt(2);
