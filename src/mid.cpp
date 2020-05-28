@@ -175,17 +175,13 @@ unsigned long CmidPlayer::getnext(unsigned long num)
 
 unsigned long CmidPlayer::getval()
 {
-    int v=0;
-	unsigned char b;
+	unsigned long b, v = 0;
 
-    b=(unsigned char)getnext(1);
-	v=b&0x7f;
-	while ((b&0x80) !=0)
-		{
-        b=(unsigned char)getnext(1);
-        v = (v << 7) + (b & 0x7F);
-		}
-	return(v);
+	do {
+		b = getnext(1);
+		v = (v << 7) + (b & 0x7F);
+	} while (b & 0x80);
+	return v;
 }
 
 bool CmidPlayer::load_sierra_ins(const std::string &fname, const CFileProvider &fp)
