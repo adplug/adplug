@@ -231,12 +231,13 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
   restartpos = 0;
 
   // order length
-  length = 64;
-  for (int i = 0; i < 64; i++) {
-      if (order[i] >= 0x80) {
-	  length = i;
-	  break;
-      }
+  if (order[0] >= 0x36) // empty order list or invalid pattern
+    return false;
+  for (length = 1; length < 64; length++) {
+    if (order[length] & 0x80) // end marker, keep length
+      break;
+    if (order[length] >= 36) // invalid pattern number
+      return false;
   }
 
   // default tempo
