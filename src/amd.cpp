@@ -91,6 +91,12 @@ bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
 
   // order list
   f->readString((char *)order, 128);
+  // invalid pattern number in order list?
+  for (size_t i = 0; i < length; i++)
+    if ((order[i] & 0x7f) >= 64) { // should be < nop
+      fp.close(f);
+      return false;
+    }
 
   f->ignore(10);
 
@@ -100,7 +106,7 @@ bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
     init_trackord();
     maxi = nop * 9;
 
-    for (int t = 0; !f->ateof(); t += 9) {
+    for (int t = 0; t < maxi && !f->ateof(); t += 9) {
       for (int j = 0; j < 64; j++)
 	for (int i = t; i < t + 9; i++) {
 	  unsigned char buf = f->readInt(1) & 0x7f;
