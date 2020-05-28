@@ -303,7 +303,12 @@ bool CmodPlayer::update()
       break;
 
     case 13: // pattern break
-      if(!pattbreak) { pattbreak = 1; rw = info; ord++; } break;
+      if (!pattbreak) {
+        pattbreak = 1;
+        rw = info < nrows ? info : 0;
+        ord++;
+      }
+      break;
 
     case 14: // extended command
       switch(info1) {
