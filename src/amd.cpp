@@ -64,6 +64,10 @@ bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
     for(j = 0; j < 11; j++) inst[i].data[j] = f->readInt(1);
   }
   length = f->readInt(1); nop = f->readInt(1) + 1;
+  if (length > 128 || nop > 64) {
+    fp.close(f);
+    return false;
+  }
   for(i=0;i<128;i++) order[i] = f->readInt(1);
   f->seek(10, binio::Add);
   if(header.version == 0x10) {	// unpacked module
