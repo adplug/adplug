@@ -159,6 +159,12 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 
   memcpy(order, orgptr, length);
   orgptr += length;
+  for (i = 0; i < length; i++)
+    if ((order[i] & 0x7f) >= numpats) {		// invalid pattern in order list
+      delete [] org;
+      fp.close(f);
+      return false;
+    }
 
   bpm = *orgptr++;
   initspeed = *orgptr++;
