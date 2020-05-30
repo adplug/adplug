@@ -52,7 +52,7 @@ CPlayer *CxadratPlayer::factory(Copl *newopl)
 
 bool CxadratPlayer::xadplayer_load()
 {
-  if(xad.fmt != RAT)
+  if (xad.fmt != RAT || tune_size < 0x140)
     return false;
 
   // load header
@@ -66,16 +66,25 @@ bool CxadratPlayer::xadplayer_load()
   if (rat.hdr.version != 0x10)
     return false;
 
+  // valid number of channels (1..9)?
+  if (rat.hdr.numchan < 1 || rat.hdr.numchan > 9)
+    return false;
+
   // load order
   rat.order = &tune[0x40];
 
   // load instruments
   rat.inst = (rat_instrument *)&tune[0x140];
+  if (0x140 + rat.hdr.numinst * sizeof(rat_instrument) > tune_size)
+    return false;
 
   // load pattern data
   unsigned short patseg = (rat.hdr.patseg[1] << 8) + rat.hdr.patseg[0];
-  unsigned char *event_ptr = &tune[patseg << 4];
+  if (patseg * 16 + sizeof(rat_event) * rat.hdr.numpat * 64 * rat.hdr.numchan
+      > tune_size)
+    return false;
 
+  unsigned char *event_ptr = &tune[patseg * 16];
   for(int i=0;i<rat.hdr.numpat;i++)
     for(int j=0;j<64;j++)
       for(int k=0;k<rat.hdr.numchan;k++)
