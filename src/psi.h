@@ -43,6 +43,7 @@ protected:
     unsigned char   note_delay[9];
     unsigned char   note_curdelay[9];
     unsigned char   looping[9];
+    unsigned short  ptr[9];
   } psi;
   //
   bool	          xadplayer_load();
