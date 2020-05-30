@@ -38,12 +38,13 @@ protected:
 
   struct
   {
+    enum { nchannels = 8 };
     unsigned char   *instr_table;
     unsigned char   *seq_table;
-    unsigned char   note_delay[9];
-    unsigned char   note_curdelay[9];
-    unsigned char   looping[9];
-    unsigned short  ptr[9];
+    unsigned char   note_delay[nchannels];
+    unsigned char   note_curdelay[nchannels];
+    unsigned short  looping;
+    unsigned short  ptr[nchannels];
   } psi;
   //
   bool	          xadplayer_load();
@@ -52,8 +53,4 @@ protected:
   float           xadplayer_getrefresh();
   std::string     xadplayer_gettype();
   unsigned int    xadplayer_getinstruments();
-
-private:
-  static const unsigned char psi_adlib_registers[99];
-  static const unsigned short psi_notes[16];
 };
