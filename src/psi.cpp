@@ -130,7 +130,7 @@ void CxadpsiPlayer::xadplayer_update()
       opl_write(0xA0+i, 0x00);
       opl_write(0xB0+i, 0x00);
 
-      unsigned char event = tune[ptr++];
+      unsigned char event = ptr < tune_size ? tune[ptr++] : 0;
 #ifdef DEBUG
   AdPlug_LogWrite("channel %02X, event %02X:\n",i+1,event);
 #endif
@@ -140,7 +140,7 @@ void CxadpsiPlayer::xadplayer_update()
       {
 	ptr = (psi.seq_table[(i<<1) * 2 + 3] << 8) + psi.seq_table[(i<<1) * 2 + 2];
 
-        event = tune[ptr++];
+        event = ptr < tune_size ? tune[ptr++] : 0;
 #ifdef DEBUG
   AdPlug_LogWrite(" channel %02X, event %02X:\n",i+1,event);
 #endif
@@ -159,7 +159,7 @@ void CxadpsiPlayer::xadplayer_update()
       {
         psi.note_delay[i] = (event & 0x7F);
 
-        event = tune[ptr++];
+        event = ptr < tune_size ? tune[ptr++] : 0;
 #ifdef DEBUG
   AdPlug_LogWrite("  channel %02X, event %02X:\n",i+1,event);
 #endif
