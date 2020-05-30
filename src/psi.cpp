@@ -63,19 +63,41 @@ CPlayer *CxadpsiPlayer::factory(Copl *newopl)
   return new CxadpsiPlayer(newopl);
 }
 
+bool CxadpsiPlayer::xadplayer_load()
+{
+  if (xad.fmt != PSI || tune_size < 4)
+    return false;
+
+  // get header
+  header.instr_ptr = (tune[1] << 8) + tune[0];
+  header.seq_ptr = (tune[3] << 8) + tune[2];
+
+  if (header.instr_ptr + 8 * 2 >= tune_size ||
+      header.seq_ptr + 8 * 4 >= tune_size)
+    return false;
+
+  // calculate instruments & sequence tables
+  psi.instr_table = &tune[header.instr_ptr];
+  psi.seq_table = &tune[header.seq_ptr];
+
+  // validate instrument data & sequence pointers
+  for (int i = 0; i < 8 * 2; i += 2)
+    if ((psi.instr_table[i + 1] << 8) + psi.instr_table[i] + 11 >= tune_size)
+      return false;
+  for (int i = 0; i < 8 * 4; i += 2)
+    if ((psi.seq_table[i + 1] << 8) + psi.seq_table[i] >= tune_size)
+      return false;
+
+  return true;
+}
+
 void CxadpsiPlayer::xadplayer_rewind(int subsong)
 {
   opl_write(0x01, 0x20);
   opl_write(0x08, 0x00);
   opl_write(0xBD, 0x00);
 
-  // get header
-  header.instr_ptr = (tune[1] << 8) + tune[0];
-  header.seq_ptr = (tune[3] << 8) + tune[2];
-
   // define instruments
-  psi.instr_table = &tune[header.instr_ptr];
-
   for(int i=0; i<8; i++)
   {
     for(int j=0; j<11; j++) {
@@ -91,9 +113,6 @@ void CxadpsiPlayer::xadplayer_rewind(int subsong)
     psi.note_curdelay[i] = 1;
     psi.looping[i] = 0;
   }
-
-  // calculate sequence pointer
-  psi.seq_table = &tune[header.seq_ptr];
 }
 
 void CxadpsiPlayer::xadplayer_update()

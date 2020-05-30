@@ -45,13 +45,7 @@ protected:
     unsigned char   looping[9];
   } psi;
   //
-  bool		  xadplayer_load()
-    {
-      if(xad.fmt == PSI)
-	return true;
-      else
-	return false;
-    }
+  bool	          xadplayer_load();
   void            xadplayer_rewind(int subsong);
   void            xadplayer_update();
   float           xadplayer_getrefresh();
