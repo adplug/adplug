@@ -109,6 +109,9 @@ void CxadpsiPlayer::xadplayer_rewind(int subsong)
     opl_write(0xA0+i, 0x00);
     opl_write(0xB0+i, 0x00);
 
+    // reset sequence pointers
+    psi.ptr[i] = (psi.seq_table[i * 4 + 1] << 8) + psi.seq_table[i * 4];
+
     psi.note_delay[i] = 1;
     psi.note_curdelay[i] = 1;
     psi.looping[i] = 0;
@@ -117,11 +120,8 @@ void CxadpsiPlayer::xadplayer_rewind(int subsong)
 
 void CxadpsiPlayer::xadplayer_update()
 {
-  unsigned short ptr;
-
-  for(int i=0; i<8; i++)
-  {
-    ptr = (psi.seq_table[(i<<1) * 2 + 1] << 8) + psi.seq_table[(i<<1) * 2];
+  for (int i = 0; i < 8; i++) {
+    unsigned short ptr = psi.ptr[i];
 
     psi.note_curdelay[i]--;
 
@@ -174,8 +174,7 @@ void CxadpsiPlayer::xadplayer_update()
       opl_write(0xB0+i, (note >> 8) + ((event >> 2) & 0xFC));
 
       // save position
-      psi.seq_table[(i<<1) * 2] = ptr & 0xff;
-      psi.seq_table[(i<<1) * 2 + 1] = ptr >> 8;
+      psi.ptr[i] = ptr;
     }
   }
 }
