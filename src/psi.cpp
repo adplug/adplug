@@ -38,6 +38,11 @@
 #include "psi.h"
 #include "debug.h"
 
+static unsigned short le16(const unsigned char *p)
+{
+  return p[0] | (p[1] << 8);
+}
+
 CPlayer *CxadpsiPlayer::factory(Copl *newopl)
 {
   return new CxadpsiPlayer(newopl);
@@ -49,8 +54,8 @@ bool CxadpsiPlayer::xadplayer_load()
     return false;
 
   // get header
-  header.instr_ptr = (tune[1] << 8) + tune[0];
-  header.seq_ptr = (tune[3] << 8) + tune[2];
+  header.instr_ptr = le16(&tune[0]);
+  header.seq_ptr = le16(&tune[2]);
 
   if (header.instr_ptr + psi.nchannels * 2 >= tune_size ||
       header.seq_ptr + psi.nchannels * 4 >= tune_size)
@@ -62,10 +67,10 @@ bool CxadpsiPlayer::xadplayer_load()
 
   // validate instrument data & sequence pointers
   for (int i = 0; i < psi.nchannels * 2; i += 2)
-    if ((psi.instr_table[i + 1] << 8) + psi.instr_table[i] + 11 >= tune_size)
+    if (le16(&psi.instr_table[i]) + 11 >= tune_size)
       return false;
   for (int i = 0; i < psi.nchannels * 4; i += 2)
-    if ((psi.seq_table[i + 1] << 8) + psi.seq_table[i] >= tune_size)
+    if (le16(&psi.seq_table[i]) >= tune_size)
       return false;
 
   return true;
@@ -91,7 +96,7 @@ void CxadpsiPlayer::xadplayer_rewind(int subsong)
 
   for (int i = 0; i < psi.nchannels; i++) {
     // define instruments
-    unsigned short inspos = (psi.instr_table[i * 2 + 1] << 8) + psi.instr_table[i * 2];
+    unsigned short inspos = le16(&psi.instr_table[i * 2]);
     for (int j = 0; j < 11; j++)
       opl_write(adlib_registers[i][j], tune[inspos + j]);
 
@@ -99,7 +104,7 @@ void CxadpsiPlayer::xadplayer_rewind(int subsong)
     opl_write(0xB0 + i, 0x00);
 
     // reset sequence pointers
-    psi.ptr[i] = (psi.seq_table[i * 4 + 1] << 8) + psi.seq_table[i * 4];
+    psi.ptr[i] = le16(&psi.seq_table[i * 4]);
 
     psi.note_delay[i] = 1;
     psi.note_curdelay[i] = 1;
@@ -124,7 +129,7 @@ void CxadpsiPlayer::xadplayer_update()
 
     // end of sequence?
     if (!event) {
-      ptr = (psi.seq_table[i * 4 + 3] << 8) + psi.seq_table[i * 4 + 2];
+      ptr = le16(&psi.seq_table[i * 4 + 2]);
       event = tune[ptr++]; // loop position is validated
 #ifdef DEBUG
   AdPlug_LogWrite(" channel %02X, event %02X:\n", i+1, event);
