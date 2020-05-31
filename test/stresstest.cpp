@@ -173,7 +173,12 @@ static const char *const filelist[] = {
 	"i-110_167.sa2", "i-110_168.a2m", "i-110_169.amd", "i-110_170.a2m",
 	"i-110_171.amd", "i-110_172.amd", "i-110_173.xad", "i-110_174.amd",
 	"i-110_175.amd", "i-110_176.dtm", "i-110_177.amd", "i-110_178.dtm",
-	"i-110_179.dtm",
+	"i-110_179.dtm", "i-110_180.a2m", "i-110_181.dtm", "i-110_182.dtm",
+	"i-110_183.a2m", "i-110_184.dtm", "i-110_185.dtm", "i-110_186.a2m",
+	"i-110_187.amd", "i-110_188.mtk", "i-110_189.amd", "i-110_190.amd",
+	"i-110_191.dtm", "i-110_192.a2m", "i-110_193.amd", "i-110_194.dtm",
+	"i-110_195.dtm", "i-110_196.a2m", "i-110_197.sa2", "i-110_198.dtm",
+	"i-110_199.amd", "i-110_200.a2m",
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);
