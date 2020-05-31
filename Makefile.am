@@ -529,4 +529,11 @@ EXTRA_DIST += \
 	test/i-110_169.amd test/i-110_170.a2m test/i-110_171.amd \
 	test/i-110_172.amd test/i-110_173.xad test/i-110_174.amd \
 	test/i-110_175.amd test/i-110_176.dtm test/i-110_177.amd \
-	test/i-110_178.dtm test/i-110_179.dtm
+	test/i-110_178.dtm test/i-110_179.dtm test/i-110_180.a2m \
+	test/i-110_181.dtm test/i-110_182.dtm test/i-110_183.a2m \
+	test/i-110_184.dtm test/i-110_185.dtm test/i-110_186.a2m \
+	test/i-110_187.amd test/i-110_188.mtk test/i-110_189.amd \
+	test/i-110_190.amd test/i-110_191.dtm test/i-110_192.a2m \
+	test/i-110_193.amd test/i-110_194.dtm test/i-110_195.dtm \
+	test/i-110_196.a2m test/i-110_197.sa2 test/i-110_198.dtm \
+	test/i-110_199.amd test/i-110_200.a2m
