@@ -140,9 +140,12 @@ static unsigned char calc_volume(unsigned char ivol, unsigned char cvol, unsigne
 
 void CxadratPlayer::xadplayer_update()
 {
+  unsigned char pattern = rat.order[rat.order_pos];
+  if (pattern >= rat.hdr.numpat)
+    goto bad_pattern;
+
   // process events
   for (int i = 0; i < rat.hdr.numchan; i++) {
-    unsigned char pattern = rat.order[rat.order_pos];
     const rat_event &event = rat.tracks[pattern][rat.pattern_pos][i];
 
 #ifdef DEBUG
@@ -258,6 +261,7 @@ void CxadratPlayer::xadplayer_update()
 
   // end of pattern?
   if (rat.pattern_pos >= 0x40) {
+  bad_pattern:
     rat.pattern_pos = 0;
     rat.order_pos++;
 
