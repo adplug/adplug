@@ -38,7 +38,7 @@ protected:
   //
   bool		  xadplayer_load()
     {
-      if(xad.fmt == FLASH)
+      if (xad.fmt == FLASH && tune_size >= 0x633 + 18)
 	return true;
       else
 	return false;
