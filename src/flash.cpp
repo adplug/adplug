@@ -119,6 +119,11 @@ void CxadflashPlayer::xadplayer_update()
 
   for (int i=0; i<9; i++)
   {
+    if (event_pos > tune_size - 2) {
+      flash.pattern_pos = 0x3F; // end of data, skip rest of pattern
+      break;
+    }
+
     unsigned short flash_channel_freq = (adlib[0xB0+i] << 8) + adlib[0xA0+i];
 
     unsigned char event_b0 = tune[event_pos++];
@@ -129,8 +134,9 @@ void CxadflashPlayer::xadplayer_update()
 
     if (event_b0 == 0x80)               // 0.0x80: Set Instrument
     {
-      for(int j=0; j<11; j++)
-        opl_write(flash_adlib_registers[i*11+j], tune[event_b1*12+j]);
+      if (event_b1 < 0x80)
+	for (int j=0; j<11; j++)
+	  opl_write(flash_adlib_registers[i*11+j], tune[event_b1*12+j]);
     }
     else
     {
@@ -205,7 +211,7 @@ void CxadflashPlayer::xadplayer_update()
     flash.order_pos++;
 
     // end of module ?
-    if (tune[0x600+flash.order_pos] == 0xFF)
+    if (flash.order_pos > 0x33 || tune[0x600 + flash.order_pos] == 0xFF)
     {
       flash.order_pos = 0;
 
@@ -226,5 +232,5 @@ std::string CxadflashPlayer::xadplayer_gettype()
 
 unsigned int CxadflashPlayer::xadplayer_getinstruments()
 {
-  return 32;
+  return 32; // there is enough space for 128 instruments, so why only 32?
 }
