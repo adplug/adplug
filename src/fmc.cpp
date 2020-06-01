@@ -145,20 +145,19 @@ bool CfmcLoader::load(const std::string &filename, const CFileProvider &fp)
   for (i=0;i<31;i++)
     buildinst(i);
 
-  // order length
-  for (i=0;i<256;i++)
-    {
-      if (order[i] >= 0xFE)
-	{
-	  length = i;
-	  break;
-	}
-    }
-
   // data for Protracker
   activechan = (0xffffffffUL >> (32 - header.numchan)) << (32 - header.numchan);
   nop = t / header.numchan;
+  if (!nop) return false; // truncated file, no track data
   restartpos = 0;
+
+  // order length
+  for (length = 0; length < 256; length++) {
+    if (order[length] >= 0xFE) // end marker
+      break;
+    else if (order[length] >= nop /* or 64*/) // invalid pattern
+      return false;
+  }
 
   // flags
   flags = Faust;
