@@ -138,6 +138,11 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
     fp.close(f);
     return false;
   }
+  for (i = 0; i < length; i++)	// check order
+    if (order[i] >= nop /* or 64 */) {
+      fp.close(f);
+      return false;
+    }
 
   // bpm
   bpm = f->readInt(2);
@@ -153,12 +158,12 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
 
   for(i=0;i<64;i++) {				// track orders
     for(j=0;j<9;j++) {
-      if(sat_type & HAS_TRACKORDER)
+      if (sat_type & HAS_TRACKORDER) {
+	// the value read should be < 9 * nop, but can't cause invalid accesses
 	trackord[i][j] = f->readInt(1);
-      else
-	{
-	  trackord[i][j] = i * 9 + j;
-	}
+      } else {
+	trackord[i][j] = i * 9 + j; // + 1 ???
+      }
     }
   }
 
