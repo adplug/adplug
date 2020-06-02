@@ -132,6 +132,12 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
 
   // infos
   nop = f->readInt(2); length = f->readInt(1); restartpos = f->readInt(1);
+  if (nop < 1 || nop > 64 ||
+      length < 1 || length > 128 ||
+      restartpos >= length) {
+    fp.close(f);
+    return false;
+  }
 
   // bpm
   bpm = f->readInt(2);
@@ -166,7 +172,7 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
   // track data
   if(sat_type & HAS_OLDPATTERNS) {
     i = 0;
-    while(!f->ateof()) {
+    while (i < 64 * 9 && !f->ateof()) {
       for(j=0;j<64;j++) {
 	for(k=0;k<9;k++) {
 	  buf = f->readInt(1);
@@ -182,7 +188,7 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
   } else
     if(sat_type & HAS_V7PATTERNS) {
       i = 0;
-      while(!f->ateof()) {
+      while (i < 64 * 9 && !f->ateof()) {
 	for(j=0;j<64;j++) {
 	  for(k=0;k<9;k++) {
 	    buf = f->readInt(1);
@@ -200,7 +206,7 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
       }
     } else {
       i = 0;
-      while(!f->ateof()) {
+      while (i < 64 * 9 && !f->ateof()) {
 	for(j=0;j<64;j++) {
 	  buf = f->readInt(1);
 	  tracks[i][j].note = buf >> 1;
