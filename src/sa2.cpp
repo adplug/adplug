@@ -243,27 +243,32 @@ std::string Csa2Loader::gettype()
 
 std::string Csa2Loader::gettitle()
 {
-  char bufinst[29*17],buf[18];
-  int i,ptr;
+  char buf[29 * 17 - 1];
+  int i, j, len = 0, ptr = 0, spaces = 0;
 
   // parse instrument names for song name
-  memset(bufinst,'\0',29*17);
-  for(i=0;i<29;i++) {
-    buf[16] = ' '; buf[17] = '\0';
-    memcpy(buf,instname[i]+1,16);
-    for(ptr=16;ptr>0;ptr--)
-      if(buf[ptr] == ' ')
-	buf[ptr] = '\0';
-      else {
-	if(ptr<16)
-	  buf[ptr+1] = ' ';
-	break;
-      }
-    strcat(bufinst,buf);
+
+  for (i = 0; i < 29; i++)
+    for (j = 1; j < 17; j++)
+      if (instname[i][j] == '"') goto title_start;
+
+  return std::string();
+
+  for (/*i = 0*/; i < 29; i++) {
+    for (j = 1; j < 17; j++) {
+      if (instname[i][j] == ' ')
+	spaces++;
+      else
+	spaces = 0;
+      if (instname[i][j] == '"')
+	len = ptr;
+      buf[ptr++] = instname[i][j];
+    title_start:;
+    }
+    ptr -= spaces;
+    spaces = 1;
+    buf[ptr++] = ' ';
   }
 
-  if(strchr(bufinst,'"'))
-    return std::string(bufinst,strchr(bufinst,'"')-bufinst+1,strrchr(bufinst,'"')-strchr(bufinst,'"')-1);
-  else
-    return std::string();
+  return std::string(buf, len);
 }
