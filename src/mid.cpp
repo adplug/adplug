@@ -179,9 +179,9 @@ unsigned long CmidPlayer::getval()
 
 	do {
 		b = getnext(1);
-		v = (v << 7) + (b & 0x7F);
+		v = (v << 7) + (b & 0x7f);
 	} while (b & 0x80);
-	return v;
+	return v & 0x0fffffff; // limit value to allowed range
 }
 
 bool CmidPlayer::load_sierra_ins(const std::string &fname, const CFileProvider &fp)
@@ -432,6 +432,7 @@ void CmidPlayer::midi_fm_volume(int voice, int volume)
 
 void CmidPlayer::midi_fm_playnote(int voice, int note, int volume)
 {
+    if (note < 0) return; // prevent invalid access
     int freq=fnums[note%12];
     int oct=note/12;
 	int c;
@@ -828,7 +829,7 @@ midi_fm_playnote(i,note+cnote[c],my_midi_fm_vol_table[(cvols[c]*vel)/128]*2);
 
         if (ret==1)
             {
-            iwait=0xffffff;  // bigger than any wait can be!
+            iwait = ~0UL;  // bigger than any wait can be!
             for (curtrack=0; curtrack<16; curtrack++)
                if (track[curtrack].on == 1 &&
                    track[curtrack].pos < track[curtrack].tend &&
@@ -949,8 +950,11 @@ void CmidPlayer::rewind(int subsong)
                 curtrack=0;
                 track[curtrack].on=1;
                 track[curtrack].tend=getnext(4);
-                track[curtrack].spos=pos;
                 midiprintf ("tracklen:%lu\n",track[curtrack].tend);
+                //track[curtrack].tend += pos; // FIXME: length -> end position
+                if (track[curtrack].tend > flen) // no music after end of file
+                    track[curtrack].tend = flen;
+                track[curtrack].spos=pos;
                 break;
             case FILE_CMF:
                 getnext(3);  // ctmf
