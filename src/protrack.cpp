@@ -66,7 +66,7 @@ bool CmodPlayer::update()
   unsigned long		row;
 
   if(!speed)		// song full stop
-    return !songend;
+    return false;
 
   // effect handling (timer dependant)
   for(chan = 0; chan < nchans; chan++) {
@@ -290,7 +290,11 @@ bool CmodPlayer::update()
       break;
 
     case 11: // position jump
-      pattbreak = 1; rw = 0; if(info < ord) songend = 1; ord = info; break;
+      pattbreak = 1;
+      rw = 0;
+      if (info <= ord) songend = 1;
+      ord = info;
+      break;
 
     case 12: // set volume
       channel[chan].vol1 = info;
