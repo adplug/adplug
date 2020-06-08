@@ -107,14 +107,20 @@ bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
       offs = (cnt+3) + (cmp[cmpptr] << 4);
       cnt = cmp[++cmpptr] + 16; cmpptr++;
       if (orgptr + cnt > header.size || offs > orgptr) goto err;
-      memcpy(&org[orgptr],&org[orgptr - offs],cnt);
+      // may overlap, can't use memcpy()
+      //memcpy(&org[orgptr],&org[orgptr - offs],cnt);
+      for (i = 0; i < cnt; i++)
+        org[orgptr + i] = org[orgptr - offs + i];
       orgptr += cnt;
       break;
 
     default:
       offs = (cnt+3) + (cmp[cmpptr++] << 4);
       if (orgptr + cmd > header.size || offs > orgptr) goto err;
-      memcpy(&org[orgptr],&org[orgptr-offs],cmd);
+      // may overlap, can't use memcpy()
+      //memcpy(&org[orgptr],&org[orgptr-offs],cmd);
+      for (i = 0; i < cmd; i++)
+        org[orgptr + i] = org[orgptr - offs + i];
       orgptr += cmd;
       break;
     }
