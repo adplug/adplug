@@ -42,10 +42,7 @@ bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
     // HSC pattern has different type and size from patterns, but that
     // doesn't matter much since we memcpy() the data. Still confusing.
   } *data;
-  unsigned char *cmp,*org;
-  unsigned int i;
-  unsigned long cmpsize,cmpptr=0,orgptr=0;
-  unsigned short ctrlbits=0,ctrlmask=0,cmd,cnt,offs;
+  unsigned int i, cnt;
 
   // read header
   f->readString(header.id, 18);
@@ -58,78 +55,61 @@ bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
     fp.close(f); return false;
   }
 
-  // load section
-  cmpsize = fp.filesize(f) - 22;
-  cmp = new unsigned char[cmpsize];
-  org = new unsigned char[header.size];
-  for(i = 0; i < cmpsize; i++) cmp[i] = f->readInt(1);
-  fp.close(f);
+  // load & decompress section
+  unsigned short ctrlbits = 0, ctrlmask = 0;
+  unsigned char *org = new unsigned char[header.size];
+  for (size_t orgptr = 0; orgptr < header.size; orgptr += cnt) {
+    if (f->error()) goto err;
 
-  while(cmpptr < cmpsize) {	// decompress
     ctrlmask >>= 1;
-    if(!ctrlmask) {
-      if (cmpptr + 2 > cmpsize) goto err;
-      ctrlbits = cmp[cmpptr] + (cmp[cmpptr + 1] << 8);
-      cmpptr += 2;
+    if (!ctrlmask) {
+      ctrlbits = f->readInt(2);
       ctrlmask = 0x8000;
     }
-    if(!(ctrlbits & ctrlmask)) {	// uncompressed data
-      if(orgptr >= header.size)
-	goto err;
 
-      org[orgptr] = cmp[cmpptr];
-      orgptr++; cmpptr++;
+    if (!(ctrlbits & ctrlmask)) {	// uncompressed data
+      org[orgptr] = f->readInt(1);
+      cnt = 1;
       continue;
     }
 
     // compressed data
-    cmd = (cmp[cmpptr] >> 4) & 0x0f;
-    cnt = cmp[cmpptr] & 0x0f;
-    cmpptr++;
-    if (cmpptr >= cmpsize) goto err;
-    switch(cmd) {
-    case 0:
-      cnt += 3;
+    unsigned offs;
+    unsigned char cmd = f->readInt(1);
+    cnt = (cmd & 0x0f) + 3;
+
+    switch (cmd >> 4) {
+    case 0:	// repeat a byte 3..18 times
+    repeat_byte:
       if (orgptr + cnt > header.size) goto err;
-      memset(&org[orgptr],cmp[cmpptr],cnt);
-      cmpptr++; orgptr += cnt;
+      memset(&org[orgptr], f->readInt(1), cnt);
       break;
 
-    case 1:
-      cnt += (cmp[cmpptr] << 4) + 19;
-      if (orgptr + cnt > header.size || cmpptr >= cmpsize) goto err;
-      memset(&org[orgptr],cmp[++cmpptr],cnt);
-      cmpptr++; orgptr += cnt;
-      break;
+    case 1:	// repeat a byte 19..4114 times
+      cnt += (f->readInt(1) << 4) + 16;
+      goto repeat_byte;
 
-    case 2:
-      if (cmpptr + 2 > cmpsize) goto err;
-      offs = (cnt+3) + (cmp[cmpptr] << 4);
-      cnt = cmp[++cmpptr] + 16; cmpptr++;
+    case 2:	// copy range (16..271 bytes)
+      offs = cnt + (f->readInt(1) << 4);
+      cnt = f->readInt(1) + 16;
+    copy_range:
       if (orgptr + cnt > header.size || offs > orgptr) goto err;
       // may overlap, can't use memcpy()
-      //memcpy(&org[orgptr],&org[orgptr - offs],cnt);
       for (i = 0; i < cnt; i++)
         org[orgptr + i] = org[orgptr - offs + i];
-      orgptr += cnt;
       break;
 
-    default:
-      offs = (cnt+3) + (cmp[cmpptr++] << 4);
-      if (orgptr + cmd > header.size || offs > orgptr) goto err;
-      // may overlap, can't use memcpy()
-      //memcpy(&org[orgptr],&org[orgptr-offs],cmd);
-      for (i = 0; i < cmd; i++)
-        org[orgptr + i] = org[orgptr - offs + i];
-      orgptr += cmd;
-      break;
+    default:	// copy range (3..15 bytes)
+      offs = cnt + (f->readInt(1) << 4);
+      cnt = cmd >> 4;
+      goto copy_range;
     }
   }
-  // orgptr should match header.size; add a check?
-  delete [] cmp;
-  data = (struct mtkdata *) org;
+  if (f->error() || !f->ateof()) goto err;
+  fp.close(f);
 
   // convert to HSC replay data
+  data = (struct mtkdata *) org;
   memset(title,0,34); strncpy(title,data->songname+1,33);
   memset(composer,0,34); strncpy(composer,data->composername+1,33);
   memset(instname,0,0x80*34);
@@ -151,7 +131,7 @@ bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
   return true;
 
  err:
-  delete [] cmp;
+  fp.close(f);
   delete [] org;
   return false;
 }
