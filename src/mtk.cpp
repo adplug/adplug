@@ -31,27 +31,29 @@ CPlayer *CmtkLoader::factory(Copl *newopl)
 
 bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-  binistream *f = fp.open(filename); if(!f) return false;
+  binistream *f = fp.open(filename);
+  if (!f) return false;
+
   struct {
     char id[18];
-    unsigned short crc,size;
+    unsigned short crc, size;
   } header;
   struct mtkdata {
-    char songname[34],composername[34],instname[0x80][34];
-    unsigned char insts[0x80][12],order[0x80],dummy,patterns[0x32][0x40][9];
-    // HSC pattern has different type and size from patterns, but that
-    // doesn't matter much since we memcpy() the data. Still confusing.
+    struct { char dummy, str[33]; } songname, composername, instname[0x80];
+    unsigned char insts[0x80][12], order[0x80], dummy;
+    // followed by pattern data:
+    // hscnote patterns[50][64*9];
   } *data;
   unsigned int i, cnt;
 
   // read header
-  f->readString(header.id, 18);
+  f->readString(header.id, sizeof(header.id));
   header.crc = f->readInt(2);
   header.size = f->readInt(2);
 
   // file validation section
-  if (memcmp(header.id, "mpu401tr\x92kk\xeer@data", 18) ||
-      header.size < sizeof(*data) - sizeof(data->patterns)) {
+  if (memcmp(header.id, "mpu401tr\x92kk\xeer@data", sizeof(header.id)) ||
+      header.size < sizeof(*data)) {
     fp.close(f); return false;
   }
 
@@ -110,21 +112,28 @@ bool CmtkLoader::load(const std::string &filename, const CFileProvider &fp)
 
   // convert to HSC replay data
   data = (struct mtkdata *) org;
-  memset(title,0,34); strncpy(title,data->songname+1,33);
-  memset(composer,0,34); strncpy(composer,data->composername+1,33);
-  memset(instname,0,0x80*34);
-  for(i=0;i<0x80;i++)
-    strncpy(instname[i],data->instname[i]+1,33);
-  memcpy(instr,data->insts,0x80 * 12);
-  memcpy(song,data->order,0x80);
-  for (i=0;i<128;i++) {				// correct instruments
+  strncpy(title, data->songname.str, sizeof(title) - 1);
+  title[sizeof(title) - 1] = 0;
+  strncpy(composer, data->composername.str, sizeof(composer) - 1);
+  composer[sizeof(composer) - 1] = 0;
+
+  for (i = 0; i < 0x80; i++) {
+    strncpy(instname[i], data->instname[i].str, sizeof(instname[i]) - 1);
+    instname[i][sizeof(instname[i]) - 1] = 0;
+  }
+
+  memcpy(instr, data->insts, sizeof(instr));
+  for (i = 0; i < 0x80; i++) {		// correct instruments
     instr[i][2] ^= (instr[i][2] & 0x40) << 1;
     instr[i][3] ^= (instr[i][3] & 0x40) << 1;
     instr[i][11] >>= 4;		// make unsigned
   }
-  cnt = header.size - (sizeof(*data) - sizeof(data->patterns)); // was off by 1
+
+  memcpy(song, data->order, sizeof(song));
+
+  cnt = header.size - sizeof(*data); // was off by 1
   if (cnt > sizeof(patterns)) cnt = sizeof(patterns); // fail?
-  memcpy(patterns, data->patterns, cnt);
+  memcpy(patterns, org + sizeof(*data), cnt);
 
   delete [] org;
   rewind(0);
