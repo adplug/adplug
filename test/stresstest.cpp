@@ -44,9 +44,6 @@
 /***** Local variables *****/
 
 static const char *const filelist[] = {
-	/* Example */
-	"fdance03.dmo",	// TwinTrack sample (skipped in playertest)
-	/* Regression tests */
 	"i-85.bmf",	// Issue #85 (CVE-2019-14690): "Heap-based buffer
 			//    overflow in CxadbmfPlayer::__bmf_convert_stream()"
 	"i-86.dtm",	// Issue #86 (CVE-2019-14691): "Heap-based buffer
