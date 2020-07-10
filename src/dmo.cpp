@@ -57,14 +57,13 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
   if (!f) return false;
 
   // check header
-  dmo_unpacker *unpacker = new dmo_unpacker;
+  dmo_unpacker unpacker;
   unsigned char chkhdr[16];
 
   f->readString((char *)chkhdr, 16);
 
-  if (!unpacker->decrypt(chkhdr, 16))
+  if (!unpacker.decrypt(chkhdr, 16))
     {
-      delete unpacker;
       fp.close(f);
       return false;
     }
@@ -80,21 +79,19 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
   fp.close(f);
 
   // decrypt
-  unpacker->decrypt(packed_module,packed_length);
+  unpacker.decrypt(packed_module, packed_length);
 
   long unpacked_length = 0x2000 * ARRAY_AS_WORD(packed_module, 12);
   unsigned char *module = new unsigned char [unpacked_length];
 
   // unpack
-  if (!unpacker->unpack(packed_module+12,module,unpacked_length))
+  if (!unpacker.unpack(packed_module + 12, module, unpacked_length))
     {
-      delete unpacker;
       delete [] packed_module;
       delete [] module;
       return false;
     }
 
-  delete unpacker;
   delete [] packed_module;
 
   // "TwinTeam" - signed ?
