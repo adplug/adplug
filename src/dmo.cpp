@@ -51,25 +51,14 @@ CPlayer *CdmoLoader::factory(Copl *newopl)
 
 bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-  int i,j;
-  binistream *f;
+  int i, j;
+
+  binistream *f = fp.open(filename);
+  if (!f) return false;
 
   // check header
   dmo_unpacker *unpacker = new dmo_unpacker;
   unsigned char chkhdr[16];
-
-  if(!fp.extension(filename, ".dmo"))
-    {
-      delete unpacker;
-      return false;
-    }
-
-  f = fp.open(filename);
-  if(!f)
-    {
-      delete unpacker;
-      return false;
-    }
 
   f->readString((char *)chkhdr, 16);
 
