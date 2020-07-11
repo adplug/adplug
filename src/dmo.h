@@ -19,6 +19,8 @@
   dmo.cpp - TwinTeam loader by Riven the Mage <riven@ok.ru>
 */
 
+#include <cstdint>
+
 #include "s3m.h"
 
 class CdmoLoader: public Cs3mPlayer
@@ -45,7 +47,7 @@ class CdmoLoader: public Cs3mPlayer
     unsigned short brand(unsigned short range);
     short unpack_block(unsigned char *ibuf, long ilen, unsigned char *obuf);
 
-    unsigned long bseed;
+    uint32_t bseed;
     unsigned char *oend;
   };
 };

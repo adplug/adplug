@@ -31,11 +31,6 @@
 #include "dmo.h"
 #include "debug.h"
 
-#define LOWORD(l) ((l) & 0xffff)
-#define HIWORD(l) ((l) >> 16)
-#define LOBYTE(w) ((w) & 0xff)
-#define HIBYTE(w) ((w) >> 8)
-
 #define ARRAY_AS_DWORD(a, i) \
 ((a[i + 3] << 24) + (a[i + 2] << 16) + (a[i + 1] << 8) + a[i])
 #define ARRAY_AS_WORD(a, i)	((a[i + 1] << 8) + a[i])
@@ -224,31 +219,10 @@ std::string CdmoLoader::getauthor()
 
 unsigned short CdmoLoader::dmo_unpacker::brand(unsigned short range)
 {
-  unsigned short ax,bx,cx,dx;
+  bseed *= 0x08088405U;
+  bseed++;
 
-  ax = LOWORD(bseed);
-  bx = HIWORD(bseed);
-  cx = ax;
-  ax = LOWORD(cx * 0x8405U);
-  dx = HIWORD(cx * 0x8405U);
-  cx <<= 3;
-  cx = (((HIBYTE(cx) + LOBYTE(cx)) & 0xFF) << 8) + LOBYTE(cx);
-  dx += cx;
-  dx += bx;
-  bx <<= 2;
-  dx += bx;
-  dx = (((HIBYTE(dx) + LOBYTE(bx)) & 0xFF) << 8) + LOBYTE(dx);
-  bx <<= 5;
-  dx = (((HIBYTE(dx) + LOBYTE(bx)) & 0xFF) << 8) + LOBYTE(dx);
-  ax += 1;
-  if (!ax) dx += 1;
-
-  // leave it that way or amd64 might get it wrong
-  bseed = dx;
-  bseed <<= 16;
-  bseed += ax;
-
-  return HIWORD(HIWORD(LOWORD(bseed) * range) + HIWORD(bseed) * range);
+  return (uint64_t)bseed * range >> 32;
 }
 
 bool CdmoLoader::dmo_unpacker::decrypt(unsigned char *buf, long len)
