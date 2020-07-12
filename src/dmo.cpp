@@ -248,108 +248,67 @@ bool CdmoLoader::dmo_unpacker::decrypt(unsigned char *buf, long len)
   return true;
 }
 
-short CdmoLoader::dmo_unpacker::unpack_block(unsigned char *ibuf, long ilen, unsigned char *obuf)
+long CdmoLoader::dmo_unpacker::unpack_block(unsigned char *ibuf, size_t ilen,
+					    unsigned char *obuf)
 {
-  unsigned char code,par1,par2;
-  unsigned short ax,bx,cx;
-
-  unsigned char *ipos = ibuf;
-  unsigned char *opos = obuf;
+  size_t ipos = 0, opos = 0;
+  size_t olen = oend - obuf;
 
   // LZ77 child
-  while (ipos - ibuf < ilen)
-    {
-      code = *ipos++;
+  while (ipos < ilen) {
+    size_t cpy = 0, ofs = 0, lit = 0;
+    unsigned char code, par1, par2;
 
-      // 00xxxxxx: copy (xxxxxx + 1) bytes
-      if ((code >> 6) == 0)
-	{
-	  cx = (code & 0x3F) + 1;
+    code = ibuf[ipos++];
+    par1 = ipos < ilen ? ibuf[ipos] : 0;
+    par2 = ipos + 1 < ilen ? ibuf[ipos + 1] : 0;
+    switch (code >> 6) {
+    case 0:
+      // 00xxxxxx: use (X + 1) literal bytes
+      lit = (code & 0x3F) + 1;
+      break;
 
-	  if(opos + cx >= oend)
-	    return -1;
+    case 1:
+      // 01xxxxxx xxxyyyyy: copy (Y + 3) bytes from offset (X + 1)
+      ipos++; // for par1
+      ofs = ((code & 0x3F) << 3) + ((par1 & 0xE0) >> 5) + 1;
+      cpy = (par1 & 0x1F) + 3;
+      break;
 
-	  for (int i=0;i<cx;i++)
-	    *opos++ = *ipos++;
+    case 2:
+      // 10xxxxxx xyyyzzzz: copy (Y + 3) bytes from offset(X + 1);
+      // use Z literal bytes
+      ipos++; // for par1
+      ofs = ((code & 0x3F) << 1) + (par1 >> 7) + 1;
+      cpy = ((par1 & 0x70) >> 4) + 3;
+      lit = par1 & 0x0F;
+      break;
 
-	  continue;
-	}
-
-      // 01xxxxxx xxxyyyyy: copy (Y + 3) bytes from (X + 1)
-      if ((code >> 6) == 1)
-	{
-	  par1 = *ipos++;
-
-	  ax = ((code & 0x3F) << 3) + ((par1 & 0xE0) >> 5) + 1;
-	  cx = (par1 & 0x1F) + 3;
-
-	  if(opos + cx >= oend)
-	    return -1;
-
-	  for(int i=0;i<cx;i++)
-	  {
-	    *opos = *(opos - ax);
-	    opos++;
-	  }
-
-	  continue;
-	}
-
-      // 10xxxxxx xyyyzzzz: copy (Y + 3) bytes from (X + 1); copy Z bytes
-      if ((code >> 6) == 2)
-	{
-	  int i;
-
-	  par1 = *ipos++;
-
-	  ax = ((code & 0x3F) << 1) + (par1 >> 7) + 1;
-	  cx = ((par1 & 0x70) >> 4) + 3;
-	  bx = par1 & 0x0F;
-
-	  if(opos + bx + cx >= oend)
-	    return -1;
-
-	  for(i=0;i<cx;i++)
-	  {
-	    *opos = *(opos - ax);
-	    opos++;
-	  }
-
-	  for (i=0;i<bx;i++)
-	    *opos++ = *ipos++;
-
-	  continue;
-	}
-
-      // 11xxxxxx xxxxxxxy yyyyzzzz: copy (Y + 4) from X; copy Z bytes
-      if ((code >> 6) == 3)
-	{
-	  int i;
-
-	  par1 = *ipos++;
-	  par2 = *ipos++;
-
-	  bx = ((code & 0x3F) << 7) + (par1 >> 1);
-	  cx = ((par1 & 0x01) << 4) + (par2 >> 4) + 4;
-	  ax = par2 & 0x0F;
-
-	  if(opos + ax + cx >= oend)
-	    return -1;
-
-	  for(i=0;i<cx;i++)
-	  {
-	    *opos = *(opos - bx);
-	    opos++;
-	  }
-
-	  for (i=0;i<ax;i++)
-	    *opos++ = *ipos++;
-
-	  continue;
-	}
+    case 3:
+      // 11xxxxxx xxxxxxxy yyyyzzzz: copy (Y + 4) from offset X;
+      // use Z literal bytes
+      ipos += 2; // for par1 and par2
+      ofs = ((code & 0x3F) << 7) + (par1 >> 1);
+      cpy = ((par1 & 0x01) << 4) + (par2 >> 4) + 4;
+      lit = par2 & 0x0F;
+      break;
     }
 
-  return opos - obuf;
+    // check lengths and offset
+    if (ipos + lit > ilen || opos + cpy + lit > olen || ofs > opos)
+      return -1;
+
+    // copy - can't use memcpy() because source and destination may overlap
+    for (size_t i = 0; i < cpy; i++)
+      obuf[opos + i] = obuf[opos - ofs + i];
+    opos += cpy;
+
+    // copy literal bytes
+    while (lit--)
+      obuf[opos++] = ibuf[ipos++];
+  }
+
+  return opos;
 }
 
 long CdmoLoader::dmo_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf,

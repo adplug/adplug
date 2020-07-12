@@ -45,7 +45,7 @@ class CdmoLoader: public Cs3mPlayer
 
   private:
     unsigned short brand(unsigned short range);
-    short unpack_block(unsigned char *ibuf, long ilen, unsigned char *obuf);
+    long unpack_block(unsigned char *ibuf, size_t ilen, unsigned char *obuf);
 
     uint32_t bseed;
     unsigned char *oend;
