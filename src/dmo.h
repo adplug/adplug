@@ -39,15 +39,16 @@ class CdmoLoader: public Cs3mPlayer
 
   class dmo_unpacker {
   public:
-    bool decrypt(unsigned char *buf, long len);
-    long unpack(unsigned char *ibuf, unsigned char *obuf,
-		unsigned long outputsize);
+    enum { headersize = 12 };
+    bool decrypt(unsigned char *buf, size_t len);
+    static size_t unpack(unsigned char *ibuf, size_t inputsize,
+			 unsigned char *obuf, size_t outputsize);
 
   private:
     unsigned short brand(unsigned short range);
-    long unpack_block(unsigned char *ibuf, size_t ilen, unsigned char *obuf);
+    static long unpack_block(unsigned char *ibuf, size_t ilen,
+			unsigned char *obuf, size_t olen);
 
     uint32_t bseed;
-    unsigned char *oend;
   };
 };

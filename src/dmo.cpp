@@ -35,8 +35,6 @@
 ((a[i + 3] << 24) + (a[i + 2] << 16) + (a[i + 1] << 8) + a[i])
 #define ARRAY_AS_WORD(a, i)	((a[i + 1] << 8) + a[i])
 
-#define CHARP_AS_WORD(p)	(((*(p + 1)) << 8) + (*p))
-
 /* -------- Public Methods -------------------------------- */
 
 CPlayer *CdmoLoader::factory(Copl *newopl)
@@ -80,7 +78,7 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
   unsigned char *module = new unsigned char [unpacked_length];
 
   // unpack
-  if (!unpacker.unpack(packed_module + 12, module, unpacked_length))
+  if (!unpacker.unpack(packed_module, packed_length, module, unpacked_length))
     {
       delete [] packed_module;
       delete [] module;
@@ -225,14 +223,15 @@ unsigned short CdmoLoader::dmo_unpacker::brand(unsigned short range)
   return (uint64_t)bseed * range >> 32;
 }
 
-bool CdmoLoader::dmo_unpacker::decrypt(unsigned char *buf, long len)
+bool CdmoLoader::dmo_unpacker::decrypt(unsigned char *buf, size_t len)
 {
-  unsigned long seed = 0;
-  int i;
+  if (len < headersize)
+    return false;
 
   bseed = ARRAY_AS_DWORD(buf, 0);
 
-  for (i=0; i < ARRAY_AS_WORD(buf, 4) + 1; i++)
+  uint32_t seed = 0;
+  for (int i = 0; i <= ARRAY_AS_WORD(buf, 4); i++)
     seed += brand(0xffff);
 
   bseed = seed ^ ARRAY_AS_DWORD(buf, 6);
@@ -240,8 +239,8 @@ bool CdmoLoader::dmo_unpacker::decrypt(unsigned char *buf, long len)
   if (ARRAY_AS_WORD(buf, 10) != brand(0xffff))
     return false;
 
-  for (i=0;i<(len-12);i++)
-    buf[12+i] ^= brand(0x100);
+  for (size_t i = headersize; i < len; i++)
+    buf[i] ^= brand(0x100);
 
   buf[len - 2] = buf[len - 1] = 0;
 
@@ -249,10 +248,9 @@ bool CdmoLoader::dmo_unpacker::decrypt(unsigned char *buf, long len)
 }
 
 long CdmoLoader::dmo_unpacker::unpack_block(unsigned char *ibuf, size_t ilen,
-					    unsigned char *obuf)
+					    unsigned char *obuf, size_t olen)
 {
   size_t ipos = 0, opos = 0;
-  size_t olen = oend - obuf;
 
   // LZ77 child
   while (ipos < ilen) {
@@ -311,31 +309,39 @@ long CdmoLoader::dmo_unpacker::unpack_block(unsigned char *ibuf, size_t ilen,
   return opos;
 }
 
-long CdmoLoader::dmo_unpacker::unpack(unsigned char *ibuf, unsigned char *obuf,
-				      unsigned long outputsize)
+size_t CdmoLoader::dmo_unpacker::unpack(unsigned char *ibuf, size_t inputsize,
+					unsigned char *obuf, size_t outputsize)
 {
-  long			olen = 0;
-  unsigned short	block_count = CHARP_AS_WORD(ibuf);
+  if (inputsize < headersize + 2)
+    return 0;
 
-  ibuf += 2;
-  unsigned char *block_length = ibuf;
-  ibuf += 2 * block_count;
+  unsigned short block_count = ARRAY_AS_WORD(ibuf, headersize);
+  unsigned block_start = headersize + 2 + 2 * block_count;
 
-  oend = obuf + outputsize;
+  if (inputsize < block_start)
+    return 0;
 
-  for (int i=0;i<block_count;i++)
-    {
-      unsigned short bul = CHARP_AS_WORD(ibuf);
+  unsigned char *block_length = &ibuf[headersize + 2];
+  ibuf += block_start;
+  inputsize -= block_start;
 
-      if(unpack_block(ibuf + 2,CHARP_AS_WORD(block_length) - 2,obuf) != bul)
-	return 0;
+  size_t olen = 0;
+  for (int i = 0; i < block_count; i++) {
+    unsigned short blen = ARRAY_AS_WORD(block_length, 2 * i);
+    if (blen < 2 || blen > inputsize)
+      return 0;
 
-      obuf += bul;
-      olen += bul;
+    unsigned short bul = ARRAY_AS_WORD(ibuf, 0);
 
-      ibuf += CHARP_AS_WORD(block_length);
-      block_length += 2;
-    }
+    if (unpack_block(ibuf + 2, blen - 2, obuf, outputsize - olen) != bul)
+      return 0;
+
+    obuf += bul;
+    olen += bul;
+
+    ibuf += blen;
+    inputsize -= blen;
+  }
 
   return olen;
 }
