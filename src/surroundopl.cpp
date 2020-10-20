@@ -227,6 +227,8 @@ void CSurroundopl::init()
 {
 	this->oplA.opl->init();
 	this->oplB.opl->init();
+	this->oplA.opl->setchip(0);
+	this->oplB.opl->setchip(0);
 	for (int c = 0; c < 2; c++) {
 		for (int i = 0; i < 256; i++) {
 			this->iFMReg[c][i] = 0;
@@ -243,6 +245,7 @@ void CSurroundopl::setchip(int n)
 {
 	this->oplA.opl->setchip(n);
 	this->oplB.opl->setchip(n);
+	this->Copl::setchip(n);
 }
 
 void CSurroundopl::set_offset(double offset)
