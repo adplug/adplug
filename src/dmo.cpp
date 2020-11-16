@@ -102,6 +102,7 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
 
   uf.ignore(22);				// ignore DMO header ID string
   uf.readString(header.name, 28);
+  header.name[27] = 0;				// ensure termination
 
   uf.ignore(2);				// _unk_1
   header.ordnum  = uf.readInt(2);
@@ -110,6 +111,11 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
   uf.ignore(2);				// _unk_2
   header.is      = uf.readInt(2);
   header.it      = uf.readInt(2);
+
+  if (header.ordnum >= 256 || header.insnum > 99 || header.patnum > 99) {
+    delete [] module;
+    return false;
+  }
 
   memset(header.chanset,0xFF,32);
 
@@ -133,6 +139,7 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
       memset(&inst[i],0,sizeof(s3minst));
 
       uf.readString(inst[i].name, 28);
+      inst[i].name[27] = 0;
 
       inst[i].volume = uf.readInt(1);
       inst[i].dsk    = uf.readInt(1);
@@ -190,6 +197,7 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
       }
     }
 
+    // TODO: sanitiy checking my_patlen[i] here might be a good idea
     uf.seek(cur_pos + my_patlen[i]);
   }
 
