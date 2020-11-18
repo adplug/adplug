@@ -41,7 +41,7 @@
  * and more.
  */
 
-#include <string.h>
+#include <cstring>
 
 #include "imf.h"
 #include "database.h"
@@ -55,11 +55,11 @@ CPlayer *CimfPlayer::factory(Copl *newopl)
 
 bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
-  binistream *f = fp.open(filename); if(!f) return false;
-  unsigned long fsize, flsize, mfsize = 0;
-  unsigned int i;
+  binistream *f = fp.open(filename);
+  if (!f) return false;
 
   // file validation section
+  size_t hdr_size = 0;
   {
     char	header[5];
     int		version;
@@ -67,8 +67,8 @@ bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
     f->readString(header, 5);
     version = f->readInt(1);
 
-    if(strncmp(header, "ADLIB", 5) || version != 1) {
-      if(!fp.extension(filename, ".imf") && !fp.extension(filename, ".wlf")) {
+    if (memcmp(header, "ADLIB", 5) || version != 1) {
+      if (!fp.extension(filename, ".imf") && !fp.extension(filename, ".wlf")) {
 	// It's no IMF file at all
 	fp.close(f);
 	return false;
@@ -79,45 +79,52 @@ bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
       track_name = f->readString('\0');
       game_name = f->readString('\0');
       f->ignore(1);
-      mfsize = f->pos() + 2;
+      hdr_size = f->pos();
     }
   }
 
-  // load section
-  if(mfsize)
-    fsize = f->readInt(4);
-  else
-    fsize = f->readInt(2);
-  flsize = fp.filesize(f);
-  if (mfsize + 4 > flsize || fsize > flsize - 2 - mfsize || fsize & 3) {
-    fp.close(f);        // truncated file or bad size record
-    return false;
-  }    
-  if(!fsize) {		// footerless file (raw music data)
-    if(mfsize)
-      f->seek(-4, binio::Add);
-    else
-      f->seek(-2, binio::Add);
-    size = (flsize - mfsize) / 4;
-  } else		// file has got a footer
-    size = fsize / 4;
+  // determine data size
+  unsigned long file_size = fp.filesize(f);
+  int len_size = hdr_size ? 4 : 2;
+  size_t song_size = f->readInt(len_size);
 
+  if (!song_size) {	// raw music data (no length field, no footer)
+    f->seek(-len_size, binio::Add);
+    len_size = 0;
+    song_size = file_size - hdr_size;
+    // some IMF files end *before* the last time value (either format)
+    if (song_size & 2) song_size += 2;
+  }
+
+  hdr_size += len_size;
+
+  // validity check
+  if (hdr_size + 4 > file_size || song_size & 3 // too short || invalid length
+      || (song_size > file_size - hdr_size && // truncated song data
+	  song_size != file_size + 2 - hdr_size)) { // allow trunc. final time
+    fp.close(f);
+    return false;
+  }
+
+  // read song data
+  size = song_size / 4;
   data = new Sdata[size];
-  for(i = 0; i < size; i++) {
-    data[i].reg = f->readInt(1); data[i].val = f->readInt(1);
+  for (size_t i = 0; i < size; i++) {
+    data[i].reg = f->readInt(1);
+    data[i].val = f->readInt(1);
     data[i].time = f->readInt(2);
   }
 
   // read footer, if any
-  if(fsize && (fsize < flsize - 2 - mfsize)) {
-    if(f->readInt(1) == 0x1a) {
+  if (song_size < file_size - hdr_size) {
+    if (f->readInt(1) == 0x1a) {
       // Adam Nielsen's footer format
       track_name = f->readString();
       author_name = f->readString();
       remarks = f->readString();
     } else {
       // Generic footer
-      unsigned long footerlen = flsize - fsize - 2 - mfsize;
+      size_t footerlen = file_size - hdr_size - song_size;
 
       footer = new char[footerlen + 1];
       f->readString(footer, footerlen);
