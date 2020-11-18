@@ -177,17 +177,10 @@ std::string CimfPlayer::gettitle()
 
 std::string CimfPlayer::getdesc()
 {
-  std::string	desc;
+  if (footer)
+    return std::string(footer);
 
-  if(footer)
-    desc = std::string(footer);
-
-  if(!remarks.empty() && footer)
-    desc += "\n\n";
-
-  desc += remarks;
-
-  return desc;
+  return remarks;
 }
 
 /*** private methods *************************************/
