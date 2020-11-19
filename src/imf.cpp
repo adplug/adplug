@@ -180,16 +180,10 @@ void CimfPlayer::rewind(int subsong)
 
 std::string CimfPlayer::gettitle()
 {
-  std::string	title;
+  if (game_name.empty()) return track_name;
+  if (track_name.empty()) return game_name;
 
-  title = track_name;
-
-  if(!track_name.empty() && !game_name.empty())
-    title += " - ";
-
-  title += game_name;
-
-  return title;
+  return track_name + " - " + game_name;
 }
 
 std::string CimfPlayer::getdesc()
