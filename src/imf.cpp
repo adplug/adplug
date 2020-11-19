@@ -117,18 +117,35 @@ bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
 
   // read footer, if any
   if (song_size < file_size - hdr_size) {
-    if (f->readInt(1) == 0x1a) {
+    size_t footerlen = file_size - hdr_size - song_size;
+    char signature = f->readInt(1);
+
+    if (signature == 0x1a && footerlen <= 1 + 3 * 256 + 9) {
       // Adam Nielsen's footer format
       track_name = f->readString();
       author_name = f->readString();
       remarks = f->readString();
+      // f->ignore(9); // tagging program
     } else {
       // Generic footer
-      size_t footerlen = file_size - hdr_size - song_size;
-
       footer = new char[footerlen + 1];
-      f->readString(footer, footerlen);
+      footer[0] = signature;
+      f->readString(&footer[1], footerlen);
       footer[footerlen] = '\0';	// Make ASCIIZ string
+
+      if (footerlen == 88 && // maybe Muse tag data
+	  !footer[17] && !footer[81] && track_name.empty()) {
+	// For the lack of a better test assume it's Muse data if the size
+	// is correct and both string fields end with NUL. Format is:
+	//  2 Bytes: unknown
+	// 16 Bytes: title
+	// 64 Bytes: remarks (usually source file)
+	//  6 Bytes: unknown data
+	track_name = std::string(&footer[2]);
+	remarks = std::string(&footer[18]);
+	delete footer;
+	footer = 0;
+      }
     }
   }
 
