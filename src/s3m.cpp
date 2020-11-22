@@ -22,6 +22,7 @@
  * Extra Fine Slides (EEx, FEx) & Fine Vibrato (Uxy) are inaccurate
  */
 
+#include <algorithm>
 #include <cstring>
 #include "s3m.h"
 #include "debug.h"
@@ -164,19 +165,11 @@ bool Cs3mPlayer::update()
 	vibrato(realchan, c.dualinfo);
       else					// dual command: G00 and Dxy
 	tone_portamento(realchan, c.dualinfo);
-    case 4:
-      if (info <= 0x0f) {			// volume slide down
-	if (c.vol >= info)
-	  c.vol -= info;
-	else
-	  channel[realchan].vol = 0;
-      }
-      if (!(info & 0x0f)) {			// volume slide up
-	if (c.vol + (info >> 4) <= 63)
-	  c.vol += info >> 4;
-	else
-	  c.vol = 63;
-      }
+    case 4:	// volume slide
+      if (info <= 0x0f)				// volume slide down
+	c.vol = std::max(c.vol - info, 0);
+      if (!(info & 0x0f))			// volume slide up
+	c.vol = std::min(c.vol + info >> 4, 63);
       setvolume(realchan);
       break;
 
@@ -218,10 +211,7 @@ bool Cs3mPlayer::update()
 	c.oct += (c.note + (info & 0x0f)) / 12;
 	break;
       }
-      if (c.trigger < 2)
-	c.trigger++;
-      else
-	c.trigger = 0;
+      if (++c.trigger > 2) c.trigger = 0;
       setfreq(realchan);
       c.freq = c.nextfreq;
       c.oct = c.nextoct;
@@ -312,20 +302,9 @@ bool Cs3mPlayer::update()
     // set instrument
     if (ev.instrument > 0 && ev.instrument <= header.insnum) {
       c.inst = ev.instrument - 1;
-      if (inst[c.inst].volume < 64)
-	c.vol = inst[c.inst].volume;
-      else
-	c.vol = 63;
+      c.vol = std::min(inst[c.inst].volume, (unsigned char)63);
       if (ev.command != 7)
 	donote = true;
-    }
-
-    // set volume
-    if (ev.volume != 255) {
-      if (ev.volume < 64)
-	c.vol = ev.volume;
-      else
-	c.vol = 63;
     }
 
     // set command & infobyte
@@ -345,8 +324,10 @@ bool Cs3mPlayer::update()
 	playnote(realchan);
 
     // set volume
-    if (ev.volume != 255)
-	setvolume(realchan);
+    if (ev.volume != 0xff) {
+      c.vol = std::min(ev.volume, (unsigned char)63);
+      setvolume(realchan);
+    }
 
     // fill infobyte cache
     const unsigned char info = c.info, infoL = info & 0x0f, infoH = info >> 4;
@@ -372,18 +353,10 @@ bool Cs3mPlayer::update()
       break;
 
     case 4:
-      if (info > 0xf0) {				// fine volume down
-	if (c.vol >= infoL)
-	  c.vol -= infoL;
-	else
-	  c.vol = 0;
-      }
-      if (infoL == 0x0f && infoH) {			// fine volume up
-	if (c.vol + infoH <= 63)
-	  c.vol += infoH;
-	else
-	  c.vol = 63;
-      }
+      if (info > 0xf0)					// fine volume down
+	c.vol = std::max(c.vol - infoL, 0);
+      if (infoL == 0x0f && infoH)			// fine volume up
+	c.vol = std::min(c.vol + infoH, 63);
       setvolume(realchan);
       break;
 
@@ -444,8 +417,7 @@ bool Cs3mPlayer::update()
   if (!del)
     del = speed - 1;		// speed compensation
   if (!pattbreak) {		// next row (only if no manual advance)
-    crow++;
-    if (crow > 63) {
+    if (++crow > 63) {
       crow = 0;
       if (!++ord) songend = 1;
       loopstart = 0;
