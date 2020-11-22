@@ -76,11 +76,11 @@ class Cs3mPlayer: public CPlayer
     char dummy2[12], name[28],scri[4];
   } inst[99];
 
-  struct {
+  struct s3mevent {
     unsigned char note,oct,instrument,volume,command,info;
   } pattern[99][64][32];
 
-  struct {
+  struct s3mchan {
     unsigned short freq,nextfreq;
     unsigned char oct,vol,inst,fx,info,dualinfo,key,nextoct,trigger,note;
   } channel[9];
