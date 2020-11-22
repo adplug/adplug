@@ -24,6 +24,7 @@
 
 #include <cstring>
 #include "s3m.h"
+#include "debug.h"
 
 const signed char Cs3mPlayer::chnresolv[] =	// S3M -> adlib channel conversion
   {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,-1,-1,-1,-1,-1,-1,-1};
@@ -227,16 +228,25 @@ bool Cs3mPlayer::update()
   }
 
   // arrangement handling
-  pattnr = orders[ord];
-  if(pattnr == 0xff || ord > header.ordnum) {	// "--" end of song
-    songend = 1;				// set end-flag
-    ord = 0;
-    pattnr = orders[ord];
-    if(pattnr == 0xff)
-      return !songend;
-  }
-  if(pattnr == 0xfe) {		// "++" skip marker
-    ord++; pattnr = orders[ord];
+  for (int end = 0;;) {
+    pattnr = ord < header.ordnum ? orders[ord] : 0xff;
+    if (pattnr < header.patnum) break;	// pattern is valid
+
+    switch (pattnr) {
+    default:	// skip invalid pattern
+      AdPlug_LogWrite("Invalid pattern %d number (order %d)\n", pattnr, ord);
+      // fallthrough;
+    case 0xfe:	// "++" skip marker
+      if (ord + 1 < header.ordnum) {
+	ord++;
+	break;
+      }
+      // else fallthrough;
+    case 0xff:	// "--" end of song
+      ord = 0;
+      songend = 1;
+      if (end++) return !songend;	// no order is a valid pattern
+    }
   }
 
   // play row
@@ -318,7 +328,13 @@ bool Cs3mPlayer::update()
       switch(channel[realchan].fx) {
       case 1: speed = info; break;	// set speed
       case 2: if(info <= ord) songend = 1; ord = info; crow = 0; pattbreak = 1; break;	// jump to order
-      case 3: if(!pattbreak) { crow = info; ord++; pattbreak = 1; } break;	// pattern break
+      case 3:	// pattern break
+	if(!pattbreak) {
+	  crow = info;
+	  if (!++ord) songend = 1;
+	  pattbreak = 1;
+	}
+	break;
       case 4: if(info > 0xf0) {		// fine volume down
 	if(channel[realchan].vol - (info & 0x0f) >= 0)
 	  channel[realchan].vol -= info & 0x0f;
@@ -384,7 +400,7 @@ bool Cs3mPlayer::update()
     crow++;
     if(crow > 63) {
       crow = 0;
-      ord++;
+      if (!++ord) songend = 1;
       loopstart = 0;
     }
   }
