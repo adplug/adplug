@@ -459,9 +459,13 @@ void Cs3mPlayer::setvolume(unsigned char chan)
 {
   unsigned char op = op_table[chan], insnr = channel[chan].inst;
 
-  opl->write(0x43 + op,(int)(63-((63-(inst[insnr].d03 & 63))/63.0)*channel[chan].vol) + (inst[insnr].d03 & 192));
-  if(inst[insnr].d0a & 1)
-    opl->write(0x40 + op,(int)(63-((63-(inst[insnr].d02 & 63))/63.0)*channel[chan].vol) + (inst[insnr].d02 & 192));
+  opl->write(0x43 + op,
+	     (63*63 - (~inst[insnr].d03 & 63) * channel[chan].vol) / 63
+	     + (inst[insnr].d03 & 192));
+  if (inst[insnr].d0a & 1)
+    opl->write(0x40 + op,
+	       (63*63 - (~inst[insnr].d02 & 63) * channel[chan].vol) / 63
+	       + (inst[insnr].d02 & 192));
 }
 
 void Cs3mPlayer::setfreq(unsigned char chan)
