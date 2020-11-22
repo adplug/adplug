@@ -195,19 +195,13 @@ bool Cs3mPlayer::update()
       channel[realchan].nextoct = channel[realchan].oct;
       switch(channel[realchan].trigger) {
       case 0: channel[realchan].freq = notetable[channel[realchan].note]; break;
-      case 1: if(channel[realchan].note + ((info & 0xf0) >> 4) < 12)
-	channel[realchan].freq = notetable[channel[realchan].note + ((info & 0xf0) >> 4)];
-      else {
-	channel[realchan].freq = notetable[channel[realchan].note + ((info & 0xf0) >> 4) - 12];
-	channel[realchan].oct++;
-      }
-	break;
-      case 2: if(channel[realchan].note + (info & 0x0f) < 12)
-	channel[realchan].freq = notetable[channel[realchan].note + (info & 0x0f)];
-      else {
-	channel[realchan].freq = notetable[channel[realchan].note + (info & 0x0f) - 12];
-	channel[realchan].oct++;
-      }
+      case 1:
+	channel[realchan].freq = notetable[(channel[realchan].note + (info >> 4)) % 12];
+	channel[realchan].oct += (channel[realchan].note + (info >> 4)) / 12;
+ 	break;
+      case 2:
+	channel[realchan].freq = notetable[(channel[realchan].note + (info & 0x0f)) % 12];
+	channel[realchan].oct += (channel[realchan].note + (info & 0x0f)) / 12;
 	break;
       }
       if(channel[realchan].trigger < 2)
@@ -253,13 +247,13 @@ bool Cs3mPlayer::update()
   row = crow;	// fill row cache
   for(chan=0;chan<32;chan++) {
     if(!(header.chanset[chan] & 128))		// resolve S3M -> AdLib channels
-      realchan = chnresolv[header.chanset[chan] & 127];
+      realchan = chnresolv[header.chanset[chan] & 0x1f];
     else
       realchan = -1;		// channel disabled
     if(realchan != -1) {	// channel playable?
       // set channel values
       donote = 0;
-      if(pattern[pattnr][row][chan].note < 14) {
+      if(pattern[pattnr][row][chan].note < 12) {
 	// tone portamento
 	if(pattern[pattnr][row][chan].command == 7 || pattern[pattnr][row][chan].command == 12) {
 	  channel[realchan].nextfreq = notetable[pattern[pattnr][row][chan].note];
@@ -288,7 +282,8 @@ bool Cs3mPlayer::update()
 	  channel[realchan].oct = channel[realchan].nextoct;
 	  setfreq(realchan);
 	}
-      if(pattern[pattnr][row][chan].instrument) {	// set instrument
+      if(pattern[pattnr][row][chan].instrument > 0 &&	// set instrument
+	 pattern[pattnr][row][chan].instrument <= header.insnum) {
 	channel[realchan].inst = pattern[pattnr][row][chan].instrument - 1;
 	if(inst[channel[realchan].inst].volume < 64)
 	  channel[realchan].vol = inst[channel[realchan].inst].volume;
@@ -471,11 +466,10 @@ void Cs3mPlayer::setvolume(unsigned char chan)
 
 void Cs3mPlayer::setfreq(unsigned char chan)
 {
-  opl->write(0xa0 + chan, channel[chan].freq & 255);
-  if(channel[chan].key)
-    opl->write(0xb0 + chan, (((channel[chan].freq & 768) >> 8) + (channel[chan].oct << 2)) | 32);
-  else
-    opl->write(0xb0 + chan, ((channel[chan].freq & 768) >> 8) + (channel[chan].oct << 2));
+  opl->write(0xa0 + chan, channel[chan].freq & 0xff);
+  opl->write(0xb0 + chan, (channel[chan].freq >> 8 & 0x03) +
+	                  (channel[chan].oct << 2 & 0x1c) +
+	                  (channel[chan].key ? 0x20 : 0));
 }
 
 void Cs3mPlayer::playnote(unsigned char chan)
