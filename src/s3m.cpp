@@ -93,7 +93,6 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
   for (i = 0; i < header.insnum; i++) {	// load instruments
     f->seek(insptr[i] * 16);
     inst[i].type = f->readInt(1);
-    adlibins += inst[i].type >= 2;
     f->readString(inst[i].filename, 15);
     inst[i].d00 = f->readInt(1); inst[i].d01 = f->readInt(1);
     inst[i].d02 = f->readInt(1); inst[i].d03 = f->readInt(1);
@@ -108,6 +107,13 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
     f->ignore(12);
     f->readString(inst[i].name, 28);
     f->readString(inst[i].scri, 4);
+    if (inst[i].type >= 2) {
+      adlibins++;
+      if (memcmp(inst[i].scri, "SCRI", 4)) {
+	fp.close(f);
+	return false;
+      }
+    }
   }
   if (!adlibins) { // no adlib instrument found
     fp.close(f);
