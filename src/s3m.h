@@ -90,10 +90,6 @@ class Cs3mPlayer: public CPlayer
   unsigned char crow,ord,speed,tempo,del,songend,loopstart,loopcnt;
 
  private:
-  static const signed char chnresolv[];
-  static const unsigned short notetable[12];
-  static const unsigned char vibratotab[32];
-
   void load_header(binistream *f, s3mheader *h);
   void setvolume(unsigned char chan);
   void setfreq(unsigned char chan);

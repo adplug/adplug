@@ -27,14 +27,22 @@
 #include "s3m.h"
 #include "debug.h"
 
-const signed char Cs3mPlayer::chnresolv[] =	// S3M -> adlib channel conversion
-  {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,-1,-1,-1,-1,-1,-1,-1};
+// S3M -> adlib channel conversion
+static const signed char chnresolv[32] = {
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+   0,  1,  2,  3,  4,  5,  6,  7,  8, -1, -1, -1, -1, -1, -1, -1
+};
 
-const unsigned short Cs3mPlayer::notetable[12] =		// S3M adlib note table
-  {340,363,385,408,432,458,485,514,544,577,611,647};
+// S3M adlib note table
+static const unsigned short notetable[12] = {
+  340, 363, 385, 408, 432, 458, 485, 514, 544, 577, 611, 647
+};
 
-const unsigned char Cs3mPlayer::vibratotab[32] =		// vibrato rate table
-  {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
+// vibrato rate table
+static const unsigned char vibratotab[32] = {
+   1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+  16, 15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1
+};
 
 /*** public methods *************************************/
 
@@ -45,14 +53,12 @@ CPlayer *Cs3mPlayer::factory(Copl *newopl)
 
 Cs3mPlayer::Cs3mPlayer(Copl *newopl): CPlayer(newopl)
 {
-  int i,j,k;
+  memset(orders, 0xff, sizeof(orders));
+  memset(pattern, 0xff, sizeof(pattern));
 
-  memset(pattern,255,sizeof(pattern));
-  memset(orders,255,sizeof(orders));
-
-  for(i=0;i<99;i++)		// setup pattern
-    for(j=0;j<64;j++)
-      for(k=0;k<32;k++) {
+  for (int i = 0; i < 99; i++)		// setup pattern
+    for (int j = 0; j < 64; j++)
+      for (int k = 0; k < 32; k++) {
 	pattern[i][j][k].instrument = 0;
 	pattern[i][j][k].info = 0;
       }
@@ -159,13 +165,8 @@ bool Cs3mPlayer::update()
     const unsigned char info = c.info;	// fill infobyte cache
 
     switch (c.fx) {
-    case 11:
-    case 12:
-      if (c.fx == 11)	// dual command: H00 and Dxy
-	vibrato(realchan, c.dualinfo);
-      else					// dual command: G00 and Dxy
-	tone_portamento(realchan, c.dualinfo);
     case 4:	// volume slide
+    volslide:
       if (info <= 0x0f)				// volume slide down
 	c.vol = std::max(c.vol - info, 0);
       if (!(info & 0x0f))			// volume slide up
@@ -216,6 +217,14 @@ bool Cs3mPlayer::update()
       c.freq = c.nextfreq;
       c.oct = c.nextoct;
       break;
+
+    case 11:	// dual command: H00 and Dxy
+      vibrato(realchan, c.dualinfo);
+      goto volslide;
+
+    case 12:	// dual command: G00 and Dxy
+      tone_portamento(realchan, c.dualinfo);
+      goto volslide;
 
     case 21:	// fine vibrato
       vibrato(realchan, info / 4);
@@ -430,33 +439,37 @@ bool Cs3mPlayer::update()
 void Cs3mPlayer::rewind(int subsong)
 {
   // set basic variables
-  songend = 0; ord = 0; crow = 0; tempo = header.it;
-  speed = header.is; del = 0; loopstart = 0; loopcnt = 0;
+  songend = 0;
+  ord = 0;
+  crow = 0;
+  tempo = header.it;
+  speed = header.is;
+  del = 0;
+  loopstart = 0;
+  loopcnt = 0;
 
-  memset(channel,0,sizeof(channel));
+  memset(channel, 0, sizeof(channel));
 
   opl->init();				// reset OPL chip
-  opl->write(1,32);			// Go to ym3812 mode
+  opl->write(1, 32);			// Go to ym3812 mode
 }
 
 std::string Cs3mPlayer::gettype()
 {
-  char filever[5];
+  std::string s("Scream Tracker ");
 
-  switch(header.cwtv) {		// determine version number
-  case 0x1300: strcpy(filever,"3.00"); break;
-  case 0x1301: strcpy(filever,"3.01"); break;
-  case 0x1303: strcpy(filever,"3.03"); break;
-  case 0x1320: strcpy(filever,"3.20"); break;
-  default: strcpy(filever,"3.??");
+  switch (header.cwtv) {		// determine version number
+  case 0x1300: return s + "3.00";
+  case 0x1301: return s + "3.01";
+  case 0x1303: return s + "3.03";
+  case 0x1320: return s + "3.20";
   }
-
-  return (std::string("Scream Tracker ") + filever);
+  return s + "3.??";
 }
 
 float Cs3mPlayer::getrefresh()
 {
-  return (float) (tempo / 2.5);
+  return tempo / 2.5f;
 }
 
 /*** private methods *************************************/
