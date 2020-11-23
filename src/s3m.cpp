@@ -68,9 +68,7 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
   binistream		*f = fp.open(filename); if(!f) return false;
   unsigned short	insptr[99],pattptr[99];
-  int			i,row;
-  unsigned char		bufval,bufval2;
-  unsigned short	ppatlen;
+  int			i;
 
   // file validation section
   load_header(f, &header);
@@ -120,15 +118,14 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
     return false;
   }
 
-  for(i=0;i<header.patnum;i++) {	// depack patterns
-    f->seek(pattptr[i]*16);
-    ppatlen = f->readInt(2);
+  for (i = 0; i < header.patnum; i++) {	// depack patterns
+    f->seek(pattptr[i] * 16);
+    unsigned short ppatlen = f->readInt(2);
     unsigned long pattpos = f->pos();
-    for(row=0;(row<64) && (pattpos-pattptr[i]*16<=ppatlen);row++)
-      do {
-	bufval = f->readInt(1);
+    for (int row = 0; (row < 64) && (pattpos-pattptr[i]*16<=ppatlen); row++)
+      while (unsigned char bufval = f->readInt(1)) {
 	if(bufval & 32) {
-	  bufval2 = f->readInt(1);
+	  unsigned char bufval2 = f->readInt(1);
 	  pattern[i][row][bufval & 31].note = bufval2 & 15;
 	  pattern[i][row][bufval & 31].oct = (bufval2 & 240) >> 4;
 	  pattern[i][row][bufval & 31].instrument = f->readInt(1);
@@ -139,7 +136,7 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
 	  pattern[i][row][bufval & 31].command = f->readInt(1);
 	  pattern[i][row][bufval & 31].info = f->readInt(1);
 	}
-      } while(bufval);
+      }
   }
 
   fp.close(f);
