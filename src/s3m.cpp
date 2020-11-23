@@ -71,50 +71,29 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
   int			i,row;
   unsigned char		bufval,bufval2;
   unsigned short	ppatlen;
-  s3mheader		*checkhead;
-  bool			adlibins=false;
 
   // file validation section
-  checkhead = new s3mheader;
-  load_header(f, checkhead);
-  if(checkhead->kennung != 0x1a || checkhead->typ != 16
-     || checkhead->insnum > 99) {
-    delete checkhead; fp.close(f); return false;
-  } else
-    if(strncmp(checkhead->scrm,"SCRM",4)) {
-      delete checkhead; fp.close(f); return false;
-    } else {	// is an adlib module?
-      f->seek(checkhead->ordnum, binio::Add);
-      for(i = 0; i < checkhead->insnum; i++)
-	insptr[i] = f->readInt(2);
-      for(i=0;i<checkhead->insnum;i++) {
-	f->seek(insptr[i]*16);
-	if(f->readInt(1) >= 2) {
-	  adlibins = true;
-	  break;
-	}
-      }
-      delete checkhead;
-      if(!adlibins) { fp.close(f); return false; }
-    }
-
-  // load section
-  f->seek(0);			// rewind for load
-  load_header(f, &header);	// read header
-
-  // security check
-  if(header.ordnum > 256 || header.insnum > 99 || header.patnum > 99) {
+  load_header(f, &header);
+  if (header.kennung != 0x1a || header.typ != 16 ||
+      memcmp(header.scrm, "SCRM", 4) ||
+      header.ordnum > 256 || header.insnum > 99 || header.patnum > 99) {
     fp.close(f);
     return false;
   }
 
-  for(i = 0; i < header.ordnum; i++) orders[i] = f->readInt(1);	// read orders
-  for(i = 0; i < header.insnum; i++) insptr[i] = f->readInt(2);	// instrument parapointers
-  for(i = 0; i < header.patnum; i++) pattptr[i] = f->readInt(2); // pattern parapointers
+  // load section
+  for (i = 0; i < header.ordnum; i++)	// read orders
+    orders[i] = f->readInt(1);
+  for (i = 0; i < header.insnum; i++)	// instrument offsets
+    insptr[i] = f->readInt(2);
+  for (i = 0; i < header.patnum; i++)	// pattern offsets
+    pattptr[i] = f->readInt(2);
 
-  for(i=0;i<header.insnum;i++) {	// load instruments
-    f->seek(insptr[i]*16);
+  int adlibins = 0;
+  for (i = 0; i < header.insnum; i++) {	// load instruments
+    f->seek(insptr[i] * 16);
     inst[i].type = f->readInt(1);
+    adlibins += inst[i].type >= 2;
     f->readString(inst[i].filename, 15);
     inst[i].d00 = f->readInt(1); inst[i].d01 = f->readInt(1);
     inst[i].d02 = f->readInt(1); inst[i].d03 = f->readInt(1);
@@ -122,12 +101,17 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
     inst[i].d06 = f->readInt(1); inst[i].d07 = f->readInt(1);
     inst[i].d08 = f->readInt(1); inst[i].d09 = f->readInt(1);
     inst[i].d0a = f->readInt(1); inst[i].d0b = f->readInt(1);
-    inst[i].volume = f->readInt(1); inst[i].dsk = f->readInt(1);
+    inst[i].volume = f->readInt(1);
+    inst[i].dsk = f->readInt(1);
     f->ignore(2);
     inst[i].c2spd = f->readInt(4);
     f->ignore(12);
     f->readString(inst[i].name, 28);
     f->readString(inst[i].scri, 4);
+  }
+  if (!adlibins) { // no adlib instrument found
+    fp.close(f);
+    return false;
   }
 
   for(i=0;i<header.patnum;i++) {	// depack patterns
