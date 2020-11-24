@@ -72,8 +72,8 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
 
   // load header
   f->readString(header.name, 28);
-  header.kennung = f->readInt(1);
-  header.typ = f->readInt(1);
+  header.id = f->readInt(1);
+  header.type = f->readInt(1);
   f->ignore(2);
   header.ordnum = f->readInt(2);
   header.insnum = f->readInt(2);
@@ -94,7 +94,7 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
     header.chanset[i] = f->readInt(1);
 
   // validate header
-  if (header.kennung != 0x1a || header.typ != 16 ||
+  if (header.id != 0x1a || header.type != 16 ||
       memcmp(header.scrm, "SCRM", 4) ||
       header.ordnum > 256 || header.insnum > 99 || header.patnum > 99) {
     fp.close(f);

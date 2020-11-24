@@ -60,7 +60,7 @@ class Cs3mPlayer: public CPlayer
  protected:
   struct s3mheader {
     char name[28];				// song name
-    unsigned char kennung,typ,dummy[2];
+    unsigned char id,type,dummy[2];
     unsigned short ordnum,insnum,patnum,flags,cwtv,ffi;
     char scrm[4];
     unsigned char gv,is,it,mv,uc,dp,dummy2[8];
