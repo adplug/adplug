@@ -70,8 +70,30 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
   unsigned short	insptr[99],pattptr[99];
   int			i;
 
-  // file validation section
-  load_header(f, &header);
+  // load header
+  f->readString(header.name, 28);
+  header.kennung = f->readInt(1);
+  header.typ = f->readInt(1);
+  f->ignore(2);
+  header.ordnum = f->readInt(2);
+  header.insnum = f->readInt(2);
+  header.patnum = f->readInt(2);
+  header.flags = f->readInt(2);
+  header.cwtv = f->readInt(2);
+  header.ffi = f->readInt(2);
+  f->readString(header.scrm, 4);
+  header.gv = f->readInt(1);
+  header.is = f->readInt(1);
+  header.it = f->readInt(1);
+  header.mv = f->readInt(1);
+  header.uc = f->readInt(1);
+  header.dp = f->readInt(1);
+  f->ignore(8);
+  header.special = f->readInt(2);
+  for (i = 0; i < 32; i++)
+    header.chanset[i] = f->readInt(1);
+
+  // validate header
   if (header.kennung != 0x1a || header.typ != 16 ||
       memcmp(header.scrm, "SCRM", 4) ||
       header.ordnum > 256 || header.insnum > 99 || header.patnum > 99) {
@@ -483,24 +505,6 @@ float Cs3mPlayer::getrefresh()
 }
 
 /*** private methods *************************************/
-
-void Cs3mPlayer::load_header(binistream *f, s3mheader *h)
-{
-  int i;
-
-  f->readString(h->name, 28);
-  h->kennung = f->readInt(1); h->typ = f->readInt(1);
-  f->ignore(2);
-  h->ordnum = f->readInt(2); h->insnum = f->readInt(2);
-  h->patnum = f->readInt(2); h->flags = f->readInt(2);
-  h->cwtv = f->readInt(2); h->ffi = f->readInt(2);
-  f->readString(h->scrm, 4);
-  h->gv = f->readInt(1); h->is = f->readInt(1); h->it = f->readInt(1);
-  h->mv = f->readInt(1); h->uc = f->readInt(1); h->dp = f->readInt(1);
-  f->ignore(8);
-  h->special = f->readInt(2);
-  for(i = 0; i < 32; i++) h->chanset[i] = f->readInt(1);
-}
 
 void Cs3mPlayer::setvolume(unsigned char chan)
 {

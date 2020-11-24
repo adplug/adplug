@@ -92,7 +92,6 @@ class Cs3mPlayer: public CPlayer
   size_t load_pattern(int pat, binistream *f, size_t length);
 
  private:
-  void load_header(binistream *f, s3mheader *h);
   void setvolume(unsigned char chan);
   void setfreq(unsigned char chan);
   void playnote(unsigned char chan);
