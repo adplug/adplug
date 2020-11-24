@@ -90,6 +90,10 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
   int adlibins = 0;
   for (i = 0; i < header.insnum; i++) {	// load instruments
     f->seek(insptr[i] * 16);
+    if (f->error()) {
+ 	fp.close(f);
+	return false;
+    }
     inst[i].type = f->readInt(1);
     f->readString(inst[i].filename, 15);
     inst[i].d00 = f->readInt(1); inst[i].d01 = f->readInt(1);
@@ -120,10 +124,18 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
 
   for (i = 0; i < header.patnum; i++) {	// depack patterns
     f->seek(pattptr[i] * 16);
+    if (f->error()) {
+ 	fp.close(f);
+	return false;
+    }
     unsigned short ppatlen = f->readInt(2);
     unsigned long pattpos = f->pos();
     for (int row = 0; (row < 64) && (pattpos-pattptr[i]*16<=ppatlen); row++)
       while (unsigned char bufval = f->readInt(1)) {
+	if (f->error()) {
+	  fp.close(f);
+	  return false;
+	}
 	if(bufval & 32) {
 	  unsigned char bufval2 = f->readInt(1);
 	  pattern[i][row][bufval & 31].note = bufval2 & 15;
