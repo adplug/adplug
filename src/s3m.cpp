@@ -122,38 +122,49 @@ bool Cs3mPlayer::load(const std::string &filename, const CFileProvider &fp)
     return false;
   }
 
-  for (i = 0; i < header.patnum; i++) {	// depack patterns
+  for (i = 0; i < header.patnum; i++) {	// load patterns
     f->seek(pattptr[i] * 16);
     if (f->error()) {
  	fp.close(f);
 	return false;
     }
-    unsigned short ppatlen = f->readInt(2);
-    unsigned long pattpos = f->pos();
-    for (int row = 0; (row < 64) && (pattpos-pattptr[i]*16<=ppatlen); row++)
-      while (unsigned char bufval = f->readInt(1)) {
-	if (f->error()) {
-	  fp.close(f);
-	  return false;
-	}
-	if(bufval & 32) {
-	  unsigned char bufval2 = f->readInt(1);
-	  pattern[i][row][bufval & 31].note = bufval2 & 15;
-	  pattern[i][row][bufval & 31].oct = (bufval2 & 240) >> 4;
-	  pattern[i][row][bufval & 31].instrument = f->readInt(1);
-	}
-	if(bufval & 64)
-	  pattern[i][row][bufval & 31].volume = f->readInt(1);
-	if(bufval & 128) {
-	  pattern[i][row][bufval & 31].command = f->readInt(1);
-	  pattern[i][row][bufval & 31].info = f->readInt(1);
-	}
-      }
+    load_pattern(i, f, f->readInt(2));
   }
 
   fp.close(f);
   rewind(0);
   return true;		// done
+}
+
+size_t Cs3mPlayer::load_pattern(int pat, binistream *f, size_t length) {
+  struct {	// closure to keep track of amount read
+    binistream *f;
+    size_t length, count;
+    unsigned char read() { return count++ < length ? f->readInt(1) : 0; }
+  } fs = {f, length, 0};
+
+  // read and unpack pattern data
+  for (int row = 0; row < 64 && fs.count < length; row++) {
+    while (unsigned char token = fs.read()) {
+      s3mevent &ev = pattern[pat][row][token & 0x1f];
+
+      if (token & 0x20) {	// note + instrument?
+	unsigned char val = fs.read();
+	ev.note = val & 0x0f;
+	ev.oct = val >> 4;
+	ev.instrument = fs.read();
+      }
+
+      if (token & 0x40) 	// volume?
+	ev.volume = fs.read();
+
+      if (token & 0x80) {	// command?
+	ev.command = fs.read();
+	ev.info = fs.read();
+      }
+    }
+  }
+  return fs.count;
 }
 
 bool Cs3mPlayer::update()

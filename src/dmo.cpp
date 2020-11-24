@@ -167,37 +167,7 @@ bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
   for (i = 0; i < header.patnum; i++) {
     long cur_pos = uf.pos();
 
-    for (j = 0; j < 64; j++) {
-      while (1) {
-	unsigned char token = uf.readInt(1);
-
-	if (!token)
-	  break;
-
-	unsigned char chan = token & 31;
-
-	// note + instrument ?
-	if (token & 32) {
-	  unsigned char bufbyte = uf.readInt(1);
-
-	  pattern[i][j][chan].note = bufbyte & 15;
-	  pattern[i][j][chan].oct = bufbyte >> 4;
-	  pattern[i][j][chan].instrument = uf.readInt(1);
-	}
-
-	// volume ?
-	if (token & 64)
-	  pattern[i][j][chan].volume = uf.readInt(1);
-
-	// command ?
-	if (token & 128) {
-	  pattern[i][j][chan].command = uf.readInt(1);
-	  pattern[i][j][chan].info = uf.readInt(1);
-	}
-      }
-    }
-
-    // TODO: sanitiy checking my_patlen[i] here might be a good idea
+    load_pattern(i, &uf, my_patlen[i]);
     uf.seek(cur_pos + my_patlen[i]);
   }
 
