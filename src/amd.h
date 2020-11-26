@@ -19,8 +19,8 @@
  * amd.h - AMD Loader by Simon Peter <dn.tlp@gmx.net>
  */
 
+#include "strnlen.h"
 #include "protrack.h"
-#include <string.h> // for strnlen
 
 class CamdLoader: public CmodPlayer
 {

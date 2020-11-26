@@ -42,7 +42,7 @@
             it can be 380 or 382.
 */
 
-#include <cstring>
+#include "strnlen.h"
 #include "bmf.h"
 #include "debug.h"
 

@@ -161,6 +161,7 @@ pkginclude_HEADERS = \
 	src/vgm.h \
 	src/sop.h \
 	src/herad.h \
+	src/strnlen.h \
 	src/load_helper.h
 
 #############

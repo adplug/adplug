@@ -147,6 +147,7 @@
     <ClInclude Include="..\..\..\src\sa2.h" />
     <ClInclude Include="..\..\..\src\silentopl.h" />
     <ClInclude Include="..\..\..\src\sng.h" />
+    <ClInclude Include="..\..\..\src\strnlen.h" />
     <ClInclude Include="..\..\..\src\surroundopl.h" />
     <ClInclude Include="..\..\..\src\temuopl.h" />
     <ClInclude Include="..\..\..\src\u6m.h" />

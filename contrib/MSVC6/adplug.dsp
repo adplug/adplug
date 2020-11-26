@@ -502,6 +502,10 @@ SOURCE=.\sng.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\strnlen.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\u6m.h
 # End Source File
 # Begin Source File

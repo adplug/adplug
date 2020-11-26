@@ -75,6 +75,7 @@
  *  SD - the SCI Decoder (to get all .sci out of the Sierra files)
  */
 
+#include "strnlen.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
