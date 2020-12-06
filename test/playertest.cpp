@@ -82,8 +82,8 @@ static const char *filelist[] = {
   "blaster2.msc",	// AdLib MSCplay
   "RI051.RIX",		// Softstar RIX OPL Music
   "EOBSOUND.ADL",	// Westwood ADL v1
-  "DUNE19.ADL",		// Westwood ADL v2
-  "LOREINTR.ADL",	// Westwood ADL v3
+  "DUNE19.ADL",		// Westwood ADL v3
+  "LOREINTR.ADL",	// Westwood ADL v4
   "DEMO4.JBM",		// JBM Adlib Music
   "dro_v2.dro",         // DOSBox DRO v2.0
   "menu.got",       // God of Thunder Music (at 140 Hz)
