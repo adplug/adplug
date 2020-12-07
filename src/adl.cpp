@@ -107,7 +107,7 @@ static inline T CLIP(const T &value, const T &min, const T &max) {
 	return value < min ? min : value > max ? max : value;
 }
 
-#if __cplusplus < 201103
+#if __cplusplus < 201103L && _MSC_VER < 1600
 static const struct {
 	template <class T> operator T*() const { return 0; }
 } nullptr;
