@@ -158,6 +158,10 @@ public:
 		_numPrograms = (_version == 1) ? 150 : ((_version == 4) ? 500 : 250);
 	}
 
+	bool isChannelRepeating(int i) { // added in AdPlug
+		return _channels[i].repeating;
+	}
+
 private:
 	// These variables have not yet been named, but some of them are partly
 	// known nevertheless:
@@ -167,6 +171,7 @@ private:
 
 	struct Channel {
 		bool lock;	// New to ScummVM
+		bool repeating;	// Added in Adplug
 		uint8 opExtraLevel2;
 		const uint8 *dataptr;
 		uint8 duration;
@@ -941,6 +946,7 @@ void AdLibDriver::initChannel(Channel &channel) {
 	channel.secondaryEffect = nullptr;
 	channel.spacing1 = 1;
 	channel.lock = false;
+	channel.repeating = false;
 }
 
 void AdLibDriver::noteOff(Channel &channel) {
@@ -1516,6 +1522,8 @@ int AdLibDriver::update_jump(Channel &channel, const uint8 *values) {
 	}
 	if (_syncJumpMask & (1 << (&channel - _channels)))
 		channel.lock = true;
+	if (add < 0)
+		channel.repeating = true;
 	return 0;
 }
 
@@ -1646,6 +1654,10 @@ int AdLibDriver::update_waitForEndOfProgram(Channel &channel, const uint8 *value
 
 	if (chan > 9 || !_channels[chan].dataptr)
 		return 0;
+
+	// AdPlug: Waiting on a repeating channel loops forever.
+	if (_channels[chan].repeating)
+		channel.repeating = true;
 
 	channel.dataptr -= 2;
 	return 2;
@@ -2906,7 +2918,7 @@ bool CadlPlayer::update() {
 	_driver->callback();
 
 	for (int i = 0; i < 10; i++)
-		if (_driver->isChannelPlaying(i))
+		if (_driver->isChannelPlaying(i) && !_driver->isChannelRepeating(i))
 			return true;
 
 	return false;
