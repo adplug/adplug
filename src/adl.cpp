@@ -2776,21 +2776,26 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
 	}
 
 	fp.close(f);
-	rewind(-1);
+	rewind(2);	// subsong 2 is selected by default
 	return true;
 }
 
 void CadlPlayer::rewind(int subsong) {
-	// rewind(-1) re-initializes the opl.
-	if (subsong == -1) {
-		init();
-		_driver->stopAllChannels();
-		opl->init();
-		opl->write(1, 32);
-		subsong = 2;
-	}
-	cursubsong = subsong;
-	loadcursubsong = true;
+	// stop current song and re-initialize the opl.
+	init();
+	_driver->stopAllChannels();
+	opl->init();
+	opl->write(1, 32);
+
+	// prevent setting invalid subsong
+	if (subsong >= numsubsongs)
+		subsong = 0;
+	// rewind(-1) rewinds current subsong
+	if (subsong >= 0)
+		cursubsong = subsong;
+
+	// enqueue new subsong
+	playSoundEffect(cursubsong);
 }
 
 unsigned int CadlPlayer::getsubsongs() {
@@ -2798,14 +2803,6 @@ unsigned int CadlPlayer::getsubsongs() {
 }
 
 bool CadlPlayer::update() {
-	if (loadcursubsong) {
-		loadcursubsong = false;
-		playSoundEffect(cursubsong);
-	}
-
-//	if(_trackEntries[cursubsong] == 0xff)
-//		return false;
-
 	_driver->callback();
 
 	for (int i = 0; i < 10; i++)

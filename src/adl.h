@@ -54,7 +54,6 @@ class CadlPlayer: public CPlayer
   enum { _musicEnabled = 1, _sfxEnabled = 1 };
 
   int numsubsongs, cursubsong;
-  bool loadcursubsong;
 
   AdLibDriver *_driver;
 
