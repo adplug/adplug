@@ -2658,9 +2658,10 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
 		return false;
 
 	binistream *f = fp.open(filename);
-	const unsigned long fileSize = fp.filesize(f);
+	if (!f) return false;
 
-	if (!f || fileSize < 720) { // minimum file size of v1
+	const unsigned long fileSize = fp.filesize(f);
+	if (fileSize < 720) { // minimum file size of v1
 		fp.close(f);
 		return false;
 	}
