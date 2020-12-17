@@ -67,20 +67,18 @@
 // Compatibility layer:
 
 #ifdef ADL_DEBUG
-#	define warning(...)		AdPlug_LogWrite(__VA_ARGS__); \
-AdPlug_LogWrite("\n")
+#	define warning(...)	do {		\
+		AdPlug_LogWrite(__VA_ARGS__);	\
+		AdPlug_LogWrite("\n");		\
+	} while (0)
 
-#	define debugC(i1, i2, ...)	AdPlug_LogWrite(__VA_ARGS__); \
-AdPlug_LogWrite("\n")
+#	define debugC(i1, i2, ...)	warning(__VA_ARGS__)
 #else
 #	define kDebugLevelSound	1
 
 static inline void warning(const char *str, ...) {}
 static inline void debugC(int i1, int i2, const char *str, ...) {}
 #endif
-
-// #define warning(...)
-// #define debugC(i1, i2, ...)
 
 #define ARRAYSIZE(x) ((int)(sizeof(x) / sizeof(x[0])))
 
