@@ -2759,6 +2759,10 @@ void SoundAdLibPC::internalLoadFile(Common::String file) {
 bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
 	// file validation section
+
+	// The format has no magic number. It starts with a few tables and
+	// it would be possible to check whether the entries are plausible,
+	// but that may be a bit weak to determine the file format reliably.
 	if (!fp.extension(filename, ".adl"))
 		return false;
 
@@ -2772,116 +2776,120 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
 	}
 
 	/*
-	file += ((_version == 1) ? ".DAT" : ".ADL");
-	if (_soundFileLoaded == file)
-		return;
+	Here's the rough structure of ADL files. The player needs only the
+	first part, the driver uses only the second part (all offsets in the
+	programs/instruments tables are relative to the start of _soundData).
 
-	if (_soundDataPtr)
-		haltTrack();
+	_trackEntries[]      _soundData[]
+	+------------------+ +-----------------+--------------------+------//-+
+	| subsong->prog.ID | | Program offsets | Instrument offsets | Data... |
+	+------------------+ +-----------------+--------------------+------//-+
+	v1:   120 bytes           150 words          150 words      @720
+	v2/3: 120 bytes           250 words          250 words      @1120
+	v4:   250 words           500 words          500 words      @2500
 
-	uint8 *fileData = 0; uint32 fileSize = 0;
-
-	fileData = _vm->resource()->fileData(file.c_str(), &fileSize);
-	if (!fileData) {
-		warning("Couldn't find music file: '%s'", file.c_str());
-		return;
-	}
+	The versions can be distinguished by inspecting the table entries.
 	*/
 
-	playSoundEffect(0);
-	playSoundEffect(0);
+	// read track entries (maximum length)
+	f->readString((char *)_trackEntries, sizeof(_trackEntries));
 
-  // 	_driver->stopAllChannels();
-	_soundDataPtr = 0;
-
-	// detect format version
+	// detect format version v4 vs v1/2/3
+	int ofs = 500;
 	_version = 4; // assuming we have v4
-	for (int i = 0; i < 120; i += 2) {
-		uint16_t w = f->readInt(2);
-		// all entries should be in range 0..500-1 or 0xFFFF
-		if (w >= 500 && w < 0xffff) {
-			_version = 1; // actually 1, 2, or 3
+	for (int i = 0; i < 500; i += 2) {
+		uint16_t w = READ_LE_UINT16(&_trackEntries[i]);
+		// For v4 all entries should be below 500 or 0xFFFF. For other
+		// versions this will check program offsets (at least 600).
+		if (w >= 500 && w < 0xFFFF) {
+			_version = 3; // actually 1, 2, or 3
+			ofs = 120;
 			break;
 		}
 	}
-	if (_version == 1) { // detect whether v1 or v2/v3
-		f->seek(120);
-		_version = 3; // assuming we have v3
-		for (int i = 0; i < 150; i += 2) {
-			uint16_t w = f->readInt(2);
-			// minimum track offset for v1 is 600
-			if (w > 0 && w < 600) {
-				fp.close(f);
-				return false;
-			}
-			// minimum track offset for v2/v3 is 1000
+
+	// read remainder of file
+	int soundDataSize = fileSize - ofs;
+	_soundDataPtr = new uint8[soundDataSize];
+	const int surplus = sizeof(_trackEntries) - ofs;
+	if (surplus) {
+		memcpy(_soundDataPtr, &_trackEntries[ofs], surplus);
+		memset(&_trackEntries[ofs], 0xFF, surplus);
+	}
+	f->readString((char *)&_soundDataPtr[surplus], soundDataSize - surplus);
+	fp.close(f);
+
+	int numProgs;
+	if (_version < 4) {
+		// Note: Could check instrument offsets, too. Or fail when an
+		// offset is above soundDataSize. That's not really necessary
+		// now, but should be added if the extension check is removed.
+
+		// detect whether v1 or v2/v3
+		numProgs = 150; // for v1
+		for (int i = 0; i < numProgs * 2; i += 2) {
+			uint16_t w = READ_LE_UINT16(&_soundDataPtr[i]);
+
+			// minimum program/instrument offset for v1 is 600
+			if (w > 0 && w < 600)
+				goto bad_data;
+
+			// minimum offset for v2/v3 is 1000
 			if (w > 0 && w < 1000)
 				_version = 1;
-			// TODO: Detect whether v2 (EOB2) or v3 (KYRA1).
-			// Assume v3 for now.
+		}
+
+		// TODO: Detect whether v2 (EOB2) or v3 (KYRA1). The only
+		// difference seems to be how offsets are encoded for some
+		// opcodes in the sound programs. Assume v3 for now.
+
+		// more sanity checks
+		if (_version > 1) {
+			if (fileSize < 1120) // minimum size of v2/v3
+				goto bad_data;
+
+			numProgs = 250;
+			for (int i = 150 * 2; i < numProgs * 2; i += 2) {
+				uint16_t w = READ_LE_UINT16(&_soundDataPtr[i]);
+				if (w > 0 && w < 1000)
+					goto bad_data;
+			}
+		}
+	} else {
+		// sanity checks for v4
+		if (fileSize < 2500) { // minimum file size of v4
+		bad_data:
+			delete[] _soundDataPtr;
+			_soundDataPtr = nullptr;
+			return false;
+		}
+		numProgs = 500;
+		for (int i = 0; i < numProgs * 2; i += 2) {
+			uint16_t w = READ_LE_UINT16(&_soundDataPtr[i]);
+			// minimum program offset for v4 is 2000
+			if (w > 0 && w < 2000)
+				goto bad_data;
 		}
 	}
-	if (_version == 3 && fileSize < 1120) { // minimum file size of v2/v3
-		fp.close(f);
-		return false;
-	}
-	if (_version == 4 && fileSize < 2500) { // minimum file size of v4
-		fp.close(f);
-		return false;
-	}
-	//if (_version == 3) {
-	//	_soundTriggers = _kyra1SoundTriggers;
-	//	_numSoundTriggers = _kyra1NumSoundTriggers;
-	//}
+
 	_driver->setVersion(_version);
-
-	f->seek(0);
-	uint8 *fileData = new uint8 [fileSize];
-	f->readString((char *)fileData, fileSize);
-
-	int soundDataSize = fileSize;
-	uint8 *p = fileData;
-	if (_version == 4) {
-		memcpy(_trackEntries, p, 500);
-		p += 500;
-		soundDataSize -= 500;
-	} else {
-		memcpy(_trackEntries, p, 120);
-		p += 120;
-		soundDataSize -= 120;
-	}
-
-	_soundDataPtr = new uint8[soundDataSize];
-	assert(_soundDataPtr);
-
-	memcpy(_soundDataPtr, p, soundDataSize);
-
-	delete[] fileData;
-	fileData = p = 0;
-  // 	fileSize = 0;
-
 	_driver->setSoundData(_soundDataPtr, soundDataSize);
-
-  // 	_soundFileLoaded = file;
 
 	// find last subsong
 	if (_version == 4) {
-		const uint16_t numEntries = 500;
 		for (int i = 2 * 250; i > 0; i -= 2)
-			if (READ_LE_UINT16(&_trackEntries[i - 2]) < numEntries) {
+			if (READ_LE_UINT16(&_trackEntries[i - 2]) < numProgs) {
 				numsubsongs = i / 2;
 				break;
 			}
 	} else {
-		const uint8_t numEntries = _version == 1 ? 150 : 250;
 		for (int i = 120; i > 0; i--)
-			if (_trackEntries[i - 1] < numEntries) {
+			if (_trackEntries[i - 1] < numProgs) {
 				numsubsongs = i;
 				break;
 			}
 	}
 
-	fp.close(f);
 	rewind(2);	// subsong 2 is selected by default
 	return true;
 }
