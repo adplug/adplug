@@ -2657,6 +2657,9 @@ void CadlPlayer::playSoundEffect(uint16_t track, uint8_t volume) {
 void CadlPlayer::play(uint16_t track, uint8_t volume) {
 	uint16 soundId = 0;
 
+	if (track >= numsubsongs) // Check added in AdPlug
+		return;
+	
 	if (_version == 4)
 		soundId = READ_LE_UINT16(&_trackEntries[track<<1]);
 	else

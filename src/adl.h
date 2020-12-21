@@ -50,6 +50,8 @@ class CadlPlayer: public CPlayer
   unsigned int getsubsong() { return cursubsong; }
   std::string gettype();
 
+  void playSoundEffect(uint16_t track, uint8_t volume = 0xFF);
+
  private:
   enum { _musicEnabled = 1, _sfxEnabled = 1 };
 
@@ -63,7 +65,6 @@ class CadlPlayer: public CPlayer
 
   bool init();
   void playTrack(uint16_t track);
-  void playSoundEffect(uint16_t track, uint8_t volume = 0xFF);
   void play(uint16_t track, uint8_t volume);
 };
 
