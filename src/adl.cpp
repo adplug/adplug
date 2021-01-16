@@ -2825,8 +2825,9 @@ bool CadlPlayer::load(const std::string &filename, const CFileProvider &fp)
 		}
 
 		// TODO: Detect whether v2 (EOB2) or v3 (KYRA1). The only
-		// difference seems to be how offsets are encoded for some
-		// opcodes in the sound programs. Assume v3 for now.
+		// difference seems to be how offsets are encoded for the
+		// update_jumpToSubroutine opcode in the sound programs.
+		// Assume v3 for now.
 
 		// more sanity checks
 		if (_version > 1) {
