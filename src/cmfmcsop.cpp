@@ -75,8 +75,8 @@ channelSlots[] = { {0, 3}, {1, 4}, {2, 5}, {6, 9}, {7, 10}, {8, 11}, {12, 15}, {
 
 /*
 Note that
- op_table[chan]     == slotRegisterOffets[channelSlots[chan].slotOp1]
- op_table[chan] + 3 == slotRegisterOffets[channelSlots[chan].slotOp2]
+ op_table[chan]     == slotRegisterOffsets[channelSlots[chan].slotOp1]
+ op_table[chan] + 3 == slotRegisterOffsets[channelSlots[chan].slotOp2]
 However, the slot-numbers are needed for rhythm mode, thus the extra tables.
 */
 
