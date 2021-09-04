@@ -109,7 +109,7 @@ typedef unsigned int   uint32_t;
 
 // AdLib melodic and rhythm mode defines
 #define ADLIB_MELODIC	0
-#define ADLIB_RYTHM	1
+#define ADLIB_RHYTHM	1
 
 // File types
 #define FILE_LUCAS      1
@@ -523,7 +523,7 @@ bool CmidPlayer::update()
               //  doing=0;
                 note=getnext(1); vel=getnext(1);
 
-		if(adlib_mode == ADLIB_RYTHM)
+		if(adlib_mode == ADLIB_RHYTHM)
 		  numchan = 6;
 		else
 		  numchan = 9;
@@ -578,7 +578,7 @@ bool CmidPlayer::update()
                     chp[on][1]=note;
                     chp[on][2]=0;
 
-		    if(adlib_mode == ADLIB_RYTHM && c >= 11) {
+		    if(adlib_mode == ADLIB_RHYTHM && c >= 11) {
 		      // Still need to turn off the perc instrument before playing it again,
 		      // as not all songs send a noteoff.
 		      midi_write_adlib(0xbd, adlib_data[0xbd] & ~(0x10 >> (c - 11)));
@@ -588,7 +588,7 @@ bool CmidPlayer::update()
 
                   } else {
                     if (vel==0) { //same code as end note
-		        if (adlib_mode == ADLIB_RYTHM && c >= 11) {
+		        if (adlib_mode == ADLIB_RHYTHM && c >= 11) {
 		            // Turn off the percussion instrument
 		            midi_write_adlib(0xbd, adlib_data[0xbd] & ~(0x10 >> (c - 11)));
                             //midi_fm_endnote(percussion_map[c]);
@@ -653,7 +653,7 @@ midi_fm_playnote(i,note+cnote[c],my_midi_fm_vol_table[(cvols[c]*vel)/128]*2);
                         midiprintf("Rhythm mode: %ld\n", vel);
                         if ((adlib_style&CMF_STYLE)!=0) {
 			  adlib_mode=vel;
-			  if(adlib_mode == ADLIB_RYTHM)
+			  if(adlib_mode == ADLIB_RHYTHM)
 			    midi_write_adlib(0xbd, adlib_data[0xbd] | (1 << 5));
 			  else
 			    midi_write_adlib(0xbd, adlib_data[0xbd] & ~(1 << 5));
