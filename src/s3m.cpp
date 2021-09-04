@@ -191,7 +191,7 @@ size_t Cs3mPlayer::load_pattern(int pat, binistream *f, size_t length) {
 
 bool Cs3mPlayer::update()
 {
-  // effect handling (timer dependant)
+  // effect handling (timer dependent)
   for (int realchan = 0; realchan < 9; realchan++) {
     s3mchan &c = channel[realchan];	// shortcut ref
     const unsigned char info = c.info;	// fill infobyte cache
@@ -372,7 +372,7 @@ bool Cs3mPlayer::update()
 
     // fill infobyte cache
     const unsigned char info = c.info, infoL = info & 0x0f, infoH = info >> 4;
-    // command handling (row dependant)
+    // command handling (row dependent)
     switch (c.fx) {
     case 1:	// set speed
       speed = info;

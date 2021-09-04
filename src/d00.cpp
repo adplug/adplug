@@ -168,7 +168,7 @@ bool Cd00Player::update()
   unsigned char	c,cnt,trackend=0,fx,note;
   unsigned short ord,*patt,buf,fxop,pattpos;
 
-  // effect handling (timer dependant)
+  // effect handling (timer dependent)
   for(c=0;c<9;c++) {
     channel[c].slideval += channel[c].slide; setfreq(c);	// sliding
     vibrato(c);	// vibrato
@@ -482,7 +482,7 @@ void Cd00Player::rewind(int subsong)
     }
     channel[i].ispfx = 0xffff; channel[i].spfx = 0xffff;	// no SpFX
     channel[i].ilevpuls = 0xff; channel[i].levpuls = 0xff;	// no LevelPuls
-    channel[i].cvol = tpoin.volume[i] & 0x7f;	// our player may savely ignore bit 7
+    channel[i].cvol = tpoin.volume[i] & 0x7f;	// our player may safely ignore bit 7
     channel[i].vol = channel[i].cvol;			// initialize volume
   }
   songend = 0;

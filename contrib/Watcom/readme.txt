@@ -19,7 +19,7 @@ install AdPlug, call wmake like this:
 
 wmake /f Makefile.wat install
 
-Do this similary with any other 'wmake' target.
+Do this similarly with any other 'wmake' target.
 
 Prerequisites for Watcom C/C++ builds:
 --------------------------------------

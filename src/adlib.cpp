@@ -300,7 +300,7 @@ void CadlibDriver::SetVoiceVolume(uint8_t voice, uint8_t volume)
 		slotRelVolume[slots[1]] = volume;
 		SndSKslLevel(slots[1]);
 		if (!GetLocPrm(slots[0], prmFm)) {
-			/* additive syntesis: set volume of first slot too */
+			/* additive synthesis: set volume of first slot too */
 			slotRelVolume[slots[0]] = volume;
 			SndSKslLevel(slots[0]);
 		}

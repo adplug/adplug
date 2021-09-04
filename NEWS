@@ -145,7 +145,7 @@ Changes for version 1.4:
 ------------------------
 - Documentation changed into Texinfo format.
 - New, modularized file loading framework.
-- Now using 'libbinio' for platform-independant binary I/O.
+- Now using 'libbinio' for platform-independent binary I/O.
 - Added database framework for storing music file information.
 - Uses newest fmopl OPL2 emulator version 0.60 from MAME 0.66.
 

@@ -35,14 +35,14 @@
  *             xxxPATCH.003  (patch.003 must be saved from the
  *                            sierra resource from each game.)
  *
- * 6/2/2000:  v1.0 relased by phil hassey
+ * 6/2/2000:  v1.0 released by phil hassey
  *      Status:  LAA is almost perfect
- *                      - some volumes are a bit off (intrument too quiet)
+ *                      - some volumes are a bit off (instrument too quiet)
  *               MID is fine (who wants to listen to MIDI vid adlib anyway)
- *               CMF is okay (still needs the adlib rythm mode implemented
+ *               CMF is okay (still needs the adlib rhythm mode implemented
  *                            for real)
  * 6/6/2000:
- *      Status:  SCI:  there are two SCI formats, orginal and advanced.
+ *      Status:  SCI:  there are two SCI formats, original and advanced.
  *                    original:  (Found in SCI/EGA Sierra Adventures)
  *                               played almost perfectly, I believe
  *                               there is one mistake in the instrument
@@ -667,7 +667,7 @@ midi_fm_playnote(i,note+cnote[c],my_midi_fm_vol_table[(cvols[c]*vel)/128]*2);
 	      for (j=0; j<11; j++)
 		ch[c].ins[j]=myinsbank[ch[c].inum][j];
 	      break;
-            case 0xd0: /*chanel touch*/
+            case 0xd0: /*channel touch*/
                 x=getnext(1);
                 break;
             case 0xe0: /*pitch wheel*/
