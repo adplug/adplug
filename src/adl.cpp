@@ -1162,7 +1162,7 @@ void AdLibDriver::noteOn(Channel &channel) {
 
 	// Update vibrato effect variables: vibratoStep is set to a
 	// vibratoStepRange+1-bit value proportional to the note's f-number.
-	// Reinitalize delay countdown; vibratoStepsCountdown reinitialization omitted.
+	// Reinitialize delay countdown; vibratoStepsCountdown reinitialization omitted.
 	int8 shift = 9 - CLIP<int8>(channel.vibratoStepRange, 0, 9);
 	uint16 freq = ((channel.regBx << 8) | channel.regAx) & 0x3FF;
 	channel.vibratoStep = (freq >> shift) & 0xFF;
@@ -1444,7 +1444,7 @@ int AdLibDriver::update_setupProgram(Channel &channel, const uint8 *values) {
 
 	// In case we encounter an invalid program we simply ignore it and do
 	// nothing instead. The original did not care about invalid programs and
-	// simply tried to play them anyway... But to avoid crashes due we ingore
+	// simply tried to play them anyway... But to avoid crashes due we ignore
 	// them.
 	// This, for example, happens in the Lands of Lore intro when Scotia gets
 	// the ring in the intro.
@@ -1524,7 +1524,7 @@ int AdLibDriver::update_jumpToSubroutine(Channel &channel, const uint8 *values) 
 
 	// Safety checks: ignore jumps when stack is full or address is invalid.
 	if (channel.dataptrStackPos >= ARRAYSIZE(channel.dataptrStack)) {
-		warning("AdLibDriver::update_jumpToSubroutine: Stack overlow");
+		warning("AdLibDriver::update_jumpToSubroutine: Stack overflow");
 		return 0;
 	}
 	channel.dataptrStack[channel.dataptrStackPos++] = channel.dataptr;
@@ -2368,7 +2368,7 @@ const uint8 AdLibDriver::_unkTable2_1[] = {
 	0x10, 0x10
 };
 
-// no don't ask me WHY this table exsits!
+// no don't ask me WHY this table exists!
 const uint8 AdLibDriver::_unkTable2_2[] = {
 	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
 	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
@@ -2500,7 +2500,7 @@ PCSoundDriver *PCSoundDriver::createAdLib(Audio::Mixer *mixer, int version) {
 
 // The driver in scummvm the code below is based on has been moved
 // to a different file (engines/kyra/sound/sound_pc_v1.cpp) which
-// is GPL only, so we're stuck with the code from befor that change.
+// is GPL only, so we're stuck with the code from before that change.
 
 /*
 // Kyra 1 sound triggers. Most noticeably, these are used towards the end of

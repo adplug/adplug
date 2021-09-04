@@ -449,7 +449,7 @@ all be support by AdPlug.
 @item Single OPL2: This is the classic configuration found on the
 standard AdLib boards. One OPL2 chip is supported.
 @item Dual OPL2: This configuration was first implemented on the Sound
-Blaster Pro II boards. Two independant OPL2 chips are on this card.
+Blaster Pro II boards. Two independent OPL2 chips are on this card.
 @item OPL3: This is the configuration found on all newer sound
 cards. An OPL3 chip is supported, which is capable of emulating the
 other two configurations.
@@ -478,7 +478,7 @@ and thus supported by all of the OPL classes.
 
 During playback, it is possible to gain some replay statistics with
 some players. The following methods are for getting playback
-informations:
+information:
 
 @ftable @code
 @item std::string gettype()
@@ -523,7 +523,7 @@ pattern. @samp{0} is returned if the format isn't pattern-based.
 Returns the current speed setting of the song. @samp{0} is returned if
 the format doesn't support Protracker-based speed settings.
 
-@item unsinged int getinstruments()
+@item unsigned int getinstruments()
 Returns the number of defined instruments in the song. This does not
 necessarily mean that any of the defined instruments has an instrument
 name attached to it. @samp{0} is returned if the format doesn't define
@@ -697,14 +697,14 @@ inherited @code{std::list} interface:
 
 @ftable @code
 @item const CPlayerDesc *lookup_filetype(const std::string &ftype)
-Returns a pointer to the first occurence of a @code{CPlayerDesc}
+Returns a pointer to the first occurrence of a @code{CPlayerDesc}
 object with a file type of @var{ftype}, passed as the only
 argument. This should also be the only object with that file type in
 the list. If an object with the given file type is not found, a
 @samp{NULL}-pointer if returned instead.
 
 @item const CPlayerDesc *lookup_extension(const std::string &extension)
-Returns a pointer to the first occurence of a @code{CPlayerDesc}
+Returns a pointer to the first occurrence of a @code{CPlayerDesc}
 object, defining a file extension of @var{extension}, passed as the
 only argument. Since file extensions are not necessarily unique in a
 @code{CPlayers} list, it is often much more efficient to use the
@@ -765,7 +765,7 @@ bytes, of the associated file. The stream's state is not altered.
 
 If you like to create your own file provider, you have to inherit from
 this class and implement the methods @code{open()} and
-@code{close()}. Remember to open the stream with x86 capabilites! One
+@code{close()}. Remember to open the stream with x86 capabilities! One
 situation in which you would have to create your own file provider is
 when your application doesn't load the files from the machine's local
 filesystem. For example, when it supports reading from archives, you
@@ -882,7 +882,7 @@ record. This value is taken from the player list (see
 The common base class @code{CAdPlugDatabase::CRecord} defines a
 static method @code{factory(RecordType type)} for application usage
 that returns a pointer to a newly allocated @class{CRecord} object, or
-the @samp{NULL}-pointer if an error occured. You pass the type of the
+the @samp{NULL}-pointer if an error occurred. You pass the type of the
 record to be created as the only argument.
 
 All other public methods are meant for internal use of the database
@@ -1009,7 +1009,7 @@ and @samp{false} otherwise.
 
 @item CRecord *get_record()
 Returns a pointer to the record at the current position in the
-database. The @samp{NULL}-pointer is returned if an error occured.
+database. The @samp{NULL}-pointer is returned if an error occurred.
 
 @item bool go_forward()
 Advances the internal position in the database by one record. Returns
@@ -1194,7 +1194,7 @@ static CPlayer *factory(Copl *newopl);
 Since it is static, it isn't already virtually defined in the
 @code{CPlayer} class and you have to add it manually. This method
 should return a pointer to a freshly initialized object of your player
-class. If any errors occured (e.g. not enough memory), return @samp{0}
+class. If any errors occurred (e.g. not enough memory), return @samp{0}
 instead.
 
 Return true from your @code{load()} method, if the file was loaded
@@ -1374,7 +1374,7 @@ involved.
 
 When you decided to extend the @code{CmodPlayer} class, instead of
 writing a whole new player, you do this by writing a loader for
-it. This is done very similarily to writing a unique player for
+it. This is done very similarly to writing a unique player for
 AdPlug. Thus, reading the @ref{Player development} chapter is
 recommended for this task, too.
 
@@ -1558,7 +1558,7 @@ available commands are listed in the following table:
 @end multitable
 
 The @code{param1} and @code{param2} variables hold the command's
-parameters. These are command-dependant. Refer to the table above to
+parameters. These are command-dependent. Refer to the table above to
 see what they do with each of the commands and their value ranges. An
 @samp{xx} in the @emph{Parameters} column means that @code{param1} and
 @code{param2} form one 2-digit parameter, with @code{param1} being the
@@ -1664,7 +1664,7 @@ for this purpose.
 @node Special Arpeggio
 @section Special Arpeggio
 
-To use the @emph{Special Arpeggio} facility, you have to initalize it
+To use the @emph{Special Arpeggio} facility, you have to initialize it
 first. Use the @code{init_specialarp()} method for this
 purpose. @code{CmodPlayer}'s deconstructor automatically handles the
 deinit for you.

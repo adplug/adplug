@@ -68,7 +68,7 @@ bool CmodPlayer::update()
   if(!speed)		// song full stop
     return false;
 
-  // effect handling (timer dependant)
+  // effect handling (timer dependent)
   for(chan = 0; chan < nchans; chan++) {
     oplchan = set_opl_chip(chan);
 
@@ -243,7 +243,7 @@ bool CmodPlayer::update()
     if(donote)
       playnote(chan);
 
-    // command handling (row dependant)
+    // command handling (row dependent)
     info1 = channel[chan].info1;
     info2 = channel[chan].info2;
     if(flags & Decimal)

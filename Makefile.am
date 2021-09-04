@@ -84,7 +84,7 @@ src_libadplug_la_LIBADD = $(libbinio_LIBS)
 
 # -Dstricmp=strcasecmp is a hack. Throughout AdPlug, stricmp() is used to do
 # caseless string comparations. UNIX libcs don't support stricmp(), but do
-# support the BSD strcasecmp(), so we have to replace every occurence of
+# support the BSD strcasecmp(), so we have to replace every occurrence of
 # stricmp() into strcasecmp(). stricmp() seems to be Windows, but maybe
 # also POSIX...
 src_libadplug_la_CPPFLAGS = -Dstricmp=strcasecmp $(libbinio_CFLAGS) -I$(top_builddir)/src
