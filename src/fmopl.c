@@ -78,11 +78,11 @@ static int opl_dbg_maxchip,opl_dbg_chip;
 
 /* -------------------- quality selection --------------------- */
 
-/* sinwave entries */
+/* sine wave entries */
 /* used static memory = SIN_ENT * 4 (byte) */
 #define SIN_ENT 2048
 
-/* output level entries (envelope,sinwave) */
+/* output level entries (envelope,sine wave) */
 /* envelope counter lower bits */
 #define ENV_BITS 16
 /* envelope output entries */
@@ -185,13 +185,13 @@ static const INT32 SL_TABLE[16]={
 };
 #undef SC
 
-#define TL_MAX (EG_ENT*2) /* limit(tl + ksr + envelope) + sinwave */
+#define TL_MAX (EG_ENT*2) /* limit(tl + ksr + envelope) + sine wave */
 /* TotalLevel : 48 24 12  6  3 1.5 0.75 (dB) */
 /* TL_TABLE[ 0      to TL_MAX          ] : plus  section */
 /* TL_TABLE[ TL_MAX to TL_MAX+TL_MAX-1 ] : minus section */
 static INT32 *TL_TABLE;
 
-/* pointers to TL_TABLE with sinwave output offset */
+/* pointers to TL_TABLE with sine wave output offset */
 static INT32 **SIN_TABLE;
 
 /* LFO table */
@@ -657,7 +657,7 @@ static int OPLOpenTable( void )
 		TL_TABLE[t] = TL_TABLE[TL_MAX+t] = 0;
 	}
 
-	/* make sinwave table (total level offset) */
+	/* make sine wave table (total level offset) */
 	/* degree 0 = degree 180                   = off */
 	SIN_TABLE[0] = SIN_TABLE[SIN_ENT/2]         = &TL_TABLE[EG_ENT-1];
 	for (s = 1;s <= SIN_ENT/4;s++){
