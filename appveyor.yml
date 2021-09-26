@@ -84,7 +84,7 @@ before_deploy:
 deploy:
 - provider: NuGet
   api_key:
-    secure: Re/i54VMTFuTFvq544qGgYbtKBtp0mi4Jga3Aahv0VdJZSENBQM94pz3F4xVF0VQ
+    secure: Lb82TUs7QDi4K6cQrTaA4nv6h8ukcnAjeOP/nhMsCVV70vPci66VSbiIUYTI02uP
   artifact: /.*\.nupkg/
   on:
     branch: master
