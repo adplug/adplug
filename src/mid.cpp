@@ -114,6 +114,7 @@ typedef unsigned int   uint32_t;
 // File types
 #define FILE_LUCAS      1
 #define FILE_MIDI       2
+#define FILE_MIDItype1  7 // Multiple track file format
 #define FILE_CMF        3
 #define FILE_SIERRA     4
 #define FILE_ADVSIERRA  5
@@ -147,6 +148,16 @@ unsigned char CmidPlayer::datalook(long pos)
 {
     if (pos<0 || pos >= flen) return(0);
     return(data[pos]);
+}
+
+void CmidPlayer::readString (char *dst, unsigned long num)
+{
+	unsigned long i;
+
+    for (i=0; i<num; i++)
+        {
+        dst[i]=(char)datalook(pos); pos++;
+        }
 }
 
 unsigned long CmidPlayer::getnexti(unsigned long num)
@@ -438,6 +449,8 @@ void CmidPlayer::midi_fm_playnote(int voice, int note, int volume)
     int oct=note/12;
 	int c;
 
+    midiprintf ("playnote(voice %d, note %d, volume %d)\n", voice, note, volume);
+
     midi_fm_volume(voice,volume);
     midi_write_adlib(0xa0+voice,(unsigned char)(freq&0xff));
 
@@ -573,6 +586,7 @@ bool CmidPlayer::update()
                         nv=vel;
                     }
 
+	            midiprintf("(c=%d ch.nshift=%d)", c, ch[c].nshift);
 		    midi_fm_playnote(on,note+ch[c].nshift,nv*2); // sets freq in rhythm mode
                     chp[on][0]=c;
                     chp[on][1]=note;
@@ -941,21 +955,50 @@ void CmidPlayer::rewind(int subsong)
                 adlib_style=LUCAS_STYLE|MIDI_STYLE;
                 //note: no break, we go right into midi headers...
             case FILE_MIDI:
+            case FILE_MIDItype1:
                 if (type != FILE_LUCAS)
                     tins=128;
-                getnext(11);  /*skip header*/
+                /* "Mthd"              header-chunk
+                 * 0x00 0x00 0x00 0x06 header size
+                 * 0x00 0x0n           midi file type: 0=single-track format, 1=multiple-track format, 2=multiple-song format
+                 * 0xnn 0xnn           track-number
+                 * 0xnn 0xnn           tempo
+                 */
+                getnext(7);
+                i=getnext(2);
+                type=(i==1)?FILE_MIDItype1:FILE_MIDI;
+		midiprintf ("type:%ld\n", i);
+                getnext(2); /* skip track-number */
                 deltas=getnext(2);
                 midiprintf ("deltas:%ld\n",deltas);
-                getnext(4);
+
+	        for (i=0; i<16; i++)
+	        {
+                  ch[i].nshift=-13;
+                  ch[i].on=1;
+                }
 
                 curtrack=0;
-                track[curtrack].on=1;
-                track[curtrack].tend=getnext(4);
-                midiprintf ("tracklen:%lu\n",track[curtrack].tend);
-                //track[curtrack].tend += pos; // FIXME: length -> end position
-                if (track[curtrack].tend > flen) // no music after end of file
-                    track[curtrack].tend = flen;
-                track[curtrack].spos=pos;
+                while (((type==FILE_MIDI) && curtrack == 0) ||
+                       ((type==FILE_MIDItype1) && (curtrack < 16)))
+                {
+                    char s[4];
+                    s[0] = 0;
+                    readString(s, 4);
+                    midiprintf("Offset=0x%08lx\n", pos);
+                    midiprintf("trkHeader: %c%c%c%c\n", s[0], s[1], s[2], s[3]);
+                    if (s[0] != 'M' || s[1]!='T' || s[2]!='r' || s[3]!='k')
+                        break;
+                    track[curtrack].on=1;
+                    track[curtrack].tend=getnext(4);
+                    midiprintf ("tracklen:%lu\n",track[curtrack].tend);
+                    //track[curtrack].tend += pos; // FIXME: length -> end position
+                    if (track[curtrack].tend > flen) // no music after end of file
+                        track[curtrack].tend = flen;
+                    track[curtrack].spos=pos;
+                    pos+=track[curtrack].tend;
+                    curtrack++;
+                }
                 break;
             case FILE_CMF:
                 getnext(3);  // ctmf
@@ -1129,6 +1172,8 @@ std::string CmidPlayer::gettype()
 		return std::string("LucasArts AdLib MIDI");
 	case FILE_MIDI:
 		return std::string("General MIDI");
+	case FILE_MIDItype1:
+		return std::string("General MIDI type 1");
 	case FILE_CMF:
 		return std::string("Creative Music Format (CMF MIDI)");
 	case FILE_OLDLUCAS:

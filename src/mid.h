@@ -100,6 +100,7 @@ public:
   unsigned char datalook(long pos);
   unsigned long getnexti(unsigned long num);
   unsigned long getnext(unsigned long num);
+  void readString (char *dst, unsigned long num);
   unsigned long getval();
   void sierra_next_section();
   void midi_write_adlib(unsigned int r, unsigned char v);
