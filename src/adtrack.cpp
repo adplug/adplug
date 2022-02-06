@@ -65,9 +65,11 @@ bool CadtrackLoader::load(const std::string &filename, const CFileProvider &fp)
   if(!instf || fp.filesize(instf) != 468) { if(instf) { fp.close(instf); } fp.close(f); return false; }
 
   // give CmodPlayer a hint on what we're up to
-  realloc_patterns(1,1000,9); realloc_instruments(9); realloc_order(1);
+  // songs are fixed at 1000 rows, but we split them up into 10 patterns of 100 rows
+  realloc_patterns(10,100,9); realloc_instruments(9); realloc_order(10);
   init_trackord(); flags = NoKeyOn;
-  (*order) = 0; length = 1; restartpos = 0; bpm = 120; initspeed = 3;
+  for (i=0; i < 10; i++) order[i] = i;
+  length = 10; restartpos = 0; bpm = 120; initspeed = 3;
 
   // load instruments from instruments file
   for(i=0;i<9;i++) {
@@ -105,7 +107,7 @@ bool CadtrackLoader::load(const std::string &filename, const CFileProvider &fp)
       case 'B': pnote = 12; break;
       case '\0':
 	if(note[1] == '\0')
-	  tracks[chp][rwp].note = 127;
+	  tracks[chp + (rwp / 100) * 9][rwp % 100].note = 127;
 	else {
 	  fp.close(f);
 	  return false;
@@ -114,8 +116,8 @@ bool CadtrackLoader::load(const std::string &filename, const CFileProvider &fp)
       default: fp.close(f); return false;
       }
       if((*note) != '\0') {
-	tracks[chp][rwp].note = pnote + (octave * 12);
-	tracks[chp][rwp].inst = chp + 1;
+	tracks[chp + (rwp / 100) * 9][rwp % 100].note = pnote + (octave * 12);
+	tracks[chp + (rwp / 100) * 9][rwp % 100].inst = chp + 1;
       }
     }
 

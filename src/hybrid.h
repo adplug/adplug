@@ -82,6 +82,17 @@ protected:
 	// Wraithverge: added this.
 	unsigned int    xadplayer_getspeed();
 
+	unsigned int getpatterns() { return 256; } // need to parse data and detect the real length by review of breaks/jumps
+	unsigned int getpattern() { return hyb.order_pos; } // since channels multiplex orders to build a pattern
+	unsigned char getpattern(unsigned long order) { return order; } // since channels multiplex orders to build a pattern
+	unsigned int getorders() { return 256; } // need to parse data and detect the real length by review of breaks/jumps
+	unsigned int getorder() { return hyb.order_pos; };
+	unsigned int getrow() { return hyb.pattern_pos; };
+	unsigned int getrows() { return 0x40; }
+	unsigned int getnchans() { return 9; }
+	unsigned int getspeed() { return plr.speed; }
+	void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
+
 private:
 	static const unsigned char hyb_adlib_registers[99];
 	static const unsigned short hyb_notes[98];

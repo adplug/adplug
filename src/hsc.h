@@ -42,6 +42,12 @@ class ChscPlayer: public CPlayer
   unsigned int getorders();
   unsigned int getorder() { return songpos; }
   unsigned int getrow() { return pattpos; }
+  unsigned int getrows() { return 64; }
+  unsigned int getnchans() { return 9; }
+  unsigned char getpattern(unsigned long ordr);
+
+  void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
+
   unsigned int getspeed() { return speed; }
   unsigned int getinstruments();
 
