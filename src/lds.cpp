@@ -155,6 +155,132 @@ bool CldsPlayer::load(const std::string &filename, const CFileProvider &fp)
   return true;
 }
 
+void CldsPlayer::gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
+                              unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param)
+{
+  note = 0; command = TrackedCmdNone; inst = 0; volume = 255; param = 0;
+  if (pattern >= numposi) return;
+  if (row >= pattlen) return;
+  if (channel >= 9) return;
+  unsigned short   patnum = positions[pattern * 9 + channel].patnum;
+  unsigned char transpose = positions[pattern * 9 + channel].transpose;
+  int crow = 0;
+  int packpos = 0;
+
+  while (crow <= row) {
+    unsigned short comword, freq, octave, chan, tune, wibc, tremc, arpreg;
+    bool           vbreak;
+    unsigned char  level, regnum, comhi, comlo;
+    int            i;
+
+    comword = patterns[patnum + packpos];
+    comhi = comword >> 8;
+    comlo = comword & 0xff;
+
+    if(comword) {
+      if(comhi == 0x80) {
+        crow += comlo;
+      } else {
+        if (crow == row) {
+          if(comhi >= 0x80) {
+            switch(comhi) {
+              case 0xff:
+                command = TrackedCmdOPLCarrierModulatorVolume;
+                param = comlo;
+                break;
+              case 0xfe:
+                command = TrackedCmdTempo;
+                param = comword & 0x3f;
+                break;
+              case 0xfd:
+                volume = comlo;
+                break;
+              case 0xfc:
+                command = TrackedCmdNoteCut;
+                break;
+              case 0xfb:
+                command = TrackedCmdRetrigger;
+                param = 1;
+                break;
+              case 0xfa:
+                command = TrackedCmdPatternBreak;
+                break;
+              case 0xf9:
+                command = TrackedCmdPatternJumpTo;
+                param = comlo & maxpos;
+                break;
+              case 0xf8:
+                // lastune = 0 ???
+                break;
+              case 0xf7:
+                command = TrackedCmdVibrato;
+                param = comlo;
+                break;
+              case 0xf6:
+                command = TrackedCmdTonePortamento;
+                note = comlo + 12;
+                param = 0;
+                break;
+              case 0xf5:
+                command = TrackedCmdPitchSlideUpDown; // not a perfect match for c->finetune = comlo
+                param = comlo;
+                break;
+              case 0xf4:
+                command = TrackedCmdGlobalVolume;
+                param = comlo;
+                break;
+              case 0xf3:
+                // fadeonoff = comlo ??
+                command = TrackedCmdVolumeFadeIn;
+                param = comlo;
+                break;
+              case 0xf2:
+                command = TrackedCmdOPLTremolo;
+                param = comlo;
+                break;
+              case 0xf1:	// panorama
+              case 0xf0:	// progch
+                break;
+              default:
+                if(comhi < 0xa0) {
+                  command = TrackedCmdTonePortamento;
+                  // this note might be off..
+                  note = (comhi & 0x1f) + 12;
+                  param = 0;
+                }
+                break;
+            }
+          } else {
+            unsigned char  sound;
+            unsigned short high;
+            signed char transp = transpose & 127;
+
+            if(transpose & 64) transp |= 128;
+
+            if(transpose & 128) {
+              sound = (comlo + transp) & maxsound;
+              high = comhi << 4;
+            } else {
+              sound = comlo & maxsound;
+              high = (comhi + transp) << 4;
+            }
+
+            if(chandelay[chan]) {
+              // command = TrackedCmdDelay;
+              // param = chandelay[chan];
+            }
+            // this note might be off..
+            note = high + 12;
+          }
+          return;
+        }
+        crow++;
+      }
+    }
+    packpos++;
+  }
+}
+
 bool CldsPlayer::update()
 {
   unsigned short	comword, freq, octave, chan, tune, wibc, tremc, arpreg;

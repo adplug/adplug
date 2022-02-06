@@ -50,6 +50,11 @@ public:
 	unsigned int getorders();
 	unsigned int getorder();
 	unsigned int getrow();
+	unsigned int getrows();
+	unsigned int getnchans();
+	unsigned char getpattern(unsigned long order);
+	void gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
+	                  unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param);
 	unsigned int getspeed();
 	std::string getinstrument(unsigned int n);
 

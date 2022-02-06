@@ -85,6 +85,11 @@ bool CxadhybridPlayer::xadplayer_load()
 {
 	if(xad.fmt != HYBRID) return false;
 
+	if (tune_size < (0xade + 64*2))
+	{ /* absolute minimum */
+		return false;
+	}
+
 	// load instruments
 	hyb.inst = (hyb_instrument *)&tune[0];
 
@@ -129,6 +134,59 @@ void CxadhybridPlayer::xadplayer_rewind(int subsong)
 	}
 }
 
+void CxadhybridPlayer::gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
+                                    unsigned char &_note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param)
+{
+	_note = 0; command = TrackedCmdNone; inst = 0; volume = 255; param = 0;
+	if ((pattern*9 + channel + 0x1d4) >= tune_size) return; /* buffer overflow */
+
+	unsigned char posoffset = 0xADE + (hyb.order[pattern*9 + channel] * 64 * 2) + (row * 2);
+
+	if ((posoffset + 1) >= tune_size) return; /* buffer overflow */
+
+	unsigned char *pos = &tune[posoffset];
+	// read event
+	unsigned short event = (pos[1] << 8) + pos[0];
+
+	// calculate variables
+	unsigned char  note  =   event >> 9;
+	unsigned char  ins   = ((event & 0x01F0) >> 4);
+	unsigned char  slide =   event & 0x000F;
+
+	// play event
+	switch(note)
+	{
+		case 0x7D: // 0x7D: Set Speed
+			command = TrackedCmdSpeed;
+			param = event & 0xff;
+			return;
+
+		case 0x7E: // 0x7E: Jump Position
+			command = TrackedCmdPatternJumpTo;
+			param = (event & 0xFF) + 1;
+			return;
+
+		case 0x7f:
+			command = TrackedCmdPatternBreak;
+			return;
+
+		case 0x00:
+		case 0x01:
+                        return;
+		default:
+			inst = ins;
+			_note = note + 12 - 2; // note[2] = C#
+
+			// is slide ?
+			if (slide)
+			{
+				command = (slide & 0x08) ? TrackedCmdPitchSlideDown : TrackedCmdPitchSlideUp;
+				param = slide & 0x07;
+			}
+			return;
+	}
+}
+
 void CxadhybridPlayer::xadplayer_update()
 {
 	int i = 0, j = 0;
@@ -144,7 +202,13 @@ void CxadhybridPlayer::xadplayer_update()
 	// process channels
 	for (i=0;i<9;i++)
 	{
-		unsigned char *pos = &tune[0xADE + (hyb.order[hyb.order_pos*9 + i] * 64 * 2) + (patpos * 2)];
+		if ((hyb.order_pos*9 + i + 0x1d4) >= tune_size) { std::cerr << "WARNING1\n"; break; /* buffer overflow */ }
+
+		unsigned char posoffset = 0xADE + (hyb.order[hyb.order_pos*9 + i] * 64 * 2) + (patpos * 2);
+
+		if ((posoffset + 1) >= tune_size) { std::cerr << "WARNING2\n"; break; /* buffer overflow */ }
+
+		unsigned char *pos = &tune[posoffset];
 		// read event
 		unsigned short event = (pos[1] << 8) + pos[0];
 

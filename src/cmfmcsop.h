@@ -43,7 +43,13 @@ public:
 	virtual unsigned int getorders()      { return nrOfOrders; }
 	virtual unsigned int getorder()       { return currentOrderIndex; }
 	virtual unsigned int getrow()         { return currentRow; }
+	virtual unsigned int getrows()        { return 64; }
+	virtual unsigned int getnchans()      { return 11;  /* not 6? */}
 	virtual unsigned int getspeed()       { return 1; }
+	virtual unsigned char getpattern(unsigned long ordr) {if (ordr >= nrOfOrders) return 0; return patternOrder[ordr]; }
+	virtual void gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
+	                          unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param);
+
 	virtual unsigned int getinstruments() { return instruments.size(); }
 	virtual std::string getinstrument(unsigned int n) { return instruments[n].name; }
 

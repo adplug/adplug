@@ -457,6 +457,37 @@ void CcmfmacsoperaPlayer::processNoteEvent(const CcmfmacsoperaPlayer::NoteEvent 
 		keyOn(channelNr);
 }
 
+void CcmfmacsoperaPlayer::gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
+                                       unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param)
+{
+  note = 0x00; command = TrackedCmdNone; inst = 0x00; volume = 0xff; param = 0x00;
+
+  if (pattern >= nrOfPatterns) return;
+  const Pattern& p = patterns[pattern];
+
+  for (int pi; pi < p.size(); ++pi) {
+    const NoteEvent& n = p[pi];
+    if (n.row > row) return;
+    if (n.row < row) continue;
+    if (n.col == channel) {
+      if (n.note == 1)
+      {
+        command = TrackedCmdPatternBreak;
+        return;
+      }
+      if (n.note == 4)
+      {
+        command = TrackedCmdNoteCut;
+        return;
+      }
+      inst = n.instrument + 1;
+      volume = n.volume;
+      if ((n.note >= 23) && (n.note < 120)) note = n.note;
+      return;
+    }
+  }
+}
+
 bool CcmfmacsoperaPlayer::update()
 {
 	AdPlug_LogWrite( "%2d: ", currentRow);

@@ -57,11 +57,17 @@ public:
 	  { return 0; }
 	virtual unsigned int getpattern()	// returns currently playing pattern
 	  { return 0; }
+	virtual unsigned char getpattern(unsigned long order) // resolve order into pattern (tracked file formats)
+	  {  return order; }
 	virtual unsigned int getorders()	// returns size of orderlist
 	  { return 0; }
 	virtual unsigned int getorder()		// returns currently playing song position
 	  { return 0; }
 	virtual unsigned int getrow()		// returns currently playing row
+	  { return 0; }
+	virtual unsigned int getrows()         // returns number of rows per pattern (tracked file formats)
+	  { return 0; }
+	virtual unsigned int getnchans()       // returns number of channels per pattern (tracked file formats)
 	  { return 0; }
 	virtual unsigned int getspeed()		// returns current song speed
 	  { return 0; }
@@ -71,6 +77,59 @@ public:
 	  { return 0; }
 	virtual unsigned int getinstruments()	// returns number of instruments
 	  { return 0; }
+	enum TrackedCmds
+	{
+		TrackedCmdNone,
+		TrackedCmdArpeggio,
+		TrackedCmdPitchSlideUp,
+		TrackedCmdPitchSlideDown,
+		TrackedCmdPitchSlideUpDown,
+		TrackedCmdPitchFineSlideUp,
+		TrackedCmdPitchFineSlideDown,
+		TrackedCmdTonePortamento,
+		TrackedCmdTonePortamentoVolumeSlide,
+		TrackedCmdVibratoFine,
+		TrackedCmdVibrato,
+		TrackedCmdVibratoVolumeSlide,
+		TrackedCmdSpeed,
+		TrackedCmdTempo,
+		TrackedCmdReleaseSustainedNotes,
+		TrackedCmdVolumeSlideUpDown,
+		TrackedCmdVolumeFineSlideUp,
+		TrackedCmdVolumeFineSlideDown,
+		TrackedCmdVolumeFadeIn,
+		//TrackedCmdSetVolume,   Use volume as is instead
+
+		TrackedCmdPatternJumpTo,
+		TrackedCmdPatternBreak,
+		TrackedCmdPatternSetLoop,
+		TrackedCmdPatternDoLoop,
+		TrackedCmdPatternDelay,
+
+		TrackedCmdOPLCarrierModulatorVolume,
+		TrackedCmdOPLCarrierVolume,
+		TrackedCmdOPLModulatorVolume,
+		TrackedCmdOPLCarrierModulatorWaveform,
+
+		TrackedCmdOPLTremoloVibrato,
+		TrackedCmdOPLTremolo,
+		TrackedCmdOPLVibrato,
+
+		TrackedCmdOPL3Multiplier,
+		TrackedCmdOPLFeedback,
+		TrackedCmdOPL3Volume,
+
+		TrackedCmdOPLVoiceMode,
+		TrackedCmdOPLDrumMode,
+
+		TrackedCmdRetrigger,
+		TrackedCmdNoteCut,
+
+		TrackedCmdGlobalVolume,
+	};
+	virtual void gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
+	                          unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param) // retrieve tracked data
+	  { return; }
 	virtual std::string getinstrument(unsigned int n)	// returns n-th instrument name
 	  { return std::string(); }
 
