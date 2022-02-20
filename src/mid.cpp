@@ -113,8 +113,8 @@ typedef unsigned int   uint32_t;
 
 // File types
 #define FILE_LUCAS      1
-#define FILE_MIDI       2
-#define FILE_MIDItype1  7 // Multiple track file format
+#define FILE_MIDItype0  2 // Single track file format (all midi channels are stored in the same track interleaved)
+#define FILE_MIDItype1  7 // Multiple track file format (each midi channel is stored in its own track)
 #define FILE_CMF        3
 #define FILE_SIERRA     4
 #define FILE_ADVSIERRA  5
@@ -320,7 +320,20 @@ bool CmidPlayer::load(const std::string &filename, const CFileProvider &fp)
             if (s[1]=='D' && s[2]=='L') good=FILE_LUCAS;
             break;
         case 'M':
-            if (s[1]=='T' && s[2]=='h' && s[3]=='d') good=FILE_MIDI;
+            if (s[1]=='T' && s[2]=='h' && s[3]=='d')
+            {
+                /* "MThd"              header-chunk
+                 * 0x00 0x00 0x00 0x06 header size
+                 * 0x00 0x0n           midi file type: 0=single-track format, 1=multiple-track format, 2=multiple-song format
+                 * 0xnn 0xnn           track-number
+                 * 0xnn 0xnn           tempo
+                 */
+                unsigned char s2[4];
+                f->readString((char *)s2, 4);
+                int miditype = u16_unaligned (s2+2);
+                good=(miditype==1)?FILE_MIDItype1:FILE_MIDItype0;
+                midiprintf ("General MIDI type:%d\n", miditype);
+            }
             break;
         case 'C':
             if (s[1]=='T' && s[2]=='M' && s[3]=='F') good=FILE_CMF;
@@ -448,8 +461,6 @@ void CmidPlayer::midi_fm_playnote(int voice, int note, int volume)
     int freq=fnums[note%12];
     int oct=note/12;
 	int c;
-
-    midiprintf ("playnote(voice %d, note %d, volume %d)\n", voice, note, volume);
 
     midi_fm_volume(voice,volume);
     midi_write_adlib(0xa0+voice,(unsigned char)(freq&0xff));
@@ -586,7 +597,6 @@ bool CmidPlayer::update()
                         nv=vel;
                     }
 
-	            midiprintf("(c=%d ch.nshift=%d)", c, ch[c].nshift);
 		    midi_fm_playnote(on,note+ch[c].nshift,nv*2); // sets freq in rhythm mode
                     chp[on][0]=c;
                     chp[on][1]=note;
@@ -954,24 +964,13 @@ void CmidPlayer::rewind(int subsong)
                 getnext(24);  //skip junk and get to the midi.
                 adlib_style=LUCAS_STYLE|MIDI_STYLE;
                 //note: no break, we go right into midi headers...
-            case FILE_MIDI:
+            case FILE_MIDItype0:
             case FILE_MIDItype1:
                 if (type != FILE_LUCAS)
                     tins=128;
-                /* "Mthd"              header-chunk
-                 * 0x00 0x00 0x00 0x06 header size
-                 * 0x00 0x0n           midi file type: 0=single-track format, 1=multiple-track format, 2=multiple-song format
-                 * 0xnn 0xnn           track-number
-                 * 0xnn 0xnn           tempo
-                 */
-                getnext(7);
-                i=getnext(2);
-                type=(i==1)?FILE_MIDItype1:FILE_MIDI;
-		midiprintf ("type:%ld\n", i);
-                getnext(2); /* skip track-number */
+                getnext(11); /* skip past header data until deltas is reached */
                 deltas=getnext(2);
                 midiprintf ("deltas:%ld\n",deltas);
-
 	        for (i=0; i<16; i++)
 	        {
                   ch[i].nshift=-13;
@@ -979,15 +978,15 @@ void CmidPlayer::rewind(int subsong)
                 }
 
                 curtrack=0;
-                while (((type==FILE_MIDI) && curtrack == 0) ||
+                while ((curtrack == 0) ||
                        ((type==FILE_MIDItype1) && (curtrack < 16)))
-                {
-                    char s[4];
-                    s[0] = 0;
+                { /* MIDI type 0 (and LucasArts AdLib MIDI) stores all the MIDI channels in a single track, while MIDI type 1 splits each channel into seperate tracks */
+                    char s[5];
                     readString(s, 4);
+                    s[4] = 0;
                     midiprintf("Offset=0x%08lx\n", pos);
-                    midiprintf("trkHeader: %c%c%c%c\n", s[0], s[1], s[2], s[3]);
-                    if (s[0] != 'M' || s[1]!='T' || s[2]!='r' || s[3]!='k')
+                    midiprintf("trkHeader: %s\n", s);
+                    if (strcmp(s, "MTrk"))
                         break;
                     track[curtrack].on=1;
                     track[curtrack].tend=getnext(4);
@@ -1170,10 +1169,10 @@ std::string CmidPlayer::gettype()
 	switch(type) {
 	case FILE_LUCAS:
 		return std::string("LucasArts AdLib MIDI");
-	case FILE_MIDI:
-		return std::string("General MIDI");
+	case FILE_MIDItype0:
+		return std::string("General MIDI (type 0)");
 	case FILE_MIDItype1:
-		return std::string("General MIDI type 1");
+		return std::string("General MIDI (type 1)");
 	case FILE_CMF:
 		return std::string("Creative Music Format (CMF MIDI)");
 	case FILE_OLDLUCAS:
