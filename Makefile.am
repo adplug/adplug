@@ -278,6 +278,8 @@ EXTRA_DIST += \
 	test/bmf1_2.xad \
 	test/BOOTUP.M \
 	test/BOOTUP.ref \
+	test/canonind.rad \
+	test/canonind.ref \
 	test/CHILD1.ref \
 	test/CHILD1.XSM \
 	test/crusader.raw \
@@ -292,6 +294,8 @@ EXTRA_DIST += \
 	test/DTM-TRK1.ref \
 	test/DUNE19.ADL \
 	test/DUNE19.ref \
+	test/dystopia.rad \
+	test/dystopia.ref \
 	test/ending.ref \
 	test/ending.sop \
 	test/EOBSOUND.ADL \
