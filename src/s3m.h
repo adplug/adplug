@@ -53,8 +53,7 @@ class Cs3mPlayer: public CPlayer
   unsigned int getrows()
     { return 64; }
   unsigned int getnchans();
-  void gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
-                    unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param);
+  void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
   unsigned int getspeed()
     { return speed; };
 

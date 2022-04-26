@@ -44,8 +44,7 @@ class CldsPlayer: public CPlayer
   unsigned int getnchans() { return 9; }
   unsigned int getspeed() { return speed; }
   unsigned int getinstruments() { return numpatch; }
-  void gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
-                    unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param);
+  void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
 
  private:
   typedef struct {

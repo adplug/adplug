@@ -146,8 +146,9 @@ bool CldsPlayer::load(const std::string &filename, const CFileProvider &fp)
 
   // load patterns
   f->ignore(2);		// ignore # of digital sounds (not played by this player)
-  patterns = new unsigned short[(fp.filesize(f) - f->pos()) / 2 + 1];
-  for(i = 0; !f->eof(); i++)
+  patterns_size = (fp.filesize(f) - f->pos()) / 2;
+  patterns = new unsigned short[patterns_size + 1];
+  for(i = 0; i < patterns_size; i++)
     patterns[i] = f->readInt(2);
 
   fp.close(f);
@@ -155,33 +156,37 @@ bool CldsPlayer::load(const std::string &filename, const CFileProvider &fp)
   return true;
 }
 
-void CldsPlayer::gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
-                              unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param)
+void CldsPlayer::gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
 {
-  note = 0; command = TrackedCmdNone; inst = 0; volume = 255; param = 0;
   if (pattern >= numposi) return;
-  if (row >= pattlen) return;
-  if (channel >= 9) return;
-  unsigned short   patnum = positions[pattern * 9 + channel].patnum;
-  unsigned char transpose = positions[pattern * 9 + channel].transpose;
-  int crow = 0;
-  int packpos = 0;
+  for (int channel = 0; channel < 9; channel++) {
+    unsigned short   patnum = positions[pattern * 9 + channel].patnum;
+    unsigned char transpose = positions[pattern * 9 + channel].transpose;
+    int crow=0;
+    int packpos = 0;
+    while (crow < pattlen) {
+      unsigned short comword, freq, octave, chan, tune, wibc, tremc, arpreg;
+      bool           vbreak;
+      unsigned char  level, regnum, comhi, comlo;
+      int            i;
 
-  while (crow <= row) {
-    unsigned short comword, freq, octave, chan, tune, wibc, tremc, arpreg;
-    bool           vbreak;
-    unsigned char  level, regnum, comhi, comlo;
-    int            i;
+      unsigned char note = 0;
+      TrackedCmds command = TrackedCmdNone;
+      unsigned char inst = 0;
+      unsigned char volume = 255;
+      unsigned char param = 0;
 
-    comword = patterns[patnum + packpos];
-    comhi = comword >> 8;
-    comlo = comword & 0xff;
+      if ((patnum + packpos) < patterns_size)
+        comword = patterns[patnum + packpos];
+      else
+        comword = 0x8001;
+      comhi = comword >> 8;
+      comlo = comword & 0xff;
 
-    if(comword) {
-      if(comhi == 0x80) {
-        crow += comlo;
-      } else {
-        if (crow == row) {
+      if(comword) {
+        if(comhi == 0x80) {
+          crow += comlo;
+        } else {
           if(comhi >= 0x80) {
             switch(comhi) {
               case 0xff:
@@ -272,12 +277,17 @@ void CldsPlayer::gettrackdata(unsigned char pattern, unsigned char row, unsigned
             // this note might be off..
             note = high + 12;
           }
-          return;
+          if ((note != 0) ||
+              (command != TrackedCmdNone) ||
+              (inst != 0) ||
+              (volume != 255) ||
+              (param != 0))
+            callback (arg, crow, channel, note, command, inst, volume, param);
+          crow++;
         }
-        crow++;
       }
+      packpos++;
     }
-    packpos++;
   }
 }
 
@@ -331,7 +341,11 @@ bool CldsPlayer::update()
 	unsigned short	patnum = positions[posplay * 9 + chan].patnum;
 	unsigned char	transpose = positions[posplay * 9 + chan].transpose;
 
-	comword = patterns[patnum + c->packpos];
+        if ((patnum + c->packpos) < patterns_size)
+          comword = patterns[patnum + c->packpos];
+        else
+          comword = 0x8001;
+
 	comhi = comword >> 8; comlo = comword & 0xff;
 	if(comword)
 	  if(comhi == 0x80)

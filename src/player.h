@@ -127,9 +127,7 @@ public:
 
 		TrackedCmdGlobalVolume,
 	};
-	virtual void gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
-	                          unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param) // retrieve tracked data
-	  { return; }
+	virtual void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) { return; }
 	virtual std::string getinstrument(unsigned int n)	// returns n-th instrument name
 	  { return std::string(); }
 

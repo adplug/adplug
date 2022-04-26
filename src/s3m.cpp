@@ -74,70 +74,75 @@ unsigned int Cs3mPlayer::getnchans()
   return retval;
 }
 
-void Cs3mPlayer::gettrackdata(unsigned char pattrn, unsigned char row, unsigned char channel,
-                              unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param)
+void Cs3mPlayer::gettrackdata(unsigned char pattrn, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
 {
-  note=0; command=TrackedCmdNone; inst=0; volume=255; param = 0;
   if (pattrn >= header.patnum) return;
-  if (row >= 64) return;
-  int chanreverse = 0;
+  int channel = 0;
   for (int chan=0; chan < 32; chan++) {
     if ((!(header.chanset[chan] & 0x80)) &&
         (chnresolv[header.chanset[chan] & 0x1f] >= 0)) {
-      if (chanreverse == channel) {
+      for (int row=0; row < 64; row++) {
         const s3mevent &ev = pattern[pattrn][row][chan];
-        inst = ev.instrument;
-        volume = ev.volume;
+        unsigned char note=0;
+        TrackedCmds command=TrackedCmdNone;
+        unsigned param = 0;
+        unsigned char inst = ev.instrument;
+        unsigned char volume = ev.volume;
         if (ev.note < 12) {
           note = ev.note + ev.oct*12 + 12;
         } else if (ev.note == 14) {
           command = TrackedCmdNoteCut;
-          return;
+        } else {
+          param = ev.info;
+          switch (ev.command) {
+            case 1: command = TrackedCmdSpeed; break;
+            case 2: command = TrackedCmdPatternJumpTo; break;
+            case 3: command = TrackedCmdPatternBreak; break;
+            case 4: command = TrackedCmdVolumeSlideUpDown; break;
+            case 5:
+              if (ev.info > 0xf0) {
+                command = TrackedCmdVolumeFineSlideUp;
+                param = ev.info & 15;
+              } else if (((ev.info & 0x0f) == 0x0f) && (ev.info & 0xf0)) {
+                command = TrackedCmdVolumeFineSlideDown;
+                param = ev.info >> 4;
+              }
+              break;
+            case 6:
+              if (ev.info > 0xf0) {
+                command = TrackedCmdPitchFineSlideUp;
+                param = ev.info & 15;
+              } else if (((ev.info & 0x0f) == 0x0f) && (ev.info & 0xf0)) {
+                command = TrackedCmdPitchFineSlideDown;
+                param = ev.info >> 4;
+              }
+              break;
+            case 7: command = TrackedCmdTonePortamento; break;
+            case 8: command = TrackedCmdVibrato; break;
+            case 10: if (param) command = TrackedCmdArpeggio; break;
+            case 11: command = TrackedCmdVibratoVolumeSlide; break;
+            case 12: command = TrackedCmdTonePortamentoVolumeSlide; break;
+            case 19:
+              if (ev.info == 0xb0) {
+                command = TrackedCmdPatternSetLoop;
+                param = 0;
+              } else if ((ev.info & 0xf0 ) == 0xb0) {
+                command = TrackedCmdPatternDoLoop;
+                param &= 0x0f;
+              }
+              break;
+            case 20: command = TrackedCmdTempo; break;
+            case 21: command = TrackedCmdSpeed; break;
+          }
         }
-        param = ev.info;
-        switch (ev.command) {
-          case 1: command = TrackedCmdSpeed; break;
-          case 2: command = TrackedCmdPatternJumpTo; break;
-          case 3: command = TrackedCmdPatternBreak; break;
-          case 4: command = TrackedCmdVolumeSlideUpDown; break;
-          case 5:
-            if (ev.info > 0xf0) {
-              command = TrackedCmdVolumeFineSlideUp;
-              param = ev.info & 15;
-            } else if (((ev.info & 0x0f) == 0x0f) && (ev.info & 0xf0)) {
-              command = TrackedCmdVolumeFineSlideDown;
-              param = ev.info >> 4;
-            }
-            break;
-          case 6:
-            if (ev.info > 0xf0) {
-              command = TrackedCmdPitchFineSlideUp;
-              param = ev.info & 15;
-            } else if (((ev.info & 0x0f) == 0x0f) && (ev.info & 0xf0)) {
-              command = TrackedCmdPitchFineSlideDown;
-              param = ev.info >> 4;
-            }
-            break;
-          case 7: command = TrackedCmdTonePortamento; break;
-          case 8: command = TrackedCmdVibrato; break;
-          case 10: if (param) command = TrackedCmdArpeggio; break;
-          case 11: command = TrackedCmdVibratoVolumeSlide; break;
-          case 12: command = TrackedCmdTonePortamentoVolumeSlide; break;
-          case 19:
-            if (ev.info == 0xb0) {
-              command = TrackedCmdPatternSetLoop;
-              param = 0;
-            } else if ((ev.info & 0xf0 ) == 0xb0) {
-              command = TrackedCmdPatternDoLoop;
-              param &= 0x0f;
-            }
-            break;
-          case 20: command = TrackedCmdTempo; break;
-          case 21: command = TrackedCmdSpeed; break;
-        }
-        return;
+        if ((note != 0) ||
+            (command != TrackedCmdNone) ||
+            (inst != 0) ||
+            (volume != 255) ||
+            (param != 0))
+          callback (arg, row, channel, note, command, inst, volume, param);
       }
-      chanreverse++;
+      channel++;
     }
   }
 }

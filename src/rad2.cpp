@@ -547,8 +547,7 @@ public:
 #endif
 
 	unsigned char       GetTrackFor(unsigned long Ordr);
-	void                GetTuneData(unsigned char TrackNumber, unsigned char linenum, unsigned char channel,
-	                                unsigned char &note, CPlayer::TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param);
+        void                GetTrackData(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, CPlayer::TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg);
 
 private:
 	bool                UnpackNote(uint8_t *&s, uint8_t &last_instrument);
@@ -1172,47 +1171,26 @@ void RADPlayer::PlayLine() {
 	}
 }
 
-void RADPlayer::GetTuneData(unsigned char TrackNumber, unsigned char linenum, unsigned char channel,
-                            unsigned char &note, CPlayer::TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param)
+void RADPlayer::GetTrackData(unsigned char TrackNumber, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, CPlayer::TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
 {
-	note = 0; command = CPlayer::TrackedCmdNone; inst = 0; volume = 255; param = 0;
-
+	if (TrackNumber >= NumTracks) return;
 	uint8_t *trk = Tracks[TrackNumber];
+	uint8_t lineid;
 
-	while (1) {
+	do {
+		lineid = *trk++; // row
 
-		uint8_t lineid = *trk;
-		if ((lineid & 0x7F) > linenum)
-			return;
-		if (lineid == linenum)
-			break;
-		if (lineid & 0x80)
-			return;
-		trk++;
-
-		// Skip channel notes
+		// Run through channels
 		uint8_t chanid;
 		do {
-			chanid = *trk++;
-			if (Version >= 2)
-				trk += NoteSize[(chanid >> 4) & 7];
-			else if (trk[1] & 0xf)
-				// v1 note with param
-				trk += 3;
-			else
-				// v1 note without param
-				trk += 2;
-		} while (!(chanid & 0x80));
-	}
+			chanid = *trk++; // channel
 
-	// Run through channels
-	uint8_t chanid;
-	do {
-		int channum = *trk & 15;
-		chanid = *trk++;
+		        unsigned char note=0;
+			CPlayer::TrackedCmds command = CPlayer::TrackedCmdNone;
+			unsigned char inst = 0;
+			unsigned char volume = 255;
+			unsigned char param;
 
-		if (channum == channel)
-		{
 			uint8_t EffectNum = 0;
 			uint8_t Param = 0;
 
@@ -1234,8 +1212,7 @@ void RADPlayer::GetTuneData(unsigned char TrackNumber, unsigned char linenum, un
 					EffectNum = *trk++;
 					Param = *trk++;
 				}
-			}
-			else {
+			} else {
 				// Version 1 notes
 				// Unpack note data
 				uint8_t n = *trk++;
@@ -1259,7 +1236,7 @@ void RADPlayer::GetTuneData(unsigned char TrackNumber, unsigned char linenum, un
 				{
 					note = 0;
                                         command = CPlayer::TrackedCmdNoteCut;
-                                        return;
+                                        // break;
 				} else {
 					note = (note & 0x0f) + ((note >> 4) + 1) * 12 + 1; /* C# is the base note */
 				}
@@ -1267,35 +1244,25 @@ void RADPlayer::GetTuneData(unsigned char TrackNumber, unsigned char linenum, un
 
 			switch (EffectNum)
 			{
-				case cmPortamentoUp:  command=CPlayer::TrackedCmdPitchSlideUp;              param=Param; return;
-				case cmPortamentoDwn: command=CPlayer::TrackedCmdPitchSlideDown;            param=Param; return;
-				case cmToneSlide:     command=CPlayer::TrackedCmdTonePortamento;            param=Param; return;
-				case cmToneVolSlide:  command=CPlayer::TrackedCmdTonePortamentoVolumeSlide; param=Param; return;
-				case cmVolSlide:      command=CPlayer::TrackedCmdVolumeSlideUpDown;         param=Param; return;
-				case cmSetVol: volume=Param; return;
-				case cmJumpToLine:    command=CPlayer::TrackedCmdPatternJumpTo;             param=Param; return;
-				case cmSetSpeed:      command=CPlayer::TrackedCmdSpeed;                     param=Param; return;
-				case cmIgnore: return; // NoRiff....
-				case cmMultiplier:    command=CPlayer::TrackedCmdOPL3Multiplier;            param=Param; return;
-				case cmRiff: return; // Maybe arpeggio is the closest?
-				case cmTranspose: return; // Has to do with the riff?
-				case cmFeedback:      command=CPlayer::TrackedCmdOPLFeedback;               param=Param; return;
-				case cmVolume:        command=CPlayer::TrackedCmdOPL3Volume;                param=Param; return;
+				case cmPortamentoUp:  command=CPlayer::TrackedCmdPitchSlideUp;              param=Param; break;
+				case cmPortamentoDwn: command=CPlayer::TrackedCmdPitchSlideDown;            param=Param; break;
+				case cmToneSlide:     command=CPlayer::TrackedCmdTonePortamento;            param=Param; break;
+				case cmToneVolSlide:  command=CPlayer::TrackedCmdTonePortamentoVolumeSlide; param=Param; break;
+				case cmVolSlide:      command=CPlayer::TrackedCmdVolumeSlideUpDown;         param=Param; break;
+				case cmSetVol: volume=Param; break;
+				case cmJumpToLine:    command=CPlayer::TrackedCmdPatternJumpTo;             param=Param; break;
+				case cmSetSpeed:      command=CPlayer::TrackedCmdSpeed;                     param=Param; break;
+				case cmIgnore: break; // NoRiff....
+				case cmMultiplier:    command=CPlayer::TrackedCmdOPL3Multiplier;            param=Param; break;
+				case cmRiff: break; // Maybe arpeggio is the closest?
+				case cmTranspose: break; // Has to do with the riff?
+				case cmFeedback:      command=CPlayer::TrackedCmdOPLFeedback;               param=Param; break;
+				case cmVolume:        command=CPlayer::TrackedCmdOPL3Volume;                param=Param; break;
 			}
-			return;
-		}
 
-		if (Version >= 2)
-			trk += NoteSize[(chanid >> 4) & 7];
-		else if (trk[1] & 0xf)
-			// v1 note with param
-			trk += 3;
-		else
-			// v1 note without param
-			trk += 2;
-	} while (!(chanid & 0x80));
-
-	return;
+			callback (arg, lineid & 0x7f, chanid & 15, note, command, inst, volume, Param);
+		} while (!(chanid & 0x80));
+	} while (!(lineid & 0x80));
 }
 
 //==================================================================================================
@@ -2069,8 +2036,7 @@ unsigned int Crad2Player::getorder() { return rad->GetTunePos(); }
 unsigned int Crad2Player::getrow() { return rad->GetTuneLine(); }
 unsigned int Crad2Player::getrows() { return 64; /* rad->kTrackLines; */ }
 unsigned char Crad2Player::getpattern(unsigned long order) { return rad->GetTrackFor(order); }
-void Crad2Player::gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
-	                       unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param) { rad->GetTuneData(pattern, row, channel, note, command, inst, volume, param); }
+void Crad2Player::gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) { rad->GetTrackData (pattern, callback, arg); }
 unsigned int Crad2Player::getnchans() {return 16; }
 unsigned int Crad2Player::getspeed() { return rad->GetSpeed(); }
 unsigned int Crad2Player::getinstruments() { return rad->GetTuneInsts(); }

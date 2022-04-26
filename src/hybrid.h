@@ -91,9 +91,7 @@ protected:
 	unsigned int getrows() { return 0x40; }
 	unsigned int getnchans() { return 9; }
 	unsigned int getspeed() { return plr.speed; }
-
-	void gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
-		          unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param);
+        void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
 
 private:
 	static const unsigned char hyb_adlib_registers[99];

@@ -53,8 +53,7 @@ public:
 
   unsigned char getpattern(unsigned long _order)
     { if (_order > length) return 0; return order[_order]; }
-  void gettrackdata(unsigned char pattern, unsigned char row, unsigned char channel,
-    unsigned char &note, TrackedCmds &command, unsigned char &inst, unsigned char &volume, unsigned char &param);
+  void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
 
  protected:
   enum Flags {
