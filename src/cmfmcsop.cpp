@@ -462,7 +462,7 @@ void CcmfmacsoperaPlayer::gettrackdata(unsigned char pattern, void (*callback)(v
   if (pattern >= nrOfPatterns) return;
   const Pattern& p = patterns[pattern];
 
-  for (int pi; pi < p.size(); ++pi) {
+  for (int pi=0; pi < p.size(); ++pi) {
     const NoteEvent& n = p[pi];
     unsigned char note = 0;
     TrackedCmds command = TrackedCmdNone;

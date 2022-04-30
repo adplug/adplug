@@ -1189,7 +1189,7 @@ void RADPlayer::GetTrackData(unsigned char TrackNumber, void (*callback)(void *a
 			CPlayer::TrackedCmds command = CPlayer::TrackedCmdNone;
 			unsigned char inst = 0;
 			unsigned char volume = 255;
-			unsigned char param;
+			unsigned char param = 0;
 
 			uint8_t EffectNum = 0;
 			uint8_t Param = 0;
@@ -1260,7 +1260,7 @@ void RADPlayer::GetTrackData(unsigned char TrackNumber, void (*callback)(void *a
 				case cmVolume:        command=CPlayer::TrackedCmdOPL3Volume;                param=Param; break;
 			}
 
-			callback (arg, lineid & 0x7f, chanid & 15, note, command, inst, volume, Param);
+			callback (arg, lineid & 0x7f, chanid & 15, note, command, inst, volume, param);
 		} while (!(chanid & 0x80));
 	} while (!(lineid & 0x80));
 }

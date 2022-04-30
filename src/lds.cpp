@@ -165,10 +165,8 @@ void CldsPlayer::gettrackdata(unsigned char pattern, void (*callback)(void *arg,
     int crow=0;
     int packpos = 0;
     while (crow < pattlen) {
-      unsigned short comword, freq, octave, chan, tune, wibc, tremc, arpreg;
-      bool           vbreak;
-      unsigned char  level, regnum, comhi, comlo;
-      int            i;
+      unsigned short comword, chan;
+      unsigned char  comhi, comlo;
 
       unsigned char note = 0;
       TrackedCmds command = TrackedCmdNone;
@@ -256,17 +254,17 @@ void CldsPlayer::gettrackdata(unsigned char pattern, void (*callback)(void *arg,
                 break;
             }
           } else {
-            unsigned char  sound;
+            //unsigned char  sound;
             unsigned short high;
             signed char transp = transpose & 127;
 
             if(transpose & 64) transp |= 128;
 
             if(transpose & 128) {
-              sound = (comlo + transp) & maxsound;
+              //sound = (comlo + transp) & maxsound;
               high = comhi << 4;
             } else {
-              sound = comlo & maxsound;
+              //sound = comlo & maxsound;
               high = (comhi + transp) << 4;
             }
 
