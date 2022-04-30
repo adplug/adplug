@@ -44,7 +44,7 @@ CPlayer *CdmoLoader::factory(Copl *newopl)
 
 bool CdmoLoader::load(const std::string &filename, const CFileProvider &fp)
 {
-  int i, j;
+  int i;
 
   binistream *f = fp.open(filename);
   if (!f) return false;

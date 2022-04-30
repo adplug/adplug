@@ -182,13 +182,13 @@ static const std::string file2type(const char *filename)
   CPlayer			*p;
 
   for(i = CAdPlug::players.begin(); i != CAdPlug::players.end(); i++)
-    if((p = (*i)->factory(&opl)))
+    if((p = (*i)->factory(&opl))) {
       if(p->load(filename)) {
 	delete p;
 	return (*i)->filetype;
       } else
 	delete p;
-
+    }
   message(MSG_WARN, "unknown filetype -- %s", filename);
   return UNKNOWN_FILETYPE;
 }
