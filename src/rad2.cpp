@@ -1920,7 +1920,7 @@ float Crad2Player::getrefresh() { return rad->GetHertz(); }
 
 std::string Crad2Player::gettype() {
 	char type[64];
-	sprintf(type, "Reality ADlib Tracker (version %d)", rad->GetVersion());
+	snprintf(type, sizeof(type), "Reality ADlib Tracker (version %d)", rad->GetVersion());
 	return std::string(type);
 }
 unsigned int Crad2Player::getpatterns() { return rad->GetTunePatterns(); }
