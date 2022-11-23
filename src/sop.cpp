@@ -46,6 +46,7 @@ bool CsopPlayer::load(const std::string &filename, const CFileProvider &fp)
 		fp.close(f);
 		return false;
 	}
+	f->setFlag(binio::BigEndian, false);
 
 	/****** static header validation ******/
 
@@ -134,7 +135,16 @@ bool CsopPlayer::load(const std::string &filename, const CFileProvider &fp)
 				return false;
 			}
 			sop_sample sample;
-			f->readString((char *)&sample, sizeof(sample));
+			sample.val1 = f->readInt(2);
+			sample.val2 = f->readInt(2);
+			sample.length = f->readInt(2);
+			sample.val4 = f->readInt(2);
+			sample.base_freq = f->readInt(2);
+			sample.val6 = f->readInt(2);
+			sample.val7 = f->readInt(2);
+			sample.val8 = f->readInt(1);
+			sample.val9 = f->readInt(2);
+			sample.val10 = f->readInt(2);
 			if (fp.filesize(f) - f->pos() < sample.length)
 			{
 				fp.close(f);
