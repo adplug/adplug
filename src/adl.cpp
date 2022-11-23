@@ -2915,7 +2915,7 @@ bool CadlPlayer::update() {
 std::string CadlPlayer::gettype() {
 	char tmpstr[27];
 
-	snprintf(tmpstr, sizeof (tmpstr), "Westwood ADL (version %d)", _version);
+	snprintf(tmpstr, sizeof(tmpstr), "Westwood ADL (version %d)", _version);
 	return std::string(tmpstr);
 }
 
