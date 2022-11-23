@@ -162,8 +162,8 @@ bool CvgmPlayer::load(const std::string &filename, const CFileProvider &fp)
 		f->readString(id, 4);
 		if (!strncmp(id, GD3_HEADER_ID, 4))
 		{
-			int gd3_ver = f->readInt(4);
-			int gd3_size = f->readInt(4);
+			/* int gd3_ver = */ f->readInt(4);
+			/* int gd3_size = */ f->readInt(4);
 			fillGD3Tag(f, GD3.title_en);
 			fillGD3Tag(f, GD3.title_jp);
 			fillGD3Tag(f, GD3.game_en);

@@ -66,7 +66,7 @@ static const char *g_RADPattBadNoteNum = "Pattern contains a bad note number.";
 static const char *g_RADPattBadInstNum = "Pattern contains a bad instrument number.";
 static const char *g_RADPattBadEffect = "Pattern contains a bad effect and/or parameter.";
 static const char *g_RADBadRiffNum = "Tune file contains a bad riff index.";
-static const char *g_RADExtraBytes = "Tune file contains extra bytes.";
+//static const char *g_RADExtraBytes = "Tune file contains extra bytes.";
 
 
 
@@ -113,7 +113,7 @@ static const char *RADCheckPattern(const uint8_t *&s, const uint8_t *e, bool rif
 					return g_RADPattTruncated;
 				uint8_t note = *s++;
 				uint8_t notenum = note & 15;
-				uint8_t octave = (note >> 4) & 7;
+				//uint8_t octave = (note >> 4) & 7;
 				if (notenum == 0 || notenum == 13 || notenum == 14)
 					return g_RADPattBadNoteNum;
 			}
@@ -178,9 +178,9 @@ static const char *RADCheckPatternOld(const uint8_t *&s, const uint8_t *e) {
 			// Check note
 			if (s >= e)
 				return g_RADPattTruncated;
-			uint8_t note = *s++;
-			uint8_t notenum = note & 15;
-			uint8_t octave = (note >> 4) & 7;
+			/*uint8_t note = *s++; */ s++;
+			//uint8_t notenum = note & 15;
+			//uint8_t octave = (note >> 4) & 7;
 			/* the replayer handles bad params already and some old tunes do contain them
 			if (notenum == 13 || notenum == 14)
 				return g_RADPattBadNoteNum;
@@ -195,7 +195,7 @@ static const char *RADCheckPatternOld(const uint8_t *&s, const uint8_t *e) {
 			if (inst & 0xf) {
 				if (s > e)
 					return g_RADPattTruncated;
-				uint8_t param = *s++;
+				/* uint8_t param = *s++; */ s++;
 				/* the replayer handles bad params already and some old tunes do contain them
 				if (param > 99)
 					return g_RADPattBadEffect;
@@ -1920,7 +1920,7 @@ float Crad2Player::getrefresh() { return rad->GetHertz(); }
 
 std::string Crad2Player::gettype() {
 	char type[64];
-	sprintf(type, "Reality ADlib Tracker (version %d)", rad->GetVersion());
+	snprintf(type, sizeof(type), "Reality ADlib Tracker (version %d)", rad->GetVersion());
 	return std::string(type);
 }
 unsigned int Crad2Player::getpatterns() { return rad->GetTunePatterns(); }

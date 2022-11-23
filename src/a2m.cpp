@@ -67,7 +67,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   // read header
   char id[10];
   f->readString(id, sizeof(id));
-  unsigned long crc = f->readInt(4);
+  /*unsigned long crc = */ f->readInt(4);
   unsigned char version = f->readInt(1);
   unsigned char numpats = f->readInt(1);
 
@@ -502,7 +502,7 @@ size_t Ca2mLoader::sixdepak::do_decode()
 
 Ca2mLoader::sixdepak::sixdepak(
 	unsigned short *in, size_t isize, unsigned char *out, size_t osize
-) : wdbuf(in), obuf(out), input_size(isize), output_size(osize)
+) : input_size(isize), output_size(osize), wdbuf(in), obuf(out)
 {
 }
 

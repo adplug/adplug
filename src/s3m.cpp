@@ -202,7 +202,7 @@ bool Cs3mPlayer::update()
       if (info <= 0x0f)				// volume slide down
 	c.vol = std::max(c.vol - info, 0);
       if (!(info & 0x0f))			// volume slide up
-	c.vol = std::min(c.vol + info >> 4, 63);
+	c.vol = std::min((c.vol + info) >> 4, 63);
       setvolume(realchan);
       break;
 
