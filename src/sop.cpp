@@ -598,35 +598,35 @@ void Cad262Driver::SetVoiceVolume_SOP(unsigned chan, unsigned vol)
 		volume = 63 - VolumeTable[((63 - ((KSL_value = Ksl2[chan]) & 0x3F)) << 7) + vol];
 
 		if (chan >= 11)
-			SndOutput3(VolReg[chan - 11] - 3, KSL_value & 0xC0 | volume);
+			SndOutput3(VolReg[chan - 11] - 3, (KSL_value & 0xC0) | volume);
 		else
-			SndOutput1((percussion ? VolReg[chan + 11] : VolReg[chan]) - 3, KSL_value & 0xC0 | volume);
+			SndOutput1((percussion ? VolReg[chan + 11] : VolReg[chan]) - 3, (KSL_value & 0xC0) | volume);
 
 		if (OP4[chan]) {
 			chan += 3;
 			volume = 63 - VolumeTable[((63 - ((KSL_value = Ksl[chan]) & 0x3F)) << 7) + vol];
 
 			if (chan >= 11)
-				SndOutput3(VolReg[chan - 11], KSL_value & 0xC0 | volume);
+				SndOutput3(VolReg[chan - 11], (KSL_value & 0xC0) | volume);
 			else
-				SndOutput1(VolReg[chan], KSL_value & 0xC0 | volume);
+				SndOutput1(VolReg[chan], (KSL_value & 0xC0) | volume);
 
 			if (Ksl2V[chan]) {
 				volume = 63 - VolumeTable[((63 - ((KSL_value = Ksl2[chan]) & 0x3F)) << 7) + vol];
 
 				if (chan >= 11)
-					SndOutput3(VolReg[chan - 11] - 3, KSL_value & 0xC0 | volume);
+					SndOutput3(VolReg[chan - 11] - 3, (KSL_value & 0xC0) | volume);
 				else
-					SndOutput1(VolReg[chan] - 3, KSL_value & 0xC0 | volume);
+					SndOutput1(VolReg[chan] - 3, (KSL_value & 0xC0) | volume);
 			}
 		}
 		else {
 			volume = 63 - VolumeTable[((63 - ((KSL_value = Ksl[chan]) & 0x3F)) << 7) + vol];
 
 			if (chan >= 11)
-				SndOutput3(VolReg[chan - 11], KSL_value & 0xC0 | volume);
+				SndOutput3(VolReg[chan - 11], (KSL_value & 0xC0) | volume);
 			else
-				SndOutput1((percussion ? VolReg[chan + 11] : VolReg[chan]), KSL_value & 0xC0 | volume);
+				SndOutput1((percussion ? VolReg[chan + 11] : VolReg[chan]), (KSL_value & 0xC0) | volume);
 		}
 	}
 	else {
@@ -634,26 +634,26 @@ void Cad262Driver::SetVoiceVolume_SOP(unsigned chan, unsigned vol)
 			volume = 63 - VolumeTable[((63 - ((KSL_value = Ksl[chan + 3]) & 0x3F)) << 7) + vol];
 
 			if (chan >= 11)
-				SndOutput3(VolReg[chan + 3 - 11], KSL_value & 0xC0 | volume);
+				SndOutput3(VolReg[chan + 3 - 11], (KSL_value & 0xC0) | volume);
 			else
-				SndOutput1(VolReg[chan + 3], KSL_value & 0xC0 | volume);
+				SndOutput1(VolReg[chan + 3], (KSL_value & 0xC0) | volume);
 
 			if (Ksl2V[chan + 3]) {
 				volume = 63 - VolumeTable[((63 - ((KSL_value = Ksl[chan]) & 0x3F)) << 7) + vol];
 
 				if (chan >= 11)
-					SndOutput3(VolReg[chan - 11], KSL_value & 0xC0 | volume);
+					SndOutput3(VolReg[chan - 11], (KSL_value & 0xC0) | volume);
 				else
-					SndOutput1(VolReg[chan], KSL_value & 0xC0 | volume);
+					SndOutput1(VolReg[chan], (KSL_value & 0xC0) | volume);
 			}
 		}
 		else {
 			volume = 63 - VolumeTable[((63 - ((KSL_value = Ksl[chan]) & 0x3F)) << 7) + vol];
 
 			if (chan >= 11)
-				SndOutput3(VolReg[chan - 11], KSL_value & 0xC0 | volume);
+				SndOutput3(VolReg[chan - 11], (KSL_value & 0xC0) | volume);
 			else
-				SndOutput1((percussion ? VolReg[chan + 11] : VolReg[chan]), KSL_value & 0xC0 | volume);
+				SndOutput1((percussion ? VolReg[chan + 11] : VolReg[chan]), (KSL_value & 0xC0) | volume);
 		}
 	}
 }
@@ -733,7 +733,7 @@ void Cad262Driver::SetVoiceTimbre_SOP(unsigned chan, unsigned char* array)
 			Ksl2[chan + 3] = *(array + 12);
 			Ksl2V[chan + 3] = *(array + 16) & 1;
 
-			SndOutput1(i + 3, *(array + 16) & 0x0F | Stereo[chan]);
+			SndOutput1(i + 3, (*(array + 16) & 0x0F) | Stereo[chan]);
 		}
 
 		SetVoiceVolume_SOP(chan, VoiceVolume[chan]);

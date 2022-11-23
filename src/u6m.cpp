@@ -210,7 +210,7 @@ bool Cu6mPlayer::lzw_decompress(Cu6mPlayer::data_block source, Cu6mPlayer::data_
   size_t bytes_written = 0;
 
   int cW;
-  int pW;
+  int pW=0;
   unsigned char C;
 
   while (!end_marker_reached)

@@ -137,7 +137,7 @@ bool CmkjPlayer::update()
 	break;
       case 252:	// set waveform
 	channel[c].songptr += maxchannel;
-        if ((songbuf[channel[c].songptr] - 300 | 0xff) != 0xff)
+        if (((songbuf[channel[c].songptr] - 300) | 0xff) != 0xff)
           goto bad_data; // value out of range
 	channel[c].waveform = songbuf[channel[c].songptr] - 300;
 	if(c > 2)
