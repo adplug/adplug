@@ -58,42 +58,42 @@ static const crcEntry testlist[] = {
 int main(int argc, char *argv[])
 {
 	bool retval = true;
+	const CFileProvider &fp = CProvider_Filesystem();
 
 	// Set path to source directory
 	testdir = getenv("testdir");
-	if (!testdir) testdir = ".";
-	{
-		const CFileProvider &fp = CProvider_Filesystem();
-		for (int i = 0; testlist[i].filename != NULL; i++)
-		{
-			binistream *f = fp.open(std::string(testdir) + DIR_DELIM + testlist[i].filename);
-			if (!f)
-			{
-				std::cerr << "Error opening for reading: " << testlist[i].filename << "\n";
-				retval = false;
-				continue;
-			}
+	if (!testdir)
+		testdir = ".";
 
-			f->seek(0);
-			CAdPlugDatabase::CKey key(*f);
-			fp.close(f);
-			std::cout << "Checking CRC16: " << testlist[i].filename;
-			if (testlist[i].crc16 != key.crc16)
-			{
-				std::cout << " [FAIL: " << std::hex << key.crc16 << "]\n";
-				retval = false;
-			}
-			else
-				std::cout << " [OK]\n";
-			std::cout << "Checking CRC32: " << testlist[i].filename;
-			if (testlist[i].crc32 != key.crc32)
-			{
-				std::cout << " [FAIL: " << std::hex << key.crc32 << "]\n";
-				retval = false;
-			}
-			else
-				std::cout << " [OK]\n";
+	for (int i = 0; testlist[i].filename != NULL; i++)
+	{
+		binistream *f = fp.open(std::string(testdir) + DIR_DELIM + testlist[i].filename);
+		if (!f)
+		{
+			std::cerr << "Error opening for reading: " << testlist[i].filename << "\n";
+			retval = false;
+			continue;
 		}
+
+		f->seek(0);
+		CAdPlugDatabase::CKey key(*f);
+		fp.close(f);
+		std::cout << "Checking CRC16: " << testlist[i].filename;
+		if (testlist[i].crc16 != key.crc16)
+		{
+			std::cout << " [FAIL: " << std::hex << key.crc16 << "]\n";
+			retval = false;
+		}
+		else
+			std::cout << " [OK]\n";
+		std::cout << "Checking CRC32: " << testlist[i].filename;
+		if (testlist[i].crc32 != key.crc32)
+		{
+			std::cout << " [FAIL: " << std::hex << key.crc32 << "]\n";
+			retval = false;
+		}
+		else
+			std::cout << " [OK]\n";
 	}
 
 	return retval ? EXIT_SUCCESS : EXIT_FAILURE;
