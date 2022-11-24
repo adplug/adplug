@@ -31,6 +31,7 @@
 #ifndef WEXITSTATUS
 #include <sys/wait.h>
 #endif
+#include <sys/stat.h>
 
 #include "../src/adplug.h"
 #include "../src/opl.h"
@@ -40,6 +41,8 @@
 #else
 #	define DIR_DELIM	"/"
 #endif
+
+#define SUBDIR  "fuzzing"
 
 /***** Local variables *****/
 
@@ -198,10 +201,23 @@ public:
 
 /***** Local functions *****/
 
+static bool dir_exists(std::string path)
+{
+	struct stat info;
+
+	int rc = stat(path.c_str(), &info);
+
+	if (rc != 0)
+		return false;
+
+	return (info.st_mode & S_IFDIR);
+}
+
 bool run_test(int argc, const char *const argv[])
 {
 	const int timeout = 60;     // real time
 	const float limit = 3600.f; // simulated playback time
+	bool use_subdir = dir_exists(std::string(".") + DIR_DELIM SUBDIR);
 
 	// For now, a single argument is expected: a file name.
 	// Future test cases may provide additional arguments.
@@ -213,9 +229,12 @@ bool run_test(int argc, const char *const argv[])
 
 	SilentTestopl opl;
 	// Load test file
-	std::cout << "loading " << argv[0] << " ...";
+	std::string path = std::string(argv[0]);
+	if (use_subdir)
+		path.insert(0, SUBDIR DIR_DELIM);
+	std::cout << "loading " << path << " ...";
 	std::cout.flush();
-	CPlayer *p = CAdPlug::factory(argv[0], &opl);
+	CPlayer *p = CAdPlug::factory(path, &opl);
 	if (p) {
 		std::cout << " done\n";
 	} else {
