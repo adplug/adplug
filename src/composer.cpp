@@ -17,11 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * composer.cpp - AdLib Visual Composer synth class by OPLx <oplx@yahoo.com>
+ *                with improvements by Stas'M <binarymaster@mail.ru> and Jepael
  *
  * Source references ADLIB.C from Adlib MSC SDK.
  */
 #include <cstring>
 #include <algorithm>
+#include <binstr.h>
 
 #include "composer.h"
 #include "debug.h"
@@ -120,6 +122,18 @@ int   const CcomposerBackend::kTomtomChannel       = 8;
 int   const CcomposerBackend::kTomTomNote          = 24;
 int   const CcomposerBackend::kTomTomToSnare       = 7; // 7 half-tones between voice 7 & 8
 int   const CcomposerBackend::kSnareNote           = CcomposerBackend::kTomTomNote + CcomposerBackend::kTomTomToSnare;
+//---------------------------------------------------------
+char * strup(char *str)
+{
+    char *next = str;
+    while (*next)
+    {
+        *next = toupper((unsigned char)*next);
+        next++;
+    }
+    return str;
+}
+//---------------------------------------------------------
 uint32_t const CcomposerBackend::kMidPitch         = 0x2000U;
 uint8_t  const CcomposerBackend::kMaxVolume        = 0x7FU;
 
@@ -336,6 +350,72 @@ void CcomposerBackend::SetInstrument(int const voice, int const ins_index)
     send_operator(voice, instrument.modulator, instrument.carrier);
 }
 //---------------------------------------------------------
+void CcomposerBackend::SetDefaultInstrument(int const voice)
+{
+    int index;
+    uint8_t data[ADLIB_INST_LEN];
+
+    if ((voice >= kNumMelodicVoices && !mRhythmMode) ||
+        (voice >= kNumPercussiveVoices && mRhythmMode))
+        return;
+
+    // definition of the ELECTRIC-PIANO voice (opr0 & opr1)
+    uint8_t pianoParamsOp0[] =
+        { 1, 1, 3, 15, 5, 0, 1, 3, 15, 0, 0, 0, 1, 0 };
+    uint8_t pianoParamsOp1[] =
+        { 0, 1, 1, 15, 7, 0, 2, 4,  0, 0, 0, 1, 0, 0 };
+
+    // definition of default percussive voices
+    uint8_t bdOpr0[] =
+        { 0,  0, 0, 10,  4, 0, 8, 12, 11, 0, 0, 0, 1, 0 };
+    uint8_t bdOpr1[] =
+        { 0,  0, 0, 13,  4, 0, 6, 15,  0, 0, 0, 0, 1, 0 };
+    uint8_t sdOpr[] =
+        { 0, 12, 0, 15, 11, 0, 8,  5,  0, 0, 0, 0, 0, 0 };
+    uint8_t tomOpr[] =
+        { 0,  4, 0, 15, 11, 0, 7,  5,  0, 0, 0, 0, 0, 0 };
+    uint8_t cymbOpr[] =
+        { 0,  1, 0, 15, 11, 0, 5,  5,  0, 0, 0, 0, 0, 0 };
+    uint8_t hhOpr[] =
+        { 0,  1, 0, 15, 11, 0, 7,  5,  0, 0, 0, 0, 0, 0 };
+
+    // waveform select is always equal to 0 here, so just memset
+    memset(&data[0], 0, sizeof(data));
+
+    for (int i = 0; i < sizeof(pianoParamsOp0) - 1; i++)
+    {
+        if ((voice < kBassDrumChannel) || !mRhythmMode)
+        {
+            data[i] = pianoParamsOp0[i];
+            data[ADLIB_OPER_LEN + i] = pianoParamsOp1[i];
+        }
+        else if (voice == kBassDrumChannel)
+        {
+            data[i] = bdOpr0[i];
+            data[ADLIB_OPER_LEN + i] = bdOpr1[i];
+        }
+        else if (voice == kSnareDrumChannel)
+        {
+            data[i] = sdOpr[i];
+        }
+        else if (voice == kTomtomChannel)
+        {
+            data[i] = tomOpr[i];
+        }
+        else if (voice == kTomtomChannel + 1)
+        {
+            data[i] = cymbOpr[i];
+        }
+        else if (voice == kTomtomChannel + 2)
+        {
+            data[i] = hhOpr[i];
+        }
+    }
+
+    index = load_instrument_data(&data[0], sizeof(data));
+    SetInstrument(voice, index);
+}
+//---------------------------------------------------------
 void CcomposerBackend::send_operator(int const voice, SOPL2Op const & modulator,  SOPL2Op const & carrier)
 {
     if ((voice < kSnareDrumChannel) || !mRhythmMode)
@@ -385,10 +465,13 @@ bool CcomposerBackend::load_bnk_info(binistream *f, SBnkHeader & header)
 
     f->seek(header.abs_offset_of_name_list, binio::Set);
 
+    std::string prev;
+    header.case_sensitive = false;
+
     TInstrumentNames & ins_name_list = header.ins_name_list;
     ins_name_list.reserve(header.number_of_list_entries_used);
 
-    for (uint16_t i = 0; i < header.number_of_list_entries_used; ++i)
+    for (uint16_t i = 0; i < header.total_number_of_list_entries; ++i)
     {
         SInstrumentName instrument;
 
@@ -397,7 +480,19 @@ bool CcomposerBackend::load_bnk_info(binistream *f, SBnkHeader & header)
         f->readString(instrument.name, INS_MAX_NAME_SIZE);
         instrument.name[INS_MAX_NAME_SIZE - 1] = 0;
 
+        if (!instrument.record_used)
+            continue;
+
         ins_name_list.push_back(instrument);
+
+        if (!header.case_sensitive)
+        {
+            if (!prev.empty() && stricmp(prev.c_str(), instrument.name) > 0)
+            {
+                header.case_sensitive = true;
+            }
+            prev = instrument.name;
+        }
     }
 
     return true;
@@ -417,28 +512,63 @@ int CcomposerBackend::load_bnk_instrument(binistream *f, SBnkHeader const & head
     SInstrument usedInstrument;
     usedInstrument.name = name;
 
+    char ncs[INS_MAX_NAME_SIZE];
+    if (header.case_sensitive)
+    {
+        // assuming a bank with case sensitive names stores them in uppercase
+        // this is true for implay.bnk at least
+        strcpy(ncs, name.c_str());
+        strup(ncs);
+    }
+
     typedef TInstrumentNames::const_iterator TInsIter;
     typedef std::pair<TInsIter, TInsIter>    TInsIterPair;
 
-    TInsIterPair const range = std::equal_range(ins_name_list.begin(), 
-                                                ins_name_list.end(), 
-                                                name, 
-                                                StringCompare());
+    TInsIterPair const range = std::equal_range(ins_name_list.begin(),
+                                                ins_name_list.end(),
+                                                header.case_sensitive ? std::string(ncs) : name,
+                                                StringCompare(header.case_sensitive));
 
     if (range.first != range.second)
     {
         long int const seekOffs = header.abs_offset_of_data + (range.first->index * kSizeofDataRecord);
         f->seek(seekOffs, binio::Set);
 
-        read_bnk_instrument(f, usedInstrument.instrument);
+        read_bnk_instrument(f, usedInstrument.instrument, false);
     }
     else
     {
+        if (bnk_return_failure)
+            return ins_index;
+
         // set up default instrument data here
         memset(&usedInstrument.instrument, 0, sizeof(SInstrumentData));
     }
 
     mInstrumentList.push_back(usedInstrument);
+
+    return mInstrumentList.size()-1;
+}
+//---------------------------------------------------------
+int CcomposerBackend::load_instrument_data(uint8_t *data, size_t size)
+{
+    if (size > ADLIB_INST_LEN)
+        size = ADLIB_INST_LEN;
+
+    binisstream f(data, size);
+    SInstrument i;
+
+    read_bnk_instrument(&f, i.instrument, true);
+
+    for (size_t index = 0; index < mInstrumentList.size(); ++index)
+    {
+        if (memcmp(&mInstrumentList[index].instrument, &i.instrument, sizeof(SInstrumentData)) == 0)
+        {
+            return index;
+        }
+    }
+
+    mInstrumentList.push_back(i);
 
     return mInstrumentList.size()-1;
 }
@@ -456,10 +586,10 @@ int CcomposerBackend::get_ins_index(std::string const & name) const
     return -1;
 }
 //---------------------------------------------------------
-void CcomposerBackend::read_bnk_instrument(binistream * f, SInstrumentData & instrument)
+void CcomposerBackend::read_bnk_instrument(binistream * f, SInstrumentData & instrument, bool raw)
 {
-    instrument.mode = static_cast<uint8_t>(f->readInt(1));
-    instrument.voice_number = static_cast<uint8_t>(f->readInt(1));
+    instrument.mode = static_cast<uint8_t>(raw ? 0 : f->readInt(1));
+    instrument.voice_number = static_cast<uint8_t>(raw ? 0 : f->readInt(1));
 
     read_fm_operator(f, instrument.modulator);
     read_fm_operator(f, instrument.carrier);

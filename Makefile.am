@@ -17,7 +17,6 @@ src_libadplug_la_SOURCES = \
 	src/nukedopl.c \
 	src/a2m.cpp \
 	src/adl.cpp \
-	src/adlib.cpp \
 	src/adplug.cpp \
 	src/adtrack.cpp \
 	src/amd.cpp \
@@ -155,7 +154,6 @@ pkginclude_HEADERS = \
 	src/woodyopl.h \
 	src/nemuopl.h \
 	src/nukedopl.h \
-	src/adlib.h \
 	src/mus.h \
 	src/mdi.h \
 	src/cmfmcsop.h \

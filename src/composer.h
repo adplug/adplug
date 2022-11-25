@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * composer.h - AdLib Visual Composer synth class by OPLx <oplx@yahoo.com>
+ *              with improvements by Stas'M <binarymaster@mail.ru> and Jepael
  *
  * Source references ADLIB.C from Adlib MSC SDK.
  */
@@ -32,6 +33,8 @@
 #define INS_MAX_NAME_SIZE  9U
 #define BNK_SIGNATURE_SIZE 6U
 #define MAX_VOICES         11
+#define ADLIB_OPER_LEN     13		/* operator length, sizeof(SFMOperator) */
+#define ADLIB_INST_LEN     (ADLIB_OPER_LEN * 2 + 2)	/* modulator, carrier, mod/car wave select */
 
 #if !defined(UINT8_MAX)
     typedef signed char    int8_t;
@@ -97,6 +100,7 @@ public:
         uint16_t total_number_of_list_entries;
         int32    abs_offset_of_name_list;
         int32    abs_offset_of_data;
+        bool     case_sensitive;
 
         TInstrumentNames ins_name_list;
     } SBnkHeader;
@@ -108,6 +112,8 @@ public:
 
     bool load_bnk_info         (binistream *f, SBnkHeader & header);
     int  load_bnk_instrument   (binistream *f, SBnkHeader const & header, std::string const & name);
+    int  load_instrument_data  (uint8_t *data, size_t size);
+    bool bnk_return_failure = false;	// do not add empty instruments in failure case (default: false)
 
     void NoteOn(int const voice, int const note);
     void NoteOff(int const voice);
@@ -116,6 +122,7 @@ public:
     void ChangePitch(int voice, uint16_t const pitchBend);
     void SetVolume(int const voice, uint8_t const volume);
     void SetInstrument(int const voice, int const ins_index);
+    void SetDefaultInstrument(int const voice);
 
 private:
 
@@ -160,7 +167,7 @@ private:
         SInstrumentData instrument;
     } SInstrument;
 
-    void read_bnk_instrument   (binistream *f, SInstrumentData & ins);
+    void read_bnk_instrument   (binistream *f, SInstrumentData & ins, bool raw);
     void read_fm_operator      (binistream *f, SOPL2Op & opl2_op);
     int  get_ins_index         (std::string const & name) const;
 
@@ -174,6 +181,11 @@ private:
     class StringCompare
     {
     public:
+        StringCompare(bool case_sensitive)
+        {
+            sens = case_sensitive;
+        }
+
         bool operator()(SInstrumentName const & lhs, SInstrumentName const & rhs) const
         {
             return keyLess(lhs.name, rhs.name);
@@ -189,8 +201,12 @@ private:
             return keyLess(lhs.c_str(), rhs.name);
         }
     private:
+        bool sens;
+
         bool keyLess(char const * const lhs, char const * const rhs) const
         {
+            if (sens)
+                return strcmp(lhs, rhs) < 0;
             return stricmp(lhs, rhs) < 0;
         }
     };
