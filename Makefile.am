@@ -27,6 +27,7 @@ src_libadplug_la_SOURCES = \
 	src/cff.cpp \
 	src/cmf.cpp \
 	src/cmfmcsop.cpp \
+	src/composer.cpp \
 	src/d00.cpp \
 	src/database.cpp \
 	src/dfm.cpp \
@@ -158,6 +159,7 @@ pkginclude_HEADERS = \
 	src/mus.h \
 	src/mdi.h \
 	src/cmfmcsop.h \
+	src/composer.h \
 	src/vgm.h \
 	src/sop.h \
 	src/herad.h \
