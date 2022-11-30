@@ -62,8 +62,17 @@ bool CmusPlayer::load(const std::string &filename, const CFileProvider &fp)
 	binistream *f = fp.open(filename); if(!f) return false;
 
 	// file validation
-	if (!fp.extension(filename, ".mus") &&
-		!fp.extension(filename, ".ims"))
+	static const char * musicExt[] = { KNOWN_MUS_EXT, NULL };
+	size_t ex;
+	for (ex = 0; musicExt[ex] != NULL; ex++)
+	{
+		std::string ext = ".";
+		ext.append(musicExt[ex]);
+
+		if (fp.extension(filename, ext))
+			break;
+	}
+	if (musicExt[ex] == NULL)
 	{
 		fp.close(f);
 		return false;

@@ -59,7 +59,8 @@
 #define SND_HEADER_LEN		6
 #define IMS_SIGNATURE		0x7777
 
-#define KNOWN_SND_EXT		"snd", "tim"
+#define KNOWN_MUS_EXT		"mus", "mdy", "ims"
+#define KNOWN_SND_EXT		"snd", "tim", "tbr"
 #define KNOWN_SND_NAME		"", "timbres"
 #define KNOWN_BNK_NAME		"", "implay", "standard"
 
