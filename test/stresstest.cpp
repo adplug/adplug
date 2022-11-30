@@ -217,7 +217,6 @@ bool run_test(int argc, const char *const argv[])
 {
 	const int timeout = 60;     // real time
 	const float limit = 3600.f; // simulated playback time
-	bool use_subdir = dir_exists(std::string(".") + DIR_DELIM SUBDIR);
 
 	// For now, a single argument is expected: a file name.
 	// Future test cases may provide additional arguments.
@@ -229,12 +228,9 @@ bool run_test(int argc, const char *const argv[])
 
 	SilentTestopl opl;
 	// Load test file
-	std::string path = std::string(argv[0]);
-	if (use_subdir)
-		path.insert(0, SUBDIR DIR_DELIM);
-	std::cout << "loading " << path << " ...";
+	std::cout << "loading " << argv[0] << " ...";
 	std::cout.flush();
-	CPlayer *p = CAdPlug::factory(path, &opl);
+	CPlayer *p = CAdPlug::factory(argv[0], &opl);
 	if (p) {
 		std::cout << " done\n";
 	} else {
@@ -271,9 +267,12 @@ bool run_test(int argc, const char *const argv[])
 	return true;
 }
 
-static bool test_wrapper(const std::string &cmdprefix, const char *file)
+static bool test_wrapper(const std::string &cmdprefix, const char *file, const bool use_subdir)
 {
-	std::string cmd = cmdprefix + file;
+	std::string cmd = cmdprefix;
+	if (use_subdir)
+		cmd.append(SUBDIR DIR_DELIM);
+	cmd.append(file);
 
 	// A test failure means unsuccessful process termination. In order
 	// to catch such a failure, create a child process for each test.
@@ -331,12 +330,13 @@ int main(int argc, char *argv[])
 	bool fail = false;
 	if (argc < 2) {
 		// No files, so run all tests from filelist.
+		bool use_subdir = dir_exists((testdir ? std::string(testdir) : std::string(".")) + DIR_DELIM SUBDIR);
 		for (int i = 0; i < filecount; i++)
-			fail |= !test_wrapper(cmd, filelist[i]);
+			fail |= !test_wrapper(cmd, filelist[i], use_subdir);
 	} else {
 		// Test the file(s) on the command line
 		for(int i = 1; i < argc; i++)
-			fail |= !test_wrapper(cmd, argv[i]);
+			fail |= !test_wrapper(cmd, argv[i], false);
 	}
 
 	return fail ? EXIT_FAILURE : EXIT_SUCCESS;
