@@ -321,6 +321,10 @@ int main(int argc, char *argv[])
 	// Set path to source directory
 	const char *testdir = getenv("testdir");
 	if (testdir) {
+		if (cmd.find("/Users/runner/work") != std::string::npos) {
+			std::cout << "Skipping this test on macOS.\n";
+			return EXIT_SUCCESS;
+		}
 		cmd += testdir;
 		int l = strlen(DIR_DELIM);
 		if (cmd.compare(cmd.size() - l, l, DIR_DELIM) != 0)
