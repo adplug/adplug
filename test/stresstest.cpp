@@ -201,7 +201,7 @@ public:
 
 /***** Local functions *****/
 
-static bool dir_exists(std::string path)
+static bool dir_exists(const std::string &path)
 {
 	struct stat info;
 
@@ -276,7 +276,7 @@ static std::string quote(std::string s)
 #undef SH_ESCAPE
 }
 
-bool run_test(int argc, const char *const argv[])
+static bool run_test(int argc, const char *const argv[])
 {
 	const int timeout = 60;     // real time
 	const float limit = 3600.f; // simulated playback time
@@ -309,7 +309,7 @@ bool run_test(int argc, const char *const argv[])
 
 	// Process the file
 	float t = 0;
-	while(p->update()) {
+	while (p->update()) {
 		float refresh = p->getrefresh();
 		// With a CEmuopl or similar, SAMPLERATE/refresh sound
 		// samples are available and can be read with:
