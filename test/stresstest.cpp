@@ -267,12 +267,9 @@ bool run_test(int argc, const char *const argv[])
 	return true;
 }
 
-static bool test_wrapper(const std::string &cmdprefix, const char *file, const bool use_subdir)
+static bool test_wrapper(const std::string &cmdprefix, const std::string &file)
 {
-	std::string cmd = cmdprefix;
-	if (use_subdir)
-		cmd.append(SUBDIR DIR_DELIM);
-	cmd.append(file);
+	std::string cmd = cmdprefix + "'" + file + "'";
 
 	// A test failure means unsuccessful process termination. In order
 	// to catch such a failure, create a child process for each test.
@@ -340,25 +337,27 @@ int main(int argc, char *argv[])
 	cmd += argv[0]; // Re-exec ourselves
 	cmd += " + ";
 
-	// Set path to source directory
-	const char *testdir = getenv("testdir");
-	if (testdir) {
-		cmd += testdir;
+	// Set path to test case directory
+	std::string dir;
+	if (const char *s = getenv("testdir")) {
+		dir = s;
 		int l = strlen(DIR_DELIM);
-		if (cmd.compare(cmd.size() - l, l, DIR_DELIM) != 0)
-			cmd += DIR_DELIM;
+		if (dir.compare(dir.size() - l, l, DIR_DELIM) != 0)
+			dir += DIR_DELIM;
 	}
+	if (dir_exists(dir + SUBDIR))
+		dir += SUBDIR DIR_DELIM;
 
 	bool fail = false;
 	if (argc < 2) {
 		// No files, so run all tests from filelist.
-		bool use_subdir = dir_exists((testdir ? std::string(testdir) : std::string(".")) + DIR_DELIM SUBDIR);
 		for (int i = 0; i < filecount; i++)
-			fail |= !test_wrapper(cmd, filelist[i], use_subdir);
+			fail |= !test_wrapper(cmd, dir + filelist[i]);
 	} else {
 		// Test the file(s) on the command line
-		for(int i = 1; i < argc; i++)
-			fail |= !test_wrapper(cmd, argv[i], false);
+		for (int i = 1; i < argc; i++)
+			fail |= !test_wrapper(cmd, strstr(argv[i], DIR_DELIM) ||
+				access(argv[i], F_OK) ? argv[i] : dir + argv[i]);
 	}
 
 	return fail ? EXIT_FAILURE : EXIT_SUCCESS;
