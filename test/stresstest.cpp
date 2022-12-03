@@ -309,10 +309,32 @@ int main(int argc, char *argv[])
 
 	// Prepare a command prefix to recursively invoke ourselves
 	std::string cmd;
+
+#ifdef __APPLE__
+	// Apple's System Integrity Protection drops these environment
+	// variables when executing the shell, so in order to run tests from
+	// the build dir, we need to restore them.
+	static const char *const fwd[] = {"DYLD_LIBRARY_PATH", "LD_LIBRARY_PATH"};
+	for (int i = 0; i < sizeof(fwd) / sizeof(fwd[0]); i++) {
+		const char *s = getenv(fwd[i]);
+		if (!s) continue;
+
+		if (strchr(s, '\'')) {
+			// need to implement proper shell-style quoting
+			std::cerr << "warning: can't forward " << fwd[i] << std::endl;
+			continue;
+		}
+
+		std::cerr << "info: forwarding "
+			<< fwd[i] << "='" << s << "'" << std::endl;
+		cmd = cmd + fwd[i] + "='" + s + "' ";
+	}
+#endif
+
 	// Optional wrapper executable to run test cases
 	const char *wrapper = getenv("stresstest_wrapper");
 	if (wrapper) {
-		cmd = wrapper;
+		cmd += wrapper;
 		cmd += ' ';
 	}
 	cmd += argv[0]; // Re-exec ourselves
@@ -321,10 +343,6 @@ int main(int argc, char *argv[])
 	// Set path to source directory
 	const char *testdir = getenv("testdir");
 	if (testdir) {
-		if (cmd.find("/Users/runner/work") != std::string::npos) {
-			std::cout << "Skipping this test on macOS.\n";
-			return EXIT_SUCCESS;
-		}
 		cmd += testdir;
 		int l = strlen(DIR_DELIM);
 		if (cmd.compare(cmd.size() - l, l, DIR_DELIM) != 0)
