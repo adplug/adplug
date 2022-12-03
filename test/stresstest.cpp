@@ -216,6 +216,42 @@ static bool dir_exists(const std::string &path)
 // shell-style quoting
 static std::string quote(std::string s)
 {
+#ifdef _WIN32 // windows
+	// Quoting commands is a complete mess on windows. While not perfect,
+	// this should be good enough for arguments that are parsed by both
+	// cmd.exe and the default argv parser. It might not work for other
+	// cases (command name, custom arguments parsers, ...). See also
+	// https://daviddeley.com/autohotkey/parameters/parameters.htm#WIN
+	const char *q = s.find_first_of(" \t") == std::string::npos ? NULL : "^\"";
+	std::string::size_type i, pos = 0;
+
+	// add a backslash before each double quote and double the
+	// immediately preceding backslashes
+	while ((pos = s.find('"', pos)) != std::string::npos) {
+		i = pos++;
+		do {
+			s.insert(i, "\\");
+			pos++;
+		} while (i > 0 && s[--i] == '\\');
+	}
+	
+	// double the trailing backslashes
+	pos = s.find_last_not_of('\\');
+	if (pos != std::string::npos) pos++;
+	else pos = 0;
+	if (pos != s.size()) s.append(s, pos);
+
+	// escape special characters for cmd.exe
+	pos = 0;
+	while ((pos = s.find_first_of("^<>|&()\"", pos)) != std::string::npos) {
+		s.insert(pos, "^");
+		pos += 2;
+	}
+	
+	// surround with quotes if necessary
+	if (q) return q + s + q;
+
+#elif defined(__unix__) || defined(__unix) || defined(__MACH__) // unix
 	// POSIX says a backslash quotes any character except newline, but we
 	// use it only for printable ASCII chars that may have special meaning.
 #define SH_ESCAPE " !\"#$%&'()*,;<=>?[\\]`{|}~"
@@ -271,9 +307,17 @@ static std::string quote(std::string s)
 			pos = unsafe = s.find_first_not_of(SH_SAFE, unsafe + 2);
 		}
 	}
-	return s;
 #undef SH_SAFE
 #undef SH_ESCAPE
+#else
+	// other operating system
+	static bool warned = false;
+	if (!warned) {
+		std::cerr << "warning: argument quoting not implemented for your OS" << std::endl;
+		warned = true;
+	}
+#endif
+	return s;
 }
 
 static bool run_test(int argc, const char *const argv[])
