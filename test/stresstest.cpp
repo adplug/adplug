@@ -213,6 +213,69 @@ static bool dir_exists(std::string path)
 	return (info.st_mode & S_IFDIR);
 }
 
+// shell-style quoting
+static std::string quote(std::string s)
+{
+	// POSIX says a backslash quotes any character except newline, but we
+	// use it only for printable ASCII chars that may have special meaning.
+#define SH_ESCAPE " !\"#$%&'()*,;<=>?[\\]`{|}~"
+	// No need to ever quote these:
+#define SH_SAFE "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+		"abcdefghijklmnopqrstuvwxyz+-./:@^_"
+	// Everything else will always be enclosed in quotes.
+
+	std::string::size_type unsafe, squote, needq, pos;
+
+	// The simple cases:
+	if (s.size() == 0)
+		return std::string("''"); // empty string
+
+	unsafe = s.find_first_not_of(SH_SAFE);
+	if (unsafe == std::string::npos)
+		return s; // needs no quoting at all
+
+	squote = s.find('\'');
+	if (squote == std::string::npos)
+		return '\'' + s + '\''; // enclose in single quotes
+	if (s.find_first_of("\"\\$`!") == std::string::npos)
+		return '"' + s + '"'; // enclose in double quotes
+
+	// More complicated, needs backslashes or mixed quoting:
+	needq = s.find_first_not_of(SH_ESCAPE SH_SAFE);
+	pos = 0;
+	while (unsafe != std::string::npos) {
+		if (needq != std::string::npos &&
+			(squote == std::string::npos || needq < squote)) {
+			// use single quotes for the part including chars that
+			// can't use backslashes up to the next single quote,
+			// and add a backslash for the quote
+			s.insert(pos, "'");
+			if (squote == std::string::npos) {
+				s += '\'';
+				break;
+			}
+			s.insert(squote + 1, "'\\");
+			pos = unsafe = s.find_first_not_of(SH_SAFE, squote + 4);
+			squote = s.find('\'', pos);
+			needq = s.find_first_not_of(SH_ESCAPE SH_SAFE, pos);
+		} else {
+			// insert a backslash in front of the next unsafe
+			// char, which we know is in SH_ESCAPE
+			s.insert(unsafe, "\\");
+			if (squote == unsafe)
+				squote = s.find('\'', unsafe + 2);
+			else if (squote != std::string::npos)
+				squote++;
+			if (needq != std::string::npos)
+				needq++;
+			pos = unsafe = s.find_first_not_of(SH_SAFE, unsafe + 2);
+		}
+	}
+	return s;
+#undef SH_SAFE
+#undef SH_ESCAPE
+}
+
 bool run_test(int argc, const char *const argv[])
 {
 	const int timeout = 60;     // real time
@@ -269,7 +332,7 @@ bool run_test(int argc, const char *const argv[])
 
 static bool test_wrapper(const std::string &cmdprefix, const std::string &file)
 {
-	std::string cmd = cmdprefix + "'" + file + "'";
+	std::string cmd = cmdprefix + quote(file);
 
 	// A test failure means unsuccessful process termination. In order
 	// to catch such a failure, create a child process for each test.
@@ -316,15 +379,13 @@ int main(int argc, char *argv[])
 		const char *s = getenv(fwd[i]);
 		if (!s) continue;
 
-		if (strchr(s, '\'')) {
-			// need to implement proper shell-style quoting
-			std::cerr << "warning: can't forward " << fwd[i] << std::endl;
-			continue;
-		}
+		std::string assignment(fwd[i]);
+		assignment += '=';
+		assignment += quote(s);
 
-		std::cerr << "info: forwarding "
-			<< fwd[i] << "='" << s << "'" << std::endl;
-		cmd = cmd + fwd[i] + "='" + s + "' ";
+		std::cerr << "info: forwarding " << assignment << std::endl;
+		cmd += assignment;
+		cmd += ' ';
 	}
 #endif
 
@@ -334,7 +395,7 @@ int main(int argc, char *argv[])
 		cmd += wrapper;
 		cmd += ' ';
 	}
-	cmd += argv[0]; // Re-exec ourselves
+	cmd += quote(argv[0]); // Re-exec ourselves
 	cmd += " + ";
 
 	// Set path to test case directory
