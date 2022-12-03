@@ -30,6 +30,7 @@
     <ClCompile Include="..\..\..\src\bmf.cpp" />
     <ClCompile Include="..\..\..\src\cff.cpp" />
     <ClCompile Include="..\..\..\src\cmf.cpp" />
+    <ClCompile Include="..\..\..\src\coktel.cpp" />
     <ClCompile Include="..\..\..\src\composer.cpp" />
     <ClCompile Include="..\..\..\src\d00.cpp" />
     <ClCompile Include="..\..\..\src\database.cpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="..\..\..\src\bmf.h" />
     <ClInclude Include="..\..\..\src\cff.h" />
     <ClInclude Include="..\..\..\src\cmf.h" />
+    <ClInclude Include="..\..\..\src\coktel.h" />
     <ClInclude Include="..\..\..\src\composer.h" />
     <ClInclude Include="..\..\..\src\d00.h" />
     <ClInclude Include="..\..\..\src\database.h" />

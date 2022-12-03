@@ -110,6 +110,7 @@ static const char *filelist[] = {
   "NEWSAN.HSQ",		// HERAD SDB v2 (HSQ packed)
   "NEWPAGA.HA2",	// HERAD SDB v2
   "WORMINTR.AGD",	// HERAD AGD
+  "well.adl",		// Coktel Vision ADL
   NULL
 };
 

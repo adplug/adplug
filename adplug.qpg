@@ -50,6 +50,7 @@
          <QPG:Add permissions="0644" file="./src/cff.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/cmf.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/cmfmcsop.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/coktel.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/composer.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/d00.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/database.h" install="/opt/include/adplug/"/>

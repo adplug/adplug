@@ -82,6 +82,7 @@
 #include "vgm.h"
 #include "sop.h"
 #include "herad.h"
+#include "coktel.h"
 
 /***** CAdPlug *****/
 
@@ -95,6 +96,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CamdLoader::factory, "AMUSIC", ".amd\0"),
   CPlayerDesc(CbamPlayer::factory, "Bob's Adlib Music", ".bam\0"),
   CPlayerDesc(CcmfPlayer::factory, "Creative Music File", ".cmf\0"),
+  CPlayerDesc(CcoktelPlayer::factory, "Coktel Vision Adlib Music", ".adl\0"),
   CPlayerDesc(Cd00Player::factory, "Packed EdLib", ".d00\0"),
   CPlayerDesc(CdfmLoader::factory, "Digital-FM", ".dfm\0"),
   CPlayerDesc(ChspLoader::factory, "HSC Packed", ".hsp\0"),

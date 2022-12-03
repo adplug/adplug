@@ -26,6 +26,7 @@ src_libadplug_la_SOURCES = \
 	src/cff.cpp \
 	src/cmf.cpp \
 	src/cmfmcsop.cpp \
+	src/coktel.cpp \
 	src/composer.cpp \
 	src/d00.cpp \
 	src/database.cpp \
@@ -157,6 +158,7 @@ pkginclude_HEADERS = \
 	src/mus.h \
 	src/mdi.h \
 	src/cmfmcsop.h \
+	src/coktel.h \
 	src/composer.h \
 	src/vgm.h \
 	src/sop.h \
@@ -392,6 +394,8 @@ EXTRA_DIST += \
 	test/testref/TU_BLESS.ref \
 	test/testmus/VIB_VOL3.D00 \
 	test/testref/VIB_VOL3.ref \
+	test/testmus/well.adl \
+	test/testref/well.ref \
 	test/testref/WONDERIN.ref \
 	test/testmus/WONDERIN.WLF \
 	test/testmus/WORMINTR.AGD \
