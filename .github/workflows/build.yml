@@ -27,7 +27,12 @@ jobs:
 
     - name: Install packages (Linux)
       if: ${{ runner.os == 'Linux' }}
-      run: sudo apt install -y texlive-latex-base texinfo
+      run: |
+        sudo apt install -y texlive-latex-base texinfo
+
+        if [[ ${{ matrix.compiler }} == "clang" ]]; then
+          sudo apt install -y libncurses5
+        fi
 
     - name: Install packages (macOS)
       if: ${{ runner.os == 'macOS' }}
