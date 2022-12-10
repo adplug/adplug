@@ -229,12 +229,17 @@ void CcoktelPlayer::executeCommand()
 
 bool CcoktelPlayer::update()
 {
+	if (pos >= size)
+	{
+		rewind(0);
+	}
 	if (!counter)
 	{
 		ticks = data[pos++];
 		if (ticks & 0x80)
 			ticks = ((ticks & ~0x80) << 8) | data[pos++];
-		if (ticks == 0x7FFF)
+		// skip first delay
+		if (pos <= 2)
 			ticks = 0;
 	}
 	if (++counter >= ticks)
@@ -245,7 +250,6 @@ bool CcoktelPlayer::update()
 			executeCommand();
 			if (pos >= size)
 			{
-				pos = 0;
 				songend = true;
 				break;
 			}
