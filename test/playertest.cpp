@@ -111,6 +111,8 @@ static const char *filelist[] = {
   "NEWPAGA.HA2",	// HERAD SDB v2
   "WORMINTR.AGD",	// HERAD AGD
   "well.adl",		// Coktel Vision ADL
+  "TEST16.MID",		// MIDI Type 0
+  "GRABBAG.MID",	// MIDI Type 1
   NULL
 };
 

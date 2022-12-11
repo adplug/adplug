@@ -79,6 +79,7 @@ public:
   int adlib_style;
   int adlib_mode;
   unsigned char myinsbank[128][16], smyinsbank[128][16];
+  int midi_type;
   midi_channel ch[16];
   int chp[18][3];
 
@@ -100,6 +101,7 @@ public:
   unsigned char datalook(long pos);
   unsigned long getnexti(unsigned long num);
   unsigned long getnext(unsigned long num);
+  void readString(char *dst, unsigned long num);
   unsigned long getval();
   void sierra_next_section();
   void midi_write_adlib(unsigned int r, unsigned char v);
