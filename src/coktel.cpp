@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include "coktel.h"
+#include "debug.h"
 
 /*** public methods *************************************/
 
