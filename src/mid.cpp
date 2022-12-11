@@ -324,12 +324,16 @@ bool CmidPlayer::load(const std::string &filename, const CFileProvider &fp)
                 /* "MThd"              header-chunk
                  * 0x00 0x00 0x00 0x06 header size
                  * 0x00 0x0n           midi file type: 0=single-track format, 1=multiple-track format, 2=multiple-song format
-                 * 0xnn 0xnn           track-number
+                 * 0xnn 0xnn           number of tracks
                  * 0xnn 0xnn           tempo
                  */
-                unsigned char s2[4];
-                f->readString((char *)s2, 4);
-                midi_type=u16_unaligned(s2 + 2);
+                f->seek(-2, binio::Add); // we have already read 6 bytes from the start
+                f->setFlag(binio::BigEndian, true);
+                if (f->readInt(4) != 6)
+                    break;
+                midi_type=f->readInt(2);
+                if (f->readInt(2) < 1)
+                    break;
                 good=FILE_MIDI;
                 midiprintf ("General MIDI type: %d\n", midi_type);
             }
@@ -969,11 +973,6 @@ void CmidPlayer::rewind(int subsong)
                 getnext(11); /* skip past header data until deltas is reached */
                 deltas=getnext(2);
                 midiprintf ("deltas:%ld\n",deltas);
-	        for (i=0; i<16; i++)
-	        {
-                  ch[i].nshift=-13;
-                  ch[i].on=1;
-                }
 
                 curtrack=0;
                 while ((curtrack == 0) ||
