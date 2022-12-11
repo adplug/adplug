@@ -332,7 +332,7 @@ bool CmidPlayer::load(const std::string &filename, const CFileProvider &fp)
                 if (f->readInt(4) != 6)
                     break;
                 midi_type=f->readInt(2);
-                if (f->readInt(2) < 1)
+                if (midi_type > 2 || f->readInt(2) < 1)
                     break;
                 good=FILE_MIDI;
                 midiprintf ("General MIDI type: %d\n", midi_type);
@@ -979,7 +979,7 @@ void CmidPlayer::rewind(int subsong)
                        ((midi_type == 1) && (curtrack < 16)))
                 {
                     /* MIDI type 0 (and LucasArts AdLib MIDI) stores all the MIDI channels in a single track,
-                     * while MIDI type 1 splits each channel into seperate tracks */
+                     * while MIDI type 1 splits each channel into separate tracks */
                     char s[5];
                     readString(s, 4);
                     s[4] = 0;
@@ -1169,7 +1169,7 @@ std::string CmidPlayer::gettype()
 	case FILE_LUCAS:
 		return std::string("LucasArts AdLib MIDI");
 	case FILE_MIDI:
-		return std::string("General MIDI (type ") + std::to_string(midi_type) + std::string(")");
+		return std::string("General MIDI (type " + std::to_string(midi_type) + ")");
 	case FILE_CMF:
 		return std::string("Creative Music Format (CMF MIDI)");
 	case FILE_OLDLUCAS:
