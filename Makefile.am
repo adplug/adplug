@@ -315,6 +315,8 @@ EXTRA_DIST += \
 	test/testref/go-_-go.ref \
 	test/testref/GORBI2.ref \
 	test/testmus/GORBI2.SQX \
+	test/testmus/GRABBAG.MID \
+	test/testref/GRABBAG.ref \
 	test/testref/HIP_D.ref \
 	test/testmus/HIP_D.ROL \
 	test/testref/hybrid.ref \
@@ -386,6 +388,8 @@ EXTRA_DIST += \
 	test/testmus/tafa.mus \
 	test/testref/tafa.ref \
 	test/testmus/tafa.tim \
+	test/testmus/TEST16.MID \
+	test/testref/TEST16.ref \
 	test/testmus/TOCCATA.MAD \
 	test/testref/TOCCATA.ref \
 	test/testref/TUBES.ref \
