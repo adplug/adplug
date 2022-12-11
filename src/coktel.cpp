@@ -98,6 +98,7 @@ void CcoktelPlayer::frontend_rewind(int subsong)
 {
 	pos = 0;
 	songend = false;
+	first_tick = false;
 
 	SetRhythmMode(soundMode);
 
@@ -236,15 +237,19 @@ bool CcoktelPlayer::update()
 	if (pos >= size)
 	{
 		rewind(0);
+		songend = true;
 	}
 	if (!counter)
 	{
 		ticks = data[pos++];
 		if (ticks & 0x80)
 			ticks = ((ticks & ~0x80) << 8) | data[pos++];
-		// skip first delay
-		if (pos <= 2)
+		if (ticks && !first_tick)
+		{
+			// skip first delay
 			ticks = 0;
+			first_tick = true;
+		}
 	}
 	if (++counter >= ticks)
 	{
@@ -254,8 +259,7 @@ bool CcoktelPlayer::update()
 			executeCommand();
 			if (pos >= size)
 			{
-				songend = true;
-				break;
+				return false;
 			}
 			else if (!data[pos]) // if next delay is zero
 			{

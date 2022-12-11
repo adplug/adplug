@@ -82,6 +82,7 @@ private:
 protected:
 	unsigned long	pos, size;
 	bool		songend;
+	bool		first_tick;
 	uint8_t *	data;					/* MIDI data */
 	uint8_t		soundMode;				/* 0: melodic, 1: percussive */
 	uint8_t		nrTimbre;				/* # of timbres */
