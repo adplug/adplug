@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <string>
+#include <sys/stat.h>
 
 #include "../src/adplug.h"
 #include "../src/opl.h"
@@ -32,6 +33,9 @@
 #else
 #	define DIR_DELIM	"/"
 #endif
+
+#define TEST_SUBDIR  "testmus"
+#define REF_SUBDIR   "testref"
 
 /***** Local variables *****/
 
@@ -106,11 +110,13 @@ static const char *filelist[] = {
   "NEWSAN.HSQ",		// HERAD SDB v2 (HSQ packed)
   "NEWPAGA.HA2",	// HERAD SDB v2
   "WORMINTR.AGD",	// HERAD AGD
+  "well.adl",		// Coktel Vision ADL
   NULL
 };
 
 // String holding the relative path to the source directory
 static const char *testdir;
+static bool use_subdir = false;
 
 /***** Testopl *****/
 
@@ -166,6 +172,18 @@ private:
 
 /***** Local functions *****/
 
+static bool dir_exists(std::string path)
+{
+  struct stat info;
+
+  int rc = stat(path.c_str(), &info);
+
+  if (rc != 0)
+    return false;
+
+  return (info.st_mode & S_IFDIR);
+}
+
 static bool diff(const std::string fn1, const std::string fn2)
   /*
    * Compares files 'fn1' and 'fn2' line by line and returns true if they are
@@ -212,6 +230,10 @@ static bool testplayer(const std::string filename)
   std::string	testfn = filename + ".test";
 #endif
   std::string	reffn = fn.substr(0, fn.find_last_of(".")) + ".ref";
+  if(use_subdir) {
+    fn.insert(fn.find_last_of(DIR_DELIM), DIR_DELIM TEST_SUBDIR);
+    reffn.insert(reffn.find_last_of(DIR_DELIM), DIR_DELIM REF_SUBDIR);
+  }
   Testopl	*opl = new Testopl(testfn);
   CPlayer	*p = CAdPlug::factory(fn, opl);
 
@@ -250,6 +272,8 @@ int main(int argc, char *argv[])
   // Set path to source directory
   testdir = getenv("testdir");
   if(!testdir) testdir = ".";
+
+  use_subdir = dir_exists(std::string(testdir) + DIR_DELIM TEST_SUBDIR);
 
   // Try all files one by one
   if(argc > 1) {

@@ -709,6 +709,9 @@ void RADPlayer::Init(const void *tune, void(*opl3)(void *, uint16_t, uint8_t), v
 		s++;
 	}
 
+	// Blank the instrument table, some files reference non-existent instruments
+	memset(&Instruments[0], 0, sizeof(Instruments));
+
 	// Unpack the instruments
 	NumInstruments = 0;
 	while (1) {

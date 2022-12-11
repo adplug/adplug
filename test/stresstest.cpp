@@ -31,6 +31,7 @@
 #ifndef WEXITSTATUS
 #include <sys/wait.h>
 #endif
+#include <sys/stat.h>
 
 #include "../src/adplug.h"
 #include "../src/opl.h"
@@ -40,6 +41,8 @@
 #else
 #	define DIR_DELIM	"/"
 #endif
+
+#define SUBDIR  "fuzzing"
 
 /***** Local variables *****/
 
@@ -198,7 +201,126 @@ public:
 
 /***** Local functions *****/
 
-bool run_test(int argc, const char *const argv[])
+static bool dir_exists(const std::string &path)
+{
+	struct stat info;
+
+	int rc = stat(path.c_str(), &info);
+
+	if (rc != 0)
+		return false;
+
+	return (info.st_mode & S_IFDIR);
+}
+
+// shell-style quoting
+static std::string quote(std::string s)
+{
+#ifdef _WIN32 // windows
+	// Quoting commands is a complete mess on windows. While not perfect,
+	// this should be good enough for arguments that are parsed by both
+	// cmd.exe and the default argv parser. It might not work for other
+	// cases (command name, custom arguments parsers, ...). See also
+	// https://daviddeley.com/autohotkey/parameters/parameters.htm#WIN
+	const char *q = s.find_first_of(" \t") == std::string::npos ? NULL : "^\"";
+	std::string::size_type i, pos = 0;
+
+	// add a backslash before each double quote and double the
+	// immediately preceding backslashes
+	while ((pos = s.find('"', pos)) != std::string::npos) {
+		i = pos++;
+		do {
+			s.insert(i, "\\");
+			pos++;
+		} while (i > 0 && s[--i] == '\\');
+	}
+	
+	// double the trailing backslashes
+	pos = s.find_last_not_of('\\');
+	if (pos != std::string::npos) pos++;
+	else pos = 0;
+	if (pos != s.size()) s.append(s, pos);
+
+	// escape special characters for cmd.exe
+	pos = 0;
+	while ((pos = s.find_first_of("^<>|&()\"", pos)) != std::string::npos) {
+		s.insert(pos, "^");
+		pos += 2;
+	}
+	
+	// surround with quotes if necessary
+	if (q) return q + s + q;
+
+#elif defined(__unix__) || defined(__unix) || defined(__MACH__) // unix
+	// POSIX says a backslash quotes any character except newline, but we
+	// use it only for printable ASCII chars that may have special meaning.
+#define SH_ESCAPE " !\"#$%&'()*,;<=>?[\\]`{|}~"
+	// No need to ever quote these:
+#define SH_SAFE "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+		"abcdefghijklmnopqrstuvwxyz+-./:@^_"
+	// Everything else will always be enclosed in quotes.
+
+	std::string::size_type unsafe, squote, needq, pos;
+
+	// The simple cases:
+	if (s.size() == 0)
+		return std::string("''"); // empty string
+
+	unsafe = s.find_first_not_of(SH_SAFE);
+	if (unsafe == std::string::npos)
+		return s; // needs no quoting at all
+
+	squote = s.find('\'');
+	if (squote == std::string::npos)
+		return '\'' + s + '\''; // enclose in single quotes
+	if (s.find_first_of("\"\\$`!") == std::string::npos)
+		return '"' + s + '"'; // enclose in double quotes
+
+	// More complicated, needs backslashes or mixed quoting:
+	needq = s.find_first_not_of(SH_ESCAPE SH_SAFE);
+	pos = 0;
+	while (unsafe != std::string::npos) {
+		if (needq != std::string::npos &&
+			(squote == std::string::npos || needq < squote)) {
+			// use single quotes for the part including chars that
+			// can't use backslashes up to the next single quote,
+			// and add a backslash for the quote
+			s.insert(pos, "'");
+			if (squote == std::string::npos) {
+				s += '\'';
+				break;
+			}
+			s.insert(squote + 1, "'\\");
+			pos = unsafe = s.find_first_not_of(SH_SAFE, squote + 4);
+			squote = s.find('\'', pos);
+			needq = s.find_first_not_of(SH_ESCAPE SH_SAFE, pos);
+		} else {
+			// insert a backslash in front of the next unsafe
+			// char, which we know is in SH_ESCAPE
+			s.insert(unsafe, "\\");
+			if (squote == unsafe)
+				squote = s.find('\'', unsafe + 2);
+			else if (squote != std::string::npos)
+				squote++;
+			if (needq != std::string::npos)
+				needq++;
+			pos = unsafe = s.find_first_not_of(SH_SAFE, unsafe + 2);
+		}
+	}
+#undef SH_SAFE
+#undef SH_ESCAPE
+#else
+	// other operating system
+	static bool warned = false;
+	if (!warned) {
+		std::cerr << "warning: argument quoting not implemented for your OS" << std::endl;
+		warned = true;
+	}
+#endif
+	return s;
+}
+
+static bool run_test(int argc, const char *const argv[])
 {
 	const int timeout = 60;     // real time
 	const float limit = 3600.f; // simulated playback time
@@ -231,7 +353,7 @@ bool run_test(int argc, const char *const argv[])
 
 	// Process the file
 	float t = 0;
-	while(p->update()) {
+	while (p->update()) {
 		float refresh = p->getrefresh();
 		// With a CEmuopl or similar, SAMPLERATE/refresh sound
 		// samples are available and can be read with:
@@ -252,9 +374,9 @@ bool run_test(int argc, const char *const argv[])
 	return true;
 }
 
-static bool test_wrapper(const std::string &cmdprefix, const char *file)
+static bool test_wrapper(const std::string &cmdprefix, const std::string &file)
 {
-	std::string cmd = cmdprefix + file;
+	std::string cmd = cmdprefix + quote(file);
 
 	// A test failure means unsuccessful process termination. In order
 	// to catch such a failure, create a child process for each test.
@@ -291,33 +413,56 @@ int main(int argc, char *argv[])
 
 	// Prepare a command prefix to recursively invoke ourselves
 	std::string cmd;
+
+#ifdef __APPLE__
+	// Apple's System Integrity Protection drops these environment
+	// variables when executing the shell, so in order to run tests from
+	// the build dir, we need to restore them.
+	static const char *const fwd[] = {"DYLD_LIBRARY_PATH", "LD_LIBRARY_PATH"};
+	for (int i = 0; i < sizeof(fwd) / sizeof(fwd[0]); i++) {
+		const char *s = getenv(fwd[i]);
+		if (!s) continue;
+
+		std::string assignment(fwd[i]);
+		assignment += '=';
+		assignment += quote(s);
+
+		std::cerr << "info: forwarding " << assignment << std::endl;
+		cmd += assignment;
+		cmd += ' ';
+	}
+#endif
+
 	// Optional wrapper executable to run test cases
 	const char *wrapper = getenv("stresstest_wrapper");
 	if (wrapper) {
-		cmd = wrapper;
+		cmd += wrapper;
 		cmd += ' ';
 	}
-	cmd += argv[0]; // Re-exec ourselves
+	cmd += quote(argv[0]); // Re-exec ourselves
 	cmd += " + ";
 
-	// Set path to source directory
-	const char *testdir = getenv("testdir");
-	if (testdir) {
-		cmd += testdir;
+	// Set path to test case directory
+	std::string dir;
+	if (const char *s = getenv("testdir")) {
+		dir = s;
 		int l = strlen(DIR_DELIM);
-		if (cmd.compare(cmd.size() - l, l, DIR_DELIM) != 0)
-			cmd += DIR_DELIM;
+		if (dir.compare(dir.size() - l, l, DIR_DELIM) != 0)
+			dir += DIR_DELIM;
 	}
+	if (dir_exists(dir + SUBDIR))
+		dir += SUBDIR DIR_DELIM;
 
 	bool fail = false;
 	if (argc < 2) {
 		// No files, so run all tests from filelist.
 		for (int i = 0; i < filecount; i++)
-			fail |= !test_wrapper(cmd, filelist[i]);
+			fail |= !test_wrapper(cmd, dir + filelist[i]);
 	} else {
 		// Test the file(s) on the command line
-		for(int i = 1; i < argc; i++)
-			fail |= !test_wrapper(cmd, argv[i]);
+		for (int i = 1; i < argc; i++)
+			fail |= !test_wrapper(cmd, strstr(argv[i], DIR_DELIM) ||
+				access(argv[i], F_OK) ? argv[i] : dir + argv[i]);
 	}
 
 	return fail ? EXIT_FAILURE : EXIT_SUCCESS;

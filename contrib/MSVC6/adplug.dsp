@@ -133,6 +133,10 @@ SOURCE=.\cff.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\composer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\d00.cpp
 # End Source File
 # Begin Source File
@@ -331,6 +335,10 @@ SOURCE=.\bmf.h
 # Begin Source File
 
 SOURCE=.\cff.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\composer.h
 # End Source File
 # Begin Source File
 
