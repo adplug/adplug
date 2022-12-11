@@ -28,6 +28,10 @@
 
 #include "coktel.h"
 
+#ifdef DEBUG
+#include "debug.h"
+#endif
+
 /*** public methods *************************************/
 
 CPlayer *CcoktelPlayer::factory(Copl *newopl)
