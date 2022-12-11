@@ -973,11 +973,7 @@ void CmidPlayer::rewind(int subsong)
                 getnext(11); /* skip past header data until deltas is reached */
                 deltas=getnext(2);
                 midiprintf ("deltas:%ld\n",deltas);
-	        for (i=0; i<16; i++)
-	        {
-                  ch[i].nshift=-13;
-                  ch[i].on=1;
-                }
+
                 curtrack=0;
                 while ((curtrack == 0) ||
                        ((midi_type == 1) && (curtrack < 16)))
