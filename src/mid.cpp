@@ -973,13 +973,18 @@ void CmidPlayer::rewind(int subsong)
                 getnext(11); /* skip past header data until deltas is reached */
                 deltas=getnext(2);
                 midiprintf ("deltas:%ld\n",deltas);
-
+	        for (i=0; i<16; i++)
+	        {
+                  ch[i].nshift=-13;
+                  ch[i].on=1;
+                }
                 curtrack=0;
                 while ((curtrack == 0) ||
                        ((midi_type == 1) && (curtrack < 16)))
                 {
                     /* MIDI type 0 (and LucasArts AdLib MIDI) stores all the MIDI channels in a single track,
                      * while MIDI type 1 splits each channel into separate tracks */
+                    int len;
                     char s[5];
                     readString(s, 4);
                     s[4] = 0;
@@ -988,13 +993,13 @@ void CmidPlayer::rewind(int subsong)
                     if (strcmp(s, "MTrk"))
                         break;
                     track[curtrack].on=1;
-                    track[curtrack].tend=getnext(4);
-                    midiprintf ("tracklen:%lu\n",track[curtrack].tend);
-                    //track[curtrack].tend += pos; // FIXME: length -> end position
+                    len=getnext(4);
+                    midiprintf ("tracklen:%lu\n",len);
+                    track[curtrack].tend = pos + len;
                     if (track[curtrack].tend > flen) // no music after end of file
                         track[curtrack].tend = flen;
                     track[curtrack].spos=pos;
-                    pos+=track[curtrack].tend;
+                    pos+=len;
                     curtrack++;
                 }
                 break;
