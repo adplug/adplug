@@ -47,7 +47,8 @@ CPlayer *Ca2mLoader::factory(Copl *newopl)
 bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
 {
   binistream *f = fp.open(filename); if (!f) return false;
-  int i, j, k, t;
+  unsigned int i;
+  int j, k, t;
   unsigned int l;
   unsigned char *org, *orgptr, flags = 0;
   unsigned long alength;
@@ -199,7 +200,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
     orgptr = org + alength;
   }
 
-  if (orgptr - org < needed) {
+  if (orgptr - org < (ssize_t)needed) {
     delete [] org;
     fp.close(f);
     return false;
