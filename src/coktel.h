@@ -49,7 +49,7 @@ public:
 	static CPlayer *factory(Copl *newopl);
 
 	CcoktelPlayer(Copl *newopl)
-		: CcomposerBackend(newopl), insts(0), data(0)
+		: CcomposerBackend(newopl), data(0), insts(0)
 		{ }
 	~CcoktelPlayer()
 	{
