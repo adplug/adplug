@@ -200,7 +200,7 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
     orgptr = org + alength;
   }
 
-  if (orgptr - org < (ssize_t)needed) {
+  if (orgptr - org < (signed long)needed) {
     delete [] org;
     fp.close(f);
     return false;
