@@ -409,7 +409,7 @@ bool CcmfmacsoperaPlayer::advanceRow()
 			currentPatternIndex = 0;
 
 			do {
-				currentOrderIndex++;
+				currentOrderIndex++; // overflows ~0 into 0 when needed
 
 				// check bounds
 				if (currentOrderIndex >= (sizeof(patternOrder) / sizeof(patternOrder[0])))
@@ -421,13 +421,13 @@ bool CcmfmacsoperaPlayer::advanceRow()
 
 			} while (patternOrder[currentOrderIndex] >= patterns.size()); // loop to skip invalid pattern references
 
-			AdPlug_LogWrite("order %d, pattern %d\n", currentOrderIndex, patternOrder[currentOrderIndex]);
+			AdPlug_LogWrite("order %u, pattern %d\n", currentOrderIndex, patternOrder[currentOrderIndex]);
 		}
 
 		// check for pattern break
 		const Pattern &p = patterns[patternOrder[currentOrderIndex]];
 		if (currentPatternIndex < p.size() && p[currentPatternIndex].row == currentRow && p[currentPatternIndex].note == 1) {
-			currentRow = ~0;
+			currentRow = 64;
 		}
 		else // no pattern break, done!
 			break;
@@ -491,7 +491,7 @@ bool CcmfmacsoperaPlayer::update()
 
 void CcmfmacsoperaPlayer::resetPlayer()
 {
-	currentRow = ~0;
+	currentRow = 64;
 	currentOrderIndex = ~0;
 	advanceRow();
 }
