@@ -663,9 +663,9 @@ void CheradPlayer::rewind(int subsong)
 	wTime = 0;
 	songend = false;
 
-	ticks_pos = -1; // there's always 1 excess tick at start
+	ticks_pos = ~0; // there's always 1 excess tick at start
 	total_ticks = 0;
-	loop_pos = -1;
+	loop_pos = ~0;
 	loop_times = 1;
 
 	for (int i = 0; i < nTracks; i++)
