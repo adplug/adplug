@@ -462,7 +462,7 @@ void Cd00Player::rewind(int subsong)
 
   size_t dataofs = subsong * sizeof(Stpoin)
     + LE_WORD(&(version > 1 ? header->tpoin : header1->tpoin));
-  if (subsong < getsubsongs() && dataofs + sizeof(Stpoin) <= filesize)
+  if ((unsigned int)subsong < getsubsongs() && dataofs + sizeof(Stpoin) <= filesize)
     memcpy(&tpoin, filedata + dataofs, sizeof(Stpoin));
   else
     memset(&tpoin, 0, sizeof(Stpoin));
