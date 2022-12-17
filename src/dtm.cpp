@@ -131,7 +131,7 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 
       f->readString((char *)instruments[i].data, sizeof(instruments[i].data));
 
-      for (int j = 0; j < sizeof(conv_inst); j++)
+      for (unsigned int j = 0; j < sizeof(conv_inst); j++)
 	inst[i].data[conv_inst[j]] = instruments[i].data[j];
   }
 
@@ -218,7 +218,7 @@ bool CdtmLoader::load(const std::string &filename, const CFileProvider &fp)
 
   // order length
   length = N_ORD;
-  for (int i = 0; i < N_ORD; i++) {
+  for (unsigned int i = 0; i < N_ORD; i++) {
       if (order[i] & 0x80) {
 	  length = i;
 
