@@ -382,7 +382,7 @@ void CcomposerBackend::SetDefaultInstrument(int const voice)
     // waveform select is always equal to 0 here, so just memset
     memset(&data[0], 0, sizeof(data));
 
-    for (int i = 0; i < sizeof(pianoParamsOp0) - 1; i++)
+    for (unsigned int i = 0; i < sizeof(pianoParamsOp0) - 1; i++)
     {
         if ((voice < kBassDrumChannel) || !mRhythmMode)
         {
