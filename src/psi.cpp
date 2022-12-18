@@ -57,8 +57,8 @@ bool CxadpsiPlayer::xadplayer_load()
   header.instr_ptr = le16(&tune[0]);
   header.seq_ptr = le16(&tune[2]);
 
-  if (header.instr_ptr + psi.nchannels * 2 >= tune_size ||
-      header.seq_ptr + psi.nchannels * 4 >= tune_size)
+  if (header.instr_ptr + (unsigned)psi.nchannels * 2 >= tune_size ||
+      header.seq_ptr + (unsigned)psi.nchannels * 4 >= tune_size)
     return false;
 
   // calculate instruments & sequence tables
@@ -67,7 +67,7 @@ bool CxadpsiPlayer::xadplayer_load()
 
   // validate instrument data & sequence pointers
   for (int i = 0; i < psi.nchannels * 2; i += 2)
-    if (le16(&psi.instr_table[i]) + 11 >= tune_size)
+    if ((unsigned int)le16(&psi.instr_table[i]) + 11 >= tune_size)
       return false;
   for (int i = 0; i < psi.nchannels * 4; i += 2)
     if (le16(&psi.seq_table[i]) >= tune_size)
