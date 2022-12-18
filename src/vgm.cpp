@@ -349,7 +349,7 @@ std::string CvgmPlayer::getdesc()
 	char str_sys[256]; str_sys[0] = 0;
 	if (system[0] && date[0])
 	{
-		sprintf(str_sys, "%s / %s", system, date);
+		snprintf(str_sys, sizeof(str_sys), "%s / %s", system, date);
 	}
 	else if (system[0])
 	{
@@ -365,7 +365,7 @@ std::string CvgmPlayer::getdesc()
 	{
 		if (str_sys[0])
 		{
-			sprintf(str_game, "%s (%s)", game, str_sys);
+			snprintf(str_game, sizeof(str_game), "%s (%s)", game, str_sys);
 		}
 		else
 		{
@@ -378,7 +378,7 @@ std::string CvgmPlayer::getdesc()
 	}
 	if (notes[0])
 	{
-		sprintf(str_desc, "%s\r\n\r\n%s", str_game, notes);
+		snprintf(str_desc, sizeof(str_desc), "%s\r\n\r\n%s", str_game, notes);
 	}
 	else
 	{
