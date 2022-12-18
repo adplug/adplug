@@ -29,8 +29,12 @@ test-driver
 *.o
 *.lo
 *.la
+*.swp
+*.test
+.cvsignore
 .deps
 .libs
+.vs
 .vscode
 adplug.pc
 adplug-*.tar.bz2
@@ -64,3 +68,5 @@ contrib/vs2015/adplug/v140/x64/Debug
 contrib/vs2015/crctest/x64/Debug
 contrib/vs2015/emutest/x64/Debug
 contrib/vs2015/playertest/x64/Debug
+CMakeUserPresets.json
+out
