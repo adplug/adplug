@@ -289,7 +289,7 @@ bool CmusPlayer::LoadTimbreBank(const std::string fname, const CFileProvider &fp
 	for (int i = 0; i < nrTimbre; i++)
 	{
 		uint8_t data[ADLIB_INST_LEN];
-		for (int j = 0; j < sizeof(data); j++)
+		for (unsigned int j = 0; j < sizeof(data); j++)
 		{
 			uint16_t val = static_cast<uint16_t>(f->readInt(2));
 			data[j] = val & 0xFF;
