@@ -97,7 +97,7 @@ bool CsopPlayer::load(const std::string &filename, const CFileProvider &fp)
 	nInsts = f->readInt(1);
 	check = f->readInt(1);
 	if (nTracks == 0 || nInsts == 0 || nTracks > SOP_MAX_TRACK || nInsts > SOP_MAX_INST ||
-		check != 0 || fp.filesize(f) < SOP_HEAD_SIZE + nTracks)
+		check != 0 || fp.filesize(f) < (unsigned)SOP_HEAD_SIZE + nTracks)
 	{
 		fp.close(f);
 		return false;
@@ -174,8 +174,8 @@ bool CsopPlayer::load(const std::string &filename, const CFileProvider &fp)
 	}
 	// event tracks
 	track = new sop_trk[nTracks + 1];
-	for (i = 0; i < nTracks + 1; i++) track[i].data = 0;
-	for (i = 0; i < nTracks + 1; i++)
+	for (i = 0; i < (unsigned)nTracks + 1; i++) track[i].data = 0;
+	for (i = 0; i < (unsigned)nTracks + 1; i++)
 	{
 		track[i].nEvents = f->readInt(2);
 		track[i].size = f->readInt(4);
