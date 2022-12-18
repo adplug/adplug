@@ -347,9 +347,9 @@ std::string CvgmPlayer::getdesc()
 	if (GD3.notes[0])
 		wcstombs(notes, GD3.notes, 256);
 	char str_sys[256]; str_sys[0] = 0;
-	if (system[0] && date[0])
+	if (system[0] && date[0] && strlen(system) <= 251)
 	{
-		snprintf(str_sys, sizeof(str_sys), "%s / %s", system, date);
+		snprintf(str_sys, sizeof(str_sys), "%.251s / %.*s", system, 252 - (int)strlen(system), date);
 	}
 	else if (system[0])
 	{
@@ -363,9 +363,9 @@ std::string CvgmPlayer::getdesc()
 	char str_desc[256]; str_desc[0] = 0;
 	if (game[0])
 	{
-		if (str_sys[0])
+		if (str_sys[0] && strlen(game) <= 251)
 		{
-			snprintf(str_game, sizeof(str_game), "%s (%s)", game, str_sys);
+			snprintf(str_game, sizeof(str_game), "%.251s (%.*s)", game, 252 - (int)strlen(game), str_sys);
 		}
 		else
 		{
@@ -376,9 +376,9 @@ std::string CvgmPlayer::getdesc()
 	{
 		strcpy(str_game, str_sys);
 	}
-	if (notes[0])
+	if (notes[0] && strlen(str_game) <= 250)
 	{
-		snprintf(str_desc, sizeof(str_desc), "%s\r\n\r\n%s", str_game, notes);
+		snprintf(str_desc, sizeof(str_desc), "%.250s\r\n\r\n%.*s", str_game, 251 - (int)strlen(str_game), notes);
 	}
 	else
 	{
