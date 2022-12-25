@@ -1,4 +1,4 @@
-name: AdPlug CI
+name: AdPlug autotools CI
 
 on:
   - push
