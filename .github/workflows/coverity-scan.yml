@@ -1,0 +1,65 @@
+name: Coverity Scan
+
+# We only want to test official release code, not every pull request.
+on:
+  push:
+    branches: [master]
+
+env:
+  libbinio_PRESET: default
+  libbinio_ROOT: '${{github.workspace}}/libbinio/out/install/default/lib/cmake/libbinio/'
+
+jobs:
+  coverity:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Find libbinio repository
+      shell: bash
+      run: echo LIBBINIO_REPOSITORY="${GITHUB_REPOSITORY%/adplug}/libbinio" >> $GITHUB_ENV
+
+    - name: Get cmake and ninja
+      uses: lukka/get-cmake@latest
+
+    - name: Find MSVC (on Windows)
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Checkout libbinio repository
+      uses: actions/checkout@v3
+      with:
+        repository: '${{env.LIBBINIO_REPOSITORY}}'
+        ref: master
+        path: libbinio
+        fetch-depth: 0
+
+    - name: Checkout adplug repository
+      uses: actions/checkout@v3
+      with:
+        path: adplug
+        fetch-depth: 0
+
+    - name: Build libbinio
+      uses: lukka/run-cmake@v10
+      with:
+        cmakeListsTxtPath: libbinio/CMakeLists.txt
+        configurePreset: '${{env.libbinio_PRESET}}'
+        buildPreset: '${{env.libbinio_PRESET}}'
+
+    - name: Install libbinio
+      working-directory: 'libbinio/out/build/${{env.libbinio_PRESET}}/'
+      run: cmake --install .
+
+    - name: Build adplug
+      uses: lukka/run-cmake@v10
+      with:
+        cmakeListsTxtPath: adplug/CMakeLists.txt
+        configurePreset: default
+
+    - name: Coverity Scan
+      uses: vapier/coverity-scan-action@v1
+      with:
+        working-directory: adplug
+        command: cmake --build --preset=default
+        email: ${{ secrets.COVERITY_SCAN_EMAIL }}
+        token: ${{ secrets.COVERITY_SCAN_TOKEN }}
+
