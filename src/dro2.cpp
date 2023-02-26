@@ -64,8 +64,8 @@ bool Cdro2Player::load(const std::string &filename, const CFileProvider &fp)
 		return false;
 	}
 
-	this->iLength = f->readInt(4); // should better use an unsigned type
-	if (this->iLength <= 0 || this->iLength >= 1<<30 ||
+	this->iLength = f->readInt(4);
+	if (this->iLength >= 1<<30 ||
 	    this->iLength > fp.filesize(f) - f->pos()) {
 		fp.close(f);
 		return false;
@@ -141,8 +141,8 @@ end_section:
 bool Cdro2Player::update()
 {
 	while (this->iPos < this->iLength) {
-		int iIndex = this->data[this->iPos++];
-		int iValue = this->data[this->iPos++];
+		unsigned int iIndex = this->data[this->iPos++];
+		unsigned int iValue = this->data[this->iPos++];
 
 		// Short delay
 		if (iIndex == this->iCmdDelayS) {
