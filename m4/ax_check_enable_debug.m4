@@ -42,7 +42,7 @@
 #   permitted in any medium without royalty provided the copyright notice
 #   and this notice are preserved.
 
-#serial 8
+#serial 9
 
 AC_DEFUN([AX_CHECK_ENABLE_DEBUG],[
     AC_BEFORE([$0],[AC_PROG_CC])dnl
@@ -118,7 +118,7 @@ AC_DEFUN([AX_CHECK_ENABLE_DEBUG],[
     dnl Define various variables if debugging is disabled.
     dnl assert.h is a NOP if NDEBUG is defined, so define it by default.
     AS_IF([test "x$enable_debug" = "xyes"],
-      [m4_map_args_w(ax_enable_debug_vars, [AC_DEFINE(], [,,[Define if debugging is enabled])])],
-      [m4_map_args_w(ax_disable_debug_vars, [AC_DEFINE(], [,,[Define if debugging is disabled])])])
+      [m4_map_args_w(ax_enable_debug_vars, [AC_DEFINE(], [,[1],[Define if debugging is enabled])])],
+      [m4_map_args_w(ax_disable_debug_vars, [AC_DEFINE(], [,[1],[Define if debugging is disabled])])])
     ax_enable_debug=$enable_debug
 ])
