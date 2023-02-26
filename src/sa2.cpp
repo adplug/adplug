@@ -35,7 +35,7 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
 {
   binistream *f = fp.open(filename); if(!f) return false;
   unsigned char buf;
-  int i,j, k, notedis = 0;
+  unsigned int i,j, k, notedis = 0;
   static const unsigned char convfx[16] = {
     0, 1, 2, 3, 4, 5, 6, 255, 8, 255, 10, 11, 12, 13, 255, 15
   };
