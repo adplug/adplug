@@ -103,7 +103,7 @@ bool CcffLoader::load(const std::string &filename, const CFileProvider &fp)
 
   // number of patterns
   nop = module[0x5E0];
-  if (nop < 1 || nop > 36 || 0x669 + nop * 64 * 9 * 3 > module_size) {
+  if (nop < 1 || nop > 36 || (size_t)0x669 + nop * 64 * 9 * 3 > module_size) {
     delete [] module;
     return false;
   }
