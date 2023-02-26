@@ -143,9 +143,9 @@ CmidPlayer::CmidPlayer(Copl *newopl)
 {
 }
 
-unsigned char CmidPlayer::datalook(long pos)
+unsigned char CmidPlayer::datalook(unsigned long pos)
 {
-    if (pos<0 || pos >= flen) return(0);
+    if (pos >= flen) return(0);
     return(data[pos]);
 }
 
@@ -1009,15 +1009,15 @@ void CmidPlayer::rewind(int subsong)
                 if (i) msqtr = 1000000L / i * deltas;
 
                 i=getnexti(2);
-                if (i > 0 && i < flen &&
+                if (i > 0 && (unsigned long)i < flen &&
                     strnlen((char *)data + i, flen - i) < flen - i)
                   title = (char *)data + i;
                 i=getnexti(2);
-                if (i > 0 && i < flen &&
+                if (i > 0 && (unsigned long)i < flen &&
                     strnlen((char *)data + i, flen - i) < flen - i)
                   author = (char *)data + i;
                 i=getnexti(2);
-                if (i > 0 && i < flen &&
+                if (i > 0 && (unsigned long)i < flen &&
                     strnlen((char *)data + i, flen - i) < flen - i)
                   remarks = (char *)data + i;
 

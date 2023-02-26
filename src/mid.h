@@ -69,7 +69,7 @@ public:
   };
 
   char *author,*title,*remarks,emptystr;
-  long flen;
+  unsigned long flen;
   unsigned long pos;
   unsigned long sierra_pos; //sierras gotta be special.. :>
   int subsongs;
@@ -98,7 +98,7 @@ public:
  private:
   bool load_sierra_ins(const std::string &fname, const CFileProvider &fp);
   void midiprintf(const char *format, ...);
-  unsigned char datalook(long pos);
+  unsigned char datalook(unsigned long pos);
   unsigned long getnexti(unsigned long num);
   unsigned long getnext(unsigned long num);
   void readString(char *dst, unsigned long num);
