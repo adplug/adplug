@@ -162,9 +162,11 @@ bool Ca2mLoader::load(const std::string &filename, const CFileProvider &fp)
   orgptr += length;
   for (i = 0; i < length; i++)
     if ((order[i] & 0x7f) >= numpats) {		// invalid pattern in order list
-      delete [] org;
-      fp.close(f);
-      return false;
+      // What to do in this case in not defined in documentation? There are songs that contain this fault.
+      // We have two options:
+      //  1. allocate an empty pattern and redirect to this - more work and lots of quirks
+      //  2. adjust order list to point to pattern 0 / jump to order 0 instead
+      order[i] &= 0x80; // make it point to pattern 0 / jump to order 0
     }
 
   bpm = *orgptr++;
