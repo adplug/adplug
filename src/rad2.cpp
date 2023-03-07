@@ -671,7 +671,7 @@ void RADPlayer::Init(const void *tune, void(*opl3)(void *, uint16_t, uint8_t), v
 		return;
 	}
 	Version = ver >> 4;
-	UseOPL3 = ver >= 2;
+	UseOPL3 = Version >= 2;
 
 	// The OPL3 call-back
 	OPL3 = opl3;
