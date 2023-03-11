@@ -48,6 +48,7 @@ src_libadplug_la_SOURCES = \
 	src/hyp.cpp \
 	src/imf.cpp \
 	src/jbm.cpp \
+	src/kemuopl.cpp \
 	src/ksm.cpp \
 	src/lds.cpp \
 	src/mad.cpp \
