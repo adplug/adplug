@@ -35,37 +35,21 @@ extern "C" {
 class CKemuopl: public Copl
 {
 public:
-  CKemuopl(int rate, bool bit16, bool usestereo)
-    : use16bit(bit16), stereo(usestereo), sampleerate(rate)
-    {
-      bzero (&ctx, sizeof (ctx));
-      adlibinit(&ctx, rate, usestereo ? 2 : 1, bit16 ? 2 : 1);
-      currType = TYPE_OPL2;
-    };
+  CKemuopl(int rate, bool bit16, bool usestereo);
+  virtual ~CKemuopl();
 
-  void update(short *buf, int samples)
-    {
-      if(use16bit) samples *= 2;
-      if(stereo) samples *= 2;
-      adlibgetsample(&ctx, (unsigned char *)buf, samples);
-    }
 
-  // template methods
-  void write(int reg, int val)
-    {
-      if(currChip == 0)
-	adlib0(&ctx, reg, val);
-    };
+  void update(short *buf, int samples);
+  void write(int reg, int val);
 
-  void init() {
-    adlibinit(&ctx, sampleerate, stereo ? 2 : 1, use16bit ? 2 : 1);
-    currChip = 0;
-  };
+  void init();
 
 private:
-  bool	use16bit,stereo;
-  int	sampleerate;
-  adlibemu_context ctx;
+  bool             use16bit, stereo;
+  int              sampleerate;
+  adlibemu_context ctx[2];
+  short            *mixbuf0, *mixbuf1, *mixbuf2;
+  int              mixbufSamples;
 };
 
 #endif
