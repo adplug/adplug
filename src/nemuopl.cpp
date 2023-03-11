@@ -29,7 +29,7 @@ CNemuopl::CNemuopl(int rate)
 {
   opl = new opl3_chip();
   OPL3_Reset(opl, rate);
-  currType = TYPE_OPL2;
+  currType = TYPE_OPL3;
   samplerate = rate;
 }
 
