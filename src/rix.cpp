@@ -128,7 +128,7 @@ void CrixPlayer::rewind(int subsong)
   if (flag_mkf && subsong >= 0)
   {
     // changed to actually work and match numbering of getsubsongs()
-    uint32_t i, offset, next, table_end;
+    uint32_t i, offset, next=0, table_end;
     offset = RIX_GET32(file_buffer, 0);
     table_end = offset / 4;
     for (i = 1; i < table_end; i++)
