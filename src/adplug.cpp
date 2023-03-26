@@ -83,6 +83,7 @@
 #include "sop.h"
 #include "herad.h"
 #include "coktel.h"
+#include "pis.h"
 
 /***** CAdPlug *****/
 
@@ -127,6 +128,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CxsmPlayer::factory, "eXtra Simple Music", ".xsm\0"),
   CPlayerDesc(CdroPlayer::factory, "DOSBox Raw OPL v0.1", ".dro\0"),
   CPlayerDesc(Cdro2Player::factory, "DOSBox Raw OPL v2.0", ".dro\0"),
+  CPlayerDesc(CpisPlayer::factory, "Beni Tracker PIS Player", ".pis\0"),
   CPlayerDesc(CmscPlayer::factory, "Adlib MSC Player", ".msc\0"),
   CPlayerDesc(CrixPlayer::factory, "Softstar RIX OPL Music", ".rix\0"),
   CPlayerDesc(CadlPlayer::factory, "Westwood ADL", ".adl\0"),
