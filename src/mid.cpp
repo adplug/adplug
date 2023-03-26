@@ -1170,7 +1170,8 @@ std::string CmidPlayer::gettype()
 	case FILE_LUCAS:
 		return std::string("LucasArts AdLib MIDI");
 	case FILE_MIDI:
-		return std::string("General MIDI (type " + std::to_string(midi_type) + ")");
+		// avoid using std::to_string(midi_type) which is c++11 and may be broken in mingw32
+		return std::string("General MIDI (type " + std::string(1, '0' + midi_type) + ")");
 	case FILE_CMF:
 		return std::string("Creative Music Format (CMF MIDI)");
 	case FILE_OLDLUCAS:
