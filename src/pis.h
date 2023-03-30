@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * pis.cpp - PIS Player (Beni Tracker) by Jonas Santoso <jonashuman@mail.com>
+ * pis.cpp - PIS Player (Beni Tracker) by Jonas Santoso <jonas.santoso@gmail.com>
  *           adapted from 'pisplay' by Dmitry Smagin <dmitry.s.smagin@gmail.com>
  *
  * REFERENCES:
