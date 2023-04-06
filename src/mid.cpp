@@ -974,6 +974,15 @@ void CmidPlayer::rewind(int subsong)
                 deltas=getnext(2);
                 midiprintf ("deltas:%ld\n",deltas);
 
+                /* MIDI files should be played back one octave and a semi-note off in to be played back correctly */
+                if (type != FILE_LUCAS)
+                {
+                    for (i=0; i<16; i++)
+                    {
+                        ch[i].nshift=-13;
+                    }
+                }
+
                 curtrack=0;
                 while ((curtrack == 0) ||
                        ((midi_type == 1) && (curtrack < 16)))
