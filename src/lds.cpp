@@ -146,8 +146,9 @@ bool CldsPlayer::load(const std::string &filename, const CFileProvider &fp)
 
   // load patterns
   f->ignore(2);		// ignore # of digital sounds (not played by this player)
-  patterns = new unsigned short[(fp.filesize(f) - f->pos()) / 2 + 1];
-  for(i = 0; !f->eof(); i++)
+  patterns_size = (fp.filesize(f) - f->pos()) / 2;
+  patterns = new unsigned short[patterns_size + 1];
+  for(i = 0; i < patterns_size; i++)
     patterns[i] = f->readInt(2);
 
   fp.close(f);
@@ -207,7 +208,11 @@ bool CldsPlayer::update()
 	unsigned short	patnum = positions[posplay * 9 + chan].patnum;
 	unsigned char	transpose = positions[posplay * 9 + chan].transpose;
 
-	comword = patterns[patnum + c->packpos];
+        if ((patnum + c->packpos) < patterns_size)
+          comword = patterns[patnum + c->packpos];
+        else
+          comword = 0x8001;
+
 	comhi = comword >> 8; comlo = comword & 0xff;
 	if(comword) {
 	  if(comhi == 0x80)
