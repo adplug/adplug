@@ -113,6 +113,7 @@ static const char *filelist[] = {
   "well.adl",		// Coktel Vision ADL
   "TEST16.MID",		// MIDI Type 0
   "GRABBAG.MID",	// MIDI Type 1
+  "ACTION.PIS",		// Beni Tracker
   NULL
 };
 
