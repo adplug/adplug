@@ -501,6 +501,8 @@ void CpisPlayer::unpack_row() {
 void CpisPlayer::advance_row() {
     if (replay_state.position_jump >= 0) {
         replay_state.position = replay_state.position_jump;
+        is_playing = 0; // Treat pattern jump as stop
+
         if (replay_state.pattern_break == PIS_NONE) {
             //
             // Position jump without pattern break
@@ -521,6 +523,7 @@ void CpisPlayer::advance_row() {
         replay_state.position++;
         if (replay_state.position == module.length) {
             replay_state.position = 0;
+            is_playing = 0;
         }
         replay_state.row = replay_state.pattern_break;
         replay_state.pattern_break = PIS_NONE;
@@ -534,6 +537,7 @@ void CpisPlayer::advance_row() {
             replay_state.position++;
             if (replay_state.position == module.length) {
                 replay_state.position = 0;
+                is_playing = 0;
             }
         }
     }
@@ -666,7 +670,7 @@ bool CpisPlayer::load(const std::string &filename, const CFileProvider &fp) {
 bool CpisPlayer::update() {
     replay_frame_routine();
 
-    return replay_state.position < module.length;
+    return is_playing;
 }
 
 void CpisPlayer::rewind(int subsong) {
@@ -674,6 +678,7 @@ void CpisPlayer::rewind(int subsong) {
 
     opl->init();
     opl->write(1, 0x20); // enable waveform control
+    is_playing = 1;
 }
 
 float CpisPlayer::getrefresh() {
