@@ -261,6 +261,8 @@ EXTRA_DIST += \
 	test/testref/2001.ref \
 	test/testmus/2.CMF \
 	test/testref/2.ref \
+	test/testmus/ACTION.PIS \
+	test/testref/ACTION.ref \
 	test/testmus/ADAGIO.DFM \
 	test/testref/ADAGIO.ref \
 	test/testref/adlibsp.ref \
