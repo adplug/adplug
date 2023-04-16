@@ -479,7 +479,6 @@ void CpisPlayer::unpack_row() {
     uint32_t *pptn;
     uint32_t packed;
     uint8_t b1, b2, el;
-    int note, octave, instrument, effect;
 
     for (int v = 0; v < 9; v++) {
         pattern_index = module.order[replay_state.position][v];
