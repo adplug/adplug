@@ -28,6 +28,7 @@ jobs:
     - name: Install packages (Linux)
       if: ${{ runner.os == 'Linux' }}
       run: |
+        sudo apt update
         sudo apt install -y texlive-latex-base texinfo
 
         if [[ ${{ matrix.compiler }} == "clang" ]]; then
