@@ -20,7 +20,7 @@
  *           adapted from 'pisplay' by Dmitry Smagin <dmitry.s.smagin@gmail.com>
  *
  * REFERENCES:
- * https://github.com/moxy-bc/pisplay
+ * https://github.com/klubderkluebe/pisplay/
  *
  */
 
