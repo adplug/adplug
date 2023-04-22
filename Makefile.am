@@ -59,6 +59,7 @@ src_libadplug_la_SOURCES = \
 	src/mtk.cpp \
 	src/mus.cpp \
 	src/nemuopl.cpp \
+	src/pis.cpp \
 	src/player.cpp \
 	src/players.cpp \
 	src/protrack.cpp \
@@ -125,6 +126,7 @@ pkginclude_HEADERS = \
 	src/bmf.h \
 	src/flash.h \
 	src/hyp.h \
+	src/pis.h \
 	src/psi.h \
 	src/rat.h \
 	src/hybrid.h \
@@ -259,6 +261,8 @@ EXTRA_DIST += \
 	test/testref/2001.ref \
 	test/testmus/2.CMF \
 	test/testref/2.ref \
+	test/testmus/ACTION.PIS \
+	test/testref/ACTION.ref \
 	test/testmus/ADAGIO.DFM \
 	test/testref/ADAGIO.ref \
 	test/testref/adlibsp.ref \
