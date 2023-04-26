@@ -269,7 +269,7 @@ EXTRA_DIST += \
 	test/testref/ADAGIO.ref \
 	test/testref/adlibsp.ref \
 	test/testmus/adlibsp.s3m \
-	test/testref/AKMTEC.MTR \
+	test/testmus/AKMTEC.MTR \
 	test/testref/AKMTEC.ref \
 	test/testmus/ALLOYRUN.RAD \
 	test/testref/ALLOYRUN.ref \
@@ -293,7 +293,7 @@ EXTRA_DIST += \
 	test/testref/canonind.ref \
 	test/testref/CHILD1.ref \
 	test/testmus/CHILD1.XSM \
-	test/testref/CHIP.MTR \
+	test/testmus/CHIP.MTR \
 	test/testref/CHIP.ref \
 	test/testmus/crusader.raw \
 	test/testref/crusader.ref \
