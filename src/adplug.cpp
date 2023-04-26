@@ -84,6 +84,7 @@
 #include "herad.h"
 #include "coktel.h"
 #include "pis.h"
+#include "mtr.h"
 
 /***** CAdPlug *****/
 
@@ -113,6 +114,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CdtmLoader::factory, "DeFy Adlib Tracker", ".dtm\0"),
   CPlayerDesc(CfmcLoader::factory, "Faust Music Creator", ".sng\0"),
   CPlayerDesc(CmtkLoader::factory, "MPU-401 Trakker", ".mtk\0"),
+  CPlayerDesc(CmtrLoader::factory, "Master Tracker", ".mtr\0"),
   CPlayerDesc(Crad2Player::factory, "Reality Adlib Tracker", ".rad\0"),
   CPlayerDesc(CrawPlayer::factory, "Raw AdLib Capture", ".rac\0.raw\0"),
   CPlayerDesc(Csa2Loader::factory, "Surprise! Adlib Tracker", ".sat\0.sa2\0"),

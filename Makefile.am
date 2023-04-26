@@ -57,6 +57,7 @@ src_libadplug_la_SOURCES = \
 	src/mkj.cpp \
 	src/msc.cpp \
 	src/mtk.cpp \
+	src/mtr.cpp \
 	src/mus.cpp \
 	src/nemuopl.cpp \
 	src/pis.cpp \
@@ -112,6 +113,7 @@ pkginclude_HEADERS = \
 	src/mid.h \
 	src/mkj.h \
 	src/mtk.h \
+	src/mtr.h \
 	src/protrack.h \
 	src/rad2.h \
 	src/raw.h \
