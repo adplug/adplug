@@ -43,4 +43,5 @@ private:
     } instruments[64];
 
     unsigned char timer;
+    unsigned int version, ninstruments;
 };

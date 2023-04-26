@@ -36,10 +36,11 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
         return false;
 
     unsigned int i, j, k, t = 0;
+    ninstruments = 0;
 
     char header[51] = {0};
-    int version, nvoices, ndigvoices, npatterns, orderlen,
-        ninstruments = 0, speed = 0x428F, restart, flength;
+    int nvoices, ndigvoices, npatterns, orderlen,
+        timervalue = 0x428F, restart, flength;
 
     f->readString(header, 50);
 
@@ -52,18 +53,18 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
             &restart,
             &flength
         );
-        speed = f->readInt(2); // usually 428F
+        timervalue = f->readInt(2); // usually 428F
         f->ignore(1); // 0=SPK 1=ADL 2=SBP
     } else if (!strncmp(header, "MTRACK NC", 9)) {
         version = 2;
         sscanf(header + 10, "%02x %02x %02x %02x %02x %02x %04x %08x",
             &nvoices,
-            &ndigvoices,
+            &ndigvoices, // unused
             &npatterns,
             &orderlen,
             &ninstruments,
             &restart,
-            &speed, // usually 428F
+            &timervalue, // usually 428F
             &flength
         );
         f->ignore(20); // tune name
@@ -79,7 +80,7 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
     // data for Protracker
     length = orderlen + 1;
     nop = npatterns + 1;
-    timer = 1193180 / (speed ? speed : 0x428F);
+    timer = 1193180 / (timervalue ? timervalue : 0x428F);
 
     // init CmodPlayer
     realloc_instruments(ninstruments);
@@ -194,7 +195,7 @@ float CmtrLoader::getrefresh() {
 }
 
 std::string CmtrLoader::gettype() {
-    return std::string("Master Tracker");
+    return std::string("Master Tracker (version " + std::string(1, '0' + version) + ")");
 }
 
 std::string CmtrLoader::getinstrument(unsigned int n) {
@@ -202,5 +203,5 @@ std::string CmtrLoader::getinstrument(unsigned int n) {
 }
 
 unsigned int CmtrLoader::getinstruments() {
-    return 9;
+    return ninstruments;
 }
