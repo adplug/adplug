@@ -100,7 +100,7 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
     // read instruments
     for (i = 0; i < ninstruments; i++) {
         f->readString(instruments[i].name, 20);
-        instruments[i].name[19] = 0;
+        instruments[i].name[20] = 0;
         instruments[i].is_used = f->readInt(1);
         f->readString(instruments[i].data, 12);
         f->ignore(31);
@@ -184,10 +184,6 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
 
     rewind(0);
     return true;
-}
-
-void CmtrLoader::rewind(int subsong) {
-    CmodPlayer::rewind(subsong);
 }
 
 float CmtrLoader::getrefresh() {

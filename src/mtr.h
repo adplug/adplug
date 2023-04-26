@@ -28,7 +28,6 @@ public:
     CmtrLoader(Copl *newopl) : CmodPlayer(newopl){};
 
     bool load(const std::string &filename, const CFileProvider &fp);
-    void rewind(int subsong);
     float getrefresh();
 
     std::string gettype();
@@ -37,7 +36,7 @@ public:
 
 private:
     struct mtr_instrument {
-        char name[20];
+        char name[21];
         char is_used; // 2 - used, 0 unused
         char data[12];
     } instruments[64];
