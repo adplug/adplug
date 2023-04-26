@@ -39,6 +39,7 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
     ninstruments = 0;
 
     char header[51] = {0};
+    char mtitle[21] = {0};
     int nvoices, ndigvoices, npatterns, orderlen,
         timervalue = 0x428F, restart, flength;
 
@@ -53,6 +54,7 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
             &restart,
             &flength
         );
+        strncpy(mtitle, header + 6, 20);
         timervalue = f->readInt(2); // usually 428F
         f->ignore(1); // 0=SPK 1=ADL 2=SBP
     } else if (!strncmp(header, "MTRACK NC", 9)) {
@@ -67,11 +69,13 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
             &timervalue, // usually 428F
             &flength
         );
-        f->ignore(20); // tune name
+        f->readString(mtitle, 20);
     } else {
         fp.close(f);
         return false;
     }
+
+    title = std::string(mtitle);
 
     // corrections for read data
     nvoices++;
@@ -200,4 +204,8 @@ std::string CmtrLoader::getinstrument(unsigned int n) {
 
 unsigned int CmtrLoader::getinstruments() {
     return ninstruments;
+}
+
+std::string CmtrLoader::gettitle() {
+    return title;
 }

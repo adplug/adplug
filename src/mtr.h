@@ -33,6 +33,7 @@ public:
     std::string gettype();
     std::string getinstrument(unsigned int n);
     unsigned int getinstruments();
+    std::string gettitle();
 
 private:
     struct mtr_instrument {
@@ -43,4 +44,5 @@ private:
 
     unsigned char timer;
     unsigned int version, ninstruments;
+    std::string title;
 };
