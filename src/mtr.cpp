@@ -19,9 +19,10 @@
   mtr.cpp - MTR loader by Dmitry Smagin <dmitry.s.smagin@gmail.com>
 */
 
-#include "mtr.h"
 #include <stdio.h>
 #include <cstring>
+#include "mtr.h"
+#include "debug.h"
 
 /* -------- Public Methods -------------------------------- */
 
@@ -114,11 +115,10 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
     // load tracks
     for (i = 0; i < nop; i++)
         for (k = 0; k < 64; k++) {
-            //printf("%02x: ", k);
             for (j = 0; j < nvoices; j++) {
                 char event[4], note, inst, fx, val;
                 f->readString(event, 4);
-                note = event[0] ? ((event[0] & 0xf) + ((event[0] >> 4) * 12)) + 1 : 0;
+                note = event[0] ? ((event[0] & 0xf) + ((event[0] >> 4) * 12)) : 0;
                 inst = event[1] & 0x3f;
                 fx = event[2] & 0xf;
                 val = event[3];
@@ -128,27 +128,51 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
                 tracks[t][k].inst = inst;
 
                 // translate effects
-                if (fx == 5) {                      // 5xy -> C(63-xy)
+                switch (fx) {
+                case 0: // 0xy, arp
+                // 1 and 2 never occur in any .mtr, so might sound wrong
+                case 1: // 1xy, slide up
+                case 2: // 2xy, slide down
+                    tracks[t][k].command = fx;
+                    tracks[t][k].param1 = val >> 4;
+                    tracks[t][k].param2 = val & 0xf;
+                    break;
+                case 3: // 3xy, fine slide up
+                case 4: // 4xy, fine slide down
+                    tracks[t][k].command = fx == 3 ? 0x17 : 0x18;
+                    tracks[t][k].param1 = val >> 4;
+                    tracks[t][k].param2 = val & 0xf;
+                    break;
+                case 5:     // 5xy -> C(63-xy), set volume
                     tracks[t][k].command = 0xc;
                     tracks[t][k].param1 = (63 - val) >> 4;
                     tracks[t][k].param2 = (63 - val) & 0xf;
-                } else if (fx == 0xb) {             // Bxy -> Fxy, set speed
+                    break;
+                case 0xB:   // Bxy -> Fxy, set speed
                     tracks[t][k].command = 0xf;
                     tracks[t][k].param1 = val >> 4;
                     tracks[t][k].param2 = val & 0xf;
-                } else if (fx == 0xc) {             // C ??
-                    tracks[t][k].command = 0xc;
-                    tracks[t][k].param1 = val >> 4;
-                    tracks[t][k].param2 = val & 0xf;
-                } else if (fx == 0xf && val == 2) { // F02 -> C00
-                    tracks[t][k].command = 0xc;
-                    tracks[t][k].param1 = 0;
-                    tracks[t][k].param2 = 0;
+                    break;
+                case 0xF:
+                    if (val == 1) { // F01 -> D00, pattern break
+                        tracks[t][k].command = 0xd;
+                        tracks[t][k].param1 = 0;
+                        tracks[t][k].param2 = 0;
+                        break;
+                    } else if (val == 2) { // F02 -> note off
+                        tracks[t][k].note = 0x7f;
+                        tracks[t][k].inst = 0;
+                        break;
+                    }
+                default:
+                    // Unsupported:
+                    // Axy - retrigger
+                    // Cxy - go to order position
+                    // F00 - stop playing and restart
+                    if (fx | val)
+                        AdPlug_LogWrite("Unsupported effect: %02x-%02x\n", fx, val);
                 }
-
-                //printf("%02x %02x %02x %02x | ", event[0], event[1], event[2], event[3]);
             }
-            //printf("\n");
         }
 
     fp.close(f);
