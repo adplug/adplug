@@ -114,6 +114,8 @@ static const char *filelist[] = {
   "TEST16.MID",		// MIDI Type 0
   "GRABBAG.MID",	// MIDI Type 1
   "ACTION.PIS",		// Beni Tracker
+  "CHIP.MTR",		// Master Tracker v1
+  "AKMTEC.MTR",		// Master Tracker v2
   NULL
 };
 

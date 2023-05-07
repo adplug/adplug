@@ -57,6 +57,7 @@ src_libadplug_la_SOURCES = \
 	src/mkj.cpp \
 	src/msc.cpp \
 	src/mtk.cpp \
+	src/mtr.cpp \
 	src/mus.cpp \
 	src/nemuopl.cpp \
 	src/pis.cpp \
@@ -112,6 +113,7 @@ pkginclude_HEADERS = \
 	src/mid.h \
 	src/mkj.h \
 	src/mtk.h \
+	src/mtr.h \
 	src/protrack.h \
 	src/rad2.h \
 	src/raw.h \
@@ -267,6 +269,8 @@ EXTRA_DIST += \
 	test/testref/ADAGIO.ref \
 	test/testref/adlibsp.ref \
 	test/testmus/adlibsp.s3m \
+	test/testmus/AKMTEC.MTR \
+	test/testref/AKMTEC.ref \
 	test/testmus/ALLOYRUN.RAD \
 	test/testref/ALLOYRUN.ref \
 	test/testmus/ARAB.BAM \
@@ -289,6 +293,8 @@ EXTRA_DIST += \
 	test/testref/canonind.ref \
 	test/testref/CHILD1.ref \
 	test/testmus/CHILD1.XSM \
+	test/testmus/CHIP.MTR \
+	test/testref/CHIP.ref \
 	test/testmus/crusader.raw \
 	test/testref/crusader.ref \
 	test/testmus/DEMO4.JBM \
