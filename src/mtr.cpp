@@ -17,6 +17,9 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
   mtr.cpp - MTR loader by Dmitry Smagin <dmitry.s.smagin@gmail.com>
+
+  AKMTRK2.DOC with format description is wrong in various ways.
+  This loader interpretes v1 and v2 correctly.
 */
 
 #include <stdio.h>
@@ -35,7 +38,7 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
     if (!f)
         return false;
 
-    unsigned int i, j, k, t = 0;
+    unsigned int i, j, k, t = 0, numread;
     ninstruments = 0;
 
     char header[51] = {0};
@@ -47,19 +50,25 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
 
     if (!strncmp(header, "MTRAC ", 6)) {
         version = 1;
-        sscanf(header + 26, "%02x %02x %02x %02x %08x",
+        numread = sscanf(header + 26, "%02x %02x %02x %02x %08x",
             &nvoices,
             &npatterns,
             &orderlen,
             &restart,
             &flength
         );
+
+        if (numread != 5) {
+            fp.close(f);
+            return false;
+        }
+
         strncpy(mtitle, header + 6, 20);
         timervalue = f->readInt(2); // usually 428F
         f->ignore(1); // 0=SPK 1=ADL 2=SBP
     } else if (!strncmp(header, "MTRACK NC", 9)) {
         version = 2;
-        sscanf(header + 10, "%02x %02x %02x %02x %02x %02x %04x %08x",
+        numread = sscanf(header + 10, "%02x %02x %02x %02x %02x %02x %04x %08x",
             &nvoices,
             &ndigvoices, // unused
             &npatterns,
@@ -69,6 +78,12 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
             &timervalue, // usually 428F
             &flength
         );
+
+        if (numread != 8) {
+            fp.close(f);
+            return false;
+        }
+
         f->readString(mtitle, 20);
     } else {
         fp.close(f);
