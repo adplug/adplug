@@ -62,6 +62,7 @@ static const char *filelist[] = {
   "mi2.laa",		// LucasArts
   "michaeld.cmf",	// Creative Music Format
   "2.CMF",			// Creative Music Format (with transpose effect)
+  "SNDTRACK.CMF",	// Creative Music Format (with note-off)
   "PLAYMUS1.SNG",	// SNGPlay
   "rat.xad",		// xad: rat
   "REVELAT.SNG",	// Faust Music Creator
