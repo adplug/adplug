@@ -362,6 +362,8 @@ EXTRA_DIST += \
 	test/testref/MORNING.ref \
 	test/testmus/NECRONOM.CMF \
 	test/testref/NECRONOM.ref \
+	test/testmus/SNDTRACK.CMF \
+	test/testref/SNDTRACK.ref \
 	test/testmus/NEWPAGA.HA2 \
 	test/testref/NEWPAGA.ref \
 	test/testmus/NEWSAN.HSQ \
