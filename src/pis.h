@@ -143,14 +143,9 @@ private:
     void opl_set_instrument(int v, PisInstrument *instr);
     void oplout(int r, int v);
 
-    const int opl_voice_offset_into_registers[9] = {
-        0,1,2,8,9,10,16,17,18
-    };
+    static const int opl_voice_offset_into_registers[9];
 
-    const int frequency_table[12] = {
-        0x157,0x16B,0x181,0x198,0x1B0,0x1CA,
-        0x1E5,0x202,0x220,0x241,0x263,0x287
-    };
+    static const int frequency_table[12];
 
     PisModule module;
     PisReplayState replay_state;

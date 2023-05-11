@@ -45,7 +45,18 @@
 #define HAS_INSTRUMENT(r) ((r)->instrument > 0)
 #define IS_NOTE(n) (n < 12)
 
+const int CpisPlayer::opl_voice_offset_into_registers[9] = {
+    0,1,2,8,9,10,16,17,18
+};
+
+const int CpisPlayer::frequency_table[12] = {
+    0x157,0x16B,0x181,0x198,0x1B0,0x1CA,
+    0x1E5,0x202,0x220,0x241,0x263,0x287
+};
+
+
 /*** private methods *************************************/
+
 void CpisPlayer::init_replay_state(PisReplayState *pstate) {
     memset(pstate, 0, sizeof(PisReplayState));
 

@@ -10,13 +10,11 @@ jobs:
     strategy:
 
       matrix:
-        os:
-        - ubuntu-latest
-        - macos-latest
-
-        compiler:
-        - gcc
-        - clang
+        os: [ubuntu-latest, macos-latest]
+        compiler: [gcc, clang]
+        include:
+          - compiler: gcc-4.8 # To test compatibility with older systems
+            os: ubuntu-latest
 
       fail-fast: false
 
@@ -35,6 +33,17 @@ jobs:
           sudo apt install -y libncurses5
         fi
 
+        if [[ ${{ matrix.compiler }} == "gcc-4.8" ]]; then
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/g++-4.8_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/libstdc++-4.8-dev_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/gcc-4.8-base_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/gcc-4.8_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/libgcc-4.8-dev_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/cpp-4.8_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/libasan0_4.8.5-4ubuntu8_amd64.deb
+          sudo apt install ./gcc-4.8_4.8.5-4ubuntu8_amd64.deb ./gcc-4.8-base_4.8.5-4ubuntu8_amd64.deb ./libstdc++-4.8-dev_4.8.5-4ubuntu8_amd64.deb ./cpp-4.8_4.8.5-4ubuntu8_amd64.deb ./libgcc-4.8-dev_4.8.5-4ubuntu8_amd64.deb ./libasan0_4.8.5-4ubuntu8_amd64.deb ./g++-4.8_4.8.5-4ubuntu8_amd64.deb
+        fi
+
     - name: Install packages (macOS)
       if: ${{ runner.os == 'macOS' }}
       run: |
@@ -50,6 +59,10 @@ jobs:
       uses: KyleMayes/install-llvm-action@v1
       with:
         version: "10.0"
+
+    - name: Set GCC-4.8 environment
+      if: ${{ matrix.compiler == 'gcc-4.8' }}
+      run: echo 'compile_opts=CC=gcc-4.8 CXX=g++-4.8' >> $GITHUB_ENV
 
     - name: Set GCC environment
       if: ${{ matrix.compiler == 'gcc' && runner.os == 'macOS' }}
