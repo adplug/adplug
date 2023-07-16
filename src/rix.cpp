@@ -98,8 +98,14 @@ bool CrixPlayer::update()
 	return !play_end;
 }
 
+unsigned int CrixPlayer::getsubsong()
+{
+  return song;
+}
+
 void CrixPlayer::rewind(int subsong)
 {
+  song = subsong;
   I = 0; T = 0;
   mus_block = 0;
   ins_block = 0;
