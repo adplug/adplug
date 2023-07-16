@@ -38,12 +38,12 @@ bool CmtrLoader::load(const std::string &filename, const CFileProvider &fp) {
     if (!f)
         return false;
 
-    unsigned int i, j, k, t = 0, numread;
+    unsigned int i, j, k, t = 0, numread, nvoices;
     ninstruments = 0;
 
     char header[51] = {0};
     char mtitle[21] = {0};
-    int nvoices, ndigvoices, npatterns, orderlen,
+    int ndigvoices, npatterns, orderlen,
         timervalue = 0x428F, restart, flength;
 
     f->readString(header, 50);
