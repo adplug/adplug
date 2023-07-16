@@ -132,7 +132,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(Cdro2Player::factory, "DOSBox Raw OPL v2.0", ".dro\0"),
   CPlayerDesc(CpisPlayer::factory, "Beni Tracker PIS Player", ".pis\0"),
   CPlayerDesc(CmscPlayer::factory, "Adlib MSC Player", ".msc\0"),
-  CPlayerDesc(CrixPlayer::factory, "Softstar RIX OPL Music", ".rix\0"),
+  CPlayerDesc(CrixPlayer::factory, "Softstar RIX OPL Music", ".rix\0.mkf\0"),
   CPlayerDesc(CadlPlayer::factory, "Westwood ADL", ".adl\0"),
   CPlayerDesc(CjbmPlayer::factory, "JBM Adlib Music", ".jbm\0"),
   CPlayerDesc(CgotPlayer::factory, "God of Thunder Music", ".got\0"),
