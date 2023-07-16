@@ -142,7 +142,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 	uint32_t queue = 1;
 	int8_t bit;
 	int16_t offset;
-	uint16_t count, out_size = *(uint16_t *)data;
+	uint16_t count, out_size = u16_unaligned(data);
 	uint8_t * src = data;
 	uint8_t * dst = out;
 
@@ -582,14 +582,14 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 		#endif
 		goto failure;
 	}
-	if ( size < *(uint16_t *)data )
+	if ( size < u16_unaligned(data))
 	{
 		#ifdef DEBUG
 		AdPlug_LogWrite("HERAD: Incorrect offset / file size.\n");
 		#endif
 		goto failure;
 	}
-	nInsts = (size - *(uint16_t *)data) / HERAD_INST_SIZE;
+	nInsts = (size - u16_unaligned(data)) / HERAD_INST_SIZE;
 	if ( nInsts == 0 )
 	{
 		#ifdef DEBUG
@@ -597,7 +597,7 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 		#endif
 		goto failure;
 	}
-	offset = *(uint16_t *)(data + 2);
+	offset = u16_unaligned(data + 2);
 	if ( offset != 0x32 && offset != 0x52 )
 	{
 		#ifdef DEBUG
@@ -606,10 +606,10 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 		goto failure;
 	}
 	AGD = offset == 0x52;
-	wLoopStart = *(uint16_t *)(data + 0x2C);
-	wLoopEnd = *(uint16_t *)(data + 0x2E);
-	wLoopCount = *(uint16_t *)(data + 0x30);
-	wSpeed = *(uint16_t *)(data + 0x32);
+	wLoopStart = u16_unaligned(data + 0x2C);
+	wLoopEnd = u16_unaligned(data + 0x2E);
+	wLoopCount = u16_unaligned(data + 0x30);
+	wSpeed = u16_unaligned(data + 0x32);
 	if (wSpeed == 0)
 	{
 		#ifdef DEBUG
@@ -620,7 +620,7 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 	nTracks = 0;
 	for (int i = 0; i < HERAD_MAX_TRACKS; i++)
 	{
-		if ( *(uint16_t *)(data + 2 + i * 2) == 0 )
+		if ( u16_unaligned(data + 2 + i * 2) == 0 )
 			break;
 		nTracks++;
 	}
@@ -628,16 +628,16 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 	chn = new herad_chn[nTracks];
 	for (int i = 0; i < nTracks; i++)
 	{
-		offset = *(uint16_t *)(data + 2 + i * 2) + 2;
-		uint16_t next = (i < HERAD_MAX_TRACKS - 1 ? *(uint16_t *)(data + 2 + (i + 1) * 2) + 2 : *(uint16_t *)data);
-		if (next <= 2) next = *(uint16_t *)data;
+		offset = u16_unaligned(data + 2 + i * 2) + 2;
+		uint16_t next = (i < HERAD_MAX_TRACKS - 1) ? u16_unaligned(data + 2 + (i + 1) * 2) + 2 : u16_unaligned(data);
+		if (next <= 2) next = u16_unaligned(data);
 
 		track[i].size = next - offset;
 		track[i].data = new uint8_t[track[i].size];
 		memcpy(track[i].data, data + offset, track[i].size);
 	}
 	inst = new herad_inst[nInsts];
-	offset = *(uint16_t *)data;
+	offset = u16_unaligned(data);
 	v2 = true;
 	for (int i = 0; i < nInsts; i++)
 	{
