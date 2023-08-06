@@ -44,3 +44,8 @@ test/emutest
 test/emutest.log
 test/playertest
 test/playertest.log
+.*/Debug
+contrib/vs2015/adplug/v140/x64/Debug
+contrib/vs2015/crctest/x64/Debug
+contrib/vs2015/emutest/x64/Debug
+contrib/vs2015/playertest/x64/Debug
