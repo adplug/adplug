@@ -1,5 +1,5 @@
 AdPlug - A free AdLib sound player library
-Copyright (C) 1999 - 2016 Simon Peter, et al.
+Copyright (C) 1999 - 2017 Simon Peter, et al.
 
 Website: http://adplug.github.io/
 
@@ -18,10 +18,14 @@ platforms and compilers:
 
 Platform                Operating System        Compiler
 --------                ----------------        --------
-IA32 - x86              Windows XP              MinGW 3.4
-                        MS-DOS 6.22             DJGPP 4.0
-                        Linux 2.6               GCC 4.1
-x86_64                  Linux 2.6               GCC 4.4.2
+IA32 - x86              Windows XP              MinGW 3.4     # not tested at the moment
+                        MS-DOS 6.22             DJGPP 4.0     # not tested at the moment
+                        Linux 2.6               GCC 4.1       # not tested at the moment
+x86_64                  Linux                   GCC 4.8
+                        Linux                   GCC 11.3.0
+                        Linux                   CLANG 10.0.1
+                        MACOS                   GCC 14.0.0
+                        MACOS                   CLANG 14.0.0
 
 This list only incorporates platforms on which this release of AdPlug has
 been tested successfully. This and/or earlier versions of AdPlug may and did
@@ -49,14 +53,10 @@ Linux/OSX git:
 --------------
 If you checked out from git, please first run:
 
-autoreconf --install
+    autoreconf --install
 
-to generate the build cruft and get the configure script. Oh, and did i
+to generate the build cruft and get the configure script. Oh, and did I
 mention you need recent versions of autoconf, automake and libtool?
-
-When building a git version, always supply the --enable-maintainer-mode
-option to the configure script!  (Otherwise you will get errors about
-version.texi missing).
 
 Windows git:
 ------------

@@ -4,3 +4,5 @@ Known bugs and problems:
   a well-known "problem" with software mixing, hearable when the composer plays
   the same sound on multiple channels. Hardware mixing is unaffected by this
   issue.
+
+See https://github.com/adplug/adplug/issues

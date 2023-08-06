@@ -1,8 +1,40 @@
 This is a brief overview of user-visible changes in AdPlug.
 
+Changes for version 2.3.3:
+--------------------------
+- New RAD player replacing the old one
+- Bug fixes: (huge thanks to Alexander Miller for these)
+  - CVE-2019-14690 - buffer overflow in .bmf
+  - CVE-2019-14691 - buffer overflow in .dtm
+  - CVE-2019-14692 - buffer overflow in .mkj
+  - CVE-2019-14732 - buffer overflow in .a2m
+  - CVE-2019-14733 - buffer overflow in .rad
+  - CVE-2019-14734 - buffer overflow in .mtk
+  - CVE-2019-15151 - double free and OOB reads in .u6m
+  - OOB reads in .xad
+  - OOB reads in .rix
+
+Changes for version 2.3.2:
+--------------------------
+- Bug fixes:
+  - FMOPL: Fix global variable pointer double-free (CVE-2018-17825)
+  - HERAD: Fix compilation on GCC 4.2.1
+  - ADL: Calling rewind() before update() causes access violation
+  - Move OPL reset/init code to rewind() for some players
+
+Changes for version 2.3.1:
+--------------------------
+- Fixed unconditional inclusion of "sys/io.h" on Linux
+- Autotools improvement
+  - Non-recursive Automake, improved parallelizability
+  - Compatibility fixes for FreeBSD's pmake and OpenBSD's make
+  - Out-of-source building
+
 Changes for version 2.3:
 -------------------------
 - Bug fixes:
+  - CMF: Fix uninitialised variable use (thanks binarymaster)
+  - CMF: Handle invalid offsets without crashing
   - ROL: Prevent access beyond end of vector
   - MSC: Fix use of uninitialised variable
   - HSC: Handle out of range patterns more gracefully
@@ -10,16 +42,31 @@ Changes for version 2.3:
   - LDS: Use the tempo stored inside the Loudness-File instead of simply returning 70Hz
   - RIX: Fix several replay bugs (thanks to Palxex)
   - RIX: Big-endian fix by Wei Mingzhi
-  - Various other out of bounds array fixes
+  - XAD: Tempo fix
+  - Various other out of bounds array fixes, timing fixes, etc.
+- New formats:
+  - BMF: Easy AdLib 1.0
+  - CMF: SoundFX Macs Opera
+  - GOT: God of Thunder
+  - HSQ/SQX/SDB/AGD/HA2: Herbulot AdLib System (HERAD)
+  - MUS/IMS/MDI: AdLib Visual Composer ROL derivatives
+  - SOP: sopepos' Note Player
+  - VGM: Video Game Music
 - Allow compilation on platforms that don't support real OPL hardware access
 - Add support for compiling on Appveyor and publishing a NuGet package
 - Add Visual Studio 2015 projects
 - Add support for Travis CI builds
+- Add new CRC16 and CRC32 tests
 - Addition of WoodyOPL from DOSBox SVN (thanks to NY00123)
+- Addition of NukedOPL (thanks to loki666 and nukeykt)
 - Move from SourceForge to GitHub
 - DRO player refactored (thanks to Laurence Myers and William Yates)
 - Add (mono) OPL3 support to the surround/harmonic-effect OPL
 - Fix occasional random noise in right channel when using surround OPL and Satoh synth
+- Add display for ROL comment and instrument names
+- Improve support for different Westwood ADL format versions
+- Improve CMF transpose support (per-channel now)
+- Autotools build environment updated
 
 Changes for version 2.2.1:
 --------------------------
@@ -98,7 +145,7 @@ Changes for version 1.4:
 ------------------------
 - Documentation changed into Texinfo format.
 - New, modularized file loading framework.
-- Now using 'libbinio' for platform-independant binary I/O.
+- Now using 'libbinio' for platform-independent binary I/O.
 - Added database framework for storing music file information.
 - Uses newest fmopl OPL2 emulator version 0.60 from MAME 0.66.
 

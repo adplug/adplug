@@ -18,10 +18,5 @@ General to do items:
 
 - New players:
   - Palladix file format, used in LOGICAL game [dynamite]
-  - Herad System (HSQ), used in Dune, Megarace, KGB games
 
 - Add possibility to mute/solo AdLib channels.
-
-- Isolate Ken Silverman's synth (no global variables) so that multiple
-  instances can be created.  Surround mode won't work with Ken's synth
-  until this is done.

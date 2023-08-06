@@ -30,6 +30,8 @@
     <ClCompile Include="..\..\..\src\bmf.cpp" />
     <ClCompile Include="..\..\..\src\cff.cpp" />
     <ClCompile Include="..\..\..\src\cmf.cpp" />
+    <ClCompile Include="..\..\..\src\coktel.cpp" />
+    <ClCompile Include="..\..\..\src\composer.cpp" />
     <ClCompile Include="..\..\..\src\d00.cpp" />
     <ClCompile Include="..\..\..\src\database.cpp" />
     <ClCompile Include="..\..\..\src\debug.c" />
@@ -44,7 +46,6 @@
     <ClCompile Include="..\..\..\src\fmc.cpp" />
     <ClCompile Include="..\..\..\src\fmopl.c" />
     <ClCompile Include="..\..\..\src\fprovide.cpp" />
-    <ClCompile Include="..\..\..\src\adlib.cpp" />
     <ClCompile Include="..\..\..\src\got.cpp" />
     <ClCompile Include="..\..\..\src\hsc.cpp" />
     <ClCompile Include="..\..\..\src\hsp.cpp" />
@@ -65,7 +66,7 @@
     <ClCompile Include="..\..\..\src\players.cpp" />
     <ClCompile Include="..\..\..\src\protrack.cpp" />
     <ClCompile Include="..\..\..\src\psi.cpp" />
-    <ClCompile Include="..\..\..\src\rad.cpp" />
+    <ClCompile Include="..\..\..\src\rad2.cpp" />
     <ClCompile Include="..\..\..\src\rat.cpp" />
     <ClCompile Include="..\..\..\src\raw.cpp" />
     <ClCompile Include="..\..\..\src\realopl.cpp" />
@@ -85,6 +86,7 @@
     <ClCompile Include="..\..\..\src\cmfmcsop.cpp" />
     <ClCompile Include="..\..\..\src\vgm.cpp" />
     <ClCompile Include="..\..\..\src\sop.cpp" />
+    <ClCompile Include="..\..\..\src\herad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\a2m.h" />
@@ -98,6 +100,8 @@
     <ClInclude Include="..\..\..\src\bmf.h" />
     <ClInclude Include="..\..\..\src\cff.h" />
     <ClInclude Include="..\..\..\src\cmf.h" />
+    <ClInclude Include="..\..\..\src\coktel.h" />
+    <ClInclude Include="..\..\..\src\composer.h" />
     <ClInclude Include="..\..\..\src\d00.h" />
     <ClInclude Include="..\..\..\src\database.h" />
     <ClInclude Include="..\..\..\src\debug.h" />
@@ -112,7 +116,6 @@
     <ClInclude Include="..\..\..\src\fmc.h" />
     <ClInclude Include="..\..\..\src\fmopl.h" />
     <ClInclude Include="..\..\..\src\fprovide.h" />
-    <ClInclude Include="..\..\..\src\adlib.h" />
     <ClInclude Include="..\..\..\src\got.h" />
     <ClInclude Include="..\..\..\src\hsc.h" />
     <ClInclude Include="..\..\..\src\hsp.h" />
@@ -136,7 +139,7 @@
     <ClInclude Include="..\..\..\src\players.h" />
     <ClInclude Include="..\..\..\src\protrack.h" />
     <ClInclude Include="..\..\..\src\psi.h" />
-    <ClInclude Include="..\..\..\src\rad.h" />
+    <ClInclude Include="..\..\..\src\rad2.h" />
     <ClInclude Include="..\..\..\src\rat.h" />
     <ClInclude Include="..\..\..\src\raw.h" />
     <ClInclude Include="..\..\..\src\realopl.h" />
@@ -146,6 +149,7 @@
     <ClInclude Include="..\..\..\src\sa2.h" />
     <ClInclude Include="..\..\..\src\silentopl.h" />
     <ClInclude Include="..\..\..\src\sng.h" />
+    <ClInclude Include="..\..\..\src\strnlen.h" />
     <ClInclude Include="..\..\..\src\surroundopl.h" />
     <ClInclude Include="..\..\..\src\temuopl.h" />
     <ClInclude Include="..\..\..\src\u6m.h" />
@@ -158,6 +162,7 @@
     <ClInclude Include="..\..\..\src\cmfmcsop.h" />
     <ClInclude Include="..\..\..\src\vgm.h" />
     <ClInclude Include="..\..\..\src\sop.h" />
+    <ClInclude Include="..\..\..\src\herad.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -289,12 +294,12 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\libbinio.1.4.16\build\native\libbinio.targets" Condition="Exists('..\packages\libbinio.1.4.16\build\native\libbinio.targets')" />
+    <Import Project="..\packages\libbinio.1.4.20\build\native\libbinio.targets" Condition="Exists('..\packages\libbinio.1.4.20\build\native\libbinio.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\libbinio.1.4.16\build\native\libbinio.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\libbinio.1.4.16\build\native\libbinio.targets'))" />
+    <Error Condition="!Exists('..\packages\libbinio.1.4.20\build\native\libbinio.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\libbinio.1.4.20\build\native\libbinio.targets'))" />
   </Target>
 </Project>

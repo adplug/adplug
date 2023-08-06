@@ -133,6 +133,10 @@ SOURCE=.\cff.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\composer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\d00.cpp
 # End Source File
 # Begin Source File
@@ -250,7 +254,7 @@ SOURCE=.\psi.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\rad.cpp
+SOURCE=.\rad2.cpp
 # End Source File
 # Begin Source File
 
@@ -331,6 +335,10 @@ SOURCE=.\bmf.h
 # Begin Source File
 
 SOURCE=.\cff.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\composer.h
 # End Source File
 # Begin Source File
 
@@ -466,7 +474,7 @@ SOURCE=.\psi.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\rad.h
+SOURCE=.\rad2.h
 # End Source File
 # Begin Source File
 
@@ -499,6 +507,10 @@ SOURCE=.\silentopl.h
 # Begin Source File
 
 SOURCE=.\sng.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\strnlen.h
 # End Source File
 # Begin Source File
 

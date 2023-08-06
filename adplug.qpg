@@ -24,8 +24,8 @@
    <QPG:Values>
       <QPG:Files>
          <QPG:Add file="./COPYING" install="LicenseUrl/" handling="repdata"/>
-         <QPG:Add permissions="0755" file="./src/.libs/libadplug-2.2.1.so.0" install="/opt/lib/"/>
-         <QPG:Add filetype="symlink" file="libadplug.so.0" install="/opt/lib/" linkto="libadplug-2.2.1.so.0"/>
+         <QPG:Add permissions="0755" file="./src/.libs/libadplug-2.3.so.0" install="/opt/lib/"/>
+         <QPG:Add filetype="symlink" file="libadplug.so.0" install="/opt/lib/" linkto="libadplug-2.3.so.0"/>
          <QPG:Add permissions="0644" file="./src/.libs/libadplug.a" install="/opt/lib/"/>
          <QPG:Add permissions="0644" file="./AUTHORS" install="/usr/doc/libadplug/"/>
          <QPG:Add permissions="0644" file="./BUGS" install="/usr/doc/libadplug/"/>
@@ -40,7 +40,6 @@
          <QPG:Add permissions="0644" file="./doc/libadplug.info-2" install="/opt/info/"/>
          <QPG:Add permissions="0644" file="./src/a2m.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/adl.h" install="/opt/include/adplug/"/>
-         <QPG:Add permissions="0644" file="./src/adlib.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/adlibemu.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/adplug.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/adtrack.h" install="/opt/include/adplug/"/>
@@ -51,6 +50,8 @@
          <QPG:Add permissions="0644" file="./src/cff.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/cmf.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/cmfmcsop.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/coktel.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/composer.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/d00.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/database.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/debug.h" install="/opt/include/adplug/"/>
@@ -66,6 +67,7 @@
          <QPG:Add permissions="0644" file="./src/fmopl.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/fprovide.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/got.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/herad.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/hsc.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/hsp.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/hybrid.h" install="/opt/include/adplug/"/>
@@ -90,7 +92,7 @@
          <QPG:Add permissions="0644" file="./src/players.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/protrack.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/psi.h" install="/opt/include/adplug/"/>
-         <QPG:Add permissions="0644" file="./src/rad.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/rad2.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/rat.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/raw.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/realopl.h" install="/opt/include/adplug/"/>
@@ -119,7 +121,7 @@
                <QPM:PackageName>libadplug</QPM:PackageName>
                <QPM:PackageReleaseNumber>1</QPM:PackageReleaseNumber>
                <QPM:PackageRepository>http://qnx.org.ru/repository</QPM:PackageRepository>
-               <QPM:FileVersion>1.01</QPM:FileVersion>
+               <QPM:FileVersion>1.02</QPM:FileVersion>
             </QPM:PackageDescription>
             <QPM:ProductDescription>
                <QPM:ProductName>libadplug</QPM:ProductName>
@@ -142,7 +144,7 @@
                <QPM:ProductDescriptionEmbedURL/>
             </QPM:ProductDescription>
             <QPM:ReleaseDescription>
-               <QPM:ReleaseVersion>2.2.1</QPM:ReleaseVersion>
+               <QPM:ReleaseVersion>2.3</QPM:ReleaseVersion>
                <QPM:ReleaseUrgency>Medium</QPM:ReleaseUrgency>
                <QPM:ReleaseStability>Stable</QPM:ReleaseStability>
                <QPM:ReleaseNoteMinor/>

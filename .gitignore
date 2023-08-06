@@ -1,3 +1,4 @@
+.dirstamp
 autom4te.cache
 aclocal.m4
 config.guess
@@ -21,8 +22,8 @@ bindist.lst
 compile
 makeall
 INSTALL
-doc/mdate-sh
-doc/texinfo.tex
+mdate-sh
+texinfo.tex
 test-driver
 *.o
 *.lo
@@ -30,13 +31,19 @@ test-driver
 .deps
 .libs
 adplug.pc
+adplug-*.tar.bz2
 adplugdb/adplugdb
 doc/*.1
 doc/libadplug.info
 doc/version.texi
 doc/stamp-vti
+m4/libtool.m4
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4
 src/version.h
-test/test-suite.log
+test-suite.log
 test/*.trs
 test/crctest
 test/crctest.log
@@ -44,6 +51,8 @@ test/emutest
 test/emutest.log
 test/playertest
 test/playertest.log
+test/stresstest
+test/stresstest.log
 contrib/vs2015/adplug/v140/x64/Debug
 contrib/vs2015/crctest/x64/Debug
 contrib/vs2015/emutest/x64/Debug
