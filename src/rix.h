@@ -34,7 +34,7 @@ class CrixPlayer: public CPlayer
   bool update();
   void rewind(int subsong);
   float getrefresh();
-  uint32_t getsubsongs();
+  unsigned int getsubsongs();
   unsigned int getsubsong();
 
   std::string gettype()
