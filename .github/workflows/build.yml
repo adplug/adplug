@@ -15,6 +15,10 @@ jobs:
         include:
           - compiler: gcc-4.8 # To test compatibility with older systems
             os: ubuntu-latest
+          - compiler: djgpp-2.0.5-gcc-12.2.0 # To test compatibility for Adplay - DOS
+            os: ubuntu-latest
+          - compiler: djgpp-2.0.5-gcc-4.8.5 # To test compatibility for Adplay - DOS
+            os: ubuntu-latest
 
       fail-fast: false
 
@@ -42,6 +46,21 @@ jobs:
           wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/cpp-4.8_4.8.5-4ubuntu8_amd64.deb
           wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/libasan0_4.8.5-4ubuntu8_amd64.deb
           sudo apt install ./gcc-4.8_4.8.5-4ubuntu8_amd64.deb ./gcc-4.8-base_4.8.5-4ubuntu8_amd64.deb ./libstdc++-4.8-dev_4.8.5-4ubuntu8_amd64.deb ./cpp-4.8_4.8.5-4ubuntu8_amd64.deb ./libgcc-4.8-dev_4.8.5-4ubuntu8_amd64.deb ./libasan0_4.8.5-4ubuntu8_amd64.deb ./g++-4.8_4.8.5-4ubuntu8_amd64.deb
+        fi
+
+        if [[ ${{ matrix.compiler }} = djgpp* ]]; then
+          # Flex is required, but even though it's in the GitHub runner image, and marked as installed
+          # it's still missing some things, see https://github.com/orgs/community/discussions/45029
+          sudo apt install -y libfl2 libfl-dev
+
+          if [[ ${{ matrix.compiler }} == "djgpp-2.0.5-gcc-12.2.0" ]]; then
+            wget https://github.com/andrewwutw/build-djgpp/releases/download/v3.4/djgpp-linux64-gcc1220.tar.bz2
+            bzcat djgpp-linux64-gcc1220.tar.bz2 | sudo tar -x --directory /usr/local
+          fi
+          if [[ ${{ matrix.compiler }} == "djgpp-2.0.5-gcc-4.8.5" ]]; then
+            wget https://github.com/andrewwutw/build-djgpp/releases/download/v1.6/djgpp-linux64-gcc485.tar.bz2
+            bzcat djgpp-linux64-gcc485.tar.bz2 | sudo tar -x --directory /usr/local
+          fi
         fi
 
     - name: Install packages (macOS)
@@ -72,10 +91,16 @@ jobs:
       if: ${{ matrix.compiler == 'clang' }}
       run: echo 'compile_opts=CC=clang CXX=clang++' >> $GITHUB_ENV
 
+    - name: Set DJGPP environment
+      if: ${{ startsWith(matrix.compiler, 'djgpp') }}
+      run: |
+        echo 'compile_opts=--host=i586-pc-msdosdjgpp --prefix=/usr/local/djgpp CXXFLAGS=-Wno-deprecated CPPFLAGS=-Wno-deprecated PKG_CONFIG_PATH=/usr/local/djgpp/lib/pkgconfig' >> $GITHUB_ENV
+        echo 'usr/local//djgpp/bin/' >> $GITHUB_PATH
+
     - name: Install libbinio
       run: |
         git clone http://github.com/adplug/libbinio.git
-        pushd libbinio && autoreconf -i && ./configure --enable-maintainer-mode ${{ env.compile_opts }} && make && sudo make install && popd
+        pushd libbinio && autoreconf -i && ./configure --enable-maintainer-mode ${{ env.compile_opts }} && make && sudo env PATH=$PATH make install && popd
 
     - name: autoreconf
       run: autoreconf -i
@@ -84,22 +109,30 @@ jobs:
 
     - name: make
       run: |
+        ulimit -c unlimited -S
         if [[ ${{ runner.os }} == "macOS" ]]; then
           # - macOS's /usr/bin/texi2dvi is broken
           # - Furthermore, trying to get a working
           #   TeX installation on macOS is a futile
           #   endeavour, hence just run tests.
-          export TARGET=check
+          make check ${{ env.compile_opts }}
+        elif [[ ${{ matrix.compiler }} = djgpp* ]]; then
+          # Just verify it compiles and installs,
+          # we can't run tests because of binary incompatibility with host OS when cross compiling
+
+          # Note: compile_opts is not used here, since DJGPP requires stuff like --host for ./configure
+          # which will mess with make's command-line parsing
+          make all
         elif [[ ${{ runner.os }} == "Linux" ]]; then
-          export TARGET=distcheck
+          make distcheck ${{ env.compile_opts }}
         fi
-        ulimit -c unlimited -S && make "${TARGET}" ${{ env.compile_opts }}
 
     - name: Prepare test results (Linux)
-      if: ${{ runner.os == 'Linux' }}
+      if: ${{ runner.os == 'Linux' && !startsWith(matrix.compiler, 'djgpp')}}
       run: make check
 
     - name: Show test results
+      if: ${{ !startsWith(matrix.compiler, 'djgpp')}}
       run: |-
         for I in test/*.log; do
           [ -e "$I" ] || continue
