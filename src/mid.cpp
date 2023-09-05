@@ -93,14 +93,7 @@ void CmidPlayer::midiprintf(const char *format, ...)
     }
 #endif
 
-#if !defined(UINT8_MAX)
-typedef signed char    int8_t;
-typedef short          int16_t;
-typedef int            int32_t;
-typedef unsigned char  uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int   uint32_t;
-#endif
+#include <stdint.h> // for uintxx_t
 
 #define LUCAS_STYLE   1
 #define CMF_STYLE     2
