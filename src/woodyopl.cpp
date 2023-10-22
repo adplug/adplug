@@ -6,12 +6,12 @@
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
  *  version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -33,27 +33,7 @@
 #include <string.h> // memset
 #include "woodyopl.h"
 
-
-static fltype recipsamp;	// inverse of sampling rate
-static Bit16s wavtable[WAVEPREC*3];	// wave form table
-
-// vibrato/tremolo tables
-static Bit32s vib_table[VIBTAB_SIZE];
-static Bit32s trem_table[TREMTAB_SIZE*2];
-
-static Bit32s vibval_const[BLOCKBUF_SIZE];
-static Bit32s tremval_const[BLOCKBUF_SIZE];
-
-// vibrato value tables (used per-operator)
-static Bit32s vibval_var1[BLOCKBUF_SIZE];
-static Bit32s vibval_var2[BLOCKBUF_SIZE];
-//static Bit32s vibval_var3[BLOCKBUF_SIZE];
-//static Bit32s vibval_var4[BLOCKBUF_SIZE];
-
-// vibrato/trmolo value table pointers
-static Bit32s *vibval1, *vibval2, *vibval3, *vibval4;
-static Bit32s *tremval1, *tremval2, *tremval3, *tremval4;
-
+static const Bit32s vibval_const[BLOCKBUF_SIZE] = {0};
 
 // key scale level lookup table
 static const fltype kslmul[4] = {
@@ -64,14 +44,9 @@ static const fltype kslmul[4] = {
 static const fltype frqmul_tab[16] = {
 	0.5,1,2,3,4,5,6,7,8,9,10,10,12,12,15,15
 };
-// calculated frequency multiplication values (depend on sampling rate)
-static fltype frqmul[16];
-
-// key scale levels
-static Bit8u kslev[8][16];
 
 // map a channel number to the register offset of the modulator (=register base)
-static const Bit8u modulatorbase[9]	= {
+static const Bit8u modulatorbase[9] = {
 	0,1,2,
 	8,9,10,
 	16,17,18
@@ -80,12 +55,12 @@ static const Bit8u modulatorbase[9]	= {
 // map a register base to a modulator operator number or operator number
 #if defined(OPLTYPE_IS_OPL3)
 static const Bit8u regbase2modop[44] = {
-	0,1,2,0,1,2,0,0,3,4,5,3,4,5,0,0,6,7,8,6,7,8,					// first set
-	18,19,20,18,19,20,0,0,21,22,23,21,22,23,0,0,24,25,26,24,25,26	// second set
+	 0, 1, 2, 0, 1, 2, 0, 0, 3, 4, 5, 3, 4, 5, 0, 0, 6, 7, 8, 6, 7, 8,  // first set
+	18,19,20,18,19,20, 0, 0,21,22,23,21,22,23, 0, 0,24,25,26,24,25,26   // second set
 };
 static const Bit8u regbase2op[44] = {
-	0,1,2,9,10,11,0,0,3,4,5,12,13,14,0,0,6,7,8,15,16,17,			// first set
-	18,19,20,27,28,29,0,0,21,22,23,30,31,32,0,0,24,25,26,33,34,35	// second set
+	 0, 1, 2, 9,10,11, 0, 0, 3, 4, 5,12,13,14, 0, 0, 6, 7, 8,15,16,17,  // first set
+	18,19,20,27,28,29, 0, 0,21,22,23,30,31,32, 0, 0,24,25,26,33,34,35   // second set
 };
 #else
 static const Bit8u regbase2modop[22] = {
@@ -98,7 +73,7 @@ static const Bit8u regbase2op[22] = {
 
 
 // start of the waveform
-static Bit32u waveform[8] = {
+static const Bit32u waveform[8] = {
 	WAVEPREC,
 	WAVEPREC>>1,
 	WAVEPREC,
@@ -110,7 +85,7 @@ static Bit32u waveform[8] = {
 };
 
 // length of the waveform as mask
-static Bit32u wavemask[8] = {
+static const Bit32u wavemask[8] = {
 	WAVEPREC-1,
 	WAVEPREC-1,
 	(WAVEPREC>>1)-1,
@@ -122,7 +97,7 @@ static Bit32u wavemask[8] = {
 };
 
 // where the first entry resides
-static Bit32u wavestart[8] = {
+static const Bit32u wavestart[8] = {
 	0,
 	WAVEPREC>>1,
 	0,
@@ -134,13 +109,13 @@ static Bit32u wavestart[8] = {
 };
 
 // envelope generator function constants
-static fltype attackconst[4] = {
+static const fltype attackconst[4] = {
 	(fltype)(1/2.82624),
 	(fltype)(1/2.25280),
 	(fltype)(1/1.88416),
 	(fltype)(1/1.59744)
 };
-static fltype decrelconst[4] = {
+static const fltype decrelconst[4] = {
 	(fltype)(1/39.28064),
 	(fltype)(1/31.41608),
 	(fltype)(1/26.17344),
@@ -148,7 +123,7 @@ static fltype decrelconst[4] = {
 };
 
 
-void operator_advance(op_type* op_pt, Bit32s vib) {
+void OPLChipClass::operator_advance(op_type* op_pt, Bit32s vib) {
 	op_pt->wfpos = op_pt->tcount;						// waveform position
 
 	// advance waveform time
@@ -158,7 +133,7 @@ void operator_advance(op_type* op_pt, Bit32s vib) {
 	op_pt->generator_pos += generator_add;
 }
 
-void operator_advance_drums(op_type* op_pt1, Bit32s vib1, op_type* op_pt2, Bit32s vib2, op_type* op_pt3, Bit32s vib3) {
+void OPLChipClass::operator_advance_drums(op_type* op_pt1, Bit32s vib1, op_type* op_pt2, Bit32s vib2, op_type* op_pt3, Bit32s vib3) {
 	Bit32u c1 = op_pt1->tcount/FIXEDPT;
 	Bit32u c3 = op_pt3->tcount/FIXEDPT;
 	Bit32u phasebit = (((c1 & 0x88) ^ ((c1<<5) & 0x80)) | ((c3 ^ (c3<<2)) & 0x20)) ? 0x02 : 0x00;
@@ -306,7 +281,7 @@ void operator_attack(op_type* op_pt) {
 
 typedef void (*optype_fptr)(op_type*);
 
-optype_fptr opfuncs[6] = {
+const optype_fptr opfuncs[6] = {
 	operator_attack,
 	operator_decay,
 	operator_release,
@@ -330,7 +305,7 @@ void OPLChipClass::change_attackrate(Bitu regbase, op_type* op_pt) {
 		op_pt->env_step_a = (1<<(steps<=12?12-steps:0))-1;
 
 		Bits step_num = (step_skip<=48)?(4-(step_skip&3)):0;
-		static Bit8u step_skip_mask[5] = {0xff, 0xfe, 0xee, 0xba, 0xaa}; 
+		static const Bit8u step_skip_mask[5] = {0xff, 0xfe, 0xee, 0xba, 0xaa};
 		op_pt->env_step_skip_a = step_skip_mask[step_num];
 
 #if defined(OPLTYPE_IS_OPL3)
@@ -539,14 +514,11 @@ void OPLChipClass::adlib_init(Bit32u samplerate, Bit32u numchannels, Bit32u byte
 	vibtab_add = static_cast<Bit32u>(VIBTAB_SIZE*FIXEDPT_LFO/8192*INTFREQU/int_samplerate);
 	vibtab_pos = 0;
 
-	for (i=0; i<BLOCKBUF_SIZE; i++) vibval_const[i] = 0;
-
-
 	// create tremolo table
 	Bit32s trem_table_int[TREMTAB_SIZE];
-	for (i=0; i<14; i++)	trem_table_int[i] = i-13;		// upwards (13 to 26 -> -0.5/6 to 0)
-	for (i=14; i<41; i++)	trem_table_int[i] = -i+14;		// downwards (26 to 0 -> 0 to -1/6)
-	for (i=41; i<53; i++)	trem_table_int[i] = i-40-26;	// upwards (1 to 12 -> -1/6 to -0.5/6)
+	for (i=0; i<14; i++)  trem_table_int[i] = i-13;		// upwards (13 to 26 -> -0.5/6 to 0)
+	for (i=14; i<41; i++) trem_table_int[i] = -i+14;		// downwards (26 to 0 -> 0 to -1/6)
+	for (i=41; i<53; i++) trem_table_int[i] = i-40-26;	// upwards (1 to 12 -> -1/6 to -0.5/6)
 
 	for (i=0; i<TREMTAB_SIZE; i++) {
 		// 0.0 .. -26/26*4.8/6 == [0.0 .. -0.8], 4/53 steps == [1 .. 0.57]
@@ -563,29 +535,27 @@ void OPLChipClass::adlib_init(Bit32u samplerate, Bit32u numchannels, Bit32u byte
 
 	for (i=0; i<BLOCKBUF_SIZE; i++) tremval_const[i] = FIXEDPT;
 
-
-	static Bitu initfirstime = 0;
 	if (!initfirstime) {
 		initfirstime = 1;
 
 		// create waveform tables
 		for (i=0;i<(WAVEPREC>>1);i++) {
-			wavtable[(i<<1)  +WAVEPREC]	= (Bit16s)(16384*sin((fltype)((i<<1)  )*PI*2/WAVEPREC));
-			wavtable[(i<<1)+1+WAVEPREC]	= (Bit16s)(16384*sin((fltype)((i<<1)+1)*PI*2/WAVEPREC));
-			wavtable[i]					= wavtable[(i<<1)  +WAVEPREC];
+			wavtable[(i<<1)  +WAVEPREC] = (Bit16s)(16384*sin((fltype)((i<<1)  )*PI*2/WAVEPREC));
+			wavtable[(i<<1)+1+WAVEPREC] = (Bit16s)(16384*sin((fltype)((i<<1)+1)*PI*2/WAVEPREC));
+			wavtable[i]                 = wavtable[(i<<1)  +WAVEPREC];
 			// alternative: (zero-less)
-/*			wavtable[(i<<1)  +WAVEPREC]	= (Bit16s)(16384*sin((fltype)((i<<2)+1)*PI/WAVEPREC));
-			wavtable[(i<<1)+1+WAVEPREC]	= (Bit16s)(16384*sin((fltype)((i<<2)+3)*PI/WAVEPREC));
-			wavtable[i]					= wavtable[(i<<1)-1+WAVEPREC]; */
+/*			wavtable[(i<<1)  +WAVEPREC] = (Bit16s)(16384*sin((fltype)((i<<2)+1)*PI/WAVEPREC));
+			wavtable[(i<<1)+1+WAVEPREC] = (Bit16s)(16384*sin((fltype)((i<<2)+3)*PI/WAVEPREC));
+			wavtable[i]                 = wavtable[(i<<1)-1+WAVEPREC]; */
 		}
 		for (i=0;i<(WAVEPREC>>3);i++) {
-			wavtable[i+(WAVEPREC<<1)]		= wavtable[i+(WAVEPREC>>3)]-16384;
-			wavtable[i+((WAVEPREC*17)>>3)]	= wavtable[i+(WAVEPREC>>2)]+16384;
+			wavtable[i+(WAVEPREC<<1)]      = wavtable[i+(WAVEPREC>>3)]-16384;
+			wavtable[i+((WAVEPREC*17)>>3)] = wavtable[i+(WAVEPREC>>2)]+16384;
 		}
 
 		// key scale level table verified ([table in book]*8/3)
-		kslev[7][0] = 0;	kslev[7][1] = 24;	kslev[7][2] = 32;	kslev[7][3] = 37;
-		kslev[7][4] = 40;	kslev[7][5] = 43;	kslev[7][6] = 45;	kslev[7][7] = 47;
+		kslev[7][0] = 0;  kslev[7][1] = 24; kslev[7][2] = 32; kslev[7][3] = 37;
+		kslev[7][4] = 40; kslev[7][5] = 43; kslev[7][6] = 45; kslev[7][7] = 47;
 		kslev[7][8] = 48;
 		for (i=9;i<16;i++) kslev[7][i] = (Bit8u)(i+41);
 		for (j=6;j>=0;j--) {
@@ -983,6 +953,10 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 	Bit32s vib_lut[BLOCKBUF_SIZE];
 	Bit32s trem_lut[BLOCKBUF_SIZE];
 
+	// vibrato/trmolo value table pointers
+	const Bit32s *vibval1, *vibval2, *vibval3, *vibval4;
+	const Bit32s *tremval1, *tremval2, *tremval3, *tremval4;
+
 	Bits samples_to_process = numsamples;
 
 	for (Bits cursmp=0; cursmp<samples_to_process; cursmp+=endsamples) {
@@ -1019,7 +993,7 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 					if (cptr[9].vibrato) {
 						vibval1 = vibval_var1;
 						for (i=0;i<endsamples;i++)
-							vibval1[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
+							vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
 					} else vibval1 = vibval_const;
 					if (cptr[9].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
 					else tremval1 = tremval_const;
@@ -1029,7 +1003,7 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 						operator_advance(&cptr[9],vibval1[i]);
 						opfuncs[cptr[9].op_state](&cptr[9]);
 						operator_output(&cptr[9],0,tremval1[i]);
-						
+
 						Bit32s chanval = cptr[9].cval*2;
 						CHANVAL_OUT
 					}
@@ -1040,12 +1014,12 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 					if ((cptr[0].vibrato) && (cptr[0].op_state != OF_TYPE_OFF)) {
 						vibval1 = vibval_var1;
 						for (i=0;i<endsamples;i++)
-							vibval1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
+							vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
 					} else vibval1 = vibval_const;
 					if ((cptr[9].vibrato) && (cptr[9].op_state != OF_TYPE_OFF)) {
 						vibval2 = vibval_var2;
 						for (i=0;i<endsamples;i++)
-							vibval2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
+							vibval_var2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
 					} else vibval2 = vibval_const;
 					if (cptr[0].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
 					else tremval1 = tremval_const;
@@ -1061,7 +1035,7 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 						operator_advance(&cptr[9],vibval2[i]);
 						opfuncs[cptr[9].op_state](&cptr[9]);
 						operator_output(&cptr[9],cptr[0].cval*FIXEDPT,tremval2[i]);
-						
+
 						Bit32s chanval = cptr[9].cval*2;
 						CHANVAL_OUT
 					}
@@ -1074,7 +1048,7 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 				if (cptr[0].vibrato) {
 					vibval3 = vibval_var1;
 					for (i=0;i<endsamples;i++)
-						vibval3[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
+						vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
 				} else vibval3 = vibval_const;
 
 				if (cptr[0].tremolo) tremval3 = trem_lut;	// tremolo enabled, use table
@@ -1097,12 +1071,12 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 				if ((cptr[0].vibrato) && (cptr[0].op_state != OF_TYPE_OFF)) {
 					vibval1 = vibval_var1;
 					for (i=0;i<endsamples;i++)
-						vibval1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
+						vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
 				} else vibval1 = vibval_const;
 				if ((cptr[9].vibrato) && (cptr[9].op_state == OF_TYPE_OFF)) {
 					vibval2 = vibval_var2;
 					for (i=0;i<endsamples;i++)
-						vibval2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
+						vibval_var2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
 				} else vibval2 = vibval_const;
 
 				if (cptr[0].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
@@ -1114,7 +1088,7 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 				if ((cptr[9].vibrato) && (cptr[9].op_state == OF_TYPE_OFF)) {
 					vibval4 = vibval_var2;
 					for (i=0;i<endsamples;i++)
-						vibval4[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
+						vibval_var2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
 				} else vibval4 = vibval_const;
 
 				if (cptr[9].tremolo) tremval4 = trem_lut;	// tremolo enabled, use table
@@ -1171,7 +1145,7 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 							if (cptr[0].vibrato) {
 								vibval1 = vibval_var1;
 								for (i=0;i<endsamples;i++)
-									vibval1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
+									vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
 							} else vibval1 = vibval_const;
 							if (cptr[0].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
 							else tremval1 = tremval_const;
@@ -1191,7 +1165,7 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 							if ((cptr[9].vibrato) && (cptr[9].op_state != OF_TYPE_OFF)) {
 								vibval1 = vibval_var1;
 								for (i=0;i<endsamples;i++)
-									vibval1[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
+									vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
 							} else vibval1 = vibval_const;
 							if (cptr[9].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
 							else tremval1 = tremval_const;
@@ -1233,7 +1207,7 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 							if (cptr[0].vibrato) {
 								vibval1 = vibval_var1;
 								for (i=0;i<endsamples;i++)
-									vibval1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
+									vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
 							} else vibval1 = vibval_const;
 							if (cptr[0].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
 							else tremval1 = tremval_const;
@@ -1253,7 +1227,7 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 							if ((cptr[9].vibrato) && (cptr[9].op_state != OF_TYPE_OFF)) {
 								vibval1 = vibval_var1;
 								for (i=0;i<endsamples;i++)
-									vibval1[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
+									vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
 							} else vibval1 = vibval_const;
 							if (cptr[9].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
 							else tremval1 = tremval_const;
@@ -1289,12 +1263,12 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 				if ((cptr[0].vibrato) && (cptr[0].op_state != OF_TYPE_OFF)) {
 					vibval1 = vibval_var1;
 					for (i=0;i<endsamples;i++)
-						vibval1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
+						vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
 				} else vibval1 = vibval_const;
 				if ((cptr[9].vibrato) && (cptr[9].op_state != OF_TYPE_OFF)) {
 					vibval2 = vibval_var2;
 					for (i=0;i<endsamples;i++)
-						vibval2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
+						vibval_var2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
 				} else vibval2 = vibval_const;
 				if (cptr[0].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
 				else tremval1 = tremval_const;
@@ -1325,12 +1299,12 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 							if ((cptr[0].vibrato) && (cptr[0].op_state != OF_TYPE_OFF)) {
 								vibval1 = vibval_var1;
 								for (i=0;i<endsamples;i++)
-									vibval1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
+									vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
 							} else vibval1 = vibval_const;
 							if ((cptr[9].vibrato) && (cptr[9].op_state != OF_TYPE_OFF)) {
 								vibval2 = vibval_var2;
 								for (i=0;i<endsamples;i++)
-									vibval2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
+									vibval_var2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
 							} else vibval2 = vibval_const;
 							if (cptr[0].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
 							else tremval1 = tremval_const;
@@ -1375,17 +1349,17 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 
 					} else {
 						// FM-FM-style synthesis (op1[fb] * op2 * op3 * op4)
-						if ((cptr[0].op_state != OF_TYPE_OFF) || (cptr[9].op_state != OF_TYPE_OFF) || 
+						if ((cptr[0].op_state != OF_TYPE_OFF) || (cptr[9].op_state != OF_TYPE_OFF) ||
 							(cptr[3].op_state != OF_TYPE_OFF) || (cptr[3+9].op_state != OF_TYPE_OFF)) {
 							if ((cptr[0].vibrato) && (cptr[0].op_state != OF_TYPE_OFF)) {
 								vibval1 = vibval_var1;
 								for (i=0;i<endsamples;i++)
-									vibval1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
+									vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
 							} else vibval1 = vibval_const;
 							if ((cptr[9].vibrato) && (cptr[9].op_state != OF_TYPE_OFF)) {
 								vibval2 = vibval_var2;
 								for (i=0;i<endsamples;i++)
-									vibval2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
+									vibval_var2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
 							} else vibval2 = vibval_const;
 							if (cptr[0].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
 							else tremval1 = tremval_const;
@@ -1427,12 +1401,12 @@ void OPLChipClass::adlib_getsample(Bit16s* sndptr, Bits numsamples) {
 				if ((cptr[0].vibrato) && (cptr[0].op_state != OF_TYPE_OFF)) {
 					vibval1 = vibval_var1;
 					for (i=0;i<endsamples;i++)
-						vibval1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
+						vibval_var1[i] = (Bit32s)((vib_lut[i]*cptr[0].freq_high/8)*FIXEDPT*VIBFAC);
 				} else vibval1 = vibval_const;
 				if ((cptr[9].vibrato) && (cptr[9].op_state != OF_TYPE_OFF)) {
 					vibval2 = vibval_var2;
 					for (i=0;i<endsamples;i++)
-						vibval2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
+						vibval_var2[i] = (Bit32s)((vib_lut[i]*cptr[9].freq_high/8)*FIXEDPT*VIBFAC);
 				} else vibval2 = vibval_const;
 				if (cptr[0].tremolo) tremval1 = trem_lut;	// tremolo enabled, use table
 				else tremval1 = tremval_const;
