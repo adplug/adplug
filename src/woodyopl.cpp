@@ -460,10 +460,9 @@ void OPLChipClass::adlib_init(Bit32u samplerate, Bit32u numchannels, Bit32u byte
 
 	generator_add = (Bit32u)(INTFREQU*FIXEDPT/int_samplerate);
 
-
-	memset((void *)adlibreg,0,sizeof(adlibreg));
-	memset((void *)op,0,sizeof(op_type)*MAXOPERATORS);
-	memset((void *)wave_sel,0,sizeof(wave_sel));
+	memset(adlibreg,0,sizeof(adlibreg));
+	memset(op,0,sizeof(op_type)*MAXOPERATORS);
+	memset(wave_sel,0,sizeof(wave_sel));
 
 	for (i=0;i<MAXOPERATORS;i++) {
 		op[i].op_state = OF_TYPE_OFF;
