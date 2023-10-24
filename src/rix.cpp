@@ -127,7 +127,7 @@ void CrixPlayer::rewind(int subsong)
   memset(insbuf,     0,     sizeof(insbuf));
   memset(displace,   0,     sizeof(displace));
   memset(reg_bufs,   0,     sizeof(reg_bufs));
-  memset(for40reg,   0x7F,  sizeof(for40reg)); // FIXME: !static
+  memset(for40reg,   0x7F,  sizeof(for40reg));
 
   if (flag_mkf && subsong >= 0)
   {
