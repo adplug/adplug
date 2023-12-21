@@ -104,7 +104,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(ChspLoader::factory, "HSC Packed", ".hsp\0"),
   CPlayerDesc(CksmPlayer::factory, "Ken Silverman Music", ".ksm\0"),
   CPlayerDesc(CmadLoader::factory, "Mlat Adlib Tracker", ".mad\0"),
-  CPlayerDesc(CmusPlayer::factory, "AdLib MIDI/IMS Format", ".mus\0.mdy\0.ims\0"),
+  CPlayerDesc(CmusPlayer::factory, "AdLib MIDI/IMS Format", ".mus\0.mdy\0.ims\0.kpf\0"),
   CPlayerDesc(CmdiPlayer::factory, "AdLib MIDIPlay File", ".mdi\0"),
   CPlayerDesc(CmidPlayer::factory, "MIDI", ".mid\0.sci\0.laa\0"),
   CPlayerDesc(CmkjPlayer::factory, "MKJamz", ".mkj\0"),
