@@ -83,6 +83,8 @@
 #include "sop.h"
 #include "herad.h"
 #include "coktel.h"
+#include "pis.h"
+#include "mtr.h"
 
 /***** CAdPlug *****/
 
@@ -112,6 +114,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CdtmLoader::factory, "DeFy Adlib Tracker", ".dtm\0"),
   CPlayerDesc(CfmcLoader::factory, "Faust Music Creator", ".sng\0"),
   CPlayerDesc(CmtkLoader::factory, "MPU-401 Trakker", ".mtk\0"),
+  CPlayerDesc(CmtrLoader::factory, "Master Tracker", ".mtr\0"),
   CPlayerDesc(Crad2Player::factory, "Reality Adlib Tracker", ".rad\0"),
   CPlayerDesc(CrawPlayer::factory, "Raw AdLib Capture", ".rac\0.raw\0"),
   CPlayerDesc(Csa2Loader::factory, "Surprise! Adlib Tracker", ".sat\0.sa2\0"),
@@ -127,8 +130,9 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CxsmPlayer::factory, "eXtra Simple Music", ".xsm\0"),
   CPlayerDesc(CdroPlayer::factory, "DOSBox Raw OPL v0.1", ".dro\0"),
   CPlayerDesc(Cdro2Player::factory, "DOSBox Raw OPL v2.0", ".dro\0"),
+  CPlayerDesc(CpisPlayer::factory, "Beni Tracker PIS Player", ".pis\0"),
   CPlayerDesc(CmscPlayer::factory, "Adlib MSC Player", ".msc\0"),
-  CPlayerDesc(CrixPlayer::factory, "Softstar RIX OPL Music", ".rix\0"),
+  CPlayerDesc(CrixPlayer::factory, "Softstar RIX OPL Music", ".rix\0.mkf\0"),
   CPlayerDesc(CadlPlayer::factory, "Westwood ADL", ".adl\0"),
   CPlayerDesc(CjbmPlayer::factory, "JBM Adlib Music", ".jbm\0"),
   CPlayerDesc(CgotPlayer::factory, "God of Thunder Music", ".got\0"),

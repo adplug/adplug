@@ -181,6 +181,7 @@ bool CksmPlayer::update()
 		    case 13: drumnum = 4; chan = 8; break;
 		    case 14: drumnum = 2; chan = 8; break;
 		    case 15: drumnum = 1; chan = 7; freq -= 2048; break;
+		    default: drumnum = 0; chan = 0; break; // should not be reachable
 		    }
 		  databuf[bufnum] = (char)0, bufnum++;
 		  databuf[bufnum] = (unsigned char)(0xa0+chan); bufnum++;

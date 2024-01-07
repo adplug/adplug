@@ -47,8 +47,6 @@ const uint8_t CrixPlayer::bd_reg_data[] = {
   0x0F,0x0B,0x00,0x05,0x05,0x00,0x00,0x00,0x00,0x00,0x00,
   0x00,0x01,0x00,0x0F,0x0B,0x00,0x07,0x05,0x00,0x00,0x00,
   0x00,0x00,0x00};
-uint8_t CrixPlayer::for40reg[] = {0x7F,0x7F,0x7F,0x7F,0x7F,0x7F,0x7F,0x7F,0x7F,
-					0x7F,0x7F,0x7F,0x7F,0x7F,0x7F,0x7F,0x7F,0x7F};
 const uint16_t CrixPlayer::mus_time = 0x4268;
 
 /*** public methods *************************************/
@@ -98,8 +96,14 @@ bool CrixPlayer::update()
 	return !play_end;
 }
 
+unsigned int CrixPlayer::getsubsong()
+{
+  return song;
+}
+
 void CrixPlayer::rewind(int subsong)
 {
+  song = subsong;
   I = 0; T = 0;
   mus_block = 0;
   ins_block = 0;
@@ -123,12 +127,12 @@ void CrixPlayer::rewind(int subsong)
   memset(insbuf,     0,     sizeof(insbuf));
   memset(displace,   0,     sizeof(displace));
   memset(reg_bufs,   0,     sizeof(reg_bufs));
-  memset(for40reg,   0x7F,  sizeof(for40reg)); // FIXME: !static
+  memset(for40reg,   0x7F,  sizeof(for40reg));
 
   if (flag_mkf && subsong >= 0)
   {
     // changed to actually work and match numbering of getsubsongs()
-    uint32_t i, offset, next, table_end;
+    uint32_t i, offset, next=0, table_end;
     offset = RIX_GET32(file_buffer, 0);
     table_end = offset / 4;
     for (i = 1; i < table_end; i++)
@@ -153,7 +157,7 @@ void CrixPlayer::rewind(int subsong)
   data_initial();
 }
 
-uint32_t CrixPlayer::getsubsongs()
+unsigned int CrixPlayer::getsubsongs()
 {
 	if(flag_mkf)
 	{

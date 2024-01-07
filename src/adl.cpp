@@ -106,9 +106,21 @@ static inline T CLIP(const T &value, const T &min, const T &max) {
 }
 
 #if !defined(nullptr) && __cplusplus < 201103L && _MSC_VER < 1600
-static const struct {
-	template <class T> operator T*() const { return 0; }
-} nullptr;
+const class nullptr_t {
+public:
+	template<class T> // convertible to any type of null non-member pointer...
+	operator T*() const {
+		return 0;
+	}
+
+	template<class C, class T> // or any type of null member pointer...
+	operator T C::*() const {
+		return 0;
+	}
+
+private:
+	void operator&() const; // Can't take address of nullptr
+} nullptr = {}; // and whose name is nullptr
 #endif
 
 #define override // AdLibDriver has no base class here, so no overrides
@@ -1723,7 +1735,7 @@ int AdLibDriver::update_setPriority(Channel &channel, const uint8 *values) {
 //    - _beatDivider is not further modified
 //
 // callback()
-//    - _beatDivCnt is a countdown, gets reinitialized to _beatDivider on zero 
+//    - _beatDivCnt is a countdown, gets reinitialized to _beatDivider on zero
 //    - _beatCounter is incremented when _beatDivCnt is reset, i.e., it's a
 //      counter which updates with the global _tempo divided by _beatDivider.
 //

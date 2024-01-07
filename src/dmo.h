@@ -19,7 +19,7 @@
   dmo.cpp - TwinTeam loader by Riven the Mage <riven@ok.ru>
 */
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "s3m.h"
 

@@ -48,6 +48,7 @@ src_libadplug_la_SOURCES = \
 	src/hyp.cpp \
 	src/imf.cpp \
 	src/jbm.cpp \
+	src/kemuopl.cpp \
 	src/ksm.cpp \
 	src/lds.cpp \
 	src/mad.cpp \
@@ -56,8 +57,10 @@ src_libadplug_la_SOURCES = \
 	src/mkj.cpp \
 	src/msc.cpp \
 	src/mtk.cpp \
+	src/mtr.cpp \
 	src/mus.cpp \
 	src/nemuopl.cpp \
+	src/pis.cpp \
 	src/player.cpp \
 	src/players.cpp \
 	src/protrack.cpp \
@@ -110,6 +113,7 @@ pkginclude_HEADERS = \
 	src/mid.h \
 	src/mkj.h \
 	src/mtk.h \
+	src/mtr.h \
 	src/protrack.h \
 	src/rad2.h \
 	src/raw.h \
@@ -124,6 +128,7 @@ pkginclude_HEADERS = \
 	src/bmf.h \
 	src/flash.h \
 	src/hyp.h \
+	src/pis.h \
 	src/psi.h \
 	src/rat.h \
 	src/hybrid.h \
@@ -258,10 +263,14 @@ EXTRA_DIST += \
 	test/testref/2001.ref \
 	test/testmus/2.CMF \
 	test/testref/2.ref \
+	test/testmus/ACTION.PIS \
+	test/testref/ACTION.ref \
 	test/testmus/ADAGIO.DFM \
 	test/testref/ADAGIO.ref \
 	test/testref/adlibsp.ref \
 	test/testmus/adlibsp.s3m \
+	test/testmus/AKMTEC.MTR \
+	test/testref/AKMTEC.ref \
 	test/testmus/ALLOYRUN.RAD \
 	test/testref/ALLOYRUN.ref \
 	test/testmus/ARAB.BAM \
@@ -284,6 +293,8 @@ EXTRA_DIST += \
 	test/testref/canonind.ref \
 	test/testref/CHILD1.ref \
 	test/testmus/CHILD1.XSM \
+	test/testmus/CHIP.MTR \
+	test/testref/CHIP.ref \
 	test/testmus/crusader.raw \
 	test/testref/crusader.ref \
 	test/testmus/DEMO4.JBM \
@@ -351,6 +362,8 @@ EXTRA_DIST += \
 	test/testref/MORNING.ref \
 	test/testmus/NECRONOM.CMF \
 	test/testref/NECRONOM.ref \
+	test/testmus/SNDTRACK.CMF \
+	test/testref/SNDTRACK.ref \
 	test/testmus/NEWPAGA.HA2 \
 	test/testref/NEWPAGA.ref \
 	test/testmus/NEWSAN.HSQ \

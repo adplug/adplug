@@ -22,7 +22,7 @@
  * for further acknowledgements.
  */
  
-unsigned char midi_fm_instruments[128][14] =
+static const unsigned char midi_fm_instruments[128][14] =
 {
 
    /* This set of GM instrument patches was provided by Jorrit Rouwe...
@@ -160,7 +160,7 @@ unsigned char midi_fm_instruments[128][14] =
 };
 
 /* logarithmic relationship between midi and FM volumes */
-static int my_midi_fm_vol_table[128] = {
+static const int my_midi_fm_vol_table[128] = {
    0,  11, 16, 19, 22, 25, 27, 29, 32, 33, 35, 37, 39, 40, 42, 43,
    45, 46, 48, 49, 50, 51, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62,
    64, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 75, 76, 77,

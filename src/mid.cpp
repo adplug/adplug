@@ -93,14 +93,7 @@ void CmidPlayer::midiprintf(const char *format, ...)
     }
 #endif
 
-#if !defined(UINT8_MAX)
-typedef signed char    int8_t;
-typedef short          int16_t;
-typedef int            int32_t;
-typedef unsigned char  uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int   uint32_t;
-#endif
+#include <stdint.h> // for uintxx_t
 
 #define LUCAS_STYLE   1
 #define CMF_STYLE     2
@@ -974,6 +967,15 @@ void CmidPlayer::rewind(int subsong)
                 deltas=getnext(2);
                 midiprintf ("deltas:%ld\n",deltas);
 
+                /* MIDI files should be played back one octave and a semi-note off in to be played back correctly */
+                if (type != FILE_LUCAS)
+                {
+                    for (i=0; i<16; i++)
+                    {
+                        ch[i].nshift=-13;
+                    }
+                }
+
                 curtrack=0;
                 while ((curtrack == 0) ||
                        ((midi_type == 1) && (curtrack < 16)))
@@ -1170,7 +1172,8 @@ std::string CmidPlayer::gettype()
 	case FILE_LUCAS:
 		return std::string("LucasArts AdLib MIDI");
 	case FILE_MIDI:
-		return std::string("General MIDI (type " + std::to_string(midi_type) + ")");
+		// avoid using std::to_string(midi_type) which is c++11 and may be broken in mingw32
+		return std::string("General MIDI (type " + std::string(1, '0' + midi_type) + ")");
 	case FILE_CMF:
 		return std::string("Creative Music Format (CMF MIDI)");
 	case FILE_OLDLUCAS:

@@ -34,7 +34,7 @@ public:
     : use16bit(bit16), stereo(usestereo), sampleerate(rate)
     {
       opl.adlib_init(rate, usestereo ? 2 : 1, bit16 ? 2 : 1);
-      currType = TYPE_OPL2;
+      currType = TYPE_OPL3;
     };
 
   void update(short *buf, int samples)

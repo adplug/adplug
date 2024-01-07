@@ -36,14 +36,7 @@
 #define ADLIB_OPER_LEN     13		/* operator length, sizeof(SFMOperator) */
 #define ADLIB_INST_LEN     (ADLIB_OPER_LEN * 2 + 2)	/* modulator, carrier, mod/car wave select */
 
-#if !defined(UINT8_MAX)
-    typedef signed char    int8_t;
-    typedef short          int16_t;
-    typedef int            int32_t;
-    typedef unsigned char  uint8_t;
-    typedef unsigned short uint16_t;
-    typedef unsigned int   uint32_t;
-#endif
+#include <stdint.h> // for uintxx_t
 
 #ifdef __x86_64__
     typedef signed   int      int32;

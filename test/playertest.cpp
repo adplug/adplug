@@ -62,6 +62,7 @@ static const char *filelist[] = {
   "mi2.laa",		// LucasArts
   "michaeld.cmf",	// Creative Music Format
   "2.CMF",			// Creative Music Format (with transpose effect)
+  "SNDTRACK.CMF",	// Creative Music Format (with note-off)
   "PLAYMUS1.SNG",	// SNGPlay
   "rat.xad",		// xad: rat
   "REVELAT.SNG",	// Faust Music Creator
@@ -113,6 +114,9 @@ static const char *filelist[] = {
   "well.adl",		// Coktel Vision ADL
   "TEST16.MID",		// MIDI Type 0
   "GRABBAG.MID",	// MIDI Type 1
+  "ACTION.PIS",		// Beni Tracker
+  "CHIP.MTR",		// Master Tracker v1
+  "AKMTEC.MTR",		// Master Tracker v2
   NULL
 };
 
