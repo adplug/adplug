@@ -61,10 +61,12 @@
     <ClCompile Include="..\..\..\src\mkj.cpp" />
     <ClCompile Include="..\..\..\src\msc.cpp" />
     <ClCompile Include="..\..\..\src\mtk.cpp" />
+    <ClCompile Include="..\..\..\src\mtr.cpp" />
     <ClCompile Include="..\..\..\src\mus.cpp" />
     <ClCompile Include="..\..\..\src\player.cpp" />
     <ClCompile Include="..\..\..\src\players.cpp" />
     <ClCompile Include="..\..\..\src\protrack.cpp" />
+    <ClCompile Include="..\..\..\src\pis.cpp" />
     <ClCompile Include="..\..\..\src\psi.cpp" />
     <ClCompile Include="..\..\..\src\rad2.cpp" />
     <ClCompile Include="..\..\..\src\rat.cpp" />
@@ -133,11 +135,13 @@
     <ClInclude Include="..\..\..\src\mkj.h" />
     <ClInclude Include="..\..\..\src\msc.h" />
     <ClInclude Include="..\..\..\src\mtk.h" />
+    <ClInclude Include="..\..\..\src\mtr.h" />
     <ClInclude Include="..\..\..\src\mus.h" />
     <ClInclude Include="..\..\..\src\opl.h" />
     <ClInclude Include="..\..\..\src\player.h" />
     <ClInclude Include="..\..\..\src\players.h" />
     <ClInclude Include="..\..\..\src\protrack.h" />
+    <ClInclude Include="..\..\..\src\pis.h" />
     <ClInclude Include="..\..\..\src\psi.h" />
     <ClInclude Include="..\..\..\src\rad2.h" />
     <ClInclude Include="..\..\..\src\rat.h" />
