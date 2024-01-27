@@ -50,8 +50,19 @@ class Cs3mPlayer: public CPlayer
     { return ord; };
   unsigned int getrow()
     { return crow; };
+  unsigned int getrows()
+    { return 64; }
+  unsigned int getnchans();
+  void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
   unsigned int getspeed()
     { return speed; };
+
+  unsigned char getpattern(unsigned long ord)
+    {
+      unsigned char pattnr = ord < header.ordnum ? orders[ord] : 0xff;
+      return pattnr;
+    }
+
   unsigned int getinstruments()
     { return header.insnum; };
   std::string getinstrument(unsigned int n)

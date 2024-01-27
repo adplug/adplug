@@ -83,7 +83,7 @@ src_libadplug_la_SOURCES = \
 	src/xad.cpp \
 	src/xsm.cpp
 
-src_libadplug_la_LDFLAGS = -release $(PACKAGE_VERSION) -version-info 0
+src_libadplug_la_LDFLAGS = -release $(PACKAGE_VERSION) -version-info 1
 src_libadplug_la_LIBADD = $(libbinio_LIBS)
 
 # -Dstricmp=strcasecmp is a hack. Throughout AdPlug, stricmp() is used to do
