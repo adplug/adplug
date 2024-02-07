@@ -247,9 +247,9 @@ void CcomposerBackend::SetNotePercussive(int const voice, int const note)
 //---------------------------------------------------------
 void CcomposerBackend::SetNoteMelodic(int const voice, int const note)
 {
-    if (voice >= 9)
+    if (voice >= kNumMelodicVoices)
     {
-        AdPlug_LogWrite ("COMPOSER: SetNoteMelodic() voice %d >= 9\n", voice);
+        AdPlug_LogWrite ("COMPOSER: SetNoteMelodic() voice %d >= %d\n", voice, kNumMelodicVoices);
         return;
     }
     opl->write(skOPL2_KeyOnFreqHiBaseAddress + voice, mKOnOctFNumCache[voice] & ~skOPL2_KeyOnMask);
@@ -342,9 +342,9 @@ uint8_t CcomposerBackend::GetKSLTL(int const voice) const
 //---------------------------------------------------------
 void CcomposerBackend::SetVolume(int const voice, uint8_t const volume)
 {
-    if (voice >= 9 && !mRhythmMode)
+    if (voice >= kNumMelodicVoices && !mRhythmMode)
     {
-        AdPlug_LogWrite ("COMPOSER: SetVolume() !mRhythmMode voice %d >= 9\n", voice);
+        AdPlug_LogWrite ("COMPOSER: SetVolume() !mRhythmMode voice %d >= %d\n", voice, kNumMelodicVoices);
         return;
     }
     uint8_t const op_offset = (voice < kSnareDrumChannel || !mRhythmMode) ? op_table[voice] + skCarrierOpOffset : drum_op_table[voice - kSnareDrumChannel];
@@ -356,9 +356,9 @@ void CcomposerBackend::SetVolume(int const voice, uint8_t const volume)
 //---------------------------------------------------------
 void CcomposerBackend::SetInstrument(int const voice, int const ins_index)
 {
-    if (voice >= 9 && !mRhythmMode)
+    if (voice >= kNumMelodicVoices && !mRhythmMode)
     {
-        AdPlug_LogWrite ("COMPOSER: SetInstrument() !mRhythmMode voice %d >= 9\n", voice);
+        AdPlug_LogWrite ("COMPOSER: SetInstrument() !mRhythmMode voice %d >= %d\n", voice, kNumMelodicVoices);
         return;
     }
     SInstrumentData const & instrument = mInstrumentList[ins_index].instrument;
@@ -436,9 +436,9 @@ void CcomposerBackend::send_operator(int const voice, SOPL2Op const & modulator,
 {
     if ((voice < kSnareDrumChannel) || !mRhythmMode)
     {
-	if (voice >= 9)
+	if (voice >= kNumMelodicVoices)
         {
-            AdPlug_LogWrite ("COMPOSER: send_operator() !mRhythmMode voice %d >= 9\n", voice);
+            AdPlug_LogWrite ("COMPOSER: send_operator() !mRhythmMode voice %d >= %d\n", voice, kNumMelodicVoices);
             return;
         }
         uint8_t const op_offset = op_table[voice];
