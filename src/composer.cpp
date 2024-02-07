@@ -150,6 +150,7 @@ CcomposerBackend::CcomposerBackend(Copl * const pNewOpl)
     , mNoteCache         (kNumPercussiveVoices, 0)
     , mKOnOctFNumCache   (kNumMelodicVoices, 0)
     , mKeyOnCache        (kNumPercussiveVoices, false)
+    , mRhythmMode        (0)
     , mOldPitchBendLength(~0)
     , mPitchRangeStep    (skNrStepPitch)
     , mOldHalfToneOffset (0)
@@ -246,6 +247,11 @@ void CcomposerBackend::SetNotePercussive(int const voice, int const note)
 //---------------------------------------------------------
 void CcomposerBackend::SetNoteMelodic(int const voice, int const note)
 {
+    if (voice >= kNumMelodicVoices)
+    {
+        AdPlug_LogWrite ("COMPOSER: SetNoteMelodic() voice %d >= %d\n", voice, kNumMelodicVoices);
+        return;
+    }
     opl->write(skOPL2_KeyOnFreqHiBaseAddress + voice, mKOnOctFNumCache[voice] & ~skOPL2_KeyOnMask);
     mKeyOnCache[voice] = false;
 
@@ -336,6 +342,11 @@ uint8_t CcomposerBackend::GetKSLTL(int const voice) const
 //---------------------------------------------------------
 void CcomposerBackend::SetVolume(int const voice, uint8_t const volume)
 {
+    if (voice >= kNumMelodicVoices && !mRhythmMode)
+    {
+        AdPlug_LogWrite ("COMPOSER: SetVolume() !mRhythmMode voice %d >= %d\n", voice, kNumMelodicVoices);
+        return;
+    }
     uint8_t const op_offset = (voice < kSnareDrumChannel || !mRhythmMode) ? op_table[voice] + skCarrierOpOffset : drum_op_table[voice - kSnareDrumChannel];
 
     mVolumeCache[voice] = volume;
@@ -345,6 +356,11 @@ void CcomposerBackend::SetVolume(int const voice, uint8_t const volume)
 //---------------------------------------------------------
 void CcomposerBackend::SetInstrument(int const voice, int const ins_index)
 {
+    if (voice >= kNumMelodicVoices && !mRhythmMode)
+    {
+        AdPlug_LogWrite ("COMPOSER: SetInstrument() !mRhythmMode voice %d >= %d\n", voice, kNumMelodicVoices);
+        return;
+    }
     SInstrumentData const & instrument = mInstrumentList[ins_index].instrument;
 
     send_operator(voice, instrument.modulator, instrument.carrier);
@@ -420,6 +436,11 @@ void CcomposerBackend::send_operator(int const voice, SOPL2Op const & modulator,
 {
     if ((voice < kSnareDrumChannel) || !mRhythmMode)
     {
+	if (voice >= kNumMelodicVoices)
+        {
+            AdPlug_LogWrite ("COMPOSER: send_operator() !mRhythmMode voice %d >= %d\n", voice, kNumMelodicVoices);
+            return;
+        }
         uint8_t const op_offset = op_table[voice];
 
         opl->write(skOPL2_AaMultiBaseAddress  + op_offset, modulator.ammulti);
@@ -517,7 +538,8 @@ int CcomposerBackend::load_bnk_instrument(binistream *f, SBnkHeader const & head
     {
         // assuming a bank with case sensitive names stores them in uppercase
         // this is true for implay.bnk at least
-        strcpy(ncs, name.c_str());
+        strncpy(ncs, name.c_str(), INS_MAX_NAME_SIZE - 1);
+        ncs[INS_MAX_NAME_SIZE - 1] = 0;
         strup(ncs);
     }
 
