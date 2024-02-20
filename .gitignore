@@ -28,6 +28,9 @@ test-driver
 *.o
 *.lo
 *.la
+*.swp
+*.test
+.cvsignore
 .deps
 .libs
 adplug.pc
@@ -53,6 +56,10 @@ test/playertest
 test/playertest.log
 test/stresstest
 test/stresstest.log
+CMakeUserPresets.json
+/out/
+/.vs/
+.vscode/
 contrib/vs2015/adplug/v140/x64/Debug
 contrib/vs2015/crctest/x64/Debug
 contrib/vs2015/emutest/x64/Debug
