@@ -272,6 +272,8 @@ EXTRA_DIST += \
 	test/testref/2001.ref \
 	test/testmus/2.CMF \
 	test/testref/2.ref \
+	test/testmus/AB_JULIA.A2T \
+	test/testref/AB_JULIA.ref \
 	test/testmus/ACTION.PIS \
 	test/testref/ACTION.ref \
 	test/testmus/ADAGIO.DFM \
@@ -322,12 +324,16 @@ EXTRA_DIST += \
 	test/testmus/ending.sop \
 	test/testmus/EOBSOUND.ADL \
 	test/testref/EOBSOUND.ref \
+	test/testmus/fank5.a2m \
+	test/testref/fank5.ref \
 	test/testmus/fdance03.dmo \
 	test/testref/fdance03.ref \
 	test/testref/flash.ref \
 	test/testmus/flash.xad \
 	test/testmus/Flying.mdi \
 	test/testref/Flying.ref \
+	test/testmus/fm-troni.a2m \
+	test/testmus/fm-troni.ref \
 	test/testref/GALWAY.ref \
 	test/testmus/GALWAY.SOP \
 	test/testmus/go-_-go.bnk \
