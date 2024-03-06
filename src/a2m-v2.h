@@ -43,6 +43,8 @@
 #include "depack.h"
 #include "sixpack.h"
 #include "unlzh.h"
+#include "unlzss.h"
+#include "unlzw.h"
 
 #ifndef C_ASSERT
 #define C_ASSERT(e) typedef char __C_ASSERT__[(e) ? 1 : -1]

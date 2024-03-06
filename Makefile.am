@@ -18,6 +18,8 @@ src_libadplug_la_SOURCES = \
 	src/depack.c \
 	src/sixpack.c \
 	src/unlzh.c \
+	src/unlzss.c \
+	src/unlzw.c \
 	src/a2m.cpp \
 	src/a2m-v2.cpp \
 	src/adl.cpp \
@@ -108,6 +110,8 @@ pkginclude_HEADERS = \
 	src/depack.h \
 	src/sixpack.h \
 	src/unlzh.h \
+	src/unlzss.h \
+	src/unlzw.h \
 	src/a2m.h \
 	src/a2m-v2.h \
 	src/amd.h \

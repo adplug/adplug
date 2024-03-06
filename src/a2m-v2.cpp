@@ -982,8 +982,8 @@ inline bool Ca2mv2Player::is_4op_chan(int chan) // 0..19
 inline bool Ca2mv2Player::is_4op_chan_hi(int chan)
 {
     static bool _4op_hi[20] = {
-        true, false, true, false, true, false, false, false, false,					// 0, 2, 4
-        true, false, true, false, true, false, false, false, false, false, false	// 9, 10, 13
+        true, false, true, false, true, false, false, false, false,                // 0, 2, 4
+        true, false, true, false, true, false, false, false, false, false, false   // 9, 10, 13
     };
 
     return _4op_hi[chan];
@@ -992,8 +992,8 @@ inline bool Ca2mv2Player::is_4op_chan_hi(int chan)
 inline bool Ca2mv2Player::is_4op_chan_lo(int chan)
 {
     static bool _4op_lo[20] = {
-        false, true, false, true, false, true, false, false, false,					// 1, 3, 5
-        false, true, false, true, false, true, false, false, false, false, false	// 10, 12, 14
+        false, true, false, true, false, true, false, false, false,               // 1, 3, 5
+        false, true, false, true, false, true, false, false, false, false, false  // 10, 12, 14
     };
 
     return _4op_lo[chan];
@@ -1542,10 +1542,10 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
             break;
         case ef_ex_ExtendedCmd:
             switch (val & 0x0f) {
-            case ef_ex_cmd_MKOffLoopDi: ch->keyoff_loop[chan] = false;		break;
-            case ef_ex_cmd_MKOffLoopEn: ch->keyoff_loop[chan] = true;		break;
-            case ef_ex_cmd_TPortaFKdis: ch->portaFK_table[chan] = false;	break;
-            case ef_ex_cmd_TPortaFKenb: ch->portaFK_table[chan] = true;		break;
+            case ef_ex_cmd_MKOffLoopDi: ch->keyoff_loop[chan] = false;   break;
+            case ef_ex_cmd_MKOffLoopEn: ch->keyoff_loop[chan] = true;    break;
+            case ef_ex_cmd_TPortaFKdis: ch->portaFK_table[chan] = false; break;
+            case ef_ex_cmd_TPortaFKenb: ch->portaFK_table[chan] = true;  break;
             case ef_ex_cmd_RestartEnv:
                 key_on(chan);
                 change_freq(chan, ch->freq_table[chan]);
@@ -2438,7 +2438,7 @@ void Ca2mv2Player::update_effects_slot(int slot, int chan)
         case ef_ex2_NoteDelay:
             if (ch->notedel_table[chan] == 0) {
                 ch->notedel_table[chan] = BYTE_NULL;
-                output_note(ch->event_table[chan].note,	ch->event_table[chan].instr_def, chan, true, true);
+                output_note(ch->event_table[chan].note, ch->event_table[chan].instr_def, chan, true, true);
             } else if (ch->notedel_table[chan] != BYTE_NULL) {
                 ch->notedel_table[chan]--;
             }
@@ -2608,11 +2608,14 @@ void Ca2mv2Player::update_song_position()
                 ch->loop_table[temp][current_line]--;
         } else {
             if (pattern_break && ((next_line & 0xf0) == pattern_break_flag)) {
+                uint8_t old_order = current_order;
                 if (ch->event_table[next_line - pattern_break_flag].eff[1].def == ef_PositionJump) {
                     current_order = ch->event_table[next_line - pattern_break_flag].eff[1].val;
                 } else {
                     current_order = ch->event_table[next_line - pattern_break_flag].eff[0].val;
                 }
+                if (current_order <= old_order)
+                    songend = true;
                 pattern_break = false;
             } else {
                 if (current_order >= 0x7f)
@@ -2676,8 +2679,8 @@ void Ca2mv2Player::poll_proc()
 
 void Ca2mv2Player::macro_poll_proc()
 {
-#define  IDLE		0xfff
-#define  FINISHED	0xffff
+#define  IDLE       0xfff
+#define  FINISHED   0xffff
     uint16_t chan;
     uint16_t finished_flag;
 
@@ -3156,20 +3159,22 @@ void Ca2mv2Player::a2t_depack(char *src, int srcsize, char *dst)
 {
     switch (ffver) {
     case 1:
-    case 5:		// sixpack
+    case 5: // sixpack
         sixdepak((unsigned short *)src, (unsigned char *)dst, srcsize);
         break;
     case 2:
-    case 6:		// FIXME: lzw
+    case 6: // lzw
+        LZW_decompress(src, dst, srcsize);
         break;
     case 3:
-    case 7:		// FIXME: lzss
+    case 7: // lzss
+        LZSS_decompress(src, dst, srcsize);
         break;
     case 4:
-    case 8:		// unpacked
+    case 8: // unpacked
         memcpy(dst, src, srcsize);
         break;
-    case 9 ... 11:	// apack (aPlib)
+    case 9 ... 11:  // apack (aPlib)
         aP_depack(src, dst);
         break;
     case 12 ... 14: // lzh
@@ -3516,7 +3521,7 @@ void Ca2mv2Player::convert_v1234_event(tADTRACK2_EVENT_V1234 *ev, int chan)
 int Ca2mv2Player::a2_read_patterns(char *src, int s)
 {
     switch (ffver) {
-    case 1 ... 4:	// [4][16][64][9][4]
+    case 1 ... 4:   // [4][16][64][9][4]
         {
         tPATTERN_DATA_V1234 *old = (tPATTERN_DATA_V1234 *)calloc(16, sizeof(*old));
 
@@ -3550,7 +3555,7 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
         free(old);
         break;
         }
-    case 5 ... 8:	// [8][8][18][64][4]
+    case 5 ... 8:   // [8][8][18][64][4]
         {
         tPATTERN_DATA_V5678 *old = (tPATTERN_DATA_V5678 *)calloc(8, sizeof(*old));
 
@@ -3580,7 +3585,7 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
         free(old);
         break;
         }
-    case 9 ... 14:	// [16][8][20][256][6]
+    case 9 ... 14:  // [16][8][20][256][6]
         {
         tPATTERN_DATA *old = (tPATTERN_DATA *)calloc(8, sizeof(*old));
 
@@ -3635,8 +3640,7 @@ bool Ca2mv2Player::a2t_import(char *tune)
 
     ffver = header->ffver;
 
-    // Support versions 1, 4, 5, 8 ... 14
-    if (!ffver || ffver > 14 || ffver == 2 || ffver == 3 || ffver == 6 || ffver == 7)
+    if (!ffver || ffver > 14)
         return false;
 
     songinfo->tempo = header->tempo;
@@ -3715,7 +3719,7 @@ int Ca2mv2Player::a2m_read_varheader(char *blockptr, int npatt)
 
 int Ca2mv2Player::a2m_read_songdata(char *src)
 {
-    if (ffver < 9) {		// 1 - 8
+    if (ffver < 9) {    // 1 - 8
         A2M_SONGDATA_V1_8 *data = (A2M_SONGDATA_V1_8 *)malloc(sizeof(*data));
         a2t_depack(src, len[0], (char *)data);
 
@@ -3746,7 +3750,7 @@ int Ca2mv2Player::a2m_read_songdata(char *src)
         }
 
         free(data);
-    } else {			// 9 - 14
+    } else {    // 9 - 14
         A2M_SONGDATA_V9_14 *data = (A2M_SONGDATA_V9_14 *)malloc(sizeof(*data));
         a2t_depack(src, len[0], (char *)data);
 
@@ -3844,8 +3848,7 @@ bool Ca2mv2Player::a2m_import(char *tune)
 
     ffver = header->ffver;
 
-    // Support versions 1, 4, 5, 8 ... 14
-    if (!ffver || ffver > 14 || ffver == 2 || ffver == 3 || ffver == 6 || ffver == 7)
+    if (!ffver || ffver > 14)
         return false;
 
     songinfo->patt_len = 64;
