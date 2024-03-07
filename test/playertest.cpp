@@ -43,6 +43,9 @@
 static const char *filelist[] = {
   "SONG1.sng",		// Adlib Tracker
   "2001.MKJ",		// MK-Jamz
+  "AB_JULIA.A2T",	// Adlib Tracker 2 (tiny module v11)
+  "fank5.a2m",      // Adlib Tracker 2 (v11)
+  "fm-troni.a2m",   // Adlib Tracker 2 (v14)
   "ADAGIO.DFM",		// Digital-FM
   "adlibsp.s3m",	// Scream Tracker 3
   "ALLOYRUN.RAD",	// Reality AdLib Tracker (v1)

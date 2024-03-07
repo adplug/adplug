@@ -38,6 +38,7 @@
 #include "hsc.h"
 #include "amd.h"
 #include "a2m.h"
+#include "a2m-v2.h"
 #include "imf.h"
 #include "sng.h"
 #include "adtrack.h"
@@ -94,6 +95,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CsngPlayer::factory, "SNGPlay", ".sng\0"),
   CPlayerDesc(CimfPlayer::factory, "Apogee IMF", ".imf\0.wlf\0.adlib\0"),
   CPlayerDesc(Ca2mLoader::factory, "Adlib Tracker 2", ".a2m\0"),
+  CPlayerDesc(Ca2mv2Player::factory, "Adlib Tracker 2", ".a2m\0.a2t\0"),
   CPlayerDesc(CadtrackLoader::factory, "Adlib Tracker", ".sng\0"),
   CPlayerDesc(CamdLoader::factory, "AMUSIC", ".amd\0"),
   CPlayerDesc(CbamPlayer::factory, "Bob's Adlib Music", ".bam\0"),
