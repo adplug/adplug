@@ -633,7 +633,7 @@ public:
     void rewind(int subsong);
     float getrefresh();
 
-    std::string gettype() { return std::string("Adlib Tracker 2 (v2)"); };
+    std::string gettype();
     std::string gettitle() { return std::string(songinfo->songname); }
     std::string getauthor() { return std::string(songinfo->composer); }
     unsigned int getinstruments() { return instrinfo->count; }
@@ -715,6 +715,7 @@ private:
     int ticklooper, macro_ticklooper;
 
     // Loader
+    int type = 0; // 0 - a2m, 1 - a2t
     int ffver = 1;
     int len[21];
     bool adsr_carrier[9]; // For importing from a2m v1234

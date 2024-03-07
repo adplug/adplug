@@ -94,6 +94,13 @@ float Ca2mv2Player::getrefresh()
     return (float)tempo * _macro_speedup();
 }
 
+std::string Ca2mv2Player::gettype() {
+    char tmpstr[40];
+
+    sprintf(tmpstr, "Adlib Tracker 2 (%sversion %d)", (type == 1 ? "tiny module " : ""), ffver);
+    return std::string(tmpstr);
+};
+
 bool Ca2mv2Player::load(const std::string &filename, const CFileProvider &fp)
 {
     binistream *f = fp.open(filename);
@@ -3639,6 +3646,7 @@ bool Ca2mv2Player::a2t_import(char *tune)
     memset(len, 0, sizeof(len));
 
     ffver = header->ffver;
+    type = 1;
 
     if (!ffver || ffver > 14)
         return false;
@@ -3847,6 +3855,7 @@ bool Ca2mv2Player::a2m_import(char *tune)
     memset(len, 0, sizeof(len));
 
     ffver = header->ffver;
+    type = 0;
 
     if (!ffver || ffver > 14)
         return false;
