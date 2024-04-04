@@ -20,7 +20,7 @@
  *              Originally by Stanislav Baranec <subz3ro.altair@gmail.com>
  *
  * NOTES:
- * This player loads a2m and a2t modules version 1, 4, 5, 8 and 9 - 14 inclusively.
+ * This player loads a2m and a2t modules versions 1 - 14.
  * The code is adapted directly from FreePascal sources of the Adlib Tracker II
  *
  * REFERENCES:
