@@ -79,7 +79,13 @@ bool CAdPlugDatabase::load(binistream &f)
 
   // read records
   for(unsigned long i = 0; i < length; i++)
-    insert(CRecord::factory(f));
+  {
+    CRecord *rec = CRecord::factory(f);
+    if (!insert(rec))
+    {
+      delete rec;
+    }
+  }
 
   return true;
 }
