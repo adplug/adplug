@@ -46,10 +46,6 @@
 #include "unlzss.h"
 #include "unlzw.h"
 
-#ifndef C_ASSERT
-#define C_ASSERT(e) typedef char __C_ASSERT__[(e) ? 1 : -1]
-#endif
-
 // Macros for extracting little-endian integers from filedata
 #define INT16LE(A) (int16_t)((A[0]) | (A[1] << 8))
 #define UINT16LE(A) (uint16_t)((A[0]) | (A[1] << 8))
@@ -71,10 +67,13 @@ typedef enum {
 #define MAX_IRQ_FREQ        1000
 
 /*
-    Structures for importing A2T/A2M with no padding.
-    AdlibTracker 2 was saving structures directly from memory into the file, so we emulate
-    how FreePascal was handling them. We use chars everywhere and imply that ints are always
-    little-endian. If only chars are used, C compiler doesn't insert any padding.
+    When loading A2T/A2M, FreePascal structures (no padding and little-endian) should be emulated,
+    because AdlibTracker 2 was saving structures directly from memory into the file.
+
+    That's why:
+    1) only chars are used in structs to avoid any padding or alignment (default C/C++ behaviour)
+    2) ints and longs are represented as arrays of chars, little-endian order is implied
+    3) static_assert is used to make sure structs have the correct size
 */
 
 typedef struct {
@@ -96,7 +95,7 @@ typedef struct {
     };
 } tFM_INST_DATA;
 
-C_ASSERT(sizeof(tFM_INST_DATA) == 11);
+static_assert(sizeof(tFM_INST_DATA) == 11, "sizeof(tFM_INST_DATA) != 11");
 
 typedef struct {
     tFM_INST_DATA fm;
@@ -105,7 +104,7 @@ typedef struct {
     uint8_t perc_voice;
 } tINSTR_DATA;
 
-C_ASSERT(sizeof(tINSTR_DATA) == 14);
+static_assert(sizeof(tINSTR_DATA) == 14, "sizeof(tINSTR_DATA) != 14");
 
 typedef struct {
     uint8_t length;
@@ -148,8 +147,8 @@ typedef struct {
     tVIBRATO_TABLE vibrato;
 } tARPVIB_TABLE;
 
-C_ASSERT(sizeof(tFMREG_TABLE) == 3831);
-C_ASSERT(sizeof(tARPVIB_TABLE) == 521);
+static_assert(sizeof(tFMREG_TABLE) == 3831, "sizeof(tFMREG_TABLE) != 3831");
+static_assert(sizeof(tARPVIB_TABLE) == 521, "sizeof(tARPVIB_TABLE) != 521");
 
 typedef struct {
     uint8_t note;
@@ -160,7 +159,7 @@ typedef struct {
     } eff[2];
 } tADTRACK2_EVENT;
 
-C_ASSERT(sizeof(tADTRACK2_EVENT) == 6);
+static_assert(sizeof(tADTRACK2_EVENT) == 6, "sizeof(tADTRACK2_EVENT) != 6");
 
 typedef struct {
     struct {
@@ -170,7 +169,7 @@ typedef struct {
     } ch[20];
 } tPATTERN_DATA;
 
-C_ASSERT(sizeof(tPATTERN_DATA) == 20 * 256 * 6);
+static_assert(sizeof(tPATTERN_DATA) == 20 * 256 * 6, "sizeof(tPATTERN_DATA) != 30720");
 
 #define ef_Arpeggio            0
 #define ef_FSlideUp            1
@@ -312,7 +311,7 @@ typedef struct {
     uint8_t speed;
 } A2T_HEADER;
 
-C_ASSERT(sizeof(A2T_HEADER) == 23);
+static_assert(sizeof(A2T_HEADER) == 23, "sizeof(A2T_HEADER) != 23");
 
 typedef struct {
     char id[10];	// '_a2module_'
@@ -321,7 +320,7 @@ typedef struct {
     uint8_t npatt;
 } A2M_HEADER;
 
-C_ASSERT(sizeof(A2M_HEADER) == 16);
+static_assert(sizeof(A2M_HEADER) == 16, "sizeof(A2M_HEADER) != 16");
 
 typedef struct {
     uint8_t len[6][2]; // uint16_t
@@ -368,12 +367,12 @@ typedef union {
     A2T_VARHEADER_V11   v11;
 } A2T_VARHEADER;
 
-C_ASSERT(sizeof(A2T_VARHEADER_V1234) == 12);
-C_ASSERT(sizeof(A2T_VARHEADER_V5678) == 21);
-C_ASSERT(sizeof(A2T_VARHEADER_V9) == 86);
-C_ASSERT(sizeof(A2T_VARHEADER_V10) == 107);
-C_ASSERT(sizeof(A2T_VARHEADER_V11) == 111);
-C_ASSERT(sizeof(A2T_VARHEADER) == 111);
+static_assert(sizeof(A2T_VARHEADER_V1234) == 12, "sizeof(A2T_VARHEADER_V1234) != 12");
+static_assert(sizeof(A2T_VARHEADER_V5678) == 21, "sizeof(A2T_VARHEADER_V5678) != 21");
+static_assert(sizeof(A2T_VARHEADER_V9) == 86, "sizeof(A2T_VARHEADER_V9) != 86");
+static_assert(sizeof(A2T_VARHEADER_V10) == 107, "sizeof(A2T_VARHEADER_V10) != 107");
+static_assert(sizeof(A2T_VARHEADER_V11) == 111, "sizeof(A2T_VARHEADER_V11) != 111");
+static_assert(sizeof(A2T_VARHEADER) == 111, "sizeof(A2T_VARHEADER) != 111");
 
 // only for importing v 1,2,3,4,5,6,7,8
 typedef struct {
@@ -401,9 +400,9 @@ typedef struct {
     } ch[18];
 } tPATTERN_DATA_V5678;
 
-C_ASSERT(sizeof(tADTRACK2_EVENT_V1234) == 4);
-C_ASSERT(sizeof(tPATTERN_DATA_V1234) == 2304);
-C_ASSERT(sizeof(tPATTERN_DATA_V5678) == 4608);
+static_assert(sizeof(tADTRACK2_EVENT_V1234) == 4, "sizeof(tADTRACK2_EVENT_V1234) != 4");
+static_assert(sizeof(tPATTERN_DATA_V1234) == 2304, "sizeof(tPATTERN_DATA_V1234) != 2304");
+static_assert(sizeof(tPATTERN_DATA_V5678) == 4608, "sizeof(tPATTERN_DATA_V5678) != 4608");
 
 // Old v1234 effects
 enum {
@@ -448,7 +447,7 @@ typedef struct {
     int8_t  fine_tune;
 } tINSTR_DATA_V1_8;
 
-C_ASSERT(sizeof(tINSTR_DATA_V1_8) == 13);
+static_assert(sizeof(tINSTR_DATA_V1_8) == 13, "sizeof(tINSTR_DATA_V1_8) != 13");
 
 typedef struct {
     char songname[43];
@@ -461,7 +460,7 @@ typedef struct {
     uint8_t common_flag; // A2M_SONGDATA_V5678
 } A2M_SONGDATA_V1_8;
 
-C_ASSERT(sizeof(A2M_SONGDATA_V1_8) == 11717);
+static_assert(sizeof(A2M_SONGDATA_V1_8) == 11717, "sizeof(A2M_SONGDATA_V1_8) != 11717");
 
 typedef struct {
     uint8_t num_4op;
@@ -498,7 +497,7 @@ typedef struct {
     tBPM_DATA bpm_data;            // A2M_SONGDATA_V14
 } A2M_SONGDATA_V9_14;
 
-C_ASSERT(sizeof(A2M_SONGDATA_V9_14) == 1138338);
+static_assert(sizeof(A2M_SONGDATA_V9_14) == 1138338, "sizeof(A2M_SONGDATA_V9_14) != 1138338");
 
 /* Player data */
 
@@ -509,8 +508,6 @@ typedef struct {
     tFMREG_TABLE *fmreg;
     uint32_t dis_fmreg_cols;
 } tINSTR_DATA_EXT;
-
-C_ASSERT(sizeof(tINSTR_DATA_EXT) == 20 + sizeof(tFMREG_TABLE *));
 
 typedef struct {
     char            songname[43];        // pascal String[42];
