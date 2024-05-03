@@ -72,6 +72,7 @@ void Ca2mv2Player::rewind(int subsong)
 
     songend = false;
     current_order = 0;
+    last_order = 0xff;
     current_pattern = songinfo->pattern_order[current_order];
     current_line = 0;
     pattern_break = false;
@@ -3133,29 +3134,7 @@ bool Ca2mv2Player::a2t_play(char *tune) // start_playing()
     if (!err)
         return false;
 
-    chip = 0;
-    opl->init();
-    opl->setchip(0);
-
-    init_player();
-
-    songend = false;
-    current_order = 0;
-    current_pattern = songinfo->pattern_order[current_order];
-    current_line = 0;
-    pattern_break = false;
-    pattern_delay = false;
-    tickXF = 0;
-    ticks = 0;
-    next_line = 0;
-    irq_mode = true;
-    play_status = isPlaying;
-
-    ticklooper = 0;
-    macro_ticklooper = 0;
-    speed = songinfo->speed;
-    macro_speedup = songinfo->macro_speedup;
-    update_timer(songinfo->tempo);
+    rewind (0);
 
     return true;
 }
