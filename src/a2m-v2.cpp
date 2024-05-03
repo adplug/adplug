@@ -49,6 +49,14 @@ Ca2mv2Player::Ca2mv2Player(Copl *newopl) : CPlayer(newopl)
 
 Ca2mv2Player::~Ca2mv2Player()
 {
+    // Note: for editor_mode allocate max entries possible
+    for (unsigned int i = 0; i < 255; i++) {
+        free(vibrato_table[i]);
+        free(arpeggio_table[i]);
+    }
+
+    patterns_free();
+    instruments_free();
     delete songinfo;
     delete instrinfo;
     delete eventsinfo;
