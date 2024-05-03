@@ -823,7 +823,7 @@ private:
     void init_songdata();
 
     // Loader
-    void a2t_depack(char *src, int srcsize, char *dst);
+    void a2t_depack(char *src, int srcsize, char *dst, int dstsize);
     int a2t_read_varheader(char *blockptr);
     void instrument_import_v1_8(int ins, tINSTR_DATA_V1_8 *instr_s);
     void instrument_import(int ins, tINSTR_DATA *instr_s);

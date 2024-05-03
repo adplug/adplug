@@ -3149,30 +3149,34 @@ bool Ca2mv2Player::a2t_play(char *tune) // start_playing()
 
 /* LOADER FOR A2M/A2T */
 
-void Ca2mv2Player::a2t_depack(char *src, int srcsize, char *dst)
+void Ca2mv2Player::a2t_depack(char *src, int srcsize, char *dst, int dstsize)
 {
     switch (ffver) {
     case 1:
     case 5: // sixpack
-        sixdepak((unsigned short *)src, (unsigned char *)dst, srcsize);
+        sixdepak((unsigned short *)src, (unsigned char *)dst, srcsize, dstsize);
         break;
     case 2:
     case 6: // lzw
-        LZW_decompress(src, dst, srcsize);
+        LZW_decompress(src, dst, srcsize, dstsize);
         break;
     case 3:
     case 7: // lzss
-        LZSS_decompress(src, dst, srcsize);
+        LZSS_decompress(src, dst, srcsize, dstsize);
         break;
     case 4:
     case 8: // unpacked
-        memcpy(dst, src, srcsize);
+	if (dstsize < srcsize)
+	{
+		srcsize = dstsize;
+	        memcpy(dst, src, srcsize);
+	}
         break;
     case 9 ... 11:  // apack (aPlib)
-        aP_depack(src, dst);
+        aP_depack(src, dst, srcsize, dstsize);
         break;
     case 12 ... 14: // lzh
-        LZH_decompress(src, dst, srcsize);
+        LZH_decompress(src, dst, srcsize, dstsize);
         break;
     }
 }
@@ -3253,7 +3257,7 @@ int Ca2mv2Player::a2t_read_instruments(char *src)
                   (ffver > 11 ?  sizeof(tBPM_DATA) + sizeof(tINS_4OP_FLAGS) + sizeof(tRESERVED) : 0);
     char *dst = (char *)calloc(dstsize, 1);
 
-    a2t_depack(src, len[0], dst);
+    a2t_depack(src, len[0], dst, dstsize);
 
     if (ffver == 14) {
         //memcpy(&songinfo->bpm_data, dst, sizeof(songinfo->bpm_data));
@@ -3298,7 +3302,7 @@ int Ca2mv2Player::a2t_read_fmregtable(char *src)
     if (ffver < 9) return 0;
 
     tFMREG_TABLE *data = (tFMREG_TABLE *)calloc(255, sizeof(tFMREG_TABLE));
-    a2t_depack(src, len[1], (char *)data);
+    a2t_depack(src, len[1], (char *)data, 255 * sizeof(tFMREG_TABLE));
 
     int count = instrinfo->count;
 
@@ -3323,7 +3327,7 @@ int Ca2mv2Player::a2t_read_arpvibtable(char *src)
     if (ffver < 9) return 0;
 
     tARPVIB_TABLE *arpvib_table = (tARPVIB_TABLE *)calloc(255, sizeof(tARPVIB_TABLE));
-    a2t_depack(src, len[2], (char *)arpvib_table);
+    a2t_depack(src, len[2], (char *)arpvib_table, 255 * sizeof(tARPVIB_TABLE));
 
     arpvib_tables_allocate(255, arpvib_table);
 
@@ -3338,7 +3342,7 @@ int Ca2mv2Player::a2t_read_disabled_fmregs(char *src)
 
     bool (*dis_fmregs)[255][28] = (bool (*)[255][28])calloc(255, 28);
 
-    a2t_depack(src, len[3], (char *)*dis_fmregs);
+    a2t_depack(src, len[3], (char *)*dis_fmregs, 255 * 28);
 
     disabled_fmregs_import(instrinfo->count, *dis_fmregs);
 
@@ -3352,7 +3356,7 @@ int Ca2mv2Player::a2t_read_order(char *src)
     int blocknum[14] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 4, 4, 4, 4};
     int i = blocknum[ffver - 1];
 
-    a2t_depack(src, len[i], (char *)songinfo->pattern_order);
+    a2t_depack(src, len[i], (char *)songinfo->pattern_order, sizeof (songinfo->pattern_order));
 
     return len[i];
 }
@@ -3524,7 +3528,7 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
         for (int i = 0; i < 4; i++) {
             if (!len[i+s]) continue;
 
-            a2t_depack(src, len[i+s], (char *)old);
+            a2t_depack(src, len[i+s], (char *)old, 16 * sizeof (*old));
 
             for (int p = 0; p < 16; p++) { // pattern
                 if (i * 8 + p >= eventsinfo->patterns)
@@ -3556,7 +3560,7 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
         for (int i = 0; i < 8; i++) {
             if (!len[i+s]) continue;
 
-            a2t_depack(src, len[i+s], (char *)old);
+            a2t_depack(src, len[i+s], (char *)old, 8 * sizeof (*old));
 
             for (int p = 0; p < 8; p++) { // pattern
                 if (i * 8 + p >= eventsinfo->patterns)
@@ -3586,7 +3590,7 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
         // 16 groups of 8 patterns
         for (int i = 0; i < 16; i++) {
             if (!len[i+s]) continue;
-            a2t_depack(src, len[i+s], (char *)old);
+            a2t_depack(src, len[i+s], (char *)old, 8 * sizeof (*old));
             src += len[i+s];
 
             for (int p = 0; p < 8; p++) { // pattern
@@ -3716,7 +3720,7 @@ int Ca2mv2Player::a2m_read_songdata(char *src)
 {
     if (ffver < 9) {    // 1 - 8
         A2M_SONGDATA_V1_8 *data = (A2M_SONGDATA_V1_8 *)malloc(sizeof(*data));
-        a2t_depack(src, len[0], (char *)data);
+        a2t_depack(src, len[0], (char *)data, sizeof (*data));
 
         memcpy(songinfo->songname, data->songname + 1, 42);
         memcpy(songinfo->composer, data->composer + 1, 42);
@@ -3747,7 +3751,7 @@ int Ca2mv2Player::a2m_read_songdata(char *src)
         free(data);
     } else {    // 9 - 14
         A2M_SONGDATA_V9_14 *data = (A2M_SONGDATA_V9_14 *)malloc(sizeof(*data));
-        a2t_depack(src, len[0], (char *)data);
+        a2t_depack(src, len[0], (char *)data, sizeof (*data));
 
         memcpy(songinfo->songname, data->songname + 1, 42);
         memcpy(songinfo->composer, data->composer + 1, 42);

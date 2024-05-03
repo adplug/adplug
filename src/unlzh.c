@@ -408,16 +408,17 @@ int unlzh(in, out)
 }
 #endif
 
-int LZH_decompress(char *source, char *dest, int size)
+int LZH_decompress(char *source, char *dest, int source_size, int dest_size)
 {
 	unsigned char *ptr;
 	int size_temp;
 	char ultra;
 	uint32_t size_unpacked = 0;
+	int size;
 
 	input_buffer = (unsigned char *)source;
 	input_buffer_idx = 0;
-	input_buffer_size = size;
+	input_buffer_size = source_size;
 
 	ultra = input_buffer[input_buffer_idx++] & 1;
 
@@ -439,7 +440,7 @@ int LZH_decompress(char *source, char *dest, int size)
 
 	decode_start();
 	size = size_unpacked;
-	while (size > 0) {
+	while ((size > 0) && dest_size) {
 		if (size > (int)DIC_SIZE) {
 			size_temp = DIC_SIZE;
 		} else {
@@ -447,7 +448,14 @@ int LZH_decompress(char *source, char *dest, int size)
 		}
 
 		decode(size_temp, ptr);
-		write_buf(ptr, size_temp);
+		if (dest_size >= size_temp)
+		{
+			write_buf(ptr, size_temp);
+			dest_size -= size_temp;
+		} else {
+			write_buf(ptr, dest_size);
+			dest_size = 0;
+		}
 		size -= size_temp;
     }
 

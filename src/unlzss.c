@@ -34,6 +34,7 @@
 
 static int input_size, output_size;
 static unsigned char *input_ptr, *output_ptr;
+static int output_maxsize;
 
 #define N_BITS      12
 #define F_BITS      4
@@ -72,6 +73,7 @@ static void LZSS_decode() {
             code = input_ptr[input_idx++];
             work_ptr[edi] = code;
             edi = (edi + 1) & (N - 1);
+	    if (output_size >= output_maxsize) goto error_out;
             output_ptr[output_size++] = code;
             continue;
         }
@@ -90,6 +92,7 @@ static void LZSS_decode() {
         int length = (code & 0x0f) + THRESHOLD + 1;
 
         do {
+	    if (output_size >= output_maxsize) goto error_out;
             output_ptr[output_size++] = work_ptr[edi] = work_ptr[ebx];
 
             ebx = (ebx + 1) & (N - 1);
@@ -97,14 +100,16 @@ static void LZSS_decode() {
         } while (--length > 0);
     }
 
+error_out:
     free(work_ptr);
 }
 
-int LZSS_decompress(char *source, char *dest, int size)
+int LZSS_decompress(char *source, char *dest, int source_size, int dest_size)
 {
     input_ptr = (unsigned char *)source;
-    input_size = size;
+    input_size = source_size;
     output_ptr = (unsigned char *)dest;
+    output_maxsize = dest_size;
     
     LZSS_decode();
 

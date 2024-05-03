@@ -45,6 +45,7 @@ void decode();
 static unsigned short ibitcount, ibitbuffer, ibufcount, obufcount, input_size,
 	output_size, leftc[MAXCHAR+1], rghtc[MAXCHAR+1],
 	dad[TWICEMAX+1], freq[TWICEMAX+1], *wdbuf;
+static unsigned int obufsize;
 static unsigned char *obuf, *buf;
 
 void inittree()
@@ -133,6 +134,8 @@ unsigned short inputcode(unsigned short bits)
 		if(!ibitcount) {
 			if(ibitcount == MAXBUF)
 				ibufcount = 0;
+			if (ibufcount >= input_size)
+				return 0; /* overflow input buffer */
 			ibitbuffer = wdbuf[ibufcount];
 			ibufcount++;
 			ibitcount = 15;
@@ -155,6 +158,8 @@ unsigned short uncompress()
 		if(!ibitcount) {
 			if(ibufcount == MAXBUF)
 				ibufcount = 0;
+			if (ibufcount >= input_size)
+				return TERMINATE; /* overflow input buffer */
 			ibitbuffer = wdbuf[ibufcount];
 			ibufcount++;
 			ibitcount = 15;
@@ -182,7 +187,8 @@ void decode()
 
 	while(c != TERMINATE) {
 		if(c < 256) {
-			obuf[obufcount] = (unsigned char)c;
+			if (obufcount < obufsize) /* check for overflow if output buffer */
+				obuf[obufcount] = (unsigned char)c;
 			obufcount++;
 			if(obufcount == MAXBUF) {
 				output_size = MAXBUF;
@@ -205,7 +211,8 @@ void decode()
 				k += MAXSIZE;
 
 			for(i=0;i<=len-1;i++) {
-				obuf[obufcount] = buf[k];
+				if (obufcount < obufsize) /* check for overflow if output buffer */
+					obuf[obufcount] = buf[k];
 				obufcount++;
 				if(obufcount == MAXBUF) {
 					output_size = MAXBUF;
@@ -228,7 +235,7 @@ void decode()
 }
 
 unsigned short sixdepak(unsigned short *source, unsigned char *dest,
-				    unsigned short size)
+				    unsigned short size, unsigned int destsize)
 {
 	if((unsigned int)size + 4096 > MAXBUF)
 		return 0;
@@ -237,6 +244,7 @@ unsigned short sixdepak(unsigned short *source, unsigned char *dest,
 	input_size = size;
 	ibitcount = 0; ibitbuffer = 0;
 	obufcount = 0; ibufcount = 0;
+	obufsize = destsize;
 	wdbuf = source; obuf = dest;
 
 	decode();

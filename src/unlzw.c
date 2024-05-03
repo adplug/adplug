@@ -40,6 +40,7 @@ static uint16_t bitmask[5] = { 0x1ff, 0x3ff, 0x7ff, 0xfff, 0x1fff };
 static unsigned char *input_ptr;
 static int input_size;
 static unsigned char *output_ptr;
+static unsigned int output_maxsize;
 static int output_size;
 
 static int nextcode()
@@ -99,6 +100,7 @@ static void LZW_decode()
             le77 = code;
             le76 = code;
 
+	    if (output_idx >= output_maxsize) goto error_out;
             output_ptr[output_idx++] = code;
             continue;
         }
@@ -132,6 +134,7 @@ static void LZW_decode()
         stringlength++;
 
         while (stringlength--) {
+	    if (output_idx >= output_maxsize) goto error_out;
             output_ptr[output_idx++] = stack[sp++];
         }
 
@@ -151,16 +154,18 @@ static void LZW_decode()
         }
     }
 
+error_out:
     output_size = output_idx;
     free(stack);
     free(work_ptr);
 }
 
-int LZW_decompress(char *source, char *dest, int size)
+int LZW_decompress(char *source, char *dest, int source_size, int destination_size)
 {
     input_ptr = (unsigned char *)source;
-    input_size = size;
+    input_size = source_size;
     output_ptr = (unsigned char *)dest;
+    output_maxsize = destination_size;
 
     LZW_decode();
 

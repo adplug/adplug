@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 /* function prototype */
-unsigned int aP_depack(const void *source, void *destination);
+unsigned int aP_depack(const void *source, void *destination, int srcsize, int dstsize);
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -19,6 +19,7 @@
 struct APDSTATE {
 	const unsigned char *source;
 	unsigned char *destination;
+	unsigned int destlen;
 	unsigned int tag;
 	unsigned int bitcount;
 };
@@ -53,7 +54,7 @@ static unsigned int aP_getgamma(struct APDSTATE *ud)
 	return result;
 }
 
-unsigned int aP_depack(const void *source, void *destination)
+unsigned int aP_depack(const void *source, void *destination, int srcsize, int dstsize)
 {
 	struct APDSTATE ud;
 	unsigned int offs, len, R0/*, LWM*/;
@@ -62,6 +63,7 @@ unsigned int aP_depack(const void *source, void *destination)
 
 	ud.source = (const unsigned char *) source;
 	ud.destination = (unsigned char *) destination;
+	ud.destlen = 0;
 	ud.bitcount = 0;
 
 	R0 = (unsigned int) -1;
@@ -69,7 +71,11 @@ unsigned int aP_depack(const void *source, void *destination)
 	done = 0;
 
 	/* first byte verbatim */
+	if (!srcsize) return ud.destlen;
+	if (!dstsize) return ud.destlen;
 	*ud.destination++ = *ud.source++;
+	srcsize--;
+	dstsize--; ud.destlen++;
 
 	/* main decompression loop */
 	while (!done) {
@@ -83,16 +89,23 @@ unsigned int aP_depack(const void *source, void *destination)
 					}
 
 					if (offs) {
+						if (!dstsize) return ud.destlen;
+						if (offs > ud.destlen) return ud.destlen;
 						*ud.destination = *(ud.destination - offs);
 						ud.destination++;
+						dstsize--; ud.destlen++;
 					}
 					else {
+						if (!dstsize) return ud.destlen;
 						*ud.destination++ = 0x00;
+						dstsize--; ud.destlen++;
 					}
 
 					//LWM = 0;
 				} else {
+					if (!srcsize) return ud.destlen;
 					offs = *ud.source++;
+					srcsize--;
 
 					len = 2 + (offs & 0x0001);
 
@@ -100,8 +113,11 @@ unsigned int aP_depack(const void *source, void *destination)
 
 					if (offs) {
 						for (; len; len--) {
+							if (!dstsize) return ud.destlen;
+							if (offs > ud.destlen) return ud.destlen;
 							*ud.destination = *(ud.destination - offs);
 							ud.destination++;
+							dstsize--; ud.destlen++;
 						}
 					}
 					else {
@@ -122,8 +138,11 @@ unsigned int aP_depack(const void *source, void *destination)
 					len = aP_getgamma(&ud);
 
 					for (; len; len--) {
+						if (!dstsize) return ud.destlen;
+						if (offs > ud.destlen) return ud.destlen;
 						*ud.destination = *(ud.destination - offs);
 						ud.destination++;
+						dstsize--; ud.destlen++;
 					}
 				} else {
 					/*
@@ -138,7 +157,9 @@ unsigned int aP_depack(const void *source, void *destination)
 					//-------------------
 
 					offs <<= 8;
+					if (!srcsize) return ud.destlen;
 					offs += *ud.source++;
+					srcsize--;
 
 					len = aP_getgamma(&ud);
 
@@ -153,8 +174,11 @@ unsigned int aP_depack(const void *source, void *destination)
 					}
 
 					for (; len; len--) {
+						if (!dstsize) return ud.destlen;
+						if (offs > ud.destlen) return ud.destlen;
 						*ud.destination = *(ud.destination - offs);
 						ud.destination++;
+						dstsize--; ud.destlen++;
 					}
 
 					R0 = offs;
@@ -164,10 +188,14 @@ unsigned int aP_depack(const void *source, void *destination)
 			}
 		}
 		else {
+			if (!srcsize) return ud.destlen;
+			if (!dstsize) return ud.destlen;
 			*ud.destination++ = *ud.source++;
+			srcsize--;
+			dstsize--; ud.destlen++;
 			//LWM = 0;
 		}
 	}
 
-	return (unsigned int) (ud.destination - (unsigned char *) destination);
+	return ud.destlen;
 }
