@@ -337,7 +337,7 @@ EXTRA_DIST += \
 	test/testmus/Flying.mdi \
 	test/testref/Flying.ref \
 	test/testmus/fm-troni.a2m \
-	test/testmus/fm-troni.ref \
+	test/testref/fm-troni.ref \
 	test/testref/GALWAY.ref \
 	test/testmus/GALWAY.SOP \
 	test/testmus/go-_-go.bnk \
