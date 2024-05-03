@@ -96,9 +96,9 @@ float Ca2mv2Player::getrefresh()
 }
 
 std::string Ca2mv2Player::gettype() {
-    char tmpstr[40];
+    char tmpstr[42];
 
-    sprintf(tmpstr, "Adlib Tracker 2 (%sversion %d)", (type == 1 ? "tiny module " : ""), ffver);
+    snprintf(tmpstr, sizeof (tmpstr), "Adlib Tracker 2 (%sversion %d)", (type == 1 ? "tiny module " : ""), ffver);
     return std::string(tmpstr);
 };
 
