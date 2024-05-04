@@ -856,30 +856,30 @@ private:
 
     void init_buffers();
     void init_player();
-    bool a2t_play(char *tune);
+    bool a2t_play(char *tune, unsigned long size);
     void a2t_stop();
     void init_songdata();
 
     // Loader
     void a2t_depack(char *src, int srcsize, char *dst, int dstsize);
-    int a2t_read_varheader(char *blockptr);
+    int a2t_read_varheader(char *blockptr, unsigned long size);
     void instrument_import_v1_8(int ins, tINSTR_DATA_V1_8 *instr_s);
     void instrument_import(int ins, tINSTR_DATA *instr_s);
-    int a2t_read_instruments(char *src);
-    int a2t_read_fmregtable(char *src);
-    int a2t_read_arpvibtable(char *src);
-    int a2t_read_disabled_fmregs(char *src);
-    int a2t_read_order(char *src);
+    int a2t_read_instruments(char *src, unsigned long size);
+    int a2t_read_fmregtable(char *src, unsigned long size);
+    int a2t_read_arpvibtable(char *src, unsigned long size);
+    int a2t_read_disabled_fmregs(char *src, unsigned long size);
+    int a2t_read_order(char *src, unsigned long size);
     void convert_v1234_event(tADTRACK2_EVENT_V1234 *ev, int chan);
-    int a2_read_patterns(char *src, int s);
-    int a2t_read_patterns(char *src);
-    bool a2t_import(char *tune);
+    int a2_read_patterns(char *src, int s, unsigned long size);
+    int a2t_read_patterns(char *src, unsigned long size);
+    bool a2t_import(char *tune, unsigned long size);
 
-    int a2m_read_varheader(char *blockptr, int npatt);
-    int a2m_read_songdata(char *src);
-    int a2m_read_patterns(char *src);
-    bool a2m_import(char *tune);
-    bool a2_import(char *tune);
+    int a2m_read_varheader(char *blockptr, int npatt, unsigned long size);
+    int a2m_read_songdata(char *src, unsigned long size);
+    int a2m_read_patterns(char *src, unsigned long size);
+    bool a2m_import(char *tune, unsigned long size);
+    bool a2_import(char *tune, unsigned long size);
 };
 
 #endif

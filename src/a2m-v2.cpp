@@ -31,6 +31,7 @@
 
 #include "a2m-v2.h"
 #include "debug.h"
+#include <climits>
 
 /*** public methods *************************************/
 
@@ -127,7 +128,7 @@ bool Ca2mv2Player::load(const std::string &filename, const CFileProvider &fp)
     f->readString(tune, size);
     fp.close(f);
 
-    bool result = a2_import(tune);
+    bool result = a2_import(tune, size);
 
     free(tune);
 
@@ -3135,9 +3136,9 @@ void Ca2mv2Player::init_songdata()
     percussion_mode = false;
 }
 
-bool Ca2mv2Player::a2t_play(char *tune) // start_playing()
+bool Ca2mv2Player::a2t_play(char *tune, unsigned long size) // start_playing()
 {
-    bool err = a2_import(tune);
+    bool err = a2_import(tune, size);
 
     if (!err)
         return false;
@@ -3166,11 +3167,8 @@ void Ca2mv2Player::a2t_depack(char *src, int srcsize, char *dst, int dstsize)
         break;
     case 4:
     case 8: // unpacked
-	if (dstsize < srcsize)
-	{
-		srcsize = dstsize;
-	        memcpy(dst, src, srcsize);
-	}
+        if (dstsize <= srcsize)
+            memcpy(dst, src, srcsize);
         break;
     case 9 ... 11:  // apack (aPlib)
         aP_depack(src, dst, srcsize, dstsize);
@@ -3182,21 +3180,27 @@ void Ca2mv2Player::a2t_depack(char *src, int srcsize, char *dst, int dstsize)
 }
 
 // read the variable part of the header
-int Ca2mv2Player::a2t_read_varheader(char *blockptr)
+int Ca2mv2Player::a2t_read_varheader(char *blockptr, unsigned long size)
 {
     A2T_VARHEADER *varheader = (A2T_VARHEADER *)blockptr;
 
     switch (ffver) {
     case 1 ... 4:
+        if (sizeof(A2T_VARHEADER_V1234) > size)
+            return INT_MAX;
         for (int i = 0; i < 6; i++)
             len[i] = UINT16LE(varheader->v1234.len[i]);
         return sizeof(A2T_VARHEADER_V1234);
     case 5 ... 8:
+        if (sizeof(A2T_VARHEADER_V5678) > size)
+            return INT_MAX;
         songinfo->common_flag = varheader->v5678.common_flag;
         for (int i = 0; i < 10; i++)
             len[i] = UINT16LE(varheader->v5678.len[i]);
         return sizeof(A2T_VARHEADER_V5678);
     case 9:
+        if (sizeof(A2T_VARHEADER_V9) > size)
+            return INT_MAX;
         songinfo->common_flag = varheader->v9.common_flag;
         songinfo->patt_len = UINT16LE(varheader->v9.patt_len);
         songinfo->nm_tracks = varheader->v9.nm_tracks;
@@ -3205,6 +3209,8 @@ int Ca2mv2Player::a2t_read_varheader(char *blockptr)
             len[i] = UINT32LE(varheader->v9.len[i]);
         return sizeof(A2T_VARHEADER_V9);
     case 10:
+        if (sizeof(A2T_VARHEADER_V10) > size)
+            return INT_MAX;
         songinfo->common_flag = varheader->v10.common_flag;
         songinfo->patt_len = UINT16LE(varheader->v10.patt_len);
         songinfo->nm_tracks = varheader->v10.nm_tracks;
@@ -3216,6 +3222,8 @@ int Ca2mv2Player::a2t_read_varheader(char *blockptr)
             len[i] = UINT32LE(varheader->v10.len[i]);
         return sizeof(A2T_VARHEADER_V10);
     case 11 ... 14:
+        if (sizeof(A2T_VARHEADER_V11) > size)
+            return INT_MAX;
         songinfo->common_flag = varheader->v11.common_flag;
         songinfo->patt_len = UINT16LE(varheader->v11.patt_len);
         songinfo->nm_tracks = varheader->v11.nm_tracks;
@@ -3228,7 +3236,7 @@ int Ca2mv2Player::a2t_read_varheader(char *blockptr)
         return sizeof(A2T_VARHEADER_V11);
     }
 
-    return 0;
+    return INT_MAX;
 }
 
 void Ca2mv2Player::instrument_import_v1_8(int ins, tINSTR_DATA_V1_8 *instr_s)
@@ -3249,13 +3257,15 @@ void Ca2mv2Player::instrument_import(int ins, tINSTR_DATA *instr_s)
     *instr_d = *instr_s; // copy struct
 }
 
-int Ca2mv2Player::a2t_read_instruments(char *src)
+int Ca2mv2Player::a2t_read_instruments(char *src, unsigned long size)
 {
     int instnum = (ffver < 9 ? 250 : 255);
     int instsize = (ffver < 9 ? sizeof(tINSTR_DATA_V1_8) : sizeof(tINSTR_DATA));
     int dstsize = (instnum * instsize) +
                   (ffver > 11 ?  sizeof(tBPM_DATA) + sizeof(tINS_4OP_FLAGS) + sizeof(tRESERVED) : 0);
     char *dst = (char *)calloc(dstsize, 1);
+
+    if (len[0] > size) return INT_MAX;
 
     a2t_depack(src, len[0], dst, dstsize);
 
@@ -3297,9 +3307,11 @@ int Ca2mv2Player::a2t_read_instruments(char *src)
     return len[0];
 }
 
-int Ca2mv2Player::a2t_read_fmregtable(char *src)
+int Ca2mv2Player::a2t_read_fmregtable(char *src, unsigned long size)
 {
     if (ffver < 9) return 0;
+
+    if (len[1] > size) return INT_MAX;
 
     tFMREG_TABLE *data = (tFMREG_TABLE *)calloc(255, sizeof(tFMREG_TABLE));
     a2t_depack(src, len[1], (char *)data, 255 * sizeof(tFMREG_TABLE));
@@ -3322,9 +3334,11 @@ int Ca2mv2Player::a2t_read_fmregtable(char *src)
     return len[1];
 }
 
-int Ca2mv2Player::a2t_read_arpvibtable(char *src)
+int Ca2mv2Player::a2t_read_arpvibtable(char *src, unsigned long size)
 {
     if (ffver < 9) return 0;
+
+    if (len[2] > size) return INT_MAX;
 
     tARPVIB_TABLE *arpvib_table = (tARPVIB_TABLE *)calloc(255, sizeof(tARPVIB_TABLE));
     a2t_depack(src, len[2], (char *)arpvib_table, 255 * sizeof(tARPVIB_TABLE));
@@ -3336,11 +3350,13 @@ int Ca2mv2Player::a2t_read_arpvibtable(char *src)
     return len[2];
 }
 
-int Ca2mv2Player::a2t_read_disabled_fmregs(char *src)
+int Ca2mv2Player::a2t_read_disabled_fmregs(char *src, unsigned long size)
 {
     if (ffver < 11) return 0;
 
     bool (*dis_fmregs)[255][28] = (bool (*)[255][28])calloc(255, 28);
+
+    if (len[3] > size) return INT_MAX;
 
     a2t_depack(src, len[3], (char *)*dis_fmregs, 255 * 28);
 
@@ -3351,10 +3367,12 @@ int Ca2mv2Player::a2t_read_disabled_fmregs(char *src)
     return len[3];
 }
 
-int Ca2mv2Player::a2t_read_order(char *src)
+int Ca2mv2Player::a2t_read_order(char *src, unsigned long size)
 {
     int blocknum[14] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 4, 4, 4, 4};
     int i = blocknum[ffver - 1];
+
+    if (len[i] > size) return INT_MAX;
 
     a2t_depack(src, len[i], (char *)songinfo->pattern_order, sizeof (songinfo->pattern_order));
 
@@ -3516,8 +3534,9 @@ void Ca2mv2Player::convert_v1234_event(tADTRACK2_EVENT_V1234 *ev, int chan)
 }
 
 // common for both a2t/a2m
-int Ca2mv2Player::a2_read_patterns(char *src, int s)
+int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
 {
+    int retval = 0;
     switch (ffver) {
     case 1 ... 4:   // [4][16][64][9][4]
         {
@@ -3527,6 +3546,8 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
 
         for (int i = 0; i < 4; i++) {
             if (!len[i+s]) continue;
+
+            if (len[i+s] > size) return INT_MAX;
 
             a2t_depack(src, len[i+s], (char *)old, 16 * sizeof (*old));
 
@@ -3548,6 +3569,8 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
             }
 
             src += len[i+s];
+            size -= len[i+s];
+            retval += len[i+s];
         }
 
         free(old);
@@ -3559,6 +3582,8 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
 
         for (int i = 0; i < 8; i++) {
             if (!len[i+s]) continue;
+
+            if (len[i+s] > size) return INT_MAX;
 
             a2t_depack(src, len[i+s], (char *)old, 8 * sizeof (*old));
 
@@ -3578,6 +3603,8 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
             }
 
             src += len[i+s];
+            size -= len[i+s];
+            retval += len[i+s];
         }
 
         free(old);
@@ -3590,8 +3617,11 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
         // 16 groups of 8 patterns
         for (int i = 0; i < 16; i++) {
             if (!len[i+s]) continue;
+            if (len[i+s] > size) return INT_MAX;
             a2t_depack(src, len[i+s], (char *)old, 8 * sizeof (*old));
             src += len[i+s];
+            size -= len[i+s];
+            retval += len[i+s];
 
             for (int p = 0; p < 8; p++) { // pattern
                 if (i * 8 + p >= eventsinfo->patterns)
@@ -3611,24 +3641,25 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s)
         }
     }
 
-    return 0;
+    return retval;
 }
 
-int Ca2mv2Player::a2t_read_patterns(char *src)
+int Ca2mv2Player::a2t_read_patterns(char *src, unsigned long size)
 {
     int blockstart[14] = {2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 5, 5, 5, 5};
     int s = blockstart[ffver - 1];
 
-    a2_read_patterns(src, s);
-
-    return 0;
+    return a2_read_patterns(src, s, size);
 }
 
-bool Ca2mv2Player::a2t_import(char *tune)
+bool Ca2mv2Player::a2t_import(char *tune, unsigned long size)
 {
     A2T_HEADER *header = (A2T_HEADER *)tune;
     char *blockptr = tune + sizeof(A2T_HEADER);
+    int result;
 
+    if (sizeof (header) > size)
+        return false;
     if (strncmp(header->id, "_A2tiny_module_", 15))
         return false;
 
@@ -3649,7 +3680,9 @@ bool Ca2mv2Player::a2t_import(char *tune)
     songinfo->macro_speedup = 1;
 
     // Read variable part after header, fill len[] with values
-    blockptr += a2t_read_varheader(blockptr);
+    result = a2t_read_varheader(blockptr, size - (blockptr - tune));
+    if (result == INT_MAX) return false;
+    blockptr += result;
 
     speed_update    = (songinfo->common_flag >> 0) & 1;
     lockvol         = (songinfo->common_flag >> 1) & 1;
@@ -3661,25 +3694,36 @@ bool Ca2mv2Player::a2t_import(char *tune)
     volume_scaling  = (songinfo->common_flag >> 7) & 1;
 
     // Read instruments; all versions
-    blockptr += a2t_read_instruments(blockptr);
+    result = a2t_read_instruments(blockptr, size - (blockptr - tune));
+    if (result == INT_MAX) return false;
+    blockptr += result;
 
     // Read instrument macro (v >= 9,10,11)
-    blockptr += a2t_read_fmregtable(blockptr);
+    result = a2t_read_fmregtable(blockptr, size - (blockptr - tune));
+    if (result == INT_MAX) return false;
+    blockptr += result;
 
     // Read arpeggio/vibrato macro table (v >= 9,10,11)
-    blockptr += a2t_read_arpvibtable(blockptr);
+    result = a2t_read_arpvibtable(blockptr, size - (blockptr - tune));
+    if (result == INT_MAX) return false;
+    blockptr += result;
 
     // Read disabled fm regs (v == 11)
-    blockptr += a2t_read_disabled_fmregs(blockptr);
+    result = a2t_read_disabled_fmregs(blockptr, size - (blockptr - tune));
+    if (result == INT_MAX) return false;
+    blockptr += result;
 
     // Read pattern_order
-    blockptr += a2t_read_order(blockptr);
+    result = a2t_read_order(blockptr, size - (blockptr - tune));
+    if (result == INT_MAX) return false;
+    blockptr += result;
 
     // Allocate patterns
     patterns_allocate(header->npatt, songinfo->nm_tracks, songinfo->patt_len);
 
     // Read patterns
-    a2t_read_patterns(blockptr);
+    result = a2t_read_patterns(blockptr, size - (blockptr - tune));
+    if (result == INT_MAX) return false;
 
     return true;
 }
@@ -3687,7 +3731,7 @@ bool Ca2mv2Player::a2t_import(char *tune)
 typedef uint8_t (tUINT16)[2];
 typedef uint8_t (tUINT32)[4];
 
-int Ca2mv2Player::a2m_read_varheader(char *blockptr, int npatt)
+int Ca2mv2Player::a2m_read_varheader(char *blockptr, int npatt, unsigned long size)
 {
     int lensize;
     int maxblock = (ffver < 5 ? npatt / 16 : npatt / 8) + 1;
@@ -3701,25 +3745,30 @@ int Ca2mv2Player::a2m_read_varheader(char *blockptr, int npatt)
 
     switch (ffver) {
     case 1 ... 8:
+        if (lensize * sizeof(tUINT16) > size) return INT_MAX;
+
         // skip possible rubbish (MARIO.A2M)
         for (int i = 0; (i < lensize) && (i <= maxblock); i++)
             len[i] = UINT16LE(src16[i]);
 
         return lensize * sizeof(tUINT16);
     case 9 ... 14:
+        if (lensize * sizeof(tUINT32) > size) return INT_MAX;
+
         for (int i = 0; i < lensize; i++)
             len[i] = UINT32LE(src32[i]);
 
         return lensize * sizeof(tUINT32);
     }
 
-    return 0;
+    return INT_MAX;
 }
 
-int Ca2mv2Player::a2m_read_songdata(char *src)
+int Ca2mv2Player::a2m_read_songdata(char *src, unsigned long size)
 {
     if (ffver < 9) {    // 1 - 8
-        A2M_SONGDATA_V1_8 *data = (A2M_SONGDATA_V1_8 *)malloc(sizeof(*data));
+        if (len[0] > size) return INT_MAX;
+        A2M_SONGDATA_V1_8 *data = (A2M_SONGDATA_V1_8 *)calloc(1, sizeof(*data));
         a2t_depack(src, len[0], (char *)data, sizeof (*data));
 
         memcpy(songinfo->songname, data->songname + 1, 42);
@@ -3750,7 +3799,8 @@ int Ca2mv2Player::a2m_read_songdata(char *src)
 
         free(data);
     } else {    // 9 - 14
-        A2M_SONGDATA_V9_14 *data = (A2M_SONGDATA_V9_14 *)malloc(sizeof(*data));
+        if (len[0] > size) return INT_MAX;
+        A2M_SONGDATA_V9_14 *data = (A2M_SONGDATA_V9_14 *)calloc(1, sizeof(*data));
         a2t_depack(src, len[0], (char *)data, sizeof (*data));
 
         memcpy(songinfo->songname, data->songname + 1, 42);
@@ -3826,18 +3876,19 @@ int Ca2mv2Player::a2m_read_songdata(char *src)
     return len[0];
 }
 
-int Ca2mv2Player::a2m_read_patterns(char *src)
+int Ca2mv2Player::a2m_read_patterns(char *src, unsigned long size)
 {
-    a2_read_patterns(src, 1);
-
-    return 0;
+    return a2_read_patterns(src, 1, size);
 }
 
-bool Ca2mv2Player::a2m_import(char *tune)
+bool Ca2mv2Player::a2m_import(char *tune, unsigned long size)
 {
     A2M_HEADER *header = (A2M_HEADER *)tune;
     char *blockptr = tune + sizeof(A2M_HEADER);
+    int result;
 
+    if (sizeof (A2M_HEADER) > size)
+        return false;
     if (strncmp(header->id, "_A2module_", 10))
         return false;
 
@@ -3856,28 +3907,33 @@ bool Ca2mv2Player::a2m_import(char *tune)
     songinfo->macro_speedup = 1;
 
     // Read variable part after header, fill len[] with values
-    blockptr += a2m_read_varheader(blockptr, header->npatt);
+    result = a2m_read_varheader(blockptr, header->npatt, size - (blockptr - tune));
+    if (result == INT_MAX) return false;
+    blockptr += result;
 
     // Read songdata
-    blockptr += a2m_read_songdata(blockptr);
+    result = a2m_read_songdata(blockptr, size - (blockptr - tune));
+    if (result == INT_MAX) return false;
+    blockptr += result;
 
     // Allocate patterns
     patterns_allocate(header->npatt, songinfo->nm_tracks, songinfo->patt_len);
 
     // Read patterns
-    a2m_read_patterns(blockptr);
+    result = a2m_read_patterns(blockptr, size - (blockptr - tune));
+    if (result == INT_MAX) return false;
 
     return true;
 }
 
-bool Ca2mv2Player::a2_import(char *tune)
+bool Ca2mv2Player::a2_import(char *tune, unsigned long size)
 {
-    if (!strncmp(tune, "_A2module_", 10)) {
-        return a2m_import(tune);
+    if ((size > 10) && !strncmp(tune, "_A2module_", 10)) {
+        return a2m_import(tune, size);
     }
 
-    if (!strncmp(tune, "_A2tiny_module_", 15)) {
-        return a2t_import(tune);
+    if ((size > 15) && !strncmp(tune, "_A2tiny_module_", 15)) {
+        return a2t_import(tune, size);
     }
 
     return false;
