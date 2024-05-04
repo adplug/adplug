@@ -71,7 +71,7 @@ jobs:
         brew update
         # See comment in 'make' step (this takes good 20 mins)
         #brew install --cask mactex-no-gui
-        brew install automake texinfo
+        brew install automake texinfo libtool
 
     - name: Install LLVM and Clang
       if: ${{ matrix.compiler == 'clang' && runner.os != 'macOS' }}
