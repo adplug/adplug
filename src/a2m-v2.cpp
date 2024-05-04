@@ -3658,8 +3658,9 @@ bool Ca2mv2Player::a2t_import(char *tune, unsigned long size)
     char *blockptr = tune + sizeof(A2T_HEADER);
     int result;
 
-    if (sizeof (header) > size)
+    if (sizeof(A2T_HEADER) > size)
         return false;
+
     if (strncmp(header->id, "_A2tiny_module_", 15))
         return false;
 
@@ -3887,8 +3888,9 @@ bool Ca2mv2Player::a2m_import(char *tune, unsigned long size)
     char *blockptr = tune + sizeof(A2M_HEADER);
     int result;
 
-    if (sizeof (A2M_HEADER) > size)
+    if (sizeof(A2M_HEADER) > size)
         return false;
+
     if (strncmp(header->id, "_A2module_", 10))
         return false;
 
