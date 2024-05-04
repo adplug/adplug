@@ -46,6 +46,44 @@
 #include "unlzss.h"
 #include "unlzw.h"
 
+/* https://github.com/wc-duck/dbgtools/blob/master/include/dbgtools/static_assert.h */
+
+#define STATIC_ASSERT(cond, msg)
+#undef STATIC_ASSERT
+
+// ... clang ...
+#if defined( __clang__ )
+    #if defined( __cplusplus ) && __has_feature(cxx_static_assert)
+        #define STATIC_ASSERT(cond, msg) static_assert(cond, msg)
+    #elif __has_feature(c_static_assert)
+        #define STATIC_ASSERT(cond, msg) _Static_assert(cond, msg)
+    #endif
+
+// ... msvc ...
+#elif defined(_MSC_VER) && ( defined(_MSC_VER) && (_MSC_VER >= 1600) )
+    #define STATIC_ASSERT(cond, msg) static_assert(cond, msg)
+
+// ... gcc ...
+#elif defined(__cplusplus)
+    #if __cplusplus >= 201103L || (defined(_MSC_VER) && (_MSC_VER >= 1600))
+        #define STATIC_ASSERT(cond, msg) static_assert(cond, msg)
+    #endif
+#elif defined( __STDC__ )
+    #if defined(__STDC_VERSION__)
+        #if __STDC_VERSION__ >= 201112L
+            #define STATIC_ASSERT(cond, msg) _Static_assert(cond, msg)
+        #else
+            #define STATIC_ASSERT(cond, msg) _Static_assert(cond, msg)
+        #endif
+    #endif
+#endif
+
+/* if we couldn't detect a builtin static assert, lets define one! */
+#ifndef STATIC_ASSERT
+    #define STATIC_ASSERT(cond, msg) typedef char __STATIC_ASSERT__[(cond) ? 1 : -1]
+#endif
+
+
 // Macros for extracting little-endian integers from filedata
 #define INT16LE(A) (int16_t)((A[0]) | (A[1] << 8))
 #define UINT16LE(A) (uint16_t)((A[0]) | (A[1] << 8))
@@ -95,7 +133,7 @@ typedef struct {
     };
 } tFM_INST_DATA;
 
-static_assert(sizeof(tFM_INST_DATA) == 11, "sizeof(tFM_INST_DATA) != 11");
+STATIC_ASSERT(sizeof(tFM_INST_DATA) == 11, "sizeof(tFM_INST_DATA) != 11");
 
 typedef struct {
     tFM_INST_DATA fm;
@@ -104,7 +142,7 @@ typedef struct {
     uint8_t perc_voice;
 } tINSTR_DATA;
 
-static_assert(sizeof(tINSTR_DATA) == 14, "sizeof(tINSTR_DATA) != 14");
+STATIC_ASSERT(sizeof(tINSTR_DATA) == 14, "sizeof(tINSTR_DATA) != 14");
 
 typedef struct {
     uint8_t length;
@@ -147,8 +185,8 @@ typedef struct {
     tVIBRATO_TABLE vibrato;
 } tARPVIB_TABLE;
 
-static_assert(sizeof(tFMREG_TABLE) == 3831, "sizeof(tFMREG_TABLE) != 3831");
-static_assert(sizeof(tARPVIB_TABLE) == 521, "sizeof(tARPVIB_TABLE) != 521");
+STATIC_ASSERT(sizeof(tFMREG_TABLE) == 3831, "sizeof(tFMREG_TABLE) != 3831");
+STATIC_ASSERT(sizeof(tARPVIB_TABLE) == 521, "sizeof(tARPVIB_TABLE) != 521");
 
 typedef struct {
     uint8_t note;
@@ -159,7 +197,7 @@ typedef struct {
     } eff[2];
 } tADTRACK2_EVENT;
 
-static_assert(sizeof(tADTRACK2_EVENT) == 6, "sizeof(tADTRACK2_EVENT) != 6");
+STATIC_ASSERT(sizeof(tADTRACK2_EVENT) == 6, "sizeof(tADTRACK2_EVENT) != 6");
 
 typedef struct {
     struct {
@@ -169,7 +207,7 @@ typedef struct {
     } ch[20];
 } tPATTERN_DATA;
 
-static_assert(sizeof(tPATTERN_DATA) == 20 * 256 * 6, "sizeof(tPATTERN_DATA) != 30720");
+STATIC_ASSERT(sizeof(tPATTERN_DATA) == 20 * 256 * 6, "sizeof(tPATTERN_DATA) != 30720");
 
 #define ef_Arpeggio            0
 #define ef_FSlideUp            1
@@ -311,7 +349,7 @@ typedef struct {
     uint8_t speed;
 } A2T_HEADER;
 
-static_assert(sizeof(A2T_HEADER) == 23, "sizeof(A2T_HEADER) != 23");
+STATIC_ASSERT(sizeof(A2T_HEADER) == 23, "sizeof(A2T_HEADER) != 23");
 
 typedef struct {
     char id[10];	// '_a2module_'
@@ -320,7 +358,7 @@ typedef struct {
     uint8_t npatt;
 } A2M_HEADER;
 
-static_assert(sizeof(A2M_HEADER) == 16, "sizeof(A2M_HEADER) != 16");
+STATIC_ASSERT(sizeof(A2M_HEADER) == 16, "sizeof(A2M_HEADER) != 16");
 
 typedef struct {
     uint8_t len[6][2]; // uint16_t
@@ -367,12 +405,12 @@ typedef union {
     A2T_VARHEADER_V11   v11;
 } A2T_VARHEADER;
 
-static_assert(sizeof(A2T_VARHEADER_V1234) == 12, "sizeof(A2T_VARHEADER_V1234) != 12");
-static_assert(sizeof(A2T_VARHEADER_V5678) == 21, "sizeof(A2T_VARHEADER_V5678) != 21");
-static_assert(sizeof(A2T_VARHEADER_V9) == 86, "sizeof(A2T_VARHEADER_V9) != 86");
-static_assert(sizeof(A2T_VARHEADER_V10) == 107, "sizeof(A2T_VARHEADER_V10) != 107");
-static_assert(sizeof(A2T_VARHEADER_V11) == 111, "sizeof(A2T_VARHEADER_V11) != 111");
-static_assert(sizeof(A2T_VARHEADER) == 111, "sizeof(A2T_VARHEADER) != 111");
+STATIC_ASSERT(sizeof(A2T_VARHEADER_V1234) == 12, "sizeof(A2T_VARHEADER_V1234) != 12");
+STATIC_ASSERT(sizeof(A2T_VARHEADER_V5678) == 21, "sizeof(A2T_VARHEADER_V5678) != 21");
+STATIC_ASSERT(sizeof(A2T_VARHEADER_V9) == 86, "sizeof(A2T_VARHEADER_V9) != 86");
+STATIC_ASSERT(sizeof(A2T_VARHEADER_V10) == 107, "sizeof(A2T_VARHEADER_V10) != 107");
+STATIC_ASSERT(sizeof(A2T_VARHEADER_V11) == 111, "sizeof(A2T_VARHEADER_V11) != 111");
+STATIC_ASSERT(sizeof(A2T_VARHEADER) == 111, "sizeof(A2T_VARHEADER) != 111");
 
 // only for importing v 1,2,3,4,5,6,7,8
 typedef struct {
@@ -400,9 +438,9 @@ typedef struct {
     } ch[18];
 } tPATTERN_DATA_V5678;
 
-static_assert(sizeof(tADTRACK2_EVENT_V1234) == 4, "sizeof(tADTRACK2_EVENT_V1234) != 4");
-static_assert(sizeof(tPATTERN_DATA_V1234) == 2304, "sizeof(tPATTERN_DATA_V1234) != 2304");
-static_assert(sizeof(tPATTERN_DATA_V5678) == 4608, "sizeof(tPATTERN_DATA_V5678) != 4608");
+STATIC_ASSERT(sizeof(tADTRACK2_EVENT_V1234) == 4, "sizeof(tADTRACK2_EVENT_V1234) != 4");
+STATIC_ASSERT(sizeof(tPATTERN_DATA_V1234) == 2304, "sizeof(tPATTERN_DATA_V1234) != 2304");
+STATIC_ASSERT(sizeof(tPATTERN_DATA_V5678) == 4608, "sizeof(tPATTERN_DATA_V5678) != 4608");
 
 // Old v1234 effects
 enum {
@@ -447,7 +485,7 @@ typedef struct {
     int8_t  fine_tune;
 } tINSTR_DATA_V1_8;
 
-static_assert(sizeof(tINSTR_DATA_V1_8) == 13, "sizeof(tINSTR_DATA_V1_8) != 13");
+STATIC_ASSERT(sizeof(tINSTR_DATA_V1_8) == 13, "sizeof(tINSTR_DATA_V1_8) != 13");
 
 typedef struct {
     char songname[43];
@@ -460,7 +498,7 @@ typedef struct {
     uint8_t common_flag; // A2M_SONGDATA_V5678
 } A2M_SONGDATA_V1_8;
 
-static_assert(sizeof(A2M_SONGDATA_V1_8) == 11717, "sizeof(A2M_SONGDATA_V1_8) != 11717");
+STATIC_ASSERT(sizeof(A2M_SONGDATA_V1_8) == 11717, "sizeof(A2M_SONGDATA_V1_8) != 11717");
 
 typedef struct {
     uint8_t num_4op;
@@ -497,7 +535,7 @@ typedef struct {
     tBPM_DATA bpm_data;            // A2M_SONGDATA_V14
 } A2M_SONGDATA_V9_14;
 
-static_assert(sizeof(A2M_SONGDATA_V9_14) == 1138338, "sizeof(A2M_SONGDATA_V9_14) != 1138338");
+STATIC_ASSERT(sizeof(A2M_SONGDATA_V9_14) == 1138338, "sizeof(A2M_SONGDATA_V9_14) != 1138338");
 
 /* Player data */
 
