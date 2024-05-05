@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\a2m.cpp" />
+    <ClCompile Include="..\..\..\src\a2m-v2.cpp" />
     <ClCompile Include="..\..\..\src\adl.cpp" />
     <ClCompile Include="..\..\..\src\adlibemu.c" />
     <ClCompile Include="..\..\..\src\adplug.cpp" />
@@ -92,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\a2m.h" />
+    <ClInclude Include="..\..\..\src\a2m-v2.h" />
     <ClInclude Include="..\..\..\src\adl.h" />
     <ClInclude Include="..\..\..\src\adlibemu.h" />
     <ClInclude Include="..\..\..\src\adplug.h" />
