@@ -187,7 +187,7 @@ void decode()
 
 	while(c != TERMINATE) {
 		if(c < 256) {
-			if (obufcount < obufsize) /* check for overflow if output buffer */
+			if (obufcount < obufsize) /* check for overflow in output buffer */
 				obuf[obufcount] = (unsigned char)c;
 			obufcount++;
 			if(obufcount == MAXBUF) {
@@ -211,7 +211,7 @@ void decode()
 				k += MAXSIZE;
 
 			for(i=0;i<=len-1;i++) {
-				if (obufcount < obufsize) /* check for overflow if output buffer */
+				if (obufcount < obufsize) /* check for overflow in output buffer */
 					obuf[obufcount] = buf[k];
 				obufcount++;
 				if(obufcount == MAXBUF) {
@@ -240,7 +240,7 @@ unsigned short sixdepak(unsigned short *source, unsigned char *dest,
 	if((unsigned int)size + 4096 > MAXBUF)
 		return 0;
 
-	buf = malloc(MAXSIZE); //buf = new unsigned char [MAXSIZE];
+	buf = calloc(1, MAXSIZE); //buf = new unsigned char [MAXSIZE];
 	input_size = size;
 	ibitcount = 0; ibitbuffer = 0;
 	obufcount = 0; ibufcount = 0;
