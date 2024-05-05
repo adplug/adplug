@@ -39,6 +39,7 @@
          <QPG:Add permissions="0644" file="./doc/libadplug.info-1" install="/opt/info/"/>
          <QPG:Add permissions="0644" file="./doc/libadplug.info-2" install="/opt/info/"/>
          <QPG:Add permissions="0644" file="./src/a2m.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/a2m-v2.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/adl.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/adlibemu.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/adplug.h" install="/opt/include/adplug/"/>
