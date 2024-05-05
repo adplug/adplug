@@ -640,7 +640,7 @@ typedef struct {
 } tCHDATA;
 
 typedef struct {
-    int count;
+    unsigned int count;
     size_t size;
     tINSTR_DATA_EXT *instruments;
 } tINSTR_INFO;
@@ -752,7 +752,7 @@ private:
     // Loader
     int type = 0; // 0 - a2m, 1 - a2t
     int ffver = 1;
-    int len[21];
+    unsigned int len[21];
     bool adsr_carrier[9]; // For importing from a2m v1234
 
     bool songend = false;
