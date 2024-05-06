@@ -1895,52 +1895,45 @@ void Ca2mv2Player::generate_custom_vibrato(uint8_t value)
 
     #define min0(VALUE) ((int)VALUE >= 0 ? (int)VALUE : 0)
 
-    switch (value) {
-    case 0: // set default speed table
+    if (value == 0) {
+        // 0: set default speed table
         vibtrem_table_size = def_vibtrem_table_size;
         memcpy(&vibtrem_table, &def_vibtrem_table, sizeof(vibtrem_table));
-        break;
+    } else if (value <= 239) {
+        // 1-239: set custom speed table (fixed size = 32)
+        vibtrem_table_size = def_vibtrem_table_size;
+        double mul_r = (double)value / 16.0;
 
-    case 1 ... 239: // set custom speed table (fixed size = 32)
-        {
-            vibtrem_table_size = def_vibtrem_table_size;
-            double mul_r = (double)value / 16.0;
+        for (idx2 = 0; idx2 <= 7; idx2++) {
+            vibtrem_table[idx2 * 32] = 0;
 
-            for (idx2 = 0; idx2 <= 7; idx2++) {
-                vibtrem_table[idx2 * 32] = 0;
+            for (idx = 1; idx <= 16; idx++) {
+                vibtrem_table[idx2 * 32 + idx] = (uint8_t)round(idx * mul_r);
+            }
 
-                for (idx = 1; idx <= 16; idx++) {
-                    vibtrem_table[idx2 * 32 + idx] = (uint8_t)round(idx * mul_r);
-                }
-
-                for (idx = 17; idx <= 31; idx++) {
-                    vibtrem_table[idx2 * 32 + idx] = (uint8_t)round((32 - idx) * mul_r);
-                }
+            for (idx = 17; idx <= 31; idx++) {
+                vibtrem_table[idx2 * 32 + idx] = (uint8_t)round((32 - idx) * mul_r);
             }
         }
-        break;
+    } else {
+        // 240-255: set custom speed table (speed factor = 1-4)
+        vibtrem_speed_factor = (value - 240) % 4 + 1;
+        vibtrem_table_size = 2 * vibtab_size[value - 240];
+        int mul_b = 256 / (vibtab_size[value - 240]);
 
-    case 240 ... 255: // set custom speed table (speed factor = 1-4)
-        {
-            vibtrem_speed_factor = (value - 240) % 4 + 1;
-            vibtrem_table_size = 2 * vibtab_size[value - 240];
-            int mul_b = 256 / (vibtab_size[value - 240]);
+        for (idx2 = 0; idx <= 128 / vibtab_size[value - 240] - 1; idx++) {
+            vibtrem_table[2 * vibtab_size[value - 240] * idx2] = 0;
 
-            for (idx2 = 0; idx <= 128 / vibtab_size[value - 240] - 1; idx++) {
-                vibtrem_table[2 * vibtab_size[value - 240] * idx2] = 0;
+            for (idx = 1; idx <= vibtab_size[value - 240]; idx++) {
+                vibtrem_table[2 * vibtab_size[value - 240] * idx2 + idx] =
+                    min0(idx * mul_b - 1);
+            }
 
-                for (idx = 1; idx <= vibtab_size[value - 240]; idx++) {
-                    vibtrem_table[2 * vibtab_size[value - 240] * idx2 + idx] =
-                        min0(idx * mul_b - 1);
-                }
-
-                for (idx = vibtab_size[value - 240] + 1; idx <= 2 * vibtab_size[value - 240] - 1; idx++) {
-                    vibtrem_table[2 * vibtab_size[value - 240] * idx2 + idx] =
-                        min0((2 * vibtab_size[value - 240] - idx) * mul_b - 1);
-                }
+            for (idx = vibtab_size[value - 240] + 1; idx <= 2 * vibtab_size[value - 240] - 1; idx++) {
+                vibtrem_table[2 * vibtab_size[value - 240] * idx2 + idx] =
+                    min0((2 * vibtab_size[value - 240] - idx) * mul_b - 1);
             }
         }
-        break;
     }
 }
 
@@ -2882,21 +2875,18 @@ void Ca2mv2Player::macro_poll_proc()
                 if ((mt->arpg_pos != 0) &&
                     (mt->arpg_pos != IDLE) && (mt->arpg_pos != finished_flag)) {
                     int8_t fine_tune = get_instr_fine_tune(ch->event_table[chan].instr_def);
-                    switch (at->data[mt->arpg_pos - 1]) {
-                    case 0:
-                        change_frequency(chan, nFreq(mt->arpg_note - 1) +
-                            fine_tune);
-                        break;
+                    uint8_t d = at->data[mt->arpg_pos - 1];
 
-                    case 1 ... 96:
+                    if (d == 0) {
+                        change_frequency(chan, nFreq(mt->arpg_note - 1) + fine_tune);
+                    } else if (d <= 96) {
+                        // 1 - 96:
                         change_frequency(chan, nFreq(max(mt->arpg_note + at->data[mt->arpg_pos], 97) - 1) +
                             fine_tune);
-                        break;
-
-                    case 0x80 ... 0x80+12*8+1:
+                    } else if (d >= 0x80 && d <= 0x80+12*8+1) {
+                        // 0x80 - 0x80+12*8+1:
                         change_frequency(chan, nFreq(at->data[mt->arpg_pos - 1] - 0x80 - 1) +
                             fine_tune);
-                        break;
                     }
                 }
             } else {
@@ -3170,10 +3160,14 @@ void Ca2mv2Player::a2t_depack(char *src, int srcsize, char *dst, int dstsize)
         if (dstsize <= srcsize)
             memcpy(dst, src, srcsize);
         break;
-    case 9 ... 11:  // apack (aPlib)
+    case 9:
+    case 10:
+    case 11: // apack (aPlib)
         aP_depack(src, dst, srcsize, dstsize);
         break;
-    case 12 ... 14: // lzh
+    case 12:
+    case 13:
+    case 14: // lzh
         LZH_decompress(src, dst, srcsize, dstsize);
         break;
     }
@@ -3185,13 +3179,19 @@ int Ca2mv2Player::a2t_read_varheader(char *blockptr, unsigned long size)
     A2T_VARHEADER *varheader = (A2T_VARHEADER *)blockptr;
 
     switch (ffver) {
-    case 1 ... 4:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
         if (sizeof(A2T_VARHEADER_V1234) > size)
             return INT_MAX;
         for (int i = 0; i < 6; i++)
             len[i] = UINT16LE(varheader->v1234.len[i]);
         return sizeof(A2T_VARHEADER_V1234);
-    case 5 ... 8:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
         if (sizeof(A2T_VARHEADER_V5678) > size)
             return INT_MAX;
         songinfo->common_flag = varheader->v5678.common_flag;
@@ -3221,7 +3221,10 @@ int Ca2mv2Player::a2t_read_varheader(char *blockptr, unsigned long size)
         for (int i = 0; i < 20; i++)
             len[i] = UINT32LE(varheader->v10.len[i]);
         return sizeof(A2T_VARHEADER_V10);
-    case 11 ... 14:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
         if (sizeof(A2T_VARHEADER_V11) > size)
             return INT_MAX;
         songinfo->common_flag = varheader->v11.common_flag;
@@ -3538,7 +3541,10 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
 {
     int retval = 0;
     switch (ffver) {
-    case 1 ... 4:   // [4][16][64][9][4]
+    case 1:
+    case 2:
+    case 3:
+    case 4: // [4][16][64][9][4]
         {
         tPATTERN_DATA_V1234 *old = (tPATTERN_DATA_V1234 *)calloc(16, sizeof(*old));
 
@@ -3576,7 +3582,10 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
         free(old);
         break;
         }
-    case 5 ... 8:   // [8][8][18][64][4]
+    case 5:
+    case 6:
+    case 7:
+    case 8: // [8][8][18][64][4]
         {
         tPATTERN_DATA_V5678 *old = (tPATTERN_DATA_V5678 *)calloc(8, sizeof(*old));
 
@@ -3610,7 +3619,12 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
         free(old);
         break;
         }
-    case 9 ... 14:  // [16][8][20][256][6]
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14: // [16][8][20][256][6]
         {
         tPATTERN_DATA *old = (tPATTERN_DATA *)calloc(8, sizeof(*old));
 
@@ -3744,8 +3758,7 @@ int Ca2mv2Player::a2m_read_varheader(char *blockptr, int npatt, unsigned long si
     else if (ffver < 9) lensize = 9;    // 5,6,7,8 - uint16_t len[9];
     else lensize = 17;                  // 9,10,11 - uint32_t len[17];
 
-    switch (ffver) {
-    case 1 ... 8:
+    if (ffver >= 1 && ffver <= 8) { // 1 - 8
         if (lensize * sizeof(tUINT16) > size) return INT_MAX;
 
         // skip possible rubbish (MARIO.A2M)
@@ -3753,7 +3766,7 @@ int Ca2mv2Player::a2m_read_varheader(char *blockptr, int npatt, unsigned long si
             len[i] = UINT16LE(src16[i]);
 
         return lensize * sizeof(tUINT16);
-    case 9 ... 14:
+    } else if (ffver >= 9 && ffver <= 14) { // 9 - 14
         if (lensize * sizeof(tUINT32) > size) return INT_MAX;
 
         for (int i = 0; i < lensize; i++)
