@@ -720,8 +720,8 @@ private:
 
     tSONGINFO *songinfo;
     tINSTR_INFO *instrinfo;
-    tVIBRATO_TABLE *vibrato_table[255];
-    tARPEGGIO_TABLE *arpeggio_table[255];
+    tVIBRATO_TABLE **vibrato_table;
+    tARPEGGIO_TABLE **arpeggio_table;
     tEVENTS_INFO *eventsinfo;
     tCHDATA *ch;
 

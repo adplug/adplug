@@ -67,8 +67,8 @@ Ca2mv2Player::Ca2mv2Player(Copl *newopl) : CPlayer(newopl)
     eventsinfo = new tEVENTS_INFO();
     ch = new tCHDATA();
 
-    memset(vibrato_table, 0, 255 * sizeof(tVIBRATO_TABLE *));
-    memset(arpeggio_table, 0, 255 * sizeof(tARPEGGIO_TABLE *));
+    vibrato_table = new tVIBRATO_TABLE *[255]();
+    arpeggio_table = new tARPEGGIO_TABLE *[255]();
 }
 
 Ca2mv2Player::~Ca2mv2Player()
@@ -80,6 +80,9 @@ Ca2mv2Player::~Ca2mv2Player()
         vibrato_table[i] = 0;
         arpeggio_table[i] = 0;
     }
+
+    delete[] vibrato_table;
+    delete[] arpeggio_table;
 
     patterns_free();
     instruments_free();
