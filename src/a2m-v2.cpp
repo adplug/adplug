@@ -1921,7 +1921,7 @@ void Ca2mv2Player::generate_custom_vibrato(uint8_t value)
         vibtrem_table_size = 2 * vibtab_size[value - 240];
         int mul_b = 256 / (vibtab_size[value - 240]);
 
-        for (idx2 = 0; idx <= 128 / vibtab_size[value - 240] - 1; idx++) {
+        for (idx2 = 0; idx2 <= 128 / vibtab_size[value - 240] - 1; idx2++) {
             vibtrem_table[2 * vibtab_size[value - 240] * idx2] = 0;
 
             for (idx = 1; idx <= vibtab_size[value - 240]; idx++) {
