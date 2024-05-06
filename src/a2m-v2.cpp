@@ -66,6 +66,9 @@ Ca2mv2Player::Ca2mv2Player(Copl *newopl) : CPlayer(newopl)
     instrinfo = new tINSTR_INFO();
     eventsinfo = new tEVENTS_INFO();
     ch = new tCHDATA();
+
+    memset(vibrato_table, 0, 255 * sizeof(tVIBRATO_TABLE *));
+    memset(arpeggio_table, 0, 255 * sizeof(tARPEGGIO_TABLE *));
 }
 
 Ca2mv2Player::~Ca2mv2Player()
@@ -74,6 +77,8 @@ Ca2mv2Player::~Ca2mv2Player()
     for (unsigned int i = 0; i < 255; i++) {
         free(vibrato_table[i]);
         free(arpeggio_table[i]);
+        vibrato_table[i] = 0;
+        arpeggio_table[i] = 0;
     }
 
     patterns_free();
