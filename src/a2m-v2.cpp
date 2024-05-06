@@ -143,7 +143,7 @@ bool Ca2mv2Player::load(const std::string &filename, const CFileProvider &fp)
 void Ca2mv2Player::instruments_free()
 {
     if (instrinfo->instruments) {
-        for (int i = 0; i < instrinfo->count; i++) {
+        for (unsigned int i = 0; i < instrinfo->count; i++) {
             if (instrinfo->instruments[i].fmreg) {
                 free(instrinfo->instruments[i].fmreg);
                 instrinfo->instruments[i].fmreg = NULL;
