@@ -853,6 +853,8 @@ void Ca2mv2Player::set_ins_volume_4op(uint8_t volume, uint8_t chan)
 void Ca2mv2Player::reset_ins_volume(int chan)
 {
     tINSTR_DATA *instr = get_instr_data_by_ch(chan);
+    if (!instr) return;
+
     uint8_t vol_mod = instr->fm.volM;
     uint8_t vol_car = instr->fm.volC;
     uint8_t conn = instr->fm.connect;
@@ -3294,7 +3296,7 @@ int Ca2mv2Player::a2t_read_instruments(char *src, unsigned long size)
     int instsize = (ffver < 9 ? sizeof(tINSTR_DATA_V1_8) : sizeof(tINSTR_DATA));
     int dstsize = (instnum * instsize) +
                   (ffver > 11 ?  sizeof(tBPM_DATA) + sizeof(tINS_4OP_FLAGS) + sizeof(tRESERVED) : 0);
-    char *dst = (char *)calloc(dstsize, 1);
+    char *dst = (char *)calloc(1, dstsize);
 
     if (len[0] > size) return INT_MAX;
 
