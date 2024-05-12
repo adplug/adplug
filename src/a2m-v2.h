@@ -720,6 +720,7 @@ private:
 
     tSONGINFO *songinfo;
     tINSTR_INFO *instrinfo;
+    unsigned int arpvib_count;
     tVIBRATO_TABLE **vibrato_table;
     tARPEGGIO_TABLE **arpeggio_table;
     tEVENTS_INFO *eventsinfo;
@@ -749,6 +750,7 @@ private:
     // Helpers for macro tables
     void fmreg_table_allocate(size_t n, tFMREG_TABLE rt[]);
     void disabled_fmregs_import(size_t n, bool dis_fmregs[][28]);
+    void arpvib_tables_free();
     void arpvib_tables_allocate(size_t n, tARPVIB_TABLE mt[]);
     tARPEGGIO_TABLE *get_arpeggio_table(uint8_t arp_table);
     tVIBRATO_TABLE *get_vibrato_table(uint8_t vib_table);

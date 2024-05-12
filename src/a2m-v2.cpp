@@ -66,26 +66,14 @@ Ca2mv2Player::Ca2mv2Player(Copl *newopl) : CPlayer(newopl)
     instrinfo = new tINSTR_INFO();
     eventsinfo = new tEVENTS_INFO();
     ch = new tCHDATA();
-
-    vibrato_table = new tVIBRATO_TABLE *[255]();
-    arpeggio_table = new tARPEGGIO_TABLE *[255]();
 }
 
 Ca2mv2Player::~Ca2mv2Player()
 {
-    // Note: for editor_mode allocate max entries possible
-    for (unsigned int i = 0; i < 255; i++) {
-        free(vibrato_table[i]);
-        free(arpeggio_table[i]);
-        vibrato_table[i] = 0;
-        arpeggio_table[i] = 0;
-    }
-
-    delete[] vibrato_table;
-    delete[] arpeggio_table;
-
+    arpvib_tables_free();
     patterns_free();
     instruments_free();
+
     delete songinfo;
     delete instrinfo;
     delete eventsinfo;
@@ -271,20 +259,37 @@ void Ca2mv2Player::disabled_fmregs_import(size_t n, bool dis_fmregs[255][28])
     }
 }
 
+void Ca2mv2Player::arpvib_tables_free()
+{
+    for (unsigned int i = 0; i < arpvib_count; i++) {
+        free(vibrato_table[i]);
+        free(arpeggio_table[i]);
+        vibrato_table[i] = 0;
+        arpeggio_table[i] = 0;
+    }
+
+    delete[] vibrato_table;
+    delete[] arpeggio_table;
+}
+
 void Ca2mv2Player::arpvib_tables_allocate(size_t n, tARPVIB_TABLE mt[])
 {
-    n = editor_mode ? 255 : n;
+    arpvib_tables_free();
 
     // Note: for editor_mode allocate max entries possible
+    n = editor_mode ? 255 : n;
+
+    vibrato_table = new tVIBRATO_TABLE *[n]();
+    arpeggio_table = new tARPEGGIO_TABLE *[n]();
+    arpvib_count = n;
+
     for (unsigned int i = 0; i < n; i++) {
         if (editor_mode || mt[i].vibrato.length) {
             vibrato_table[i] = (tVIBRATO_TABLE *)calloc(1, sizeof(tVIBRATO_TABLE));
-            assert(vibrato_table[i]);
             *vibrato_table[i] = mt[i].vibrato; // copy struct
         }
         if (editor_mode || mt[i].arpeggio.length) {
             arpeggio_table[i] = (tARPEGGIO_TABLE *)calloc(1, sizeof(tARPEGGIO_TABLE));
-            assert(arpeggio_table[i]);
             *arpeggio_table[i] = mt[i].arpeggio; // copy struct
         }
     }
@@ -292,12 +297,12 @@ void Ca2mv2Player::arpvib_tables_allocate(size_t n, tARPVIB_TABLE mt[])
 
 tARPEGGIO_TABLE *Ca2mv2Player::get_arpeggio_table(uint8_t arp_table)
 {
-    return arp_table && arpeggio_table[arp_table - 1] ? arpeggio_table[arp_table - 1] : NULL;
+    return arp_table && arpeggio_table && arpeggio_table[arp_table - 1] ? arpeggio_table[arp_table - 1] : NULL;
 }
 
 tVIBRATO_TABLE *Ca2mv2Player::get_vibrato_table(uint8_t vib_table)
 {
-    return vib_table && vibrato_table[vib_table - 1] ? vibrato_table[vib_table - 1] : NULL;
+    return vib_table && vibrato_table && vibrato_table[vib_table - 1] ? vibrato_table[vib_table - 1] : NULL;
 }
 
 tFMREG_TABLE *Ca2mv2Player::get_fmreg_table(uint8_t fmreg_ins)
