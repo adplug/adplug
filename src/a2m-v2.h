@@ -721,8 +721,8 @@ private:
     tSONGINFO *songinfo;
     tINSTR_INFO *instrinfo;
     unsigned int arpvib_count;
-    tVIBRATO_TABLE **vibrato_table;
-    tARPEGGIO_TABLE **arpeggio_table;
+    tVIBRATO_TABLE **vibrato_table = 0;
+    tARPEGGIO_TABLE **arpeggio_table = 0;
     tEVENTS_INFO *eventsinfo;
     tCHDATA *ch;
 

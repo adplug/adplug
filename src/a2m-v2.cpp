@@ -261,6 +261,9 @@ void Ca2mv2Player::disabled_fmregs_import(size_t n, bool dis_fmregs[255][28])
 
 void Ca2mv2Player::arpvib_tables_free()
 {
+    if (!vibrato_table || !arpeggio_table)
+        return;
+
     for (unsigned int i = 0; i < arpvib_count; i++) {
         free(vibrato_table[i]);
         free(arpeggio_table[i]);
