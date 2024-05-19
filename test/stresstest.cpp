@@ -453,6 +453,12 @@ int main(int argc, char *argv[])
 	if (dir_exists(dir + SUBDIR))
 		dir += SUBDIR DIR_DELIM;
 
+#ifdef DJGPP
+	// DJGPP/DosEMU has weird behaviour when parsing command line arguments (adds path and name of executable as seperate vars)
+	// Don't parse the rest by setting argument count to 1
+	std::cout << "Warning: Running test with DJGPP, ignoring command line arguments, executing all test files!" << std::endl;
+	argc = 1;
+#endif
 	bool fail = false;
 	if (argc < 2) {
 		// No files, so run all tests from filelist.
