@@ -51,7 +51,13 @@ jobs:
         if [[ ${{ matrix.compiler }} = djgpp* ]]; then
           # Flex is required, but even though it's in the GitHub runner image, and marked as installed
           # it's still missing some things, see https://github.com/orgs/community/discussions/45029
-          sudo apt install -y libfl2 libfl-dev
+          sudo apt install -y libfl2 libfl-dev software-properties-common
+          # Install dosemu2 for testing
+          sudo add-apt-repository -y ppa:dosemu2/ppa
+          sudo apt install -y dosemu2 unzip
+          # We need CWSDPMI as well if we want to run any DOS programs.
+          wget https://www.delorie.com/pub/djgpp/current/v2misc/csdpmi7b.zip
+          unzip -j -o "csdpmi7b.zip" "bin/CWSDPMI.EXE" -d ./test
 
           if [[ ${{ matrix.compiler }} == "djgpp-2.0.5-gcc-12.2.0" ]]; then
             wget https://github.com/andrewwutw/build-djgpp/releases/download/v3.4/djgpp-linux64-gcc1220.tar.bz2
@@ -99,7 +105,7 @@ jobs:
       if: ${{ startsWith(matrix.compiler, 'djgpp') }}
       run: |
         echo 'compile_opts=--host=i586-pc-msdosdjgpp --prefix=/usr/local/djgpp CXXFLAGS=-Wno-deprecated CPPFLAGS=-Wno-deprecated PKG_CONFIG_PATH=/usr/local/djgpp/lib/pkgconfig' >> $GITHUB_ENV
-        echo 'usr/local//djgpp/bin/' >> $GITHUB_PATH
+        echo '/usr/local/djgpp/bin/' >> $GITHUB_PATH
 
     - name: Install libbinio
       run: |
@@ -121,12 +127,13 @@ jobs:
           #   endeavour, hence just run tests.
           make check ${{ env.compile_opts }}
         elif [[ ${{ matrix.compiler }} = djgpp* ]]; then
-          # Just verify it compiles and installs,
-          # we can't run tests because of binary incompatibility with host OS when cross compiling
-
+          # Setup dosemu as testing tool
+          export LOG_COMPILER="dosemu"
+          export AM_LOG_FLAGS="-dumb $f"
           # Note: compile_opts is not used here, since DJGPP requires stuff like --host for ./configure
           # which will mess with make's command-line parsing
-          make all
+          # -j1 is there to fix race conditions when building checks and then running dosemu
+          make -j1 check
         elif [[ ${{ runner.os }} == "Linux" ]]; then
           make distcheck ${{ env.compile_opts }}
         fi
@@ -136,7 +143,6 @@ jobs:
       run: make check
 
     - name: Show test results
-      if: ${{ !startsWith(matrix.compiler, 'djgpp')}}
       run: |-
         for I in test/*.log; do
           [ -e "$I" ] || continue
