@@ -248,25 +248,25 @@ doc/adplugdb.1: $(top_srcdir)/doc/adplugdb.1.in
 #########
 
 check_PROGRAMS = \
-	test/playertest \
+	test/playtest \
 	test/emutest \
 	test/crctest \
-	test/stresstest
+	test/strstest
 
-test_playertest_SOURCES = test/playertest.cpp
+test_playtest_SOURCES = test/playertest.cpp
 test_emutest_SOURCES = test/emutest.cpp
 test_crctest_SOURCES = test/crctest.cpp
-test_stresstest_SOURCES = test/stresstest.cpp
+test_strstest_SOURCES = test/stresstest.cpp
 
-test_playertest_CPPFLAGS = $(libbinio_CFLAGS)
+test_playtest_CPPFLAGS = $(libbinio_CFLAGS)
 test_emutest_CPPFLAGS = $(libbinio_CFLAGS)
 test_crctest_CPPFLAGS = $(libbinio_CFLAGS)
-test_stresstest_CPPFLAGS = $(libbinio_CFLAGS)
+test_strstest_CPPFLAGS = $(libbinio_CFLAGS)
 
-test_playertest_LDADD = src/libadplug.la $(libbinio_LIBS)
+test_playtest_LDADD = src/libadplug.la $(libbinio_LIBS)
 test_emutest_LDADD = src/libadplug.la $(libbinio_LIBS)
 test_crctest_LDADD = src/libadplug.la $(libbinio_LIBS)
-test_stresstest_LDADD = src/libadplug.la $(libbinio_LIBS)
+test_strstest_LDADD = src/libadplug.la $(libbinio_LIBS)
 
 AM_TESTS_ENVIRONMENT = testdir='$(srcdir)/test'; export testdir;
 TESTS = $(check_PROGRAMS)
