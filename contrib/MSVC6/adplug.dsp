@@ -129,10 +129,6 @@ SOURCE=.\adlibemu.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\adlibemu.c
-# End Source File
-# Begin Source File
-
 SOURCE=.\adplug.cpp
 # End Source File
 # Begin Source File
