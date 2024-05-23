@@ -56,6 +56,7 @@
          <QPG:Add permissions="0644" file="./src/d00.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/database.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/debug.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/depack.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/dfm.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/diskopl.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/dmo.h" install="/opt/include/adplug/"/>
@@ -102,11 +103,15 @@
          <QPG:Add permissions="0644" file="./src/s3m.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/sa2.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/silentopl.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/sixpack.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/sng.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/sop.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/surroundopl.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/temuopl.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/u6m.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/unlzh.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/unlzss.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/unlzw.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/version.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/vgm.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/wemuopl.h" install="/opt/include/adplug/"/>
