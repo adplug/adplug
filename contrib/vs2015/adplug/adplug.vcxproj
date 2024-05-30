@@ -78,6 +78,7 @@
     <ClCompile Include="..\..\..\src\sa2.cpp" />
     <ClCompile Include="..\..\..\src\sng.cpp" />
     <ClCompile Include="..\..\..\src\surroundopl.cpp" />
+    <ClCompile Include="..\..\..\src\kemuopl.cpp" />
     <ClCompile Include="..\..\..\src\temuopl.cpp" />
     <ClCompile Include="..\..\..\src\u6m.cpp" />
     <ClCompile Include="..\..\..\src\woodyopl.cpp" />
