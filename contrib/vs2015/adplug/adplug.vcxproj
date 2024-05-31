@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\a2m.cpp" />
+    <ClCompile Include="..\..\..\src\a2m-v2.cpp" />
     <ClCompile Include="..\..\..\src\adl.cpp" />
     <ClCompile Include="..\..\..\src\adlibemu.c" />
     <ClCompile Include="..\..\..\src\adplug.cpp" />
@@ -35,6 +36,7 @@
     <ClCompile Include="..\..\..\src\d00.cpp" />
     <ClCompile Include="..\..\..\src\database.cpp" />
     <ClCompile Include="..\..\..\src\debug.c" />
+    <ClCompile Include="..\..\..\src\depack.c" />
     <ClCompile Include="..\..\..\src\dfm.cpp" />
     <ClCompile Include="..\..\..\src\diskopl.cpp" />
     <ClCompile Include="..\..\..\src\dmo.cpp" />
@@ -90,9 +92,14 @@
     <ClCompile Include="..\..\..\src\vgm.cpp" />
     <ClCompile Include="..\..\..\src\sop.cpp" />
     <ClCompile Include="..\..\..\src\herad.cpp" />
+    <ClCompile Include="..\..\..\src\sixpack.c" />
+    <ClCompile Include="..\..\..\src\unlzh.c" />
+    <ClCompile Include="..\..\..\src\unlzss.c" />
+    <ClCompile Include="..\..\..\src\unlzw.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\a2m.h" />
+    <ClInclude Include="..\..\..\src\a2m-v2.h" />
     <ClInclude Include="..\..\..\src\adl.h" />
     <ClInclude Include="..\..\..\src\adlibemu.h" />
     <ClInclude Include="..\..\..\src\adplug.h" />
@@ -108,6 +115,7 @@
     <ClInclude Include="..\..\..\src\d00.h" />
     <ClInclude Include="..\..\..\src\database.h" />
     <ClInclude Include="..\..\..\src\debug.h" />
+    <ClInclude Include="..\..\..\src\depack.h" />
     <ClInclude Include="..\..\..\src\dfm.h" />
     <ClInclude Include="..\..\..\src\diskopl.h" />
     <ClInclude Include="..\..\..\src\dmo.h" />
@@ -168,6 +176,10 @@
     <ClInclude Include="..\..\..\src\vgm.h" />
     <ClInclude Include="..\..\..\src\sop.h" />
     <ClInclude Include="..\..\..\src\herad.h" />
+    <ClInclude Include="..\..\..\src\sixpack.h" />
+    <ClInclude Include="..\..\..\src\unlzh.h" />
+    <ClInclude Include="..\..\..\src\unlzss.h" />
+    <ClInclude Include="..\..\..\src\unlzw.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

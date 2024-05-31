@@ -101,6 +101,30 @@ SOURCE=.\a2m.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\a2m-v2.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\depack.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\sixpack.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzh.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzss.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzw.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\adlibemu.c
 # End Source File
 # Begin Source File
@@ -303,6 +327,30 @@ SOURCE=.\xsm.cpp
 # Begin Source File
 
 SOURCE=.\a2m.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\a2m-v2.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\depack.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\sixpack.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzh.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzss.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzw.h
 # End Source File
 # Begin Source File
 
