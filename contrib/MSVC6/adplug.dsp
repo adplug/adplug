@@ -101,6 +101,30 @@ SOURCE=.\a2m.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\a2m-v2.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\depack.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\sixpack.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzh.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzss.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzw.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\adlibemu.c
 # End Source File
 # Begin Source File
@@ -130,6 +154,10 @@ SOURCE=.\bmf.cpp
 # Begin Source File
 
 SOURCE=.\cff.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\composer.cpp
 # End Source File
 # Begin Source File
 
@@ -250,7 +278,7 @@ SOURCE=.\psi.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\rad.cpp
+SOURCE=.\rad2.cpp
 # End Source File
 # Begin Source File
 
@@ -302,6 +330,30 @@ SOURCE=.\a2m.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\a2m-v2.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\depack.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\sixpack.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzh.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzss.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\unlzw.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\adlibemu.h
 # End Source File
 # Begin Source File
@@ -331,6 +383,10 @@ SOURCE=.\bmf.h
 # Begin Source File
 
 SOURCE=.\cff.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\composer.h
 # End Source File
 # Begin Source File
 
@@ -466,7 +522,7 @@ SOURCE=.\psi.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\rad.h
+SOURCE=.\rad2.h
 # End Source File
 # Begin Source File
 
@@ -499,6 +555,10 @@ SOURCE=.\silentopl.h
 # Begin Source File
 
 SOURCE=.\sng.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\strnlen.h
 # End Source File
 # Begin Source File
 

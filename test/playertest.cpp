@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <string>
+#include <sys/stat.h>
 
 #include "../src/adplug.h"
 #include "../src/opl.h"
@@ -33,6 +34,9 @@
 #	define DIR_DELIM	"/"
 #endif
 
+#define TEST_SUBDIR  "testmus"
+#define REF_SUBDIR   "testref"
+
 /***** Local variables *****/
 
 // List of all filenames to test
@@ -41,22 +45,27 @@ static const char *filelist[] = {
   "2001.MKJ",		// MK-Jamz
   "ADAGIO.DFM",		// Digital-FM
   "adlibsp.s3m",	// Scream Tracker 3
-  "ALLOYRUN.RAD",	// Reality AdLib Tracker
+  "ALLOYRUN.RAD",	// Reality AdLib Tracker (v1)
+  "dystopia.rad",   // Reality AdLib Tracker (v2)
+  "canonind.rad",   // Reality AdLib Tracker (v2 + MIDI)
   "ARAB.BAM",		// Bob's AdLib Music
   "BEGIN.KSM",		// Ken Silverman
   "BOOTUP.M",		// Ultima 6
   "CHILD1.XSM",		// eXtra Simple Music
   "DTM-TRK1.DTM",	// DeFy Adlib Tracker
-// Skip TwinTrack as it produces different results each time
-//  "fdance03.dmo",	// TwinTrack
+  "fdance03.dmo",	// TwinTrack
   "ice_thnk.sci",	// Sierra
   "inc.raw",		// RAW
   "crusader.raw",	// RAW (non-standard clock rate)
   "loudness.lds",	// Loudness
   "MARIO.A2M",		// AdLib Tracker 2
+  "AB_JULIA.A2T",	// Adlib Tracker 2 (tiny module v11)
+  "fank5.a2m",      // Adlib Tracker 2 (v11)
+  "fm-troni.a2m",   // Adlib Tracker 2 (v14)
   "mi2.laa",		// LucasArts
   "michaeld.cmf",	// Creative Music Format
   "2.CMF",			// Creative Music Format (with transpose effect)
+  "SNDTRACK.CMF",	// Creative Music Format (with note-off)
   "PLAYMUS1.SNG",	// SNGPlay
   "rat.xad",		// xad: rat
   "REVELAT.SNG",	// Faust Music Creator
@@ -81,8 +90,8 @@ static const char *filelist[] = {
   "blaster2.msc",	// AdLib MSCplay
   "RI051.RIX",		// Softstar RIX OPL Music
   "EOBSOUND.ADL",	// Westwood ADL v1
-  "DUNE19.ADL",		// Westwood ADL v2
-  "LOREINTR.ADL",	// Westwood ADL v3
+  "DUNE19.ADL",		// Westwood ADL v3
+  "LOREINTR.ADL",	// Westwood ADL v4
   "DEMO4.JBM",		// JBM Adlib Music
   "dro_v2.dro",         // DOSBox DRO v2.0
   "menu.got",       // God of Thunder Music (at 140 Hz)
@@ -97,18 +106,26 @@ static const char *filelist[] = {
   "YsBattle.vgm",	// Video Game Music 1.51 (OPL2)
   "MainBGM5.vgm",	// Video Game Music 1.51 (Dual OPL2)
   "BeyondSN.vgm",	// Video Game Music 1.51 (OPL3)
-  "GALWAY.SOP",		// Note Sequencer by sopepos
+  "GALWAY.SOP",		// Note Sequencer v1.0 by sopepos
+  "ending.sop",		// Note Sequencer v2.0 by sopepos
   "MORNING.HSQ",	// HERAD SDB v1 (HSQ packed)
   "GORBI2.SQX",		// HERAD SDB v1 (SQX packed)
   "ARRAKIS.SDB",	// HERAD SDB v1
   "NEWSAN.HSQ",		// HERAD SDB v2 (HSQ packed)
   "NEWPAGA.HA2",	// HERAD SDB v2
   "WORMINTR.AGD",	// HERAD AGD
+  "well.adl",		// Coktel Vision ADL
+  "TEST16.MID",		// MIDI Type 0
+  "GRABBAG.MID",	// MIDI Type 1
+  "ACTION.PIS",		// Beni Tracker
+  "CHIP.MTR",		// Master Tracker v1
+  "AKMTEC.MTR",		// Master Tracker v2
   NULL
 };
 
 // String holding the relative path to the source directory
-static const char *srcdir;
+static const char *testdir;
+static bool use_subdir = false;
 
 /***** Testopl *****/
 
@@ -164,6 +181,18 @@ private:
 
 /***** Local functions *****/
 
+static bool dir_exists(std::string path)
+{
+  struct stat info;
+
+  int rc = stat(path.c_str(), &info);
+
+  if (rc != 0)
+    return false;
+
+  return (info.st_mode & S_IFDIR);
+}
+
 static bool diff(const std::string fn1, const std::string fn2)
   /*
    * Compares files 'fn1' and 'fn2' line by line and returns true if they are
@@ -203,13 +232,17 @@ static bool testplayer(const std::string filename)
    * prerecorded original and returns true if they match, false otherwise.
    */
 {
-  std::string	fn = std::string(srcdir) + DIR_DELIM + filename;
+  std::string	fn = std::string(testdir) + DIR_DELIM + filename;
 #ifdef __WATCOMC__
   std::string	testfn = tmpnam(NULL);
 #else
   std::string	testfn = filename + ".test";
 #endif
   std::string	reffn = fn.substr(0, fn.find_last_of(".")) + ".ref";
+  if(use_subdir) {
+    fn.insert(fn.find_last_of(DIR_DELIM), DIR_DELIM TEST_SUBDIR);
+    reffn.insert(reffn.find_last_of(DIR_DELIM), DIR_DELIM REF_SUBDIR);
+  }
   Testopl	*opl = new Testopl(testfn);
   CPlayer	*p = CAdPlug::factory(fn, opl);
 
@@ -246,8 +279,10 @@ int main(int argc, char *argv[])
   bool	retval = true;
 
   // Set path to source directory
-  srcdir = getenv("srcdir");
-  if(!srcdir) srcdir = ".";
+  testdir = getenv("testdir");
+  if(!testdir) testdir = ".";
+
+  use_subdir = dir_exists(std::string(testdir) + DIR_DELIM TEST_SUBDIR);
 
   // Try all files one by one
   if(argc > 1) {

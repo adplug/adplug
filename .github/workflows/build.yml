@@ -1,0 +1,213 @@
+name: AdPlug CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+
+    strategy:
+
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        compiler: [gcc, clang]
+        include:
+          - compiler: gcc-4.8 # To test compatibility with older systems
+            os: ubuntu-latest
+          - compiler: djgpp-2.0.5-gcc-12.2.0 # To test compatibility for Adplay - DOS
+            os: ubuntu-latest
+          - compiler: djgpp-2.0.5-gcc-4.8.5 # To test compatibility for Adplay - DOS
+            os: ubuntu-latest
+
+      fail-fast: false
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install packages (Linux)
+      if: ${{ runner.os == 'Linux' }}
+      run: |
+        sudo apt update
+        sudo apt install -y texlive-latex-base texinfo
+
+        if [[ ${{ matrix.compiler }} == "clang" ]]; then
+          sudo apt install -y libncurses5
+        fi
+
+        if [[ ${{ matrix.compiler }} == "gcc-4.8" ]]; then
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/g++-4.8_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/libstdc++-4.8-dev_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/gcc-4.8-base_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/gcc-4.8_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/libgcc-4.8-dev_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/cpp-4.8_4.8.5-4ubuntu8_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/g/gcc-4.8/libasan0_4.8.5-4ubuntu8_amd64.deb
+          sudo apt install ./gcc-4.8_4.8.5-4ubuntu8_amd64.deb ./gcc-4.8-base_4.8.5-4ubuntu8_amd64.deb ./libstdc++-4.8-dev_4.8.5-4ubuntu8_amd64.deb ./cpp-4.8_4.8.5-4ubuntu8_amd64.deb ./libgcc-4.8-dev_4.8.5-4ubuntu8_amd64.deb ./libasan0_4.8.5-4ubuntu8_amd64.deb ./g++-4.8_4.8.5-4ubuntu8_amd64.deb
+        fi
+
+        if [[ ${{ matrix.compiler }} = djgpp* ]]; then
+          # Flex is required, but even though it's in the GitHub runner image, and marked as installed
+          # it's still missing some things, see https://github.com/orgs/community/discussions/45029
+          sudo apt install -y libfl2 libfl-dev
+
+          if [[ ${{ matrix.compiler }} == "djgpp-2.0.5-gcc-12.2.0" ]]; then
+            wget https://github.com/andrewwutw/build-djgpp/releases/download/v3.4/djgpp-linux64-gcc1220.tar.bz2
+            bzcat djgpp-linux64-gcc1220.tar.bz2 | sudo tar -x --directory /usr/local
+          fi
+          if [[ ${{ matrix.compiler }} == "djgpp-2.0.5-gcc-4.8.5" ]]; then
+            wget https://github.com/andrewwutw/build-djgpp/releases/download/v1.6/djgpp-linux64-gcc485.tar.bz2
+            bzcat djgpp-linux64-gcc485.tar.bz2 | sudo tar -x --directory /usr/local
+          fi
+        fi
+
+    - name: Install packages (macOS)
+      if: ${{ runner.os == 'macOS' }}
+      run: |
+        # Allow core dumps
+        sudo sh -c 'touch /cores/test && rm /cores/test && chmod -R 0777 /cores'
+        brew update
+        # See comment in 'make' step (this takes good 20 mins)
+        #brew install --cask mactex-no-gui
+        brew install automake texinfo libtool
+
+    - name: Install LLVM and Clang
+      if: ${{ matrix.compiler == 'clang' && runner.os != 'macOS' }}
+      uses: KyleMayes/install-llvm-action@v1
+      with:
+        version: "10.0"
+
+    - name: Set GCC-4.8 environment
+      if: ${{ matrix.compiler == 'gcc-4.8' }}
+      run: echo 'compile_opts=CC=gcc-4.8 CXX=g++-4.8' >> $GITHUB_ENV
+
+    - name: Set GCC environment
+      if: ${{ matrix.compiler == 'gcc' && runner.os == 'macOS' }}
+      run: echo 'compile_opts=CC=gcc CXX=g++' >> $GITHUB_ENV
+
+    - name: Set Clang environment
+      if: ${{ matrix.compiler == 'clang' }}
+      run: echo 'compile_opts=CC=clang CXX=clang++' >> $GITHUB_ENV
+
+    - name: Set DJGPP environment
+      if: ${{ startsWith(matrix.compiler, 'djgpp') }}
+      run: |
+        echo 'compile_opts=--host=i586-pc-msdosdjgpp --prefix=/usr/local/djgpp CXXFLAGS=-Wno-deprecated CPPFLAGS=-Wno-deprecated PKG_CONFIG_PATH=/usr/local/djgpp/lib/pkgconfig' >> $GITHUB_ENV
+        echo 'usr/local//djgpp/bin/' >> $GITHUB_PATH
+
+    - name: Install libbinio
+      run: |
+        git clone http://github.com/adplug/libbinio.git
+        pushd libbinio && autoreconf -i && ./configure --enable-maintainer-mode ${{ env.compile_opts }} && make && sudo env PATH=$PATH make install && popd
+
+    - name: autoreconf
+      run: autoreconf -i
+    - name: configure
+      run: ./configure ${{ env.compile_opts }} || cat config.log
+
+    - name: make
+      run: |
+        ulimit -c unlimited -S
+        if [[ ${{ runner.os }} == "macOS" ]]; then
+          # - macOS's /usr/bin/texi2dvi is broken
+          # - Furthermore, trying to get a working
+          #   TeX installation on macOS is a futile
+          #   endeavour, hence just run tests.
+          make check ${{ env.compile_opts }}
+        elif [[ ${{ matrix.compiler }} = djgpp* ]]; then
+          # Just verify it compiles and installs,
+          # we can't run tests because of binary incompatibility with host OS when cross compiling
+
+          # Note: compile_opts is not used here, since DJGPP requires stuff like --host for ./configure
+          # which will mess with make's command-line parsing
+          make all
+        elif [[ ${{ runner.os }} == "Linux" ]]; then
+          make distcheck ${{ env.compile_opts }}
+        fi
+
+    - name: Prepare test results (Linux)
+      if: ${{ runner.os == 'Linux' && !startsWith(matrix.compiler, 'djgpp')}}
+      run: make check
+
+    - name: Show test results
+      if: ${{ !startsWith(matrix.compiler, 'djgpp')}}
+      run: |-
+        for I in test/*.log; do
+          [ -e "$I" ] || continue
+          echo === $I ===
+          cat $I
+        done
+
+    - name: Handle failure
+      if: failure()
+      run: |-
+        if [[ ${{ runner.os }} == "Linux" ]]; then
+          # When "make distcheck" fails, following directory will be used for all files
+          pushd adplug-*/_build/sub
+        fi
+
+        for I in test/*.log; do
+          [ -e "$I" ] || continue
+          echo === $I ===
+          cat $I
+        done
+
+        if [[ ${{ runner.os }} == "Linux" ]]; then
+          if [ -f core ]; then
+            export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:./src/.libs/"
+            if [ -e "./tests/.libs/tests" ]; then
+              gdb ./tests/.libs/tests core -ex "thread apply all bt" -ex "set pagination 0" -batch
+            else
+              # This needs to be fixed
+              echo "./tests/.libs/tests: not found"
+            fi
+          else
+            echo "No core dump; skipping gdb for backtrace"
+          fi
+
+        elif [[ ${{ runner.os }} == "macOS" ]]; then
+          # Make the build output lib dir located where dylib looks as default fallback,
+          # since setting DYLD_FALLBACK_LIBRARY_PATH doesn't seem to work
+          ln -s `pwd`"/src/.libs" "$HOME/lib"
+
+          # Run the tests with core dumps enabled
+          if [ -e "./tests/.libs/tests" ]; then
+            ulimit -c unlimited && ./tests/.libs/tests --no_catch_system_errors
+          else
+            # This needs to be fixed
+            echo "./tests/.libs/tests: not found"
+          fi
+
+          # Look for a core dump and examine it if found
+          COREFILE=`ls -t /cores/* | head -n1`
+          if [ -f "$COREFILE" ]; then
+            echo "Found core dump: $COREFILE"
+            lldb -c "$COREFILE" --batch -o 'thread backtrace all' -o 'quit'
+          else
+            echo "No core dump; skipping lldb for backtrace"
+          fi
+        else
+          echo "Unknown OS, cannot check for core dump"
+        fi
+
+        for I in *.test; do
+          [ -e "$I" ] || continue
+          echo === Failed test output for $I [first 200 lines only] ===
+          head -n 200 $I
+        done
+        echo == End of test log ==
+
+        if [[ ${{ runner.os }} == "Linux" ]]; then
+          popd
+        fi
+
+    - name: Upload failed test output
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: adplug-tests-${{runner.os}}-${{matrix.compiler}}-${{github.sha}}
+        path: |
+          adplug-*/_build/sub/*.test
+          *.test

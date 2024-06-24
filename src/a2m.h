@@ -38,46 +38,59 @@ public:
   std::string gettype()
     { return std::string("AdLib Tracker 2"); }
   std::string gettitle()
-    { if(*songname) return std::string(songname,1,*songname); else return std::string(); }
+    { return std::string(songname + 1, *songname); }
   std::string getauthor()
-    { if(*author) return std::string(author,1,*author); else return std::string(); }
+    { return std::string(author + 1, *author); }
   unsigned int getinstruments()
-    { return 250; }
+    { return NUMINST; }
   std::string getinstrument(unsigned int n)
-    { return std::string(instname[n],1,*instname[n]); }
+  { return n < NUMINST ? std::string(instname[n] + 1, *instname[n]) : std::string(); }
 
 private:
+  enum {NUMINST = 250, INSTDATASIZE = 13};
+  char songname[43], author[43], instname[NUMINST][33];
 
-#define ADPLUG_A2M_COPYRANGES		6
-#define ADPLUG_A2M_FIRSTCODE		257
-#define ADPLUG_A2M_MINCOPY		3
-#define ADPLUG_A2M_MAXCOPY		255
-#define ADPLUG_A2M_CODESPERRANGE	(ADPLUG_A2M_MAXCOPY - ADPLUG_A2M_MINCOPY + 1)
-#define ADPLUG_A2M_MAXCHAR		(ADPLUG_A2M_FIRSTCODE + ADPLUG_A2M_COPYRANGES * ADPLUG_A2M_CODESPERRANGE - 1)
-#define ADPLUG_A2M_TWICEMAX		(2 * ADPLUG_A2M_MAXCHAR + 1)
+  class sixdepak {
+  public:
+    enum {
+      COPYRANGES = 6,
+      MINCOPY = 3,
+      MAXCOPY = 255,
+      CODESPERRANGE = MAXCOPY - MINCOPY + 1,
+      ROOT = 1,
+      TERMINATE = 256,
+      FIRSTCODE = 257,
+      MAXCHAR = FIRSTCODE + COPYRANGES * CODESPERRANGE - 1,
+      SUCCMAX = MAXCHAR + 1,
+      TWICEMAX = 2 * MAXCHAR + 1,
+      MAXFREQ = 2000,
+      MAXDISTANCE = 21839, // (1 << copybits(COPYRANGES-1)) - 1 + copymin(COPYRANGES-1)
+      MAXSIZE = MAXDISTANCE + MAXCOPY,
+      MAXBUF = 42 * 1024,
+    };
 
-  static const unsigned int MAXFREQ, MINCOPY, MAXCOPY, COPYRANGES,
-    CODESPERRANGE, TERMINATE, FIRSTCODE, MAXCHAR, SUCCMAX, TWICEMAX, ROOT,
-    MAXBUF, MAXDISTANCE, MAXSIZE;
+    static size_t decode(unsigned short *source, size_t srcbytes, unsigned char *dest, size_t dstbytes);
 
-  static const unsigned short bitvalue[14];
-  static const signed short copybits[ADPLUG_A2M_COPYRANGES],
-    copymin[ADPLUG_A2M_COPYRANGES];
+  private:
+    static unsigned short bitvalue(unsigned short bit);
+    static unsigned short copybits(unsigned short range);
+    static unsigned short copymin(unsigned short range);
 
-  void inittree();
-  void updatefreq(unsigned short a,unsigned short b);
-  void updatemodel(unsigned short code);
-  unsigned short inputcode(unsigned short bits);
-  unsigned short uncompress();
-  void decode();
-  unsigned short sixdepak(unsigned short *source,unsigned char *dest,unsigned short size);
+    void inittree();
+    void updatefreq(unsigned short a, unsigned short b);
+    void updatemodel(unsigned short code);
+    unsigned short inputcode(unsigned short bits);
+    unsigned short uncompress();
+    size_t do_decode();
+    sixdepak(unsigned short *in, size_t isize, unsigned char *out, size_t osize);
 
-  char songname[43], author[43], instname[250][33];
-
-  unsigned short ibitcount, ibitbuffer, ibufcount, obufcount, input_size,
-    output_size, leftc[ADPLUG_A2M_MAXCHAR+1], rghtc[ADPLUG_A2M_MAXCHAR+1],
-    dad[ADPLUG_A2M_TWICEMAX+1], freq[ADPLUG_A2M_TWICEMAX+1], *wdbuf;
-  unsigned char *obuf, *buf;
+    unsigned short ibitcount, ibitbuffer;
+    unsigned short leftc[MAXCHAR + 1], rghtc[MAXCHAR + 1];
+    unsigned short dad[TWICEMAX + 1], freq[TWICEMAX + 1];
+    size_t ibufcount, input_size, output_size;
+    unsigned short *wdbuf;
+    unsigned char *obuf;
+  };
 };
 
 #endif

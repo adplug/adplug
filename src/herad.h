@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
  * Copyright (C) 1999 - 2005 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
@@ -146,7 +146,7 @@ private:
 protected:
 	bool songend;
 	int16_t wTime;
-	int32_t ticks_pos;	/* current tick counter */
+	uint32_t ticks_pos;	/* current tick counter */
 	uint32_t total_ticks;	/* total ticks in song */
 
 	uint8_t comp;		/* File compression type (see HERAD_COMP_*) */
@@ -236,7 +236,7 @@ protected:
 	herad_chn * chn;					/* active channels [nTracks] */
 	herad_inst * inst;				/* instruments [nInsts] */
 
-	int32_t loop_pos;
+	uint32_t loop_pos;
 	uint16_t loop_times;
 	herad_trk loop_data[HERAD_MAX_TRACKS];
 };

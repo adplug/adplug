@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
  * Copyright (C) 1999 - 2008 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
@@ -37,6 +37,7 @@
 #include <stdio.h>
 
 #include "herad.h"
+#include "load_helper.h"
 
 #ifdef DEBUG
 #include "debug.h"
@@ -86,7 +87,10 @@ bool isHSQ(uint8_t * data, int size)
 		#endif
 		return false;
 	}
-	if ( *(uint16_t *)(data + 3) != size )
+
+	const uint16_t temp_size = u16_unaligned(data + 3);
+
+	if ( temp_size != size )
 	{
 		#ifdef DEBUG
 		AdPlug_LogWrite("HERAD: Is not HSQ, wrong compressed size.\n");
@@ -138,7 +142,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 	uint32_t queue = 1;
 	int8_t bit;
 	int16_t offset;
-	uint16_t count, out_size = *(uint16_t *)data;
+	uint16_t count, out_size = u16_unaligned(data);
 	uint8_t * src = data;
 	uint8_t * dst = out;
 
@@ -148,7 +152,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 		// get next bit of the queue
 		if (queue == 1)
 		{
-			queue = *(uint16_t *)src | 0x10000;
+			queue = u16_unaligned(src) | 0x10000;
 			src += 2;
 		}
 		bit = queue & 1;
@@ -164,7 +168,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 			// get next bit of the queue
 			if (queue == 1)
 			{
-				queue = *(uint16_t *)src | 0x10000;
+				queue = u16_unaligned(src) | 0x10000;
 				src += 2;
 			}
 			bit = queue & 1;
@@ -174,7 +178,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 			{
 				// count = next 3 bits of the input
 				// offset = next 13 bits of the input minus 8192
-				count = *(uint16_t *)src;
+				count = u16_unaligned(src);
 				offset = (count >> 3) - 8192;
 				count &= 7;
 				src += 2;
@@ -194,7 +198,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 				// count = next bit of the queue * 2 + next bit of the queue
 				if (queue == 1)
 				{
-					queue = *(uint16_t *)src | 0x10000;
+					queue = u16_unaligned(src) | 0x10000;
 					src += 2;
 				}
 				bit = queue & 1;
@@ -202,7 +206,7 @@ uint16_t HSQ_decompress(uint8_t * data, int size, uint8_t * out)
 				count = bit << 1;
 				if (queue == 1)
 				{
-					queue = *(uint16_t *)src | 0x10000;
+					queue = u16_unaligned(src) | 0x10000;
 					src += 2;
 				}
 				bit = queue & 1;
@@ -233,7 +237,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 	uint8_t * dst = out;
 	bool done = false;
 
-	*(uint16_t *)dst = *(uint16_t *)src;
+	std::memcpy(dst, src, sizeof(uint16_t));
 	src += 6;
 	uint16_t queue = 1;
 	uint8_t bit, bit_p;
@@ -243,7 +247,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 		queue >>= 1;
 		if (queue == 0)
 		{
-			queue = *(uint16_t *)src;
+			queue = u16_unaligned(src);
 			src += 2;
 			bit_p = bit;
 			bit = queue & 1;
@@ -264,7 +268,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 				queue >>= 1;
 				if (queue == 0)
 				{
-					queue = *(uint16_t *)src;
+					queue = u16_unaligned(src);
 					src += 2;
 					bit_p = bit;
 					bit = queue & 1;
@@ -282,7 +286,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					queue >>= 1;
 					if (queue == 0)
 					{
-						queue = *(uint16_t *)src;
+						queue = u16_unaligned(src);
 						src += 2;
 						bit_p = bit;
 						bit = queue & 1;
@@ -303,7 +307,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 				}
 				break;
 			case 2:
-				count = *(uint16_t *)src;
+				count = u16_unaligned(src);
 				offset = (count >> data[5]) - (1 << (16 - data[5]));
 				count &= (1 << data[5]) - 1;
 				src += 2;
@@ -335,7 +339,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 			queue >>= 1;
 			if (queue == 0)
 			{
-				queue = *(uint16_t *)src;
+				queue = u16_unaligned(src);
 				src += 2;
 				bit_p = bit;
 				bit = queue & 1;
@@ -356,7 +360,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					queue >>= 1;
 					if (queue == 0)
 					{
-						queue = *(uint16_t *)src;
+						queue = u16_unaligned(src);
 						src += 2;
 						bit_p = bit;
 						bit = queue & 1;
@@ -374,7 +378,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 						queue >>= 1;
 						if (queue == 0)
 						{
-							queue = *(uint16_t *)src;
+							queue = u16_unaligned(src);
 							src += 2;
 							bit_p = bit;
 							bit = queue & 1;
@@ -395,7 +399,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					}
 					break;
 				case 2:
-					count = *(uint16_t *)src;
+					count = u16_unaligned(src);
 					offset = (count >> data[5]) - (1 << (16 - data[5]));
 					count &= (1 << data[5]) - 1;
 					src += 2;
@@ -434,7 +438,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					queue >>= 1;
 					if (queue == 0)
 					{
-						queue = *(uint16_t *)src;
+						queue = u16_unaligned(src);
 						src += 2;
 						bit_p = bit;
 						bit = queue & 1;
@@ -452,7 +456,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 						queue >>= 1;
 						if (queue == 0)
 						{
-							queue = *(uint16_t *)src;
+							queue = u16_unaligned(src);
 							src += 2;
 							bit_p = bit;
 							bit = queue & 1;
@@ -473,7 +477,7 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 					}
 					break;
 				case 2:
-					count = *(uint16_t *)src;
+					count = u16_unaligned(src);
 					offset = (count >> data[5]) - (1 << (16 - data[5]));
 					count &= (1 << data[5]) - 1;
 					src += 2;
@@ -578,14 +582,14 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 		#endif
 		goto failure;
 	}
-	if ( size < *(uint16_t *)data )
+	if ( size < u16_unaligned(data))
 	{
 		#ifdef DEBUG
 		AdPlug_LogWrite("HERAD: Incorrect offset / file size.\n");
 		#endif
 		goto failure;
 	}
-	nInsts = (size - *(uint16_t *)data) / HERAD_INST_SIZE;
+	nInsts = (size - u16_unaligned(data)) / HERAD_INST_SIZE;
 	if ( nInsts == 0 )
 	{
 		#ifdef DEBUG
@@ -593,7 +597,7 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 		#endif
 		goto failure;
 	}
-	offset = *(uint16_t *)(data + 2);
+	offset = u16_unaligned(data + 2);
 	if ( offset != 0x32 && offset != 0x52 )
 	{
 		#ifdef DEBUG
@@ -602,10 +606,10 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 		goto failure;
 	}
 	AGD = offset == 0x52;
-	wLoopStart = *(uint16_t *)(data + 0x2C);
-	wLoopEnd = *(uint16_t *)(data + 0x2E);
-	wLoopCount = *(uint16_t *)(data + 0x30);
-	wSpeed = *(uint16_t *)(data + 0x32);
+	wLoopStart = u16_unaligned(data + 0x2C);
+	wLoopEnd = u16_unaligned(data + 0x2E);
+	wLoopCount = u16_unaligned(data + 0x30);
+	wSpeed = u16_unaligned(data + 0x32);
 	if (wSpeed == 0)
 	{
 		#ifdef DEBUG
@@ -616,7 +620,7 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 	nTracks = 0;
 	for (int i = 0; i < HERAD_MAX_TRACKS; i++)
 	{
-		if ( *(uint16_t *)(data + 2 + i * 2) == 0 )
+		if ( u16_unaligned(data + 2 + i * 2) == 0 )
 			break;
 		nTracks++;
 	}
@@ -624,16 +628,16 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 	chn = new herad_chn[nTracks];
 	for (int i = 0; i < nTracks; i++)
 	{
-		offset = *(uint16_t *)(data + 2 + i * 2) + 2;
-		uint16_t next = (i < HERAD_MAX_TRACKS - 1 ? *(uint16_t *)(data + 2 + (i + 1) * 2) + 2 : *(uint16_t *)data);
-		if (next <= 2) next = *(uint16_t *)data;
+		offset = u16_unaligned(data + 2 + i * 2) + 2;
+		uint16_t next = (i < HERAD_MAX_TRACKS - 1) ? u16_unaligned(data + 2 + (i + 1) * 2) + 2 : u16_unaligned(data);
+		if (next <= 2) next = u16_unaligned(data);
 
 		track[i].size = next - offset;
 		track[i].data = new uint8_t[track[i].size];
 		memcpy(track[i].data, data + offset, track[i].size);
 	}
 	inst = new herad_inst[nInsts];
-	offset = *(uint16_t *)data;
+	offset = u16_unaligned(data);
 	v2 = true;
 	for (int i = 0; i < nInsts; i++)
 	{
@@ -659,9 +663,9 @@ void CheradPlayer::rewind(int subsong)
 	wTime = 0;
 	songend = false;
 
-	ticks_pos = -1; // there's always 1 excess tick at start
+	ticks_pos = ~0; // there's always 1 excess tick at start
 	total_ticks = 0;
-	loop_pos = -1;
+	loop_pos = ~0;
 	loop_times = 1;
 
 	for (int i = 0; i < nTracks; i++)

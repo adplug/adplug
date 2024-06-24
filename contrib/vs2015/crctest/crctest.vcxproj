@@ -158,12 +158,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\libbinio.1.4.16\build\native\libbinio.targets" Condition="Exists('..\packages\libbinio.1.4.16\build\native\libbinio.targets')" />
+    <Import Project="..\packages\libbinio.1.4.20\build\native\libbinio.targets" Condition="Exists('..\packages\libbinio.1.4.20\build\native\libbinio.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\libbinio.1.4.16\build\native\libbinio.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\libbinio.1.4.16\build\native\libbinio.targets'))" />
+    <Error Condition="!Exists('..\packages\libbinio.1.4.20\build\native\libbinio.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\libbinio.1.4.20\build\native\libbinio.targets'))" />
   </Target>
 </Project>

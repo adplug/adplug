@@ -65,9 +65,9 @@ CPlayer *CjbmPlayer::factory(Copl *newopl)
 
 bool CjbmPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
-  binistream	*f = fp.open(filename); if(!f) return false;
-  int		filelen = fp.filesize(f);
-  int		i;
+  binistream    *f = fp.open(filename); if(!f) return false;
+  unsigned int   filelen = fp.filesize(f);
+  int            i;
 
   if (!filelen || !fp.extension(filename, ".jbm")) goto loaderr;
 

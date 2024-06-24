@@ -1,6 +1,6 @@
 dnl Tell autoconf we're compiling a C++ library, using automake & libtool
 AC_PREREQ([2.69])
-AC_INIT([adplug], [2.3])
+AC_INIT([adplug], [2.3.4-beta])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl Check whether we want to set defaults for CFLAGS, CXXFLAGS, CPPFLAGS and LDFLAGS
@@ -16,10 +16,12 @@ dnl Enable debugging on user request.
 AX_CHECK_ENABLE_DEBUG([], [DEBUG])
 
 AC_CONFIG_SRCDIR([src/adplug.cpp])
-AM_INIT_AUTOMAKE([1.14 foreign dist-bzip2 no-dist-gzip])
+AM_INIT_AUTOMAKE([1.14 foreign dist-bzip2 no-dist-gzip subdir-objects])
 LT_INIT
 
 dnl Check for a sane C/C++ build environment.
+AC_PROG_SED
+AC_PROG_MKDIR_P
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 
@@ -32,6 +34,8 @@ AC_PROG_CXX
 AC_LANG([C++])
 AX_COMPILER_VENDOR
 AX_COMPILER_VERSION
+
+AC_C_BIGENDIAN
 
 AS_IF([test "x${enable_flags_setting}" = "xyes" && test "x${enable_debug}" = "xno"], [
     AC_LANG([C])
@@ -57,7 +61,11 @@ dnl Check for needed libraries.
 PKG_CHECK_MODULES([libbinio], [libbinio >= 1.4])
 
 dnl Check if getopt header is installed on this system
-AC_CHECK_HEADERS([getopt.h], , AC_SUBST(GETOPT_SOURCES, [getopt.c getopt.h]))
+AC_CHECK_HEADERS([getopt.h], [], [AC_SUBST([GETOPT_OBJECTS], ['adplugdb/getopt.$(OBJEXT)'])])
+
+dnl On some platforms glibc does not provide sys/io.h
+dnl https://bugs.gentoo.org/645296
+AC_CHECK_HEADERS([sys/io.h])
 
 dnl Sanitize some compiler features, which may be broken...
 AC_C_CONST
@@ -65,11 +73,7 @@ AC_C_INLINE
 
 AC_CONFIG_FILES([
     Makefile
-    src/Makefile
     src/version.h
-    doc/Makefile
-    adplugdb/Makefile
-    test/Makefile
     adplug.pc
 ])
 AC_OUTPUT

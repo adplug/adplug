@@ -13,14 +13,7 @@ Unfinished items for version 2.3:
 
 General to do items:
 --------------------
-- Add new Protracker loaders:
-  - MTR: Arkham Master Tracker [riven-mage]
-
 - New players:
   - Palladix file format, used in LOGICAL game [dynamite]
 
 - Add possibility to mute/solo AdLib channels.
-
-- Isolate Ken Silverman's synth (no global variables) so that multiple
-  instances can be created.  Surround mode won't work with Ken's synth
-  until this is done.
