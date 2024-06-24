@@ -32,6 +32,7 @@
 #include "a2m-v2.h"
 #include "debug.h"
 #include <climits>
+#include <math.h>
 
 static const uint8_t _panning[3] = { 0x30, 0x10, 0x20 };
 static const uint8_t def_vibtrem_table[256] = {
