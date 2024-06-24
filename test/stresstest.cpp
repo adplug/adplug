@@ -353,6 +353,7 @@ static bool run_test(int argc, const char *const argv[])
 
 	// Process the file
 	float t = 0;
+	bool bad_refresh_encountered = false;
 	while (p->update()) {
 		float refresh = p->getrefresh();
 		// With a CEmuopl or similar, SAMPLERATE/refresh sound
@@ -362,10 +363,17 @@ static bool run_test(int argc, const char *const argv[])
 		if (refresh > 0) {
 			t += 1.f / refresh;
 		} else {
-			std::cerr << "   bad refresh: " << refresh << std::endl;
+			if (!bad_refresh_encountered) {
+				bad_refresh_encountered = true;
+				std::cerr << "   bad refresh: ";
+			}
+			std::cerr << " " << refresh;
 			t += 1.f;
 		}
 		if (t >= limit) break;
+	}
+	if (bad_refresh_encountered) {
+		std::cerr << std::endl;
 	}
 	std::cout << (t >= limit ? " ! give up after " : " - play time: ")
 		<< t << " sec." << std::endl;

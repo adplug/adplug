@@ -17,8 +17,6 @@ jobs:
             os: ubuntu-latest
           - compiler: djgpp-2.0.5-gcc-12.2.0 # To test compatibility for Adplay - DOS
             os: ubuntu-latest
-          - compiler: djgpp-2.0.5-gcc-4.8.5 # To test compatibility for Adplay - DOS
-            os: ubuntu-latest
 
       fail-fast: false
 
@@ -62,10 +60,6 @@ jobs:
           if [[ ${{ matrix.compiler }} == "djgpp-2.0.5-gcc-12.2.0" ]]; then
             wget https://github.com/andrewwutw/build-djgpp/releases/download/v3.4/djgpp-linux64-gcc1220.tar.bz2
             bzcat djgpp-linux64-gcc1220.tar.bz2 | sudo tar -x --directory /usr/local
-          fi
-          if [[ ${{ matrix.compiler }} == "djgpp-2.0.5-gcc-4.8.5" ]]; then
-            wget https://github.com/andrewwutw/build-djgpp/releases/download/v1.6/djgpp-linux64-gcc485.tar.bz2
-            bzcat djgpp-linux64-gcc485.tar.bz2 | sudo tar -x --directory /usr/local
           fi
         fi
 
