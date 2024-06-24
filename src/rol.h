@@ -59,7 +59,7 @@ public:
     };
     std::string getdesc()
     {
-        return std::string(mpROLHeader->comment);
+        return strcmp(mpROLHeader->comment, "\\roll\\default") ? std::string(mpROLHeader->comment) : std::string();
     };
 
 private:

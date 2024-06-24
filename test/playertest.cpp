@@ -59,6 +59,9 @@ static const char *filelist[] = {
   "crusader.raw",	// RAW (non-standard clock rate)
   "loudness.lds",	// Loudness
   "MARIO.A2M",		// AdLib Tracker 2
+  "AB_JULIA.A2T",	// Adlib Tracker 2 (tiny module v11)
+  "fank5.a2m",      // Adlib Tracker 2 (v11)
+  "fm-troni.a2m",   // Adlib Tracker 2 (v14)
   "mi2.laa",		// LucasArts
   "michaeld.cmf",	// Creative Music Format
   "2.CMF",			// Creative Music Format (with transpose effect)
