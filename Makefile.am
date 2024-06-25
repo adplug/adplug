@@ -409,6 +409,8 @@ EXTRA_DIST += \
 	test/testref/samurai.ref \
 	test/testmus/SATNIGHT.HSP \
 	test/testref/SATNIGHT.ref \
+	test/testmus/SAVAGE.HSQ \
+	test/testref/SAVAGE.ref \
 	test/testref/SCALES.ref \
 	test/testmus/SCALES.SA2 \
 	test/testmus/SMKEREM.HSC \

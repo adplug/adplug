@@ -494,6 +494,89 @@ uint16_t SQX_decompress(uint8_t * data, int size, uint8_t * out)
 	return dst - out;
 }
 
+bool CheradPlayer::validEvent(int i, uint16_t * offset, bool v2)
+{
+	while (*offset < track[i].size && (track[i].data[(*offset)++] & 0x80) > 0);
+	if (*offset >= track[i].size)
+	{
+		AdPlug_LogWrite("HERAD: Reading out of range.\n");
+		return false;
+	}
+
+	uint8_t status = track[i].data[(*offset)++];
+	uint8_t check;
+
+	if (status < 0x80)
+	{
+		AdPlug_LogWrite("HERAD: Unexpected status.\n");
+		return false;
+	}
+	else if (status < 0x90 && v2)
+	{
+		check = track[i].data[(*offset)++];
+		if (check > 0x7F)
+		{
+			AdPlug_LogWrite("HERAD: Unexpected param.\n");
+			return false;
+		}
+	}
+	else if (status < 0xC0)
+	{
+		check = track[i].data[(*offset)++];
+		if (check > 0x7F)
+		{
+			AdPlug_LogWrite("HERAD: Unexpected param 1.\n");
+			return false;
+		}
+		check = track[i].data[(*offset)++];
+		if (check > 0x7F)
+		{
+			AdPlug_LogWrite("HERAD: Unexpected param 2.\n");
+			return false;
+		}
+	}
+	else if (status < 0xF0)
+	{
+		check = track[i].data[(*offset)++];
+		if (check > 0x7F)
+		{
+			AdPlug_LogWrite("HERAD: Unexpected param.\n");
+			return false;
+		}
+	}
+	else if (status == 0xFF)
+	{
+		*offset = track[i].size;
+	}
+
+	return true;
+}
+
+uint8_t CheradPlayer::validTracks()
+{
+	for (int i = 0; i < nTracks; i++)
+	{
+		uint16_t of_v1 = 0, of_v2 = 0;
+
+		while (of_v1 < track[i].size || of_v2 < track[i].size)
+		{
+			if (of_v1 < track[i].size)
+			{
+				if (!validEvent(i, &of_v1, false))
+					return 1;
+			}
+
+			if (of_v2 < track[i].size)
+			{
+				if (!validEvent(i, &of_v2, true))
+					return 2;
+			}
+		}
+	}
+
+	return 0;
+}
+
 bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 {
 	binistream *f = fp.open(filename); if(!f) return false;
@@ -608,12 +691,18 @@ bool CheradPlayer::load(const std::string &filename, const CFileProvider &fp)
 	}
 	inst = new herad_inst[nInsts];
 	offset = u16_unaligned(data);
-	v2 = true;
+	v2 = false;
 	for (int i = 0; i < nInsts; i++)
 	{
 		memcpy(inst[i].data, data + offset + i * HERAD_INST_SIZE, HERAD_INST_SIZE);
-		if (v2 && inst[i].param.mode == HERAD_INSTMODE_SDB1)
-			v2 = false;
+		if (!v2 && inst[i].param.mode == HERAD_INSTMODE_KMAP)
+			v2 = true;
+	}
+	if (!v2)
+	{
+		// Aggressive detection for HERAD version 2 without keymap instruments
+		// (if version 1 event parser reports error, it's version 2)
+		v2 = (validTracks() == 1);
 	}
 	delete[] data;
 	goto good;
