@@ -157,7 +157,7 @@ public:
   {
     if(reg > 255 || val > 255 || reg < 0 || val < 0)
       std::cerr << "Warning: The player is writing data out of range! (reg = "
-		<< std::hex << reg << ", val = " << val << ")\n";
+    << std::hex << reg << ", val = " << val << ")" << std::endl;
     if(!f) return;
     fprintf(f, "%x <- %x\n", reg, val);
   }
@@ -236,6 +236,8 @@ static bool testplayer(const std::string filename)
   std::string	fn = std::string(testdir) + DIR_DELIM + filename;
 #ifdef __WATCOMC__
   std::string	testfn = tmpnam(NULL);
+#elif DJGPP
+  std::string	testfn = tmpnam(NULL);
 #else
   std::string	testfn = filename + ".test";
 #endif
@@ -285,15 +287,21 @@ int main(int argc, char *argv[])
 
   use_subdir = dir_exists(std::string(testdir) + DIR_DELIM TEST_SUBDIR);
 
+#ifdef DJGPP
+  // DJGPP/DosEMU has weird behaviour when parsing command line arguments (adds path and name of executable as seperate vars)
+  // Don't parse the rest by setting argument count to 1
+  std::cout << "Warning: Running test with DJGPP, ignoring command line arguments, executing all test files!" << std::endl;
+  argc = 1;
+#endif
   // Try all files one by one
   if(argc > 1) {
     for(i = 1; i < argc; i++)
       if(!testplayer(argv[i]))
-	retval = false;
-  } else
+        retval = false;
+  } else {
     for(i = 0; filelist[i] != NULL; i++)
       if(!testplayer(filelist[i]))
-	retval = false;
-
+        retval = false;
+  }
   return retval ? EXIT_SUCCESS : EXIT_FAILURE;
 }

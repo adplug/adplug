@@ -353,6 +353,7 @@ static bool run_test(int argc, const char *const argv[])
 
 	// Process the file
 	float t = 0;
+	bool bad_refresh_encountered = false;
 	while (p->update()) {
 		float refresh = p->getrefresh();
 		// With a CEmuopl or similar, SAMPLERATE/refresh sound
@@ -362,10 +363,17 @@ static bool run_test(int argc, const char *const argv[])
 		if (refresh > 0) {
 			t += 1.f / refresh;
 		} else {
-			std::cerr << "   bad refresh: " << refresh << std::endl;
+			if (!bad_refresh_encountered) {
+				bad_refresh_encountered = true;
+				std::cerr << "   bad refresh: ";
+			}
+			std::cerr << " " << refresh;
 			t += 1.f;
 		}
 		if (t >= limit) break;
+	}
+	if (bad_refresh_encountered) {
+		std::cerr << std::endl;
 	}
 	std::cout << (t >= limit ? " ! give up after " : " - play time: ")
 		<< t << " sec." << std::endl;
@@ -453,6 +461,12 @@ int main(int argc, char *argv[])
 	if (dir_exists(dir + SUBDIR))
 		dir += SUBDIR DIR_DELIM;
 
+#ifdef DJGPP
+	// DJGPP/DosEMU has weird behaviour when parsing command line arguments (adds path and name of executable as seperate vars)
+	// Don't parse the rest by setting argument count to 1
+	std::cout << "Warning: Running test with DJGPP, ignoring command line arguments, executing all test files!" << std::endl;
+	argc = 1;
+#endif
 	bool fail = false;
 	if (argc < 2) {
 		// No files, so run all tests from filelist.
