@@ -73,17 +73,21 @@ jobs:
         #brew install --cask mactex-no-gui
         brew install automake texinfo libtool
 
-    - name: Install LLVM and Clang
+    - name: Install LLVM and Clang (Linux)
       if: ${{ matrix.compiler == 'clang' && runner.os != 'macOS' }}
       uses: KyleMayes/install-llvm-action@v1
       with:
         version: "10.0"
 
-    - name: Set GCC-4.8 environment
+    - name: Set GCC environment (Linux)
+      if: ${{ matrix.compiler == 'gcc' && runner.os == 'Linux'}}
+      run: echo "compile_opts=CC=gcc CXX=g++ CXXFLAGS='-fsanitize=address -fsanitize=leak' CPPFLAGS='-fsanitize=address -fsanitize=leak'" >> $GITHUB_ENV
+
+    - name: Set GCC-4.8 environment (Linux)
       if: ${{ matrix.compiler == 'gcc-4.8' }}
       run: echo 'compile_opts=CC=gcc-4.8 CXX=g++-4.8' >> $GITHUB_ENV
 
-    - name: Set GCC environment
+    - name: Set GCC environment (macOS)
       if: ${{ matrix.compiler == 'gcc' && runner.os == 'macOS' }}
       run: echo 'compile_opts=CC=gcc CXX=g++' >> $GITHUB_ENV
 
