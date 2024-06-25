@@ -127,6 +127,8 @@ public:
 	};
 
 private:
+	bool validEvent(int i, uint16_t * offset, bool v2);
+	uint8_t validTracks();
 	uint32_t GetTicks(uint8_t t);
 	void executeCommand(uint8_t t);
 	void processEvents();

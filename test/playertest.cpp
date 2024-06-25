@@ -111,6 +111,7 @@ static const char *filelist[] = {
   "MORNING.HSQ",	// HERAD SDB v1 (HSQ packed)
   "GORBI2.SQX",		// HERAD SDB v1 (SQX packed)
   "ARRAKIS.SDB",	// HERAD SDB v1
+  "SAVAGE.HSQ",		// HERAD SDB v1 (with instmode v2)
   "NEWSAN.HSQ",		// HERAD SDB v2 (HSQ packed)
   "NEWPAGA.HA2",	// HERAD SDB v2
   "WORMINTR.AGD",	// HERAD AGD
