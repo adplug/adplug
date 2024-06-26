@@ -3592,7 +3592,10 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
         for (int i = 0; i < 4; i++) {
             if (!len[i+s]) continue;
 
-            if (len[i+s] > size) return INT_MAX;
+            if (len[i+s] > size) {
+                free(old);
+                return INT_MAX;
+            }
 
             a2t_depack(src, len[i+s], (char *)old, 16 * sizeof (*old));
 
@@ -3631,7 +3634,10 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
         for (int i = 0; i < 8; i++) {
             if (!len[i+s]) continue;
 
-            if (len[i+s] > size) return INT_MAX;
+            if (len[i+s] > size) {
+                free(old);
+                return INT_MAX;
+            }
 
             a2t_depack(src, len[i+s], (char *)old, 8 * sizeof (*old));
 
@@ -3670,7 +3676,10 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
         // 16 groups of 8 patterns
         for (int i = 0; i < 16; i++) {
             if (!len[i+s]) continue;
-            if (len[i+s] > size) return INT_MAX;
+            if (len[i+s] > size) {
+                free(old);
+                return INT_MAX;
+            }
             a2t_depack(src, len[i+s], (char *)old, 8 * sizeof (*old));
             src += len[i+s];
             size -= len[i+s];
