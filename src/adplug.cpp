@@ -98,6 +98,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(Ca2mv2Player::factory, "Adlib Tracker 2", ".a2m\0.a2t\0"),
   CPlayerDesc(CadtrackLoader::factory, "Adlib Tracker", ".sng\0"),
   CPlayerDesc(CamdLoader::factory, "AMUSIC", ".amd\0"),
+  CPlayerDesc(CamdLoader::factory, "XMS-Tracker", ".xms\0"),
   CPlayerDesc(CbamPlayer::factory, "Bob's Adlib Music", ".bam\0"),
   CPlayerDesc(CcmfPlayer::factory, "Creative Music File", ".cmf\0"),
   CPlayerDesc(CcoktelPlayer::factory, "Coktel Vision Adlib Music", ".adl\0"),
