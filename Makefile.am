@@ -424,6 +424,8 @@ EXTRA_DIST += \
 	test/testmus/tafa.tim \
 	test/testmus/TEST16.MID \
 	test/testref/TEST16.ref \
+	test/testmus/TheAlibi.d00 \
+	test/testref/TheAlibi.ref \
 	test/testmus/TOCCATA.MAD \
 	test/testref/TOCCATA.ref \
 	test/testref/TUBES.ref \
