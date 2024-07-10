@@ -63,13 +63,29 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
   d00header1	*ch;
   int		i,ver1=0;
   char		*str;
+  int		headerstart=0;
 
   // file validation section
   checkhead = new d00header;
   f->readString((char *)checkhead, sizeof(d00header));
 
+  // Check for reheadered old-style song
+  if (strncmp(checkhead->id,"JCH\x26\x02\x66",6) == 0 && checkhead->version & 0x80) {
+    delete checkhead;
+    ch = new d00header1;
+    if(!fp.extension(filename, ".d00")) { fp.close(f); return false; }
+    // If this is a reheadered old song, the old header begins 0x6b
+    // into the file.
+    f->seek(0x6b); f->readString((char *)ch, sizeof(d00header1));
+
+    if(ch->version > 1 || !ch->subsongs)
+      { delete ch; fp.close(f); return false; }
+    delete ch;
+    ver1 = 1;
+    // Set the header position so we seek to the right place later
+    headerstart=0x6b;
   // Check for version 2-4 header
-  if(strncmp(checkhead->id,"JCH\x26\x02\x66",6) || checkhead->type ||
+  } else if(strncmp(checkhead->id,"JCH\x26\x02\x66",6) || checkhead->type ||
      !checkhead->subsongs || checkhead->soundcard ||
      checkhead->version < 2 || checkhead->version > 4) {
     // Check for version 0 or 1 header (and .d00 file extension)
@@ -88,7 +104,7 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
 		  filename.c_str(), ver1 ? "Old" : "New");
 
   // load section
-  filesize = fp.filesize(f); f->seek(0);
+  filesize = fp.filesize(f); f->seek(headerstart);
   filedata = new char [filesize + 1];			// 1 byte is needed for old-style DataInfo block
   f->readString((char *)filedata, filesize);
   filedata[filesize] = 0;

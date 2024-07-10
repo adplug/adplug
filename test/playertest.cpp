@@ -78,6 +78,7 @@ static const char *filelist[] = {
   "TUBES.SAT",		// Surprise! Adlib Tracker
   "TU_BLESS.AMD",	// AMUSIC
   "VIB_VOL3.D00",	// EdLib Packed
+  "TheAlibi.d00",       // EdLib, reheadered
   "WONDERIN.WLF",	// Apogee
   "bmf1_1.bmf",		// BMF (without XAD header)
   "bmf1_2.xad",		// xad: BMF
