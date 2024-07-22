@@ -37,6 +37,13 @@
 #include <stdio.h>
 
 #include "herad.h"
+
+#ifdef DEBUG
+#include "debug.h"
+#else
+#define AdPlug_LogWrite
+#endif
+
 #include "load_helper.h"
 
 const uint8_t CheradPlayer::slot_offset[HERAD_NUM_VOICES] = {

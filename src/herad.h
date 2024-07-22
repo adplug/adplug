@@ -34,12 +34,6 @@
 #include <stdint.h>
 #include "player.h"
 
-#ifdef DEBUG
-#include "debug.h"
-#else
-#define AdPlug_LogWrite
-#endif
-
 #define HERAD_MIN_SIZE		6		/* Minimum file size for compression detection */
 #define HERAD_MAX_SIZE		75775		/* Maximum possible file size: 0xFFFF + 256 * HERAD_INST_SIZE */
 #define HERAD_HEAD_SIZE		52		/* File header size */
