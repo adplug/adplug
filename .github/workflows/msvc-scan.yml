@@ -40,6 +40,9 @@ jobs:
 
     - name: Build libbinio
       uses: lukka/run-cmake@v10
+      env:
+        VCPKG_ROOT:
+        # workaround for https://github.com/lukka/run-cmake/issues/142
       with:
         cmakeListsTxtPath: libbinio/CMakeLists.txt
         configurePreset: '${{env.libbinio_PRESET}}'
@@ -49,9 +52,13 @@ jobs:
       working-directory: 'libbinio/out/build/${{env.libbinio_PRESET}}/'
       run: cmake --install .
 
-    - name: Configure adplug
+    - name: Build adplug
       uses: lukka/run-cmake@v10
+      env:
+        VCPKG_ROOT:
+        # workaround for https://github.com/lukka/run-cmake/issues/142
       with:
+        cmakeListsTxtPath: adplug/CMakeLists.txt
         configurePreset: default
 
     - name: Initialize MSVC Code Analysis
@@ -59,7 +66,7 @@ jobs:
       # Provide a unique ID to access the sarif output path
       id: run-analysis
       with:
-        cmakeBuildDirectory: out/build/default
+        cmakeBuildDirectory: adplug/out/build/default
         # Ruleset file that will determine what checks will be run
         ruleset: NativeRecommendedRules.ruleset
 
