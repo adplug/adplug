@@ -3,7 +3,7 @@ name: Coverity Scan
 # We only want to test official release code, not every pull request.
 on:
   push:
-    branches: [master]
+    branches: [master, workflow_dispatch]
 
 env:
   libbinio_PRESET: default
@@ -60,6 +60,7 @@ jobs:
       with:
         working-directory: adplug
         command: cmake --build --preset=default
+        project: 'adplug adplug'
         email: ${{ secrets.COVERITY_SCAN_EMAIL }}
         token: ${{ secrets.COVERITY_SCAN_TOKEN }}
 
