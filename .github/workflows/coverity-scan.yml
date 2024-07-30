@@ -2,8 +2,9 @@ name: Coverity Scan
 
 # We only want to test official release code, not every pull request.
 on:
+  workflow_dispatch:
   push:
-    branches: [master, workflow_dispatch]
+    branches: [master]
 
 env:
   libbinio_PRESET: default
