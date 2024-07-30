@@ -285,7 +285,7 @@ std::string CvgmPlayer::gettype()
 	char tmpstr[40];
 	uint8_t major = (version >> 8) & 0xFF;
 	uint8_t minor = version & 0xFF;
-	sprintf(tmpstr, "Video Game Music %x.%x (%s)", major, minor, chip);
+	snprintf(tmpstr, sizeof(tmpstr), "Video Game Music %x.%x (%s)", major, minor, chip);
 	return std::string(tmpstr);
 }
 

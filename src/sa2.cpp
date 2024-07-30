@@ -237,8 +237,7 @@ bool Csa2Loader::load(const std::string &filename, const CFileProvider &fp)
 std::string Csa2Loader::gettype()
 {
   char tmpstr[40];
-
-  sprintf(tmpstr,"Surprise! Adlib Tracker 2 (version %d)",header.version);
+  snprintf(tmpstr,sizeof(tmpstr),"Surprise! Adlib Tracker 2 (version %d)",header.version);
   return std::string(tmpstr);
 }
 

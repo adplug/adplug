@@ -119,8 +119,7 @@ bool CdfmLoader::load(const std::string &filename, const CFileProvider &fp)
 std::string CdfmLoader::gettype()
 {
 	char tmpstr[20];
-
-	sprintf(tmpstr,"Digital-FM %d.%d",header.hiver,header.lover);
+	snprintf(tmpstr,sizeof(tmpstr),"Digital-FM %d.%d",header.hiver,header.lover);
 	return std::string(tmpstr);
 }
 

@@ -190,12 +190,13 @@ unsigned long CmidPlayer::getval()
 
 bool CmidPlayer::load_sierra_ins(const std::string &fname, const CFileProvider &fp)
 {
-    long i,j,k,l;
+    long i,j,k,l,fl;
     unsigned char ins[28];
     char *pfilename;
     binistream *f;
 
-    pfilename = (char *)malloc(fname.length()+9);
+    fl = fname.length()+10;
+    pfilename = (char *)malloc(fl);
     strcpy(pfilename,fname.c_str());
     j=0;
     for(i=strlen(pfilename)-1; i >= 0; i--)
@@ -205,7 +206,7 @@ bool CmidPlayer::load_sierra_ins(const std::string &fname, const CFileProvider &
       }
     for (i = 0; i < 3; i++)
       if (pfilename[j]) j++;
-    sprintf(pfilename+j,"patch.003");
+    snprintf(pfilename+j,fl-j,"patch.003");
 
     f = fp.open(pfilename);
     free(pfilename);
