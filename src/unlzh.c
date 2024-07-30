@@ -94,7 +94,7 @@ static int		bitcount;
 uch *input_buffer, *output_buffer;
 unsigned input_buffer_idx, output_buffer_idx, input_buffer_size;
 
-static uch try_byte()
+static uch try_byte(void)
 {
 	if (input_buffer_idx < input_buffer_size)
 		return input_buffer[input_buffer_idx++];
@@ -108,8 +108,7 @@ void write_buf(uch *ptr, ush size)
 	output_buffer_idx += size;
 }
 
-static void fillbuf(n)  /* Shift bitbuf n bits left, read n bits */
-	int n;
+static void fillbuf(int n)  /* Shift bitbuf n bits left, read n bits */
 {
 	bitbuf <<= n;
 	while (n > bitcount) {
@@ -121,8 +120,7 @@ static void fillbuf(n)  /* Shift bitbuf n bits left, read n bits */
 	bitbuf |= subbitbuf >> (bitcount -= n);
 }
 
-static unsigned getbits(n)
-	int n;
+static unsigned getbits(int n)
 {
 	unsigned x;
 
@@ -130,7 +128,7 @@ static unsigned getbits(n)
 	return x;
 }
 
-static void init_getbits()
+static void init_getbits(void)
 {
 	bitbuf = 0;	 subbitbuf = 0;	 bitcount = 0;
 	fillbuf(BITBUFSIZ);
@@ -140,11 +138,7 @@ static void init_getbits()
 		maketbl.c -- make table for decoding
 ***********************************************************/
 
-static void make_table(nchar, bitlen, tablebits, table)
-	int nchar;
-	uch bitlen[];
-	int tablebits;
-	ush table[];
+static void make_table(int nchar, uch bitlen[], int tablebits, ush table[])
 {
 	ush count[17], weight[17], start[18], *p;
 	unsigned i, k, len, ch, jutbits, avail, nextcode, mask;
@@ -206,10 +200,7 @@ static void make_table(nchar, bitlen, tablebits, table)
 		huf.c -- static Huffman
 ***********************************************************/
 
-static void read_pt_len(nn, nbit, i_special)
-	int nn;
-	int nbit;
-	int i_special;
+static void read_pt_len(int nn, int nbit, int i_special)
 {
 	int i, c, n;
 	unsigned mask;
@@ -241,7 +232,7 @@ static void read_pt_len(nn, nbit, i_special)
 	}
 }
 
-static void read_c_len()
+static void read_c_len(void)
 {
 	int i, c, n;
 	unsigned mask;
@@ -276,7 +267,7 @@ static void read_c_len()
 	}
 }
 
-static unsigned decode_c()
+static unsigned decode_c(void)
 {
 	unsigned j, mask;
 
@@ -303,7 +294,7 @@ static unsigned decode_c()
 	return j;
 }
 
-static unsigned decode_p()
+static unsigned decode_p(void)
 {
 	unsigned j, mask;
 
@@ -321,7 +312,7 @@ static unsigned decode_p()
 	return j;
 }
 
-static void huf_decode_start()
+static void huf_decode_start(void)
 {
 	init_getbits();	 blocksize = 0;
 }
