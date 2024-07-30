@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 		std::cout << "Checking CRC16: " << testlist[i].filename;
 		if (testlist[i].crc16 != key.crc16)
 		{
-			std::cout << " [FAIL: " << std::hex << key.crc16 << "]\n";
+			std::cout << " [FAIL: " << std::hex << key.crc16 << "]" << std::dec << std::endl;
 			retval = false;
 		}
 		else
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 		std::cout << "Checking CRC32: " << testlist[i].filename;
 		if (testlist[i].crc32 != key.crc32)
 		{
-			std::cout << " [FAIL: " << std::hex << key.crc32 << "]\n";
+			std::cout << " [FAIL: " << std::hex << key.crc32 << "]" << std::dec << std::endl;
 			retval = false;
 		}
 		else
