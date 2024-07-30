@@ -193,7 +193,7 @@ public:
   {
     if (reg > 255 || val > 255 || reg < 0 || val < 0)
       std::cerr << "Warning: The player is writing data out of range! (reg = "
-		<< std::hex << reg << ", val = " << val << ")\n";
+		<< std::hex << reg << ", val = " << val << ")" << std::dec << std::endl;
   }
 
   void init() {}
