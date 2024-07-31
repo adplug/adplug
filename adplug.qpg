@@ -103,7 +103,6 @@
          <QPG:Add permissions="0644" file="./src/s3m.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/sa2.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/silentopl.h" install="/opt/include/adplug/"/>
-         <QPG:Add permissions="0644" file="./src/sixpack.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/sng.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/sop.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/surroundopl.h" install="/opt/include/adplug/"/>

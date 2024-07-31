@@ -92,7 +92,6 @@
     <ClCompile Include="..\..\..\src\vgm.cpp" />
     <ClCompile Include="..\..\..\src\sop.cpp" />
     <ClCompile Include="..\..\..\src\herad.cpp" />
-    <ClCompile Include="..\..\..\src\sixpack.c" />
     <ClCompile Include="..\..\..\src\unlzh.c" />
     <ClCompile Include="..\..\..\src\unlzss.c" />
     <ClCompile Include="..\..\..\src\unlzw.c" />
@@ -176,7 +175,6 @@
     <ClInclude Include="..\..\..\src\vgm.h" />
     <ClInclude Include="..\..\..\src\sop.h" />
     <ClInclude Include="..\..\..\src\herad.h" />
-    <ClInclude Include="..\..\..\src\sixpack.h" />
     <ClInclude Include="..\..\..\src\unlzh.h" />
     <ClInclude Include="..\..\..\src\unlzss.h" />
     <ClInclude Include="..\..\..\src\unlzw.h" />

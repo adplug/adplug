@@ -27,6 +27,8 @@
 class Ca2mLoader: public CmodPlayer
 {
 public:
+  friend class Ca2mv2Player;
+
   static CPlayer *factory(Copl *newopl);
 
   Ca2mLoader(Copl *newopl): CmodPlayer(newopl)

@@ -9,7 +9,6 @@ set(SOURCES
     depack.c
     fmopl.c
     nukedopl.c
-    sixpack.c
     unlzh.c
     unlzss.c
     unlzw.c
