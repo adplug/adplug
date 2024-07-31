@@ -200,10 +200,10 @@ bool CxadbmfPlayer::xadplayer_load()
   if (bmf.version > BMF0_9B) {
     if (tune_size - ptr < 4)
       return false;
-    unsigned long sflags = (tune[ptr] << 24)
-                         | (tune[ptr+1] << 16)
-                         | (tune[ptr+2] << 8)
-                         | tune[ptr+3];
+    unsigned long sflags = (((unsigned long)tune[ptr  ]) << 24) |
+                           (((unsigned long)tune[ptr+1]) << 16) |
+                           (((unsigned long)tune[ptr+2]) <<  8) |
+                            ((unsigned long)tune[ptr+3]);
     ptr += 4;
 
     for (i = 0; i < 9; i++)
