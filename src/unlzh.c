@@ -333,9 +333,7 @@ static void decode_start()
 
 /* Decode the input and return the number of decoded bytes put in buffer
  */
-static unsigned decode(count, buffer)
-	unsigned count;
-	uch buffer[];
+static unsigned decode(unsigned count, uch buffer[])
 	/* The calling function must keep the number of
 	   bytes to be processed.  This function decodes
 	   either 'count' bytes or 'DIC_SIZE' bytes, whichever
