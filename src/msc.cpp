@@ -176,7 +176,7 @@ std::string CmscPlayer::gettype()
 {
   char vstr [40];
 
-  snprintf(vstr, sizeof (vstr), "AdLib MSCplay (version %d)", version);
+  snprintf(vstr, sizeof(vstr), "AdLib MSCplay (version %d)", version);
   return std::string (vstr);
 }
 

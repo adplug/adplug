@@ -71,7 +71,7 @@ std::string CheradPlayer::gettype()
 	if (comp > HERAD_COMP_NONE)
 		snprintf(scomp, sizeof(scomp), ", %s packed", (comp == HERAD_COMP_HSQ ? "HSQ" : "SQX"));
 	char type[41 + 1];
-	snprintf(type, sizeof (type), "HERAD System %s (version %d%s)", (AGD ? "AGD" : "SDB"), (v2 ? 2 : 1), scomp);
+	snprintf(type, sizeof(type), "HERAD System %s (version %d%s)", (AGD ? "AGD" : "SDB"), (v2 ? 2 : 1), scomp);
 	return std::string(type);
 }
 

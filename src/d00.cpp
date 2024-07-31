@@ -509,7 +509,7 @@ void Cd00Player::rewind(int subsong)
 std::string Cd00Player::gettype()
 {
   char	tmpstr[40];
-  snprintf(tmpstr, sizeof (tmpstr), "EdLib packed (version %d)",version > 1 ? header->version : header1->version);
+  snprintf(tmpstr, sizeof (tmpstr), "EdLib packed (version %d)", version > 1 ? header->version : header1->version);
   return std::string(tmpstr);
 }
 
