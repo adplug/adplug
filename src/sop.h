@@ -193,7 +193,7 @@ public:
 	std::string gettype()
 	{
 		char type[36];
-		sprintf(type, "Note Sequencer v%u.%u by sopepos", (version >> 8) & 0xFF, version & 0xFF);
+		snprintf(type, sizeof(type), "Note Sequencer v%u.%u by sopepos", (version >> 8) & 0xFF, version & 0xFF);
 		return std::string(type);
 	}
 
