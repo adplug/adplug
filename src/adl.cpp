@@ -471,7 +471,7 @@ private:
 
 //AdLibDriver::AdLibDriver(Audio::Mixer *mixer, int version) : PCSoundDriver() {
 AdLibDriver::AdLibDriver(Copl *newopl) :
-	_opl(newopl), _soundData(0), _soundDataSize(0), _numPrograms(0), _version(0)
+	_opl(newopl), _soundData(0), _soundDataSize(0), _sfxPriority(0), _sfxVelocity(0), _numPrograms(0), _version(0)
 {
 	/*
 	_version = version;
@@ -2542,7 +2542,7 @@ SoundAdLibPC::SoundAdLibPC(KyraEngine_v1 *vm, Audio::Mixer *mixer)
 	: Sound(vm, mixer), _driver(0), _trackEntries(), _soundDataPtr(0) {
 */
 CadlPlayer::CadlPlayer(Copl *newopl)
-	: CPlayer(newopl), numsubsongs(0), _soundDataPtr(0) {
+	: CPlayer(newopl), numsubsongs(0), cursubsong(0), _soundDataPtr(0) {
 	memset(_trackEntries, 0, sizeof(_trackEntries));
 
 	_version = 0;
