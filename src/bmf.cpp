@@ -133,7 +133,9 @@ bool CxadbmfPlayer::xadplayer_load()
   } else {
     // bmf.version == BMF0_9B
     strncpy(bmf.title, xad.title, sizeof(bmf.title));
+    bmf.title[sizeof(bmf.title) - 1] = 0;
     strncpy(bmf.author, xad.author, sizeof(bmf.author));
+    bmf.author[sizeof(bmf.author) - 1] = 0;
   }
 
   // speed
@@ -147,8 +149,10 @@ bool CxadbmfPlayer::xadplayer_load()
   if (bmf.version > BMF0_9B) {
     if (tune_size - ptr < 4)
       return false;
-    unsigned long iflags = (tune[ptr] << 24) | (tune[ptr+1] << 16)
-                         | (tune[ptr+2] << 8) | tune[ptr+3];
+    unsigned long iflags = (((unsigned long)tune[ptr]  ) << 24) |
+                           (((unsigned long)tune[ptr+1]) << 16) |
+                           (((unsigned long)tune[ptr+2]) <<  8) |
+                            ((unsigned long)tune[ptr+3]);
     ptr += 4;
 
     for (i = 0; i < 32; i++) {
@@ -196,10 +200,10 @@ bool CxadbmfPlayer::xadplayer_load()
   if (bmf.version > BMF0_9B) {
     if (tune_size - ptr < 4)
       return false;
-    unsigned long sflags = (tune[ptr] << 24)
-                         | (tune[ptr+1] << 16)
-                         | (tune[ptr+2] << 8)
-                         | tune[ptr+3];
+    unsigned long sflags = (((unsigned long)tune[ptr  ]) << 24) |
+                           (((unsigned long)tune[ptr+1]) << 16) |
+                           (((unsigned long)tune[ptr+2]) <<  8) |
+                            ((unsigned long)tune[ptr+3]);
     ptr += 4;
 
     for (i = 0; i < 9; i++)
