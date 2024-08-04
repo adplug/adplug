@@ -40,7 +40,7 @@
 
 static unsigned short le16(const unsigned char *p)
 {
-  return ((unsigned short)p[0]) | (((unsigned short)p[1]) << 8);
+  return ((unsigned int)p[0]) | (((unsigned int)p[1]) << 8);
 }
 
 CPlayer *CxadpsiPlayer::factory(Copl *newopl)
