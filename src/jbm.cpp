@@ -184,7 +184,7 @@ bool CjbmPlayer::update()
 
     opl_noteonoff(c, &voice[c], !(voice[c].note & 0x80));
   }
-  return (voicemask);
+  return (!!voicemask);
 }
 
 void CjbmPlayer::rewind(int subsong)
