@@ -143,7 +143,7 @@ bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
 	//  6 Bytes: unknown data
 	track_name = std::string(&footer[2]);
 	remarks = std::string(&footer[18]);
-	delete footer;
+	delete[] footer;
 	footer = 0;
       }
     }
