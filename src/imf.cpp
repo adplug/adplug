@@ -59,7 +59,7 @@ bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
   if (!f) return false;
 
   // file validation section
-  size_t hdr_size = 0;
+  unsigned long hdr_size = 0;
   {
     char	header[5];
     int		version;
@@ -86,7 +86,7 @@ bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
   // determine data size
   unsigned long file_size = fp.filesize(f);
   int len_size = hdr_size ? 4 : 2;
-  size_t song_size = f->readInt(len_size);
+  unsigned long song_size = f->readInt(len_size);
 
   if (!song_size) {	// raw music data (no length field, no footer)
     f->seek(-len_size, binio::Add);
@@ -109,7 +109,7 @@ bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
   // read song data
   size = song_size / 4;
   data = new Sdata[size];
-  for (size_t i = 0; i < size; i++) {
+  for (unsigned long i = 0; i < size; i++) {
     data[i].reg = f->readInt(1);
     data[i].val = f->readInt(1);
     data[i].time = f->readInt(2);
@@ -117,7 +117,7 @@ bool CimfPlayer::load(const std::string &filename, const CFileProvider &fp)
 
   // read footer, if any
   if (song_size < file_size - hdr_size) {
-    size_t footerlen = file_size - hdr_size - song_size;
+    unsigned long footerlen = file_size - hdr_size - song_size;
     char signature = f->readInt(1);
 
     if (signature == 0x1a && footerlen <= 1 + 3 * 256 + 9) {
