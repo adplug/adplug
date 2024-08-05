@@ -177,7 +177,7 @@ bool CjbmPlayer::update()
 
     if (flags&1 && c > 6)
       opl->write(0x40 + percmx_tab[c-7], voice[c].vol ^ 0x3f);
-    else
+    else if (c < 9)
       opl->write(0x43 + op_table[c], voice[c].vol ^ 0x3f);
 
     // Write new frequencies and Gate bit
@@ -269,6 +269,9 @@ void CjbmPlayer::set_opl_instrument(int channel, JBMVoice *v)
     opl->write(0xc0 + perchn_tab[channel-6], m[i+8]&15);
     return;
   }
+
+  if (channel >= 9)
+    return;
 
   // AM/VIB/EG/KSR/FRQMUL, KSL/OUTPUT, ADSR for 1st operator
   opl->write(0x20 + op_table[channel], m[i+0]);
