@@ -72,8 +72,8 @@ bool Cd00Player::load(const std::string &filename, const CFileProvider &fp)
   // Check for reheadered old-style song
   if (strncmp(checkhead->id,"JCH\x26\x02\x66",6) == 0 && checkhead->version & 0x80) {
     delete checkhead;
-    ch = new d00header1;
     if(!fp.extension(filename, ".d00")) { fp.close(f); return false; }
+    ch = new d00header1;
     // If this is a reheadered old song, the old header begins 0x6b
     // into the file.
     f->seek(0x6b); f->readString((char *)ch, sizeof(d00header1));
