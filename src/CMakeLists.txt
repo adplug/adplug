@@ -90,6 +90,11 @@ set(HEADERS
     silentopl.h
     opl.h
     diskopl.h
+    depack.h
+    sixdepack.h
+    unlzh.h
+    unlzss.h
+    unlzw.h
     a2m.h
     a2m-v2.h
     amd.h
