@@ -30,7 +30,6 @@
  */
 
 #include "a2m-v2.h"
-#include "a2m.h" // Ca2mLoader::sixdepak
 #include "debug.h"
 #include <climits>
 #include <math.h>
@@ -3187,7 +3186,7 @@ void Ca2mv2Player::a2t_depack(char *src, int srcsize, char *dst, int dstsize)
     switch (ffver) {
     case 1:
     case 5: // sixpack
-        Ca2mLoader::sixdepak::decode((unsigned short *)src, srcsize, (unsigned char *)dst, dstsize);
+        Sixdepak::decode((unsigned short *)src, srcsize, (unsigned char *)dst, dstsize);
         break;
     case 2:
     case 6: // lzw

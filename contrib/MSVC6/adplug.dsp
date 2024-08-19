@@ -109,6 +109,10 @@ SOURCE=.\depack.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\sixdepack.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\unlzh.c
 # End Source File
 # Begin Source File
@@ -331,6 +335,10 @@ SOURCE=.\a2m-v2.h
 # Begin Source File
 
 SOURCE=.\depack.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\sixdepack.h
 # End Source File
 # Begin Source File
 

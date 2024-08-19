@@ -16,6 +16,7 @@ src_libadplug_la_SOURCES = \
 	src/fmopl.c \
 	src/nukedopl.c \
 	src/depack.c \
+	src/sixdepack.cpp \
 	src/unlzh.c \
 	src/unlzss.c \
 	src/unlzw.c \
@@ -107,6 +108,7 @@ pkginclude_HEADERS = \
 	src/opl.h \
 	src/diskopl.h \
 	src/depack.h \
+	src/sixdepack.h \
 	src/unlzh.h \
 	src/unlzss.h \
 	src/unlzw.h \
