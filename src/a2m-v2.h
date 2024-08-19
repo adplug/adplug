@@ -41,6 +41,7 @@
 
 #include "player.h"
 #include "depack.h"
+#include "sixdepack.h"
 #include "unlzh.h"
 #include "unlzss.h"
 #include "unlzw.h"

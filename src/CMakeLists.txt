@@ -9,6 +9,7 @@ set(SOURCES
     depack.c
     fmopl.c
     nukedopl.c
+    sixdepack.cpp
     unlzh.c
     unlzss.c
     unlzw.c
