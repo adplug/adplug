@@ -749,7 +749,7 @@ private:
 
     // Helpers for macro tables
     void fmreg_table_allocate(size_t n, tFMREG_TABLE rt[]);
-    void disabled_fmregs_import(size_t n, bool dis_fmregs[][28]);
+    void disabled_fmregs_import(size_t n, bool dis_fmregs[255][28]);
     void arpvib_tables_free();
     void arpvib_tables_allocate(size_t n, tARPVIB_TABLE mt[]);
     tARPEGGIO_TABLE *get_arpeggio_table(uint8_t arp_table);
@@ -783,7 +783,7 @@ private:
 
     t4OP_DATA get_4op_data(uint8_t chan);
     bool _4op_vol_valid_chan(int chan);
-    void set_ins_volume(uint8_t modulator, uint8_t carrier, int chan);
+    void set_ins_volume(uint8_t modulator, uint8_t carrier, uint8_t chan);
     void set_volume(uint8_t modulator, uint8_t carrier, uint8_t chan);
     void set_ins_volume_4op(uint8_t volume, uint8_t chan);
     void reset_ins_volume(int chan);
@@ -827,6 +827,7 @@ private:
     void update_extra_fine_effects_slot(int slot, int chan);
     void update_extra_fine_effects();
 
+    void set_current_order(uint8_t new_order);
     int calc_following_order(uint8_t order);
     int calc_order_jump();
     void update_song_position();
