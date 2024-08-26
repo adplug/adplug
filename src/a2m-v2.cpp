@@ -726,9 +726,10 @@ bool Ca2mv2Player::_4op_vol_valid_chan(int chan)
 // inverted volume here
 void Ca2mv2Player::set_ins_volume(uint8_t modulator, uint8_t carrier, uint8_t chan)
 {
-    assert(chan < 20);
-    if (chan >= 20)
+    if (chan >= 20) {
+        AdPlug_LogWrite("set_ins_volume: channel out of bounds\n");
         return;
+    }
 
     tINSTR_DATA *instr = get_instr_data_by_ch(chan);
 
@@ -2604,7 +2605,9 @@ void Ca2mv2Player::update_extra_fine_effects()
 
 void Ca2mv2Player::set_current_order(uint8_t new_order)
 {
-    assert(new_order < 0x80);
+    if (new_order >= 0x80) {
+        AdPlug_LogWrite("set_current_order parameter is out of bounds, possibly corrupt file\n");
+    }
     current_order = new_order < 0x80 ? new_order : 0;
 }
 
