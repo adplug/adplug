@@ -3327,13 +3327,13 @@ void Ca2mv2Player::instrument_import(int ins, tINSTR_DATA *instr_s)
 
 int Ca2mv2Player::a2t_read_instruments(char *src, unsigned long size)
 {
+    if (len[0] > size) return INT_MAX;
+
     int instnum = (ffver < 9 ? 250 : 255);
     int instsize = (ffver < 9 ? sizeof(tINSTR_DATA_V1_8) : sizeof(tINSTR_DATA));
     int dstsize = (instnum * instsize) +
                   (ffver > 11 ?  sizeof(tBPM_DATA) + sizeof(tINS_4OP_FLAGS) + sizeof(tRESERVED) : 0);
     char *dst = (char *)calloc(1, dstsize);
-
-    if (len[0] > size) return INT_MAX;
 
     a2t_depack(src, len[0], dst, dstsize);
 
@@ -3422,9 +3422,9 @@ int Ca2mv2Player::a2t_read_disabled_fmregs(char *src, unsigned long size)
 {
     if (ffver < 11) return 0;
 
-    bool (*dis_fmregs)[255][28] = (bool (*)[255][28])calloc(255, 28);
-
     if (len[3] > size) return INT_MAX;
+
+    bool (*dis_fmregs)[255][28] = (bool (*)[255][28])calloc(255, 28);
 
     a2t_depack(src, len[3], (char *)*dis_fmregs, 255 * 28);
 
