@@ -3085,6 +3085,11 @@ void Ca2mv2Player::init_buffers()
 
     for (int i = 0; i < 20; i++)
         ch->volslide_type[i] = (songinfo->lock_flags[i] >> 2) & 3;
+
+    memset(ch->notedel_table, BYTE_NULL, sizeof(ch->notedel_table));
+    memset(ch->notecut_table, BYTE_NULL, sizeof(ch->notecut_table));
+    memset(ch->loopbck_table, BYTE_NULL, sizeof(ch->loopbck_table));
+    memset(ch->loop_table, BYTE_NULL, sizeof(ch->loop_table));
 }
 
 void Ca2mv2Player::init_player()
