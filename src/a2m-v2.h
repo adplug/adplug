@@ -713,7 +713,7 @@ private:
 
     bool speed_update = false, lockvol = false, panlock = false, lockVP = false;
     uint8_t tremolo_depth = 0, vibrato_depth = 0;
-    bool volume_scaling, percussion_mode = false;
+    bool volume_scaling = false, percussion_mode = false;
 
     bool editor_mode = false; // true to allocate max resources
 
