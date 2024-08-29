@@ -714,7 +714,6 @@ private:
     bool speed_update, lockvol, panlock, lockVP;
     uint8_t tremolo_depth, vibrato_depth;
     bool volume_scaling, percussion_mode;
-    uint8_t last_order;
 
     bool editor_mode = false; // true to allocate max resources
 
@@ -829,7 +828,6 @@ private:
 
     void set_current_order(uint8_t new_order);
     int calc_following_order(uint8_t order);
-    int calc_order_jump();
     void update_song_position();
     void poll_proc();
     void macro_poll_proc();

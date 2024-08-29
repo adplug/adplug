@@ -97,8 +97,11 @@ void Ca2mv2Player::rewind(int subsong)
     init_player();
 
     songend = false;
-    current_order = 0;
-    last_order = 0xff;
+    set_current_order(0);
+
+    if ((songinfo->pattern_order[current_order] > 0x7f))
+        return;
+
     current_pattern = songinfo->pattern_order[current_order];
     current_line = 0;
     pattern_break = false;
@@ -1868,12 +1871,6 @@ void Ca2mv2Player::play_line()
 {
     tADTRACK2_EVENT _event, *event = &_event;
 
-    if (!(pattern_break && ((next_line & 0xf0) == pattern_loop_flag)) && current_order != last_order) {
-        memset(ch->loopbck_table, BYTE_NULL, sizeof(ch->loopbck_table));
-        memset(ch->loop_table, BYTE_NULL, sizeof(ch->loop_table));
-        last_order = current_order;
-    }
-
     for (int chan = 0; chan < songinfo->nm_tracks; chan++) {
         // save effect_table into last_effect
         for (int slot = 0; slot < 2; slot++) {
@@ -2606,9 +2603,32 @@ void Ca2mv2Player::update_extra_fine_effects()
 void Ca2mv2Player::set_current_order(uint8_t new_order)
 {
     if (new_order >= 0x80) {
-        AdPlug_LogWrite("set_current_order parameter is out of bounds, possibly corrupt file\n");
+        AdPlug_LogWrite("set_current_order parameter 0x%x is out of bounds, possibly corrupt file\n", new_order);
     }
     current_order = new_order < 0x80 ? new_order : 0;
+
+    if (songinfo->pattern_order[current_order] < 0x80)
+        return;
+
+    // protect from circular jump to jump order command
+    // if after 128 attempts of order jump we still land on jump command
+    // then quit
+    int i = 0;
+    do {
+        if (songinfo->pattern_order[current_order] > 0x7f) {
+            uint8_t old_order = current_order;
+            current_order = songinfo->pattern_order[current_order] - 0x80;
+            if (current_order <= old_order)
+                songend = true;
+        }
+        i++;
+    } while (i < 128 && songinfo->pattern_order[current_order] > 0x7f);
+
+    if (i >= 128) {
+        AdPlug_LogWrite("set_current_order: Circular order jump detected, stopping playback\n");
+        songend = true;
+        a2t_stop();
+    }
 }
 
 int Ca2mv2Player::calc_following_order(uint8_t order)
@@ -2632,66 +2652,47 @@ int Ca2mv2Player::calc_following_order(uint8_t order)
     return result;
 }
 
-int Ca2mv2Player::calc_order_jump()
-{
-    uint8_t temp = 0;
-    int result = 0;
-
-    do {
-        if (songinfo->pattern_order[current_order] > 0x7f) {
-            set_current_order(songinfo->pattern_order[current_order] - 0x80);
-            songend = true;
-        }
-        temp++;
-    } while (!((temp > 0x7f) || (songinfo->pattern_order[current_order] < 0x80)));
-
-    if (temp > 0x7f) {
-        a2t_stop();
-        result = -1;
-    }
-
-    return result;
-}
-
 void Ca2mv2Player::update_song_position()
 {
     if ((current_line < songinfo->patt_len - 1) && !pattern_break) {
         current_line++;
     } else {
-        if (!(pattern_break && ((next_line & 0xf0) == pattern_loop_flag)) && (current_order < 0x7f)) {
+        bool do_pattern_loop =  pattern_break && ((next_line & 0xf0) == pattern_loop_flag);
+        bool do_position_jump = pattern_break && ((next_line & 0xf0) == pattern_break_flag);
+
+        if (do_pattern_loop) {
+            // ZCx, ZDx - loop back
+            uint8_t chan = next_line - pattern_loop_flag;
+            next_line = ch->loopbck_table[chan];
+
+            if (ch->loop_table[chan][current_line] != 0)
+                ch->loop_table[chan][current_line]--;
+        } else {
+            // A bit overkill to clean arrays here, better do it in the end of pattern loop
             memset(ch->loopbck_table, BYTE_NULL, sizeof(ch->loopbck_table));
             memset(ch->loop_table, BYTE_NULL, sizeof(ch->loop_table));
-            current_order++;
-        }
 
-        if (pattern_break && ((next_line & 0xf0) == pattern_loop_flag)) {
-            uint8_t temp;
-
-            temp = next_line - pattern_loop_flag;
-            next_line = ch->loopbck_table[temp];
-
-            if (ch->loop_table[temp][current_line] != 0)
-                ch->loop_table[temp][current_line]--;
-        } else {
-            if (pattern_break && ((next_line & 0xf0) == pattern_break_flag)) {
+            if (do_position_jump) {
+                // Bxx - order position jump
                 uint8_t old_order = current_order;
-                if (ch->event_table[next_line - pattern_break_flag].eff[1].def == ef_PositionJump) {
-                    set_current_order(ch->event_table[next_line - pattern_break_flag].eff[1].val);
-                } else {
-                    set_current_order(ch->event_table[next_line - pattern_break_flag].eff[0].val);
-                }
+
+                uint8_t chan = next_line - pattern_break_flag;
+                int slot = ch->event_table[chan].eff[0].def == ef_PositionJump ? 0 : 1;
+                uint8_t val = ch->event_table[chan].eff[slot].val;
+
+                set_current_order(val);
+
                 if (current_order <= old_order)
                     songend = true;
                 pattern_break = false;
             } else {
-                if (current_order >= 0x7f)
-                    set_current_order(0);
+                int new_order = current_order < 0x7f ? current_order + 1 : 0;
+                set_current_order(new_order);
             }
         }
 
-        if ((songinfo->pattern_order[current_order] > 0x7f) && (calc_order_jump() == -1)) {
+        if ((songinfo->pattern_order[current_order] > 0x7f))
             return;
-        }
 
         current_pattern = songinfo->pattern_order[current_order];
         if (!pattern_break) {
@@ -2709,8 +2710,7 @@ void Ca2mv2Player::update_song_position()
         ch->glfsld_table[1][chan].val = 0;
     }
 
-    if ((current_line == 0) &&
-        (current_order == calc_following_order(0)) && speed_update) {
+    if (speed_update && current_line == 0 && current_order == calc_following_order(0)) {
         tempo = songinfo->tempo;
         speed = songinfo->speed;
         update_timer(tempo);
