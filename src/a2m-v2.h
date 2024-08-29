@@ -702,32 +702,32 @@ private:
     const uint8_t def_vibtrem_speed_factor = 1;
     const uint8_t def_vibtrem_table_size = 32;
 
-    uint8_t vibtrem_speed_factor;
-    uint8_t vibtrem_table_size;
+    uint8_t vibtrem_speed_factor = def_vibtrem_speed_factor;
+    uint8_t vibtrem_table_size = def_vibtrem_table_size;
     uint8_t vibtrem_table[256];
 
-    uint8_t misc_register;
+    uint8_t misc_register = 0;
 
     uint8_t current_tremolo_depth = 0;
     uint8_t current_vibrato_depth = 0;
 
-    bool speed_update, lockvol, panlock, lockVP;
-    uint8_t tremolo_depth, vibrato_depth;
-    bool volume_scaling, percussion_mode;
+    bool speed_update = false, lockvol = false, panlock = false, lockVP = false;
+    uint8_t tremolo_depth = 0, vibrato_depth = 0;
+    bool volume_scaling, percussion_mode = false;
 
     bool editor_mode = false; // true to allocate max resources
 
     tSONGINFO *songinfo;
     tINSTR_INFO *instrinfo;
-    unsigned int arpvib_count;
+    unsigned int arpvib_count = 0;
     tVIBRATO_TABLE **vibrato_table = 0;
     tARPEGGIO_TABLE **arpeggio_table = 0;
     tEVENTS_INFO *eventsinfo;
     tCHDATA *ch;
 
     // Timer
-    int ticks, tickD, tickXF;
-    int ticklooper, macro_ticklooper;
+    int ticks = 0, tickD = 0, tickXF = 0;
+    int ticklooper = 0, macro_ticklooper = 0;
 
     // Loader
     int type = 0; // 0 - a2m, 1 - a2t
