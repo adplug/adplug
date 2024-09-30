@@ -17,6 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * xsm.cpp - eXtra Simple Music Player, by Simon Peter <dn.tlp@gmx.net>
+ *
+ * eXtra Simple Music Player can be found in the All BASIC Code archive
+ * package called FMLIB by Davey W. Taylor (SOUND.ABC, 1997).
+ * The ABC archive can be obtained from https://github.com/qb40/abc-archive
+ *
+ * It is a simple (as the name implies ;) package to play FM music using QBasic.
+ * There is no tracker included to produce XSM files, hence it is unlikely that
+ * more XSM files other than the four included demo songs exist.
+ * Davey W. Taylor later went on to write an FM Tracker in QBasic which uses an
+ * incompatible file format.
  */
 
 #include <string.h>
