@@ -443,7 +443,9 @@ EXTRA_DIST += \
 	test/testmus/WORMINTR.AGD \
 	test/testref/WORMINTR.ref \
 	test/testref/YsBattle.ref \
-	test/testmus/YsBattle.vgm
+	test/testmus/YsBattle.vgm \
+	test/testref/logical.ref \
+	test/testmus/logical.plx
 # Regression tests:
 EXTRA_DIST += \
 	test/fuzzing/i-85.bmf \

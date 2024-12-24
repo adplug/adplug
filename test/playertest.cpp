@@ -122,6 +122,7 @@ static const char *filelist[] = {
   "ACTION.PIS",		// Beni Tracker
   "CHIP.MTR",		// Master Tracker v1
   "AKMTEC.MTR",		// Master Tracker v2
+  "logical.plx",	// Palladix Sound System
   NULL
 };
 

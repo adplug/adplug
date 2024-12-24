@@ -62,6 +62,7 @@ set(SOURCES
     pis.cpp
     player.cpp
     players.cpp
+    plx.cpp
     protrack.cpp
     psi.cpp
     rad2.cpp
@@ -119,6 +120,7 @@ set(HEADERS
     sng.h
     u6m.h
     player.h
+    plx.h
     fmc.h
     mad.h
     xad.h
