@@ -1,6 +1,6 @@
 /*
  * Adplug - Replayer for many OPL2/OPL3 audio file formats.
- * Copyright (C) 1999 - 2008 Simon Peter <dn.tlp@gmx.net>, et al.
+ * Copyright (C) 1999 - 2008, 2024 Simon Peter <dn.tlp@gmx.net>, et al.
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -86,6 +86,7 @@
 #include "coktel.h"
 #include "pis.h"
 #include "mtr.h"
+#include "plx.h"
 
 /***** CAdPlug *****/
 
@@ -128,6 +129,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CxadpsiPlayer::factory, "PSI", ".xad\0"),
   CPlayerDesc(CxadratPlayer::factory, "rat", ".xad\0"),
   CPlayerDesc(CldsPlayer::factory, "LOUDNESS Sound System", ".lds\0"),
+  CPlayerDesc(CplxPlayer::factory, "PALLADIX Sound System", ".plx\0"),
   CPlayerDesc(Cu6mPlayer::factory, "Ultima 6 Music", ".m\0"),
   CPlayerDesc(CrolPlayer::factory, "Adlib Visual Composer", ".rol\0"),
   CPlayerDesc(CxsmPlayer::factory, "eXtra Simple Music", ".xsm\0"),

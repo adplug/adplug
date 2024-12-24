@@ -66,6 +66,7 @@ src_libadplug_la_SOURCES = \
 	src/mtr.cpp \
 	src/mus.cpp \
 	src/nemuopl.cpp \
+	src/plx.cpp \
 	src/pis.cpp \
 	src/player.cpp \
 	src/players.cpp \
@@ -141,6 +142,7 @@ pkginclude_HEADERS = \
 	src/bmf.h \
 	src/flash.h \
 	src/hyp.h \
+	src/plx.h \
 	src/pis.h \
 	src/psi.h \
 	src/rat.h \
