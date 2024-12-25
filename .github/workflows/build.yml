@@ -216,3 +216,4 @@ jobs:
           adplug-*/_build/sub/*.test
           *.test
           *.log
+          libbinio/*.log
