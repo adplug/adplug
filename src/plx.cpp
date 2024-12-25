@@ -219,6 +219,8 @@ void CplxPlayer::rewind(int subsong)
 {
   opl->init();				// Reset OPL chip
 
+  memset(fmchip, 0, sizeof(fmchip));
+
   // Init OPL2 registers
   for(int i = 0; i < 0x100; i++) {
     // if(opl2_init_regs[i] != 0xff)
@@ -230,6 +232,8 @@ void CplxPlayer::rewind(int subsong)
     chan_offset[i] = chan_start_offset[i];
     chan_pos[i] = 0;
   }
+
+  songpos = 0;
 }
 
 /*** private methods *************************************/
