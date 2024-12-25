@@ -236,8 +236,10 @@ void CplxPlayer::rewind(int subsong)
 
   // Init OPL2 registers
   for(int i = 0; i < 0x100; i++) {
-    // if(opl2_init_regs[i] != 0xff)
-      setregs(i, opl2_init_regs[i]);
+    // if(opl2_init_regs[i] != 0xff) {
+      fmchip[i] = opl2_init_regs[i];
+      opl->write(i, opl2_init_regs[i]);
+    // }
   }
 
   // Reset channels
