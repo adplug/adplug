@@ -58,7 +58,6 @@ public:
     static CRecord *factory(RecordType type);
     static CRecord *factory(binistream &in);
 
-    CRecord() {}
     virtual ~CRecord() {}
 
     void write(binostream &out);
@@ -67,6 +66,7 @@ public:
     bool user_write(std::ostream &out);
 
   protected:
+    CRecord() : type(Plain) {}
     virtual void read_own(binistream &in) = 0;
     virtual void write_own(binostream &out) = 0;
     virtual unsigned long get_size() = 0;
