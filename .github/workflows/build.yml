@@ -149,7 +149,7 @@ jobs:
       run: |-
         if [[ ${{ runner.os }} == "Linux" ]]; then
           # When "make distcheck" fails, following directory will be used for all files
-          pushd adplug-*/_build/sub
+          pushd adplug-*/_build/sub || true
         fi
 
         for I in test/*.log; do
@@ -204,7 +204,7 @@ jobs:
         echo == End of test log ==
 
         if [[ ${{ runner.os }} == "Linux" ]]; then
-          popd
+          popd || true
         fi
 
     - name: Upload failed test output
@@ -215,3 +215,4 @@ jobs:
         path: |
           adplug-*/_build/sub/*.test
           *.test
+	  *.log
