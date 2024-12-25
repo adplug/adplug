@@ -1,7 +1,8 @@
 This directory contains unsupported parts of the AdPlug library
-and contributions to it (which are also unsupported).
+and contributions to it (that are also unsupported).
 
 Index of the contained subdirectories:
 --------------------------------------
 MSVC6        Microsoft Visual C++ 6.0 project files
 Watcom       Watcom C/C++ 11 and OpenWatcom build system
+vs2015	     Microsoft Visual Studio 2015 project files

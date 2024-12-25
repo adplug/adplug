@@ -70,6 +70,7 @@
     <ClCompile Include="..\..\..\src\protrack.cpp" />
     <ClCompile Include="..\..\..\src\pis.cpp" />
     <ClCompile Include="..\..\..\src\psi.cpp" />
+    <ClCompile Include="..\..\..\src\plx.cpp" />
     <ClCompile Include="..\..\..\src\rad2.cpp" />
     <ClCompile Include="..\..\..\src\rat.cpp" />
     <ClCompile Include="..\..\..\src\raw.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="..\..\..\src\protrack.h" />
     <ClInclude Include="..\..\..\src\pis.h" />
     <ClInclude Include="..\..\..\src\psi.h" />
+    <ClInclude Include="..\..\..\src\plx.h" />
     <ClInclude Include="..\..\..\src\rad2.h" />
     <ClInclude Include="..\..\..\src\rat.h" />
     <ClInclude Include="..\..\..\src\raw.h" />
