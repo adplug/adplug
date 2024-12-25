@@ -43,7 +43,7 @@ class CplxPlayer: public CPlayer
  private:
   static const unsigned short	frequency[];
   static const unsigned char	opl2_init_regs[];
-  unsigned char			fmchip[0xff];
+  unsigned char			fmchip[0x100];
   unsigned char			*songdata;
   unsigned short		speed;
   unsigned char			type, speed_scale, chan_volume[9];
