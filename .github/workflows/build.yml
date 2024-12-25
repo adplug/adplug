@@ -32,7 +32,7 @@ jobs:
         sudo apt install -y texlive-latex-base texinfo
 
         if [[ ${{ matrix.compiler }} == "clang" ]]; then
-          sudo apt install -y libncurses6
+          sudo apt install -y build-essential clang
         fi
 
         if [[ ${{ matrix.compiler }} == "gcc-4.8" ]]; then
@@ -73,11 +73,11 @@ jobs:
         #brew install --cask mactex-no-gui
         brew install automake texinfo libtool
 
-    - name: Install LLVM and Clang (Linux)
-      if: ${{ matrix.compiler == 'clang' && runner.os != 'macOS' }}
-      uses: KyleMayes/install-llvm-action@v1
-      with:
-        version: "10.0"
+    # - name: Install LLVM and Clang (Linux)
+    #   if: ${{ matrix.compiler == 'clang' && runner.os != 'macOS' }}
+    #   uses: KyleMayes/install-llvm-action@v1
+    #   with:
+    #     version: "10.0"
 
     - name: Set GCC environment (Linux)
       if: ${{ matrix.compiler == 'gcc' && runner.os == 'Linux'}}
