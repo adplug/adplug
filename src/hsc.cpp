@@ -103,6 +103,11 @@ bool ChscPlayer::update()
       songend = 1;
     }
 
+  // avoid reading outside valid "pattern" data, in case of double jump in the
+  // song[] data, invalid song termination in song[0] etc. */
+  if (pattnr >= 50)
+    goto skip_pattern_data;
+
   pattoff = pattpos*9;
   for (chan=0;chan<9;chan++) {			// handle all channels
     note = patterns[pattnr][pattoff].note;
@@ -211,6 +216,7 @@ bool ChscPlayer::update()
     }
   }
 
+skip_pattern_data:
   del = speed;		// player speed-timing
   if(pattbreak) {		// do post-effect handling
     pattpos=0;			// pattern break!
