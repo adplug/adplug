@@ -81,7 +81,7 @@ class CldsPlayer: public CPlayer
   unsigned char		fmchip[0xff], jumping, fadeonoff, allvolume, hardfade,
     tempo_now, pattplay, tempo, regbd, chandelay[9], mode, pattlen;
   unsigned short	posplay, jumppos, *patterns, speed;
-  bool			playing, songlooped;
+  bool			playing, songlooped, no_midi;
   unsigned int		numpatch, numposi, patterns_size, mainvolume;
 
   void		playsound(int inst_number, int channel_number, int tunehigh);

@@ -72,7 +72,7 @@ const unsigned short CldsPlayer::maxsound = 0x3f, CldsPlayer::maxpos = 0xff;
 /*** public methods *************************************/
 
 CldsPlayer::CldsPlayer(Copl *newopl)
-  : CPlayer(newopl), soundbank(0), positions(0), patterns(0)
+  : CPlayer(newopl), soundbank(0), positions(0), patterns(0), no_midi(false)
 {
 }
 
@@ -90,8 +90,14 @@ bool CldsPlayer::load(const std::string &filename, const CFileProvider &fp)
   SoundBank	*sb;
 
   // file validation section (actually just an extension check)
-  if(!fp.extension(filename, ".lds")) return false;
+  if(!fp.extension(filename, ".lds") && !fp.extension(filename, ".ld0")) return false;
   f = fp.open(filename); if(!f) return false;
+
+  if(fp.extension(filename, ".ld0")) {
+    no_midi = true;
+  } else {
+    no_midi = false;
+  }
 
   // file load section (header)
   mode = f->readInt(1);
@@ -121,9 +127,11 @@ bool CldsPlayer::load(const std::string &filename, const CFileProvider &fp)
     for(j = 0; j < 12; j++) sb->arp_tab[j] = f->readInt(1);
     sb->start = f->readInt(2); sb->size = f->readInt(2);
     sb->fms = f->readInt(1); sb->transp = f->readInt(2);
-    sb->midinst = f->readInt(1); sb->midvelo = f->readInt(1);
-    sb->midkey = f->readInt(1); sb->midtrans = f->readInt(1);
-    sb->middum1 = f->readInt(1); sb->middum2 = f->readInt(1);
+    if(!no_midi) {
+      sb->midinst = f->readInt(1); sb->midvelo = f->readInt(1);
+      sb->midkey = f->readInt(1); sb->midtrans = f->readInt(1);
+      sb->middum1 = f->readInt(1); sb->middum2 = f->readInt(1);
+    }
   }
 
   // load positions
@@ -141,8 +149,8 @@ bool CldsPlayer::load(const std::string &filename, const CFileProvider &fp)
     }
 
   AdPlug_LogWrite("CldsPlayer::load(\"%s\",fp): loading LOUDNESS file: mode = "
-		  "%d, pattlen = %d, numpatch = %d, numposi = %d\n",
-		  filename.c_str(), mode, pattlen, numpatch, numposi);
+		  "%d, pattlen = %d, numpatch = %d, numposi = %d, no_midi = %u\n",
+		  filename.c_str(), mode, pattlen, numpatch, numposi, no_midi);
 
   // load patterns
   f->ignore(2);		// ignore # of digital sounds (not played by this player)
