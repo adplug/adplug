@@ -57,6 +57,7 @@ static const char *filelist[] = {
   "ice_thnk.sci",	// Sierra
   "inc.raw",		// RAW
   "crusader.raw",	// RAW (non-standard clock rate)
+  "GENORI.LD0",		// Loudness (older)
   "loudness.lds",	// Loudness
   "MARIO.A2M",		// AdLib Tracker 2
   "AB_JULIA.A2T",	// Adlib Tracker 2 (tiny module v11)

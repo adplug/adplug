@@ -342,6 +342,8 @@ EXTRA_DIST += \
 	test/testref/fm-troni.ref \
 	test/testref/GALWAY.ref \
 	test/testmus/GALWAY.SOP \
+	test/testmus/GENORI.LD0 \
+	test/testref/GENORI.ref \
 	test/testmus/go-_-go.bnk \
 	test/testmus/go-_-go.ims \
 	test/testref/go-_-go.ref \
