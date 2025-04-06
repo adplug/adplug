@@ -1,5 +1,5 @@
 AdPlug - A free AdLib sound player library
-Copyright (C) 1999 - 2017 Simon Peter, et al.
+Copyright (C) 1999 - 2025 Simon Peter, et al.
 
 Website: http://adplug.github.io/
 
@@ -18,20 +18,17 @@ platforms and compilers:
 
 Platform                Operating System        Compiler
 --------                ----------------        --------
-IA32 - x86              Windows XP              MinGW 3.4     # not tested at the moment
-                        MS-DOS 6.22             DJGPP 2.0.5 / GCC 12.2.0
+IA32 - x86              MS-DOS 6.22             DJGPP 2.0.5 / GCC 12.2.0
                         MS-DOS 6.22             DJGPP 2.0.5 / GCC 4.8.5
-                        Linux 2.6               GCC 4.1       # not tested at the moment
 x86_64                  Linux                   GCC 4.8
                         Linux                   GCC 11.3.0
                         Linux                   CLANG 10.0.1
                         MACOS                   GCC 14.0.0
                         MACOS                   CLANG 14.0.0
 
-This list only incorporates platforms on which this release of AdPlug has
-been tested successfully. This and/or earlier versions of AdPlug may and did
-run on a variety of other platforms as well. It just means they haven't been
-explicitly tested for this release.
+This list only incorporates platforms on which this release of AdPlug
+has been tested successfully. This and earlier versions of AdPlug may
+and did run on a variety of other platforms as well.
 
 The library builds as dynamic and/or static link library, depending on
 the facilities provided by the host OS. These are autodetected.

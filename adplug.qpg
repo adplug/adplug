@@ -118,6 +118,12 @@
          <QPG:Add permissions="0644" file="./src/woodyopl.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/xad.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0644" file="./src/xsm.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/load_helper.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/mtr.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/pch.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/pis.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/plx.h" install="/opt/include/adplug/"/>
+         <QPG:Add permissions="0644" file="./src/strnlen.h" install="/opt/include/adplug/"/>
          <QPG:Add permissions="0755" file="./adplugdb/.libs/adplugdb" install="/opt/bin/"/>
       </QPG:Files>
       <QPG:PackageFilter>
