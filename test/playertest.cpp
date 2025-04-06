@@ -48,6 +48,8 @@ static const char *filelist[] = {
   "ALLOYRUN.RAD",	// Reality AdLib Tracker (v1)
   "dystopia.rad",   // Reality AdLib Tracker (v2)
   "canonind.rad",   // Reality AdLib Tracker (v2 + MIDI)
+  "nest-rxx.rad",   // Reality AdLib Tracker (v2), recursive RIFF command
+  "nest-txx.rad",   // Reality AdLib Tracker (v2), recursive TRANSPOSE command
   "ARAB.BAM",		// Bob's AdLib Music
   "BEGIN.KSM",		// Ken Silverman
   "BOOTUP.M",		// Ultima 6
