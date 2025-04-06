@@ -209,7 +209,7 @@ jobs:
 
     - name: Upload failed test output
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: adplug-tests-${{runner.os}}-${{matrix.compiler}}-${{github.sha}}
         path: |
