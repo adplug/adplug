@@ -391,6 +391,10 @@ EXTRA_DIST += \
 	test/testref/NEWPAGA.ref \
 	test/testmus/NEWSAN.HSQ \
 	test/testref/NEWSAN.ref \
+	test/testmus/nest-rxx.rad \
+	test/testref/nest-rxx.ref \
+	test/testmus/nest-txx.rad \
+	test/testref/nest-txx.ref \
 	test/testmus/opensong.got \
 	test/testref/opensong.ref \
 	test/testref/PLAYMUS1.ref \
