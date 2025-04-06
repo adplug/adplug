@@ -1,5 +1,28 @@
 This is a brief overview of user-visible changes in AdPlug.
 
+Changes for version 2.4:
+------------------------
+- Bug fixes:
+  - Many fixes, cleanup, and refactoring across all players based on
+    fuzzing tests. Huge thanks to Alexander Miller for these. There
+    are too many to list here - please read the commit log.
+  - Fixes to SurroundOPL getchip(), fixing missing note problems
+  - Many code typo fixes (thanks to luz paz for these).
+  - Make SOP player endian aware and many further fixes across players (thanks to Stian Sebastian Skjelstad)
+  - Fix RAD2 player crashes with files referencing unused instruments
+  - Added stress tests and many build fixes across platforms (thanks to Stas'M)
+- New formats:
+  - MUS,ADL: Add support for Coktel Vision game music files to Visual Composer player (thanks to Stas'M)
+  - MID: Detect MIDI Type 1 multi-track files (thanks to Stian Sebastian Skjelstad)
+  - PIS: Beni Tracker (thanks to Dmitry Smagin)
+  - MTR: Master Tracker Loader (thanks to Dmitry Smagin)
+  - A2M: Add new player for A2M and A2T (versions 1-14) (thanks to Dmitry Smagin)
+  - D00: Add support for reheadered D00 songs (thanks to Misty De Méo)
+  - PLX: PALLADIX Sound System
+  - LD0: Add support for old LOUDNESS files that don't have MIDI instrument data
+- Updated NukedOPL to master 730f8c238a152cb3314e46919789a666c9d81d82
+- Updated ADL player to ScummVM version from Dec 7, 2020
+
 Changes for version 2.3.3:
 --------------------------
 - New RAD player replacing the old one
