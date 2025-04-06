@@ -1,6 +1,6 @@
 dnl Tell autoconf we're compiling a C++ library, using automake & libtool
 AC_PREREQ([2.69])
-AC_INIT([adplug], [2.4])
+AC_INIT([adplug], [2.4.1])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl Check whether we want to set defaults for CFLAGS, CXXFLAGS, CPPFLAGS and LDFLAGS

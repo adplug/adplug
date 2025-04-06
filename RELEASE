@@ -13,6 +13,8 @@ Before release:
 
  * Create new tag: `git tag adplug-1.2.3` and `git push origin adplug-1.2.3`
 
+ * Run 'make distcheck' to create .tar.bz2 archive for release
+
 After release:
 
  * Update version number in configure.ac, src/version.h and appveyor.yml to
