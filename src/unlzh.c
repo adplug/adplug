@@ -414,7 +414,12 @@ int LZH_decompress(char *source, char *dest, int source_size, int dest_size)
 	output_buffer = (unsigned char *)dest;
 	output_buffer_idx = 0;
 
-	size_unpacked = *(uint32_t *)(input_buffer + input_buffer_idx);
+	//size_unpacked = *(uint32_t *)(input_buffer + input_buffer_idx);
+	// Encoded data is Little-Endian
+	size_unpacked = input_buffer[input_buffer_idx] |
+					(input_buffer[input_buffer_idx + 1] << 8) |
+					(input_buffer[input_buffer_idx + 2] << 16) |
+					(input_buffer[input_buffer_idx + 3] << 24);
 	input_buffer_idx += sizeof(uint32_t);
 
 	if (ultra) {

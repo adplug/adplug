@@ -46,50 +46,6 @@
 #include "unlzss.h"
 #include "unlzw.h"
 
-/* https://github.com/wc-duck/dbgtools/blob/master/include/dbgtools/static_assert.h */
-
-#define STATIC_ASSERT(cond, msg)
-#undef STATIC_ASSERT
-
-// ... clang ...
-#if defined( __clang__ )
-    #if defined( __cplusplus ) && __has_feature(cxx_static_assert)
-        #define STATIC_ASSERT(cond, msg) static_assert(cond, msg)
-    #elif __has_feature(c_static_assert)
-        #define STATIC_ASSERT(cond, msg) _Static_assert(cond, msg)
-    #endif
-
-// ... msvc ...
-#elif defined(_MSC_VER) && ( defined(_MSC_VER) && (_MSC_VER >= 1600) )
-    #define STATIC_ASSERT(cond, msg) static_assert(cond, msg)
-
-// ... gcc ...
-#elif defined(__cplusplus)
-    #if __cplusplus >= 201103L || (defined(_MSC_VER) && (_MSC_VER >= 1600))
-        #define STATIC_ASSERT(cond, msg) static_assert(cond, msg)
-    #endif
-#elif defined( __STDC__ )
-    #if defined(__STDC_VERSION__)
-        #if __STDC_VERSION__ >= 201112L
-            #define STATIC_ASSERT(cond, msg) _Static_assert(cond, msg)
-        #else
-            #define STATIC_ASSERT(cond, msg) _Static_assert(cond, msg)
-        #endif
-    #endif
-#endif
-
-/* if we couldn't detect a builtin static assert, lets define one! */
-#ifndef STATIC_ASSERT
-    #define STATIC_ASSERT(cond, msg) typedef char __STATIC_ASSERT__[(cond) ? 1 : -1]
-#endif
-
-
-// Macros for extracting little-endian integers from filedata
-#define INT16LE(A) (int16_t)((A[0]) | (A[1] << 8))
-#define UINT16LE(A) (uint16_t)((A[0]) | (A[1] << 8))
-#define INT32LE(A) (int32_t)((A[0]) | (A[1] << 8) | (A[2] << 16) | (A[3] << 24))
-#define UINT32LE(A) (uint32_t)((A[0]) | (A[1] << 8) | (A[2] << 16) | (A[3] << 24))
-
 #define keyoff_flag         0x80
 #define fixed_note_flag     0x90
 #define pattern_loop_flag   0xe0
@@ -103,111 +59,6 @@ typedef enum {
 
 #define MIN_IRQ_FREQ        50
 #define MAX_IRQ_FREQ        1000
-
-/*
-    When loading A2T/A2M, FreePascal structures (no padding and little-endian) should be emulated,
-    because AdlibTracker 2 was saving structures directly from memory into the file.
-
-    That's why:
-    1) only chars are used in structs to avoid any padding or alignment (default C/C++ behaviour)
-    2) ints and longs are represented as arrays of chars, little-endian order is implied
-    3) static_assert is used to make sure structs have the correct size
-*/
-
-typedef struct {
-    union {
-        struct {
-            uint8_t multipM: 4, ksrM: 1, sustM: 1, vibrM: 1, tremM : 1;
-            uint8_t multipC: 4, ksrC: 1, sustC: 1, vibrC: 1, tremC : 1;
-            uint8_t volM: 6, kslM: 2;
-            uint8_t volC: 6, kslC: 2;
-            uint8_t decM: 4, attckM: 4;
-            uint8_t decC: 4, attckC: 4;
-            uint8_t relM: 4, sustnM: 4;
-            uint8_t relC: 4, sustnC: 4;
-            uint8_t wformM: 3, : 5;
-            uint8_t wformC: 3, : 5;
-            uint8_t connect: 1, feedb: 3, : 4; // panning is not used here
-        };
-        uint8_t data[11];
-    };
-} tFM_INST_DATA;
-
-STATIC_ASSERT(sizeof(tFM_INST_DATA) == 11, "sizeof(tFM_INST_DATA) != 11");
-
-typedef struct {
-    tFM_INST_DATA fm;
-    uint8_t panning;
-    int8_t  fine_tune;
-    uint8_t perc_voice;
-} tINSTR_DATA;
-
-STATIC_ASSERT(sizeof(tINSTR_DATA) == 14, "sizeof(tINSTR_DATA) != 14");
-
-typedef struct {
-    uint8_t length;
-    uint8_t speed;
-    uint8_t loop_begin;
-    uint8_t loop_length;
-    uint8_t keyoff_pos;
-    uint8_t data[255];
-} tARPEGGIO_TABLE;
-
-typedef struct {
-    uint8_t length;
-    uint8_t speed;
-    uint8_t delay;
-    uint8_t loop_begin;
-    uint8_t loop_length;
-    uint8_t keyoff_pos;
-    int8_t data[255]; // array[1..255] of Shortint;
-} tVIBRATO_TABLE;
-
-typedef struct {
-    tFM_INST_DATA fm;
-    uint8_t freq_slide[2]; // int16_t
-    uint8_t panning;
-    uint8_t duration;
-} tREGISTER_TABLE_DEF;
-
-typedef struct {
-    uint8_t length;
-    uint8_t loop_begin;
-    uint8_t loop_length;
-    uint8_t keyoff_pos;
-    uint8_t arpeggio_table;
-    uint8_t vibrato_table;
-    tREGISTER_TABLE_DEF data[255];
-} tFMREG_TABLE;
-
-typedef struct {
-    tARPEGGIO_TABLE arpeggio;
-    tVIBRATO_TABLE vibrato;
-} tARPVIB_TABLE;
-
-STATIC_ASSERT(sizeof(tFMREG_TABLE) == 3831, "sizeof(tFMREG_TABLE) != 3831");
-STATIC_ASSERT(sizeof(tARPVIB_TABLE) == 521, "sizeof(tARPVIB_TABLE) != 521");
-
-typedef struct {
-    uint8_t note;
-    uint8_t instr_def; // TODO: rename to 'ins'
-    struct {
-        uint8_t def;
-        uint8_t val;
-    } eff[2];
-} tADTRACK2_EVENT;
-
-STATIC_ASSERT(sizeof(tADTRACK2_EVENT) == 6, "sizeof(tADTRACK2_EVENT) != 6");
-
-typedef struct {
-    struct {
-        struct {
-            tADTRACK2_EVENT ev;
-        } row[256];
-    } ch[20];
-} tPATTERN_DATA;
-
-STATIC_ASSERT(sizeof(tPATTERN_DATA) == 20 * 256 * 6, "sizeof(tPATTERN_DATA) != 30720");
 
 #define ef_Arpeggio            0
 #define ef_FSlideUp            1
@@ -339,205 +190,163 @@ STATIC_ASSERT(sizeof(tPATTERN_DATA) == 20 * 256 * 6, "sizeof(tPATTERN_DATA) != 3
 #define EFGR_PORTAVOLSLIDE 7
 #define EFGR_RETRIGNOTE 8
 
-/* Data for importing A2T format */
+// Macros for extracting little-endian integers from raw buffer
+#define INT8LE(A)                           (int8_t)((A)[0])
+#define UINT8LE(A)                          (uint8_t)((A)[0])
+#define INT16LE(A)                          (int16_t)(((A)[0]) | ((A)[1] << 8))
+#define UINT16LE(A)                         (uint16_t)(((A)[0]) | ((A)[1] << 8))
+#define INT32LE(A)                          (int32_t)(((A)[0]) | ((A)[1] << 8) | ((A)[2] << 16) | ((A)[3] << 24))
+#define UINT32LE(A)                         (uint32_t)(((A)[0]) | ((A)[1] << 8) | ((A)[2] << 16) | ((A)[3] << 24))
+
+/* Helpers for importing A2T format (all versions) */
+#define A2T_HEADER_FFVER(P)                 UINT8LE((P)+19)
+#define A2T_HEADER_NPATT(P)                 UINT8LE((P)+20)
+#define A2T_HEADER_TEMPO(P)                 UINT8LE((P)+21)
+#define A2T_HEADER_SPEED(P)                 UINT8LE((P)+22)
+#define A2T_HEADER_SIZE                     (23)
+
+#define A2T_VARHEADER_V1234_LEN(P, I)       UINT16LE((P)+0+(I)*2)
+#define A2T_VARHEADER_V1234_SIZE            (12)
+
+#define A2T_VARHEADER_V5678_COMMON_FLAG(P)  UINT8LE ((P)+0)
+#define A2T_VARHEADER_V5678_LEN(P, I)       UINT16LE((P)+1+(I)*2)
+#define A2T_VARHEADER_V5678_SIZE            (21)
+
+#define A2T_VARHEADER_V9_COMMON_FLAG(P)     UINT8LE ((P)+0)
+#define A2T_VARHEADER_V9_PATT_LEN(P)        UINT16LE((P)+1)
+#define A2T_VARHEADER_V9_NM_TRACKS(P)       UINT8LE ((P)+3)
+#define A2T_VARHEADER_V9_MACRO_SPEEDUP(P)   UINT16LE((P)+4)
+#define A2T_VARHEADER_V9_LEN(P, I)          UINT32LE((P)+6+(I)*4)
+#define A2T_VARHEADER_V9_SIZE               (86)
+
+#define A2T_VARHEADER_V10_COMMON_FLAG(P)    UINT8LE ((P)+0)
+#define A2T_VARHEADER_V10_PATT_LEN(P)       UINT16LE((P)+1)
+#define A2T_VARHEADER_V10_NM_TRACKS(P)      UINT8LE ((P)+3)
+#define A2T_VARHEADER_V10_MACRO_SPEEDUP(P)  UINT16LE((P)+4)
+#define A2T_VARHEADER_V10_FLAG_4OP(P)       UINT8LE ((P)+6)
+#define A2T_VARHEADER_V10_LOCK_FLAGS(P, I)  UINT8LE ((P)+7+(I))
+#define A2T_VARHEADER_V10_LEN(P, I)         UINT32LE((P)+27+(I)*4)
+#define A2T_VARHEADER_V10_SIZE              (107)
+
+#define A2T_VARHEADER_V11_COMMON_FLAG(P)    UINT8LE ((P)+0)
+#define A2T_VARHEADER_V11_PATT_LEN(P)       UINT16LE((P)+1)
+#define A2T_VARHEADER_V11_NM_TRACKS(P)      UINT8LE ((P)+3)
+#define A2T_VARHEADER_V11_MACRO_SPEEDUP(P)  UINT16LE((P)+4)
+#define A2T_VARHEADER_V11_FLAG_4OP(P)       UINT8LE ((P)+6)
+#define A2T_VARHEADER_V11_LOCK_FLAGS(P, I)  UINT8LE ((P)+7+(I))
+#define A2T_VARHEADER_V11_LEN(P, I)         UINT32LE((P)+27+(I)*4)
+#define A2T_VARHEADER_V11_SIZE              (111)
+
+#define tADTRACK2_EVENT_V1_8_SIZE           (4)
+#define tPATTERN_DATA_V1234_SIZE            (64 * 9 * 4)
+#define tPATTERN_DATA_V5678_SIZE            (18 * 64 * 4)
+#define tADTRACK2_EVENT_V9_14_SIZE          (6)
+#define tPATTERN_DATA_V9_14_SIZE            (20 * 256 * 6)
+
+/* Helpers for importing A2M format V1-8 */
+#define A2M_HEADER_FFVER(P)                 UINT8LE((P)+14)
+#define A2M_HEADER_NPATT(P)                 UINT8LE((P)+15)
+#define A2M_HEADER_SIZE                     (16)
+
+#define tINSTR_DATA_V1_8_SIZE                    (13)
+
+#define A2M_SONGDATA_V1_8_SONGNAME_P(P)          (uint8_t *)((P)+0)
+#define A2M_SONGDATA_V1_8_COMPOSER_P(P)          (uint8_t *)((P)+43)
+#define A2M_SONGDATA_V1_8_INSTR_NAMES_P(P, I)    (uint8_t *)((P)+86+(I)*33)
+#define A2M_SONGDATA_V1_8_INSTR_DATA_P(P, I)     (uint8_t *)((P)+8336+(I)*tINSTR_DATA_V1_8_SIZE)
+#define A2M_SONGDATA_V1_8_PATTERN_ORDER_P(P, I)  (uint8_t *)((P)+11586+(I))
+#define A2M_SONGDATA_V1_8_TEMPO(P)               UINT8LE((P)+11714)
+#define A2M_SONGDATA_V1_8_SPEED(P)               UINT8LE((P)+11715)
+#define A2M_SONGDATA_V1_8_COMMON_FLAG(P)         UINT8LE((P)+11716)
+#define A2M_SONGDATA_V1_8_SIZE                   (11717)
+
+/* Helpers for importing A2M format V9-14 */
+#define tINSTR_DATA_V9_14_SIZE                  (14)
+#define tREGISTER_TABLE_DEF_V9_14_SIZE          (15)
+#define tFMREG_TABLE_V9_14_SIZE                 (3831)
+#define tARPVIB_TABLE_V9_14_SIZE                (521)
+#define tINS_4OP_FLAGS_SIZE                     (129U)
+#define tRESERVED_SIZE                          (1024)
+#define tBPM_DATA_SIZE                          (3U)
+
+#define A2M_SONGDATA_V9_14_SONGNAME_P(P)         (uint8_t *)((P)+0)
+#define A2M_SONGDATA_V9_14_COMPOSER_P(P)         (uint8_t *)((P)+43)
+#define A2M_SONGDATA_V9_14_INSTR_NAMES_P(P, I)   (uint8_t *)((P)+86+(I)*43)
+#define A2M_SONGDATA_V9_14_INSTR_DATA_P(P, I)    (uint8_t *)((P)+11051+(I)*tINSTR_DATA_V9_14_SIZE)
+#define A2M_SONGDATA_V9_14_FMREG_TABLE_P(P, I)   (uint8_t *)((P)+14621+(I)*tFMREG_TABLE_V9_14_SIZE)
+#define A2M_SONGDATA_V9_14_ARPVIB_TABLE_P(P, I)  (uint8_t *)((P)+991526+(I)*tARPVIB_TABLE_V9_14_SIZE)
+#define A2M_SONGDATA_V9_14_PATTERN_ORDER_P(P, I) (uint8_t *)((P)+1124381+(I))
+#define A2M_SONGDATA_V9_14_TEMPO(P)               UINT8LE((P)+1124509)
+#define A2M_SONGDATA_V9_14_SPEED(P)               UINT8LE((P)+1124510)
+#define A2M_SONGDATA_V9_14_COMMON_FLAG(P)         UINT8LE((P)+1124511)
+#define A2M_SONGDATA_V9_14_PATT_LEN(P)            UINT16LE((P)+1124512)
+#define A2M_SONGDATA_V9_14_NM_TRACKS(P)           UINT8LE((P)+1124514)
+#define A2M_SONGDATA_V9_14_MACRO_SPEEDUP(P)       UINT16LE((P)+1124515)
+#define A2M_SONGDATA_V9_14_FLAG_4OP(P)            UINT8LE((P)+1124517)
+#define A2M_SONGDATA_V9_14_LOCK_FLAGS_P(P, I)    (uint8_t *)((P)+1124518+(I))
+#define A2M_SONGDATA_V9_14_DIS_FMREG_COL_P(P, I) (uint8_t *)((P)+1130042+(I)*28)
+#define A2M_SONGDATA_V9_14_BPM_ROWS_PER_BEAT(P)   UINT8LE((P)+1138335)
+#define A2M_SONGDATA_V9_14_BPM_TEMPO_FINETUNE(P)  INT16LE((P)+1138336)
+#define A2M_SONGDATA_V9_14_SIZE                  (1138338)
+
+/* Player data */
 typedef struct {
-    char id[15];	// '_a2tiny_module_'
-    uint8_t crc[4]; // uint32_t
-    uint8_t ffver;
-    uint8_t npatt;
-    uint8_t tempo;
-    uint8_t speed;
-} A2T_HEADER;
+    uint8_t multipM: 4, ksrM: 1, sustM: 1, vibrM: 1, tremM : 1;
+    uint8_t multipC: 4, ksrC: 1, sustC: 1, vibrC: 1, tremC : 1;
+    uint8_t volM: 6, kslM: 2;
+    uint8_t volC: 6, kslC: 2;
+    uint8_t decM: 4, attckM: 4;
+    uint8_t decC: 4, attckC: 4;
+    uint8_t relM: 4, sustnM: 4;
+    uint8_t relC: 4, sustnC: 4;
+    uint8_t wformM: 3, : 5;
+    uint8_t wformC: 3, : 5;
+    uint8_t connect: 1, feedb: 3, : 4; // panning is not used here
+} tFM_INST_DATA;
 
-STATIC_ASSERT(sizeof(A2T_HEADER) == 23, "sizeof(A2T_HEADER) != 23");
-
-typedef struct {
-    char id[10];	// '_a2module_'
-    uint8_t crc[4]; // uint32_t
-    uint8_t ffver;
-    uint8_t npatt;
-} A2M_HEADER;
-
-STATIC_ASSERT(sizeof(A2M_HEADER) == 16, "sizeof(A2M_HEADER) != 16");
-
-typedef struct {
-    uint8_t len[6][2]; // uint16_t
-} A2T_VARHEADER_V1234;
-
-typedef struct {
-    uint8_t common_flag;
-    uint8_t len[10][2]; // uint16_t
-} A2T_VARHEADER_V5678;
-
-typedef struct {
-    uint8_t common_flag;
-    uint8_t patt_len[2]; // uint16_t
-    uint8_t nm_tracks;
-    uint8_t macro_speedup[2]; // uint16_t
-    uint8_t len[20][4]; // uint32_t
-} A2T_VARHEADER_V9;
-
-typedef struct {
-    uint8_t common_flag;
-    uint8_t patt_len[2]; // uint16_t
-    uint8_t nm_tracks;
-    uint8_t macro_speedup[2]; // uint16_t
-    uint8_t flag_4op;
-    uint8_t lock_flags[20];
-    uint8_t len[20][4]; // uint32_t
-} A2T_VARHEADER_V10;
-
-typedef struct {
-    uint8_t common_flag;
-    uint8_t patt_len[2]; // uint16_t
-    uint8_t nm_tracks;
-    uint8_t macro_speedup[2]; // uint16_t
-    uint8_t flag_4op;
-    uint8_t lock_flags[20];
-    uint8_t len[21][4]; // uint32_t
-} A2T_VARHEADER_V11;
-
-typedef union {
-    A2T_VARHEADER_V1234 v1234;
-    A2T_VARHEADER_V5678 v5678;
-    A2T_VARHEADER_V9    v9;
-    A2T_VARHEADER_V10   v10;
-    A2T_VARHEADER_V11   v11;
-} A2T_VARHEADER;
-
-STATIC_ASSERT(sizeof(A2T_VARHEADER_V1234) == 12, "sizeof(A2T_VARHEADER_V1234) != 12");
-STATIC_ASSERT(sizeof(A2T_VARHEADER_V5678) == 21, "sizeof(A2T_VARHEADER_V5678) != 21");
-STATIC_ASSERT(sizeof(A2T_VARHEADER_V9) == 86, "sizeof(A2T_VARHEADER_V9) != 86");
-STATIC_ASSERT(sizeof(A2T_VARHEADER_V10) == 107, "sizeof(A2T_VARHEADER_V10) != 107");
-STATIC_ASSERT(sizeof(A2T_VARHEADER_V11) == 111, "sizeof(A2T_VARHEADER_V11) != 111");
-STATIC_ASSERT(sizeof(A2T_VARHEADER) == 111, "sizeof(A2T_VARHEADER) != 111");
-
-// only for importing v 1,2,3,4,5,6,7,8
-typedef struct {
-    uint8_t note;
-    uint8_t instr_def;
-    uint8_t effect_def;
-    uint8_t effect;
-} tADTRACK2_EVENT_V1234;
-
-// for importing v 1,2,3,4 patterns
-typedef struct {
-    struct {
-        struct {
-            tADTRACK2_EVENT_V1234 ev;
-        } ch[9];
-    } row[64];
-} tPATTERN_DATA_V1234;
-
-// for importing v 5,6,7,8 patterns
-typedef struct {
-    struct {
-        struct {
-            tADTRACK2_EVENT_V1234 ev;
-        } row[64];
-    } ch[18];
-} tPATTERN_DATA_V5678;
-
-STATIC_ASSERT(sizeof(tADTRACK2_EVENT_V1234) == 4, "sizeof(tADTRACK2_EVENT_V1234) != 4");
-STATIC_ASSERT(sizeof(tPATTERN_DATA_V1234) == 2304, "sizeof(tPATTERN_DATA_V1234) != 2304");
-STATIC_ASSERT(sizeof(tPATTERN_DATA_V5678) == 4608, "sizeof(tPATTERN_DATA_V5678) != 4608");
-
-// Old v1234 effects
-enum {
-    fx_Arpeggio          = 0x00,
-    fx_FSlideUp          = 0x01,
-    fx_FSlideDown        = 0x02,
-    fx_FSlideUpFine      = 0x03,
-    fx_FSlideDownFine    = 0x04,
-    fx_TonePortamento    = 0x05,
-    fx_TPortamVolSlide   = 0x06,
-    fx_Vibrato           = 0x07,
-    fx_VibratoVolSlide   = 0x08,
-    fx_SetOpIntensity    = 0x09,
-    fx_SetInsVolume      = 0x0a,
-    fx_PatternBreak      = 0x0b,
-    fx_PatternJump       = 0x0c,
-    fx_SetTempo          = 0x0d,
-    fx_SetTimer          = 0x0e,
-    fx_Extended          = 0x0f,
-    fx_ex_DefAMdepth     = 0x00,
-    fx_ex_DefVibDepth    = 0x01,
-    fx_ex_DefWaveform    = 0x02,
-    fx_ex_ManSlideUp     = 0x03,
-    fx_ex_ManSlideDown   = 0x04,
-    fx_ex_VSlideUp       = 0x05,
-    fx_ex_VSlideDown     = 0x06,
-    fx_ex_VSlideUpFine   = 0x07,
-    fx_ex_VSlideDownFine = 0x08,
-    fx_ex_RetrigNote     = 0x09,
-    fx_ex_SetAttckRate   = 0x0a,
-    fx_ex_SetDecayRate   = 0x0b,
-    fx_ex_SetSustnLevel  = 0x0c,
-    fx_ex_SetReleaseRate = 0x0d,
-    fx_ex_SetFeedback    = 0x0e,
-    fx_ex_ExtendedCmd    = 0x0f
-};
-
-/* Data for importing A2M format */
 typedef struct {
     tFM_INST_DATA fm;
     uint8_t panning;
     int8_t  fine_tune;
-} tINSTR_DATA_V1_8;
-
-STATIC_ASSERT(sizeof(tINSTR_DATA_V1_8) == 13, "sizeof(tINSTR_DATA_V1_8) != 13");
+    uint8_t perc_voice;
+} tINSTR_DATA;
 
 typedef struct {
-    char songname[43];
-    char composer[43];
-    char instr_names[250][33];
-    tINSTR_DATA_V1_8 instr_data[250];
-    uint8_t pattern_order[128];
-    uint8_t tempo;
+    uint8_t length;
     uint8_t speed;
-    uint8_t common_flag; // A2M_SONGDATA_V5678
-} A2M_SONGDATA_V1_8;
-
-STATIC_ASSERT(sizeof(A2M_SONGDATA_V1_8) == 11717, "sizeof(A2M_SONGDATA_V1_8) != 11717");
-
-typedef struct {
-    uint8_t num_4op;
-    uint8_t idx_4op[128];
-} tINS_4OP_FLAGS;
-
-typedef uint8_t tRESERVED[1024];
+    uint8_t loop_begin;
+    uint8_t loop_length;
+    uint8_t keyoff_pos;
+    uint8_t data[255];
+} tARPEGGIO_TABLE;
 
 typedef struct {
-    uint8_t rows_per_beat;
-    int8_t tempo_finetune[2]; // int16_t
-} tBPM_DATA;
-
-typedef struct {
-    char songname[43];
-    char composer[43];
-    char instr_names[255][43];
-    tINSTR_DATA instr_data[255];
-    tFMREG_TABLE fmreg_table[255];
-    tARPVIB_TABLE arpvib_table[255];
-    uint8_t pattern_order[128];
-    uint8_t tempo;
+    uint8_t length;
     uint8_t speed;
-    uint8_t common_flag;
-    uint8_t patt_len[2];           // uint16_t
-    uint8_t nm_tracks;
-    uint8_t macro_speedup[2];      // uint16_t
-    uint8_t flag_4op;              // A2M_SONGDATA_V10
-    uint8_t lock_flags[20];        // A2M_SONGDATA_V10
-    char pattern_names[128][43];   // A2M_SONGDATA_V11
-    bool dis_fmreg_col[255][28];   // A2M_SONGDATA_V11
-    tINS_4OP_FLAGS ins_4op_flags;  // A2M_SONGDATA_V12_13
-    tRESERVED reserved_data;       // A2M_SONGDATA_V12_13
-    tBPM_DATA bpm_data;            // A2M_SONGDATA_V14
-} A2M_SONGDATA_V9_14;
+    uint8_t delay;
+    uint8_t loop_begin;
+    uint8_t loop_length;
+    uint8_t keyoff_pos;
+    int8_t data[255]; // array[1..255] of Shortint;
+} tVIBRATO_TABLE;
 
-STATIC_ASSERT(sizeof(A2M_SONGDATA_V9_14) == 1138338, "sizeof(A2M_SONGDATA_V9_14) != 1138338");
+typedef struct {
+    tFM_INST_DATA fm;
+    int16_t freq_slide;
+    uint8_t panning;
+    uint8_t duration;
+    uint8_t macro_flags; // fm.data[10]
+} tREGISTER_TABLE_DEF;
 
-/* Player data */
+typedef struct {
+    uint8_t length;
+    uint8_t loop_begin;
+    uint8_t loop_length;
+    uint8_t keyoff_pos;
+    uint8_t arpeggio_table;
+    uint8_t vibrato_table;
+    tREGISTER_TABLE_DEF data[255];
+} tFMREG_TABLE;
 
 typedef struct {
     tINSTR_DATA instr_data;
@@ -548,10 +357,10 @@ typedef struct {
 } tINSTR_DATA_EXT;
 
 typedef struct {
-    char            songname[43];        // pascal String[42];
-    char            composer[43];        // pascal String[42];
-    char            instr_names[255][43];// array[1..255] of String[42];
-    uint8_t         pattern_order[0x80]; // array[0..0x7f] of Byte;
+    char            songname[43];
+    char            composer[43];
+    char            instr_names[255][43];
+    uint8_t         pattern_order[0x80];
     uint8_t         tempo;
     uint8_t         speed;
     uint8_t         common_flag;
@@ -560,6 +369,8 @@ typedef struct {
     uint16_t        macro_speedup;
     uint8_t         flag_4op;
     uint8_t         lock_flags[20];
+    uint8_t         bpm_rows_per_beat;
+    int             bpm_tempo_finetune;
 } tSONGINFO;
 
 typedef struct {
@@ -601,6 +412,23 @@ typedef struct {
     bool vib_paused;
     uint16_t vib_freq;
 } tCH_MACRO_TABLE;
+
+typedef struct {
+    uint8_t note;
+    uint8_t instr_def; // TODO: rename to 'ins'
+    struct {
+        uint8_t def;
+        uint8_t val;
+    } eff[2];
+} tADTRACK2_EVENT;
+
+/*typedef struct {
+    struct {
+        struct {
+            tADTRACK2_EVENT ev;
+        } row[256];
+    } ch[20];
+} tPATTERN_DATA;*/
 
 typedef struct {
     tFM_INST_DATA fmpar_table[20]; // TODO: rename to 'fm'
@@ -745,12 +573,14 @@ private:
     int8_t get_instr_fine_tune(uint8_t ins);
     tINSTR_DATA *get_instr_data_by_ch(int chan);
     tINSTR_DATA *get_instr_data(uint8_t ins);
+    void fmdata_fill_from_raw(tFM_INST_DATA *fm, uint8_t *src);
+    void raw_fill_from_fmdata(uint8_t *dst, tFM_INST_DATA *fm);
 
     // Helpers for macro tables
-    void fmreg_table_allocate(size_t n, tFMREG_TABLE rt[]);
+    void fmreg_table_allocate(size_t n, uint8_t *src);
     void disabled_fmregs_import(size_t n, bool dis_fmregs[255][28]);
     void arpvib_tables_free();
-    void arpvib_tables_allocate(size_t n, tARPVIB_TABLE mt[]);
+    void arpvib_tables_allocate(size_t n, uint8_t *src);
     tARPEGGIO_TABLE *get_arpeggio_table(uint8_t arp_table);
     tVIBRATO_TABLE *get_vibrato_table(uint8_t vib_table);
     tFMREG_TABLE *get_fmreg_table(uint8_t fmreg_ins);
@@ -844,21 +674,20 @@ private:
     // Loader
     void a2t_depack(char *src, int srcsize, char *dst, int dstsize);
     int a2t_read_varheader(char *blockptr, unsigned long size);
-    void instrument_import_v1_8(int ins, tINSTR_DATA_V1_8 *instr_s);
-    void instrument_import(int ins, tINSTR_DATA *instr_s);
-    int a2t_read_instruments(char *src, unsigned long size);
-    int a2t_read_fmregtable(char *src, unsigned long size);
-    int a2t_read_arpvibtable(char *src, unsigned long size);
-    int a2t_read_disabled_fmregs(char *src, unsigned long size);
+    void instrument_import(int ins, uint8_t *srci);
+    int a2t_read_instruments(char *packed, unsigned long size);
+    int a2t_read_fmregtable(char *packed, unsigned long size);
+    int a2t_read_arpvibtable(char *packed, unsigned long size);
+    int a2t_read_disabled_fmregs(char *packed, unsigned long size);
     int a2t_read_order(char *src, unsigned long size);
-    void convert_v1234_event(tADTRACK2_EVENT_V1234 *ev, int chan);
+    void convert_v1234_effects(tADTRACK2_EVENT *ev, int chan);
     int a2_read_patterns(char *src, int s, unsigned long size);
     int a2t_read_patterns(char *src, unsigned long size);
     bool a2t_import(char *tune, unsigned long size);
 
     int a2m_read_varheader(char *blockptr, int npatt, unsigned long size);
-    int a2m_read_songdata(char *src, unsigned long size);
-    int a2m_read_patterns(char *src, unsigned long size);
+    int a2m_read_songdata(char *packed, unsigned long size);
+    int a2m_read_patterns(char *packed, unsigned long size);
     bool a2m_import(char *tune, unsigned long size);
     bool a2_import(char *tune, unsigned long size);
 };
