@@ -222,15 +222,79 @@ inline tINSTR_DATA *Ca2mv2Player::get_instr_data(uint8_t ins)
     return instrument ? &instrument->instr_data : NULL;
 }
 
+// Fill tFM_INST_DATA from the raw byte array
+void Ca2mv2Player::fmdata_fill_from_raw(tFM_INST_DATA *fm, uint8_t *src)
+{
+    fm->multipM = src[0] & 0xf;
+    fm->ksrM    = (src[0] >> 4) & 1;
+    fm->sustM   = (src[0] >> 5) & 1;
+    fm->vibrM   = (src[0] >> 6) & 1;
+    fm->tremM   = (src[0] >> 7) & 1;
+
+    fm->multipC = src[1] & 0xf;
+    fm->ksrC    = (src[1] >> 4) & 1;
+    fm->sustC   = (src[1] >> 5) & 1;
+    fm->vibrC   = (src[1] >> 6) & 1;
+    fm->tremC   = (src[1] >> 7) & 1;
+
+    fm->volM    = src[2] & 0x3f;
+    fm->kslM    = (src[2] >> 6) & 3;
+
+    fm->volC    = src[3] & 0x3f;
+    fm->kslC    = (src[3] >> 6) & 3;
+
+    fm->decM    = src[4] & 0xf;
+    fm->attckM  = (src[4] >> 4) & 0xf;
+
+    fm->decC    = src[5] & 0xf;
+    fm->attckC  = (src[5] >> 4) & 0xf;
+
+    fm->relM    = src[6] & 0xf;
+    fm->sustnM  = (src[6] >> 4) & 0xf;
+
+    fm->relC    = src[7] & 0xf;
+    fm->sustnC  = (src[7] >> 4) & 0xf;
+
+    fm->wformM  = src[8] & 7;
+    fm->wformC  = src[9] & 7;
+
+    fm->connect = src[10] & 1;
+    fm->feedb   = (src[10] >> 1) & 7;
+}
+
+// Fill uint8_t data[11] array from tFM_INST_DATA
+void Ca2mv2Player::raw_fill_from_fmdata(uint8_t *dst, tFM_INST_DATA *fm)
+{
+dst[0] = (fm->multipM & 0xf) |
+            ((fm->ksrM  & 1) << 4) |
+            ((fm->sustM & 1) << 5) |
+            ((fm->vibrM & 1) << 6) |
+            ((fm->tremM & 1) << 7);
+    dst[1] = (fm->multipC & 0xf) |
+            ((fm->ksrC  & 1) << 4) |
+            ((fm->sustC & 1) << 5) |
+            ((fm->vibrC & 1) << 6) |
+            ((fm->tremC & 1) << 7);
+    dst[2] = (fm->volM & 0x3f) | ((fm->kslM & 3) << 6);
+    dst[3] = (fm->volC & 0x3f) | ((fm->kslC & 3) << 6);
+    dst[4] = (fm->decM & 0xf) | ((fm->attckM & 0xf) << 4);
+    dst[5] = (fm->decC & 0xf) | ((fm->attckC & 0xf) << 4);
+    dst[6] = (fm->relM & 0xf) | ((fm->sustnM & 0xf) << 4);
+    dst[7] = (fm->relC & 0xf) | ((fm->sustnC & 0xf) << 4);
+    dst[8] = fm->wformM & 7;
+    dst[9] = fm->wformC & 7;
+    dst[10] = (fm->connect & 1) | ((fm->feedb & 7) << 1);
+}
+
 // Helpers for macro tables =======================================================================
 
-void Ca2mv2Player::fmreg_table_allocate(size_t n, tFMREG_TABLE rt[])
+void Ca2mv2Player::fmreg_table_allocate(size_t n, uint8_t *src)
 {
     n = editor_mode ? 255 : n;
 
     // Note: for editor_mode allocate max entries possible
-    for (unsigned int i = 0; i < n; i++) {
-        if (editor_mode || rt[i].length) {
+    for (unsigned int i = 0; i < n; i++, src += tFMREG_TABLE_V9_14_SIZE) {
+        if (editor_mode || src[0] /* length */) {
             tINSTR_DATA_EXT *instrument = get_instr(i + 1);
             assert(instrument);
             if (!instrument)
@@ -238,7 +302,26 @@ void Ca2mv2Player::fmreg_table_allocate(size_t n, tFMREG_TABLE rt[])
 
             instrument->fmreg = (tFMREG_TABLE *)calloc(1, sizeof(tFMREG_TABLE));
             assert(instrument->fmreg);
-            *instrument->fmreg = rt[i]; // copy struct
+
+            // Copy field by field
+            instrument->fmreg->length         = src[0]; // length
+            instrument->fmreg->loop_begin     = src[1]; // loop_begin
+            instrument->fmreg->loop_length    = src[2]; // loop_length
+            instrument->fmreg->keyoff_pos     = src[3]; // keyoff_pos
+            instrument->fmreg->arpeggio_table = src[4]; // arpeggio_table
+            instrument->fmreg->vibrato_table  = src[5]; // vibrato_table
+
+            uint8_t *rts = &src[6];
+            for (unsigned int e = 0; e < 255; e++, rts += tREGISTER_TABLE_DEF_V9_14_SIZE) {
+                tREGISTER_TABLE_DEF *rtd = &instrument->fmreg->data[e];
+
+                fmdata_fill_from_raw(&rtd->fm, rts);
+
+                rtd->freq_slide = (int16_t)(rts[11] | (rts[12] << 8));
+                rtd->panning = rts[13];       // panning
+                rtd->duration = rts[14];      // duration
+                rtd->macro_flags = rts[10] & 0xf0;
+            }
         }
     }
 }
@@ -279,7 +362,7 @@ void Ca2mv2Player::arpvib_tables_free()
     delete[] arpeggio_table;
 }
 
-void Ca2mv2Player::arpvib_tables_allocate(size_t n, tARPVIB_TABLE mt[])
+void Ca2mv2Player::arpvib_tables_allocate(size_t n, uint8_t *src)
 {
     arpvib_tables_free();
 
@@ -290,14 +373,29 @@ void Ca2mv2Player::arpvib_tables_allocate(size_t n, tARPVIB_TABLE mt[])
     arpeggio_table = new tARPEGGIO_TABLE *[n]();
     arpvib_count = n;
 
-    for (unsigned int i = 0; i < n; i++) {
-        if (editor_mode || mt[i].vibrato.length) {
-            vibrato_table[i] = (tVIBRATO_TABLE *)calloc(1, sizeof(tVIBRATO_TABLE));
-            *vibrato_table[i] = mt[i].vibrato; // copy struct
-        }
-        if (editor_mode || mt[i].arpeggio.length) {
+    for (unsigned int i = 0; i < n; i++, src += tARPVIB_TABLE_V9_14_SIZE) {
+        if (editor_mode || src[0] /*arpeggio.length*/) {
             arpeggio_table[i] = (tARPEGGIO_TABLE *)calloc(1, sizeof(tARPEGGIO_TABLE));
-            *arpeggio_table[i] = mt[i].arpeggio; // copy struct
+
+            // Copy field by field
+            arpeggio_table[i]->length       = src[0] /*arpeggio.length*/;
+            arpeggio_table[i]->speed        = src[1] /*arpeggio.speed*/;
+            arpeggio_table[i]->loop_begin   = src[2] /*arpeggio.loop_begin*/;
+            arpeggio_table[i]->loop_length  = src[3] /*arpeggio.loop_length*/;
+            arpeggio_table[i]->keyoff_pos   = src[4] /*arpeggio.keyoff_pos*/;
+            memcpy(arpeggio_table[i]->data, &src[5] /*arpeggio.data*/, 255);
+        }
+        if (editor_mode || src[260] /*vibrato.length*/) {
+            vibrato_table[i] = (tVIBRATO_TABLE *)calloc(1, sizeof(tVIBRATO_TABLE));
+
+            // Copy field by field
+            vibrato_table[i]->length        = src[260] /*vibrato.length*/;
+            vibrato_table[i]->speed         = src[261] /*vibrato.speed*/;
+            vibrato_table[i]->delay         = src[262] /*vibrato.delay*/;
+            vibrato_table[i]->loop_begin    = src[263] /*vibrato.loop_begin*/;
+            vibrato_table[i]->loop_length   = src[264] /*vibrato.loop_length*/;
+            vibrato_table[i]->keyoff_pos    = src[265] /*vibrato.keyoff_pos*/;
+            memcpy(vibrato_table[i]->data, &src[266] /*vibrato.data*/, 255);
         }
     }
 }
@@ -530,24 +628,28 @@ void Ca2mv2Player::change_freq(int chan, uint16_t freq)
 bool Ca2mv2Player::is_chan_adsr_data_empty(int chan)
 {
     tFM_INST_DATA *fmpar = &ch->fmpar_table[chan];
+    uint8_t data[11];
+    raw_fill_from_fmdata(data, fmpar);
 
     return (
-        !fmpar->data[4] &&
-        !fmpar->data[5] &&
-        !fmpar->data[6] &&
-        !fmpar->data[7]
+        !data[4] &&
+        !data[5] &&
+        !data[6] &&
+        !data[7]
     );
 }
 
 bool Ca2mv2Player::is_ins_adsr_data_empty(int ins)
 {
     tINSTR_DATA *i = get_instr_data(ins);
+    uint8_t data[11];
+    raw_fill_from_fmdata(data, &i->fm);
 
     return (
-        !i->fm.data[4] &&
-        !i->fm.data[5] &&
-        !i->fm.data[6] &&
-        !i->fm.data[7]
+        !data[4] &&
+        !data[5] &&
+        !data[6] &&
+        !data[7]
     );
 }
 
@@ -666,9 +768,10 @@ void Ca2mv2Player::release_sustaining_sound(int chan)
     opl3out(0x40 + c, 63);
 
     // clear adsrw_mod and adsrw_car
-    for (int i = 4; i <= 9; i++) {
-        ch->fmpar_table[chan].data[i] = 0;
-    }
+    ch->fmpar_table[chan].decM = 0;
+    ch->fmpar_table[chan].attckM = 0;
+    ch->fmpar_table[chan].decC = 0;
+    ch->fmpar_table[chan].attckC = 0;
 
     key_on(chan);
     opl3out(0x60 + m, BYTE_NULL);
@@ -938,6 +1041,8 @@ void Ca2mv2Player::set_ins_data(uint8_t ins, int chan)
 
     tINSTR_DATA *i = get_instr_data(ins);
     i = i ? i : &zeroins;
+    uint8_t data[11];
+    raw_fill_from_fmdata(data, &i->fm);
 
     if (is_data_empty((char *)i, sizeof(tINSTR_DATA))) {
         release_sustaining_sound(chan);
@@ -947,6 +1052,7 @@ void Ca2mv2Player::set_ins_data(uint8_t ins, int chan)
         ch->panning_table[chan] = !ch->pan_lock[chan]
                                   ? i->panning
                                   : songinfo->lock_flags[chan] & 3;
+
         if (ch->panning_table[chan] >= sizeof (_panning))
             ch->panning_table[chan] = 0; /* various code paths can lead to this value going out of the 0-2 range */
 
@@ -954,21 +1060,19 @@ void Ca2mv2Player::set_ins_data(uint8_t ins, int chan)
         uint16_t c = regoffs_c(chan);
         uint16_t n = regoffs_n(chan);
 
-        opl3out(0x20 + m, i->fm.data[0]);
-        opl3out(0x20 + c, i->fm.data[1]);
-        opl3out(0x40 + m, (i->fm.data[2] & 0xc0) + 63);
-        opl3out(0x40 + c, (i->fm.data[3] & 0xc0) + 63);
-        opl3out(0x60 + m, i->fm.data[4]);
-        opl3out(0x60 + c, i->fm.data[5]);
-        opl3out(0x80 + m, i->fm.data[6]);
-        opl3out(0x80 + c, i->fm.data[7]);
-        opl3out(0xe0 + m, i->fm.data[8]);
-        opl3out(0xe0 + c, i->fm.data[9]);
-        opl3out(0xc0 + n, i->fm.data[10] | _panning[ch->panning_table[chan]]);
+        opl3out(0x20 + m, data[0]);
+        opl3out(0x20 + c, data[1]);
+        opl3out(0x40 + m, (data[2] & 0xc0) + 63);
+        opl3out(0x40 + c, (data[3] & 0xc0) + 63);
+        opl3out(0x60 + m, data[4]);
+        opl3out(0x60 + c, data[5]);
+        opl3out(0x80 + m, data[6]);
+        opl3out(0x80 + c, data[7]);
+        opl3out(0xe0 + m, data[8]);
+        opl3out(0xe0 + c, data[9]);
+        opl3out(0xc0 + n, data[10] | _panning[ch->panning_table[chan]]);
 
-        for (int r = 0; r < 11; r++) {
-            ch->fmpar_table[chan].data[r] = i->fm.data[r];
-        }
+        ch->fmpar_table[chan] = i->fm; // Copy struct
 
         // Stop instr macro if resetting voice
         if (!ch->reset_chan[chan])
@@ -998,29 +1102,35 @@ void Ca2mv2Player::update_modulator_adsrw(int chan)
 {
     tFM_INST_DATA *fmpar = &ch->fmpar_table[chan];
     uint16_t m = regoffs_m(chan);
+    uint8_t data[11];
+    raw_fill_from_fmdata(data, fmpar);
 
-    opl3out(0x60 + m, fmpar->data[4]);
-    opl3out(0x80 + m, fmpar->data[6]);
-    opl3out(0xe0 + m, fmpar->data[8]);
+    opl3out(0x60 + m, data[4]);
+    opl3out(0x80 + m, data[6]);
+    opl3out(0xe0 + m, data[8]);
 }
 
 void Ca2mv2Player::update_carrier_adsrw(int chan)
 {
     tFM_INST_DATA *fmpar = &ch->fmpar_table[chan];
     uint16_t c = regoffs_c(chan);
+    uint8_t data[11];
+    raw_fill_from_fmdata(data, fmpar);
 
-    opl3out(0x60 + c, fmpar->data[5]);
-    opl3out(0x80 + c, fmpar->data[7]);
-    opl3out(0xe0 + c, fmpar->data[9]);
+    opl3out(0x60 + c, data[5]);
+    opl3out(0x80 + c, data[7]);
+    opl3out(0xe0 + c, data[9]);
 }
 
 void Ca2mv2Player::update_fmpar(int chan)
 {
     tFM_INST_DATA *fmpar = &ch->fmpar_table[chan];
+    uint8_t data[11];
+    raw_fill_from_fmdata(data, fmpar);
 
-    opl3out(0x20 + regoffs_m(chan), fmpar->data[0]);
-    opl3out(0x20 + regoffs_c(chan), fmpar->data[1]);
-    opl3out(0xc0 + regoffs_n(chan), fmpar->data[10] | _panning[ch->panning_table[chan]]);
+    opl3out(0x20 + regoffs_m(chan), data[0]);
+    opl3out(0x20 + regoffs_c(chan), data[1]);
+    opl3out(0xc0 + regoffs_n(chan), data[10] | _panning[ch->panning_table[chan]]);
 
     set_ins_volume(fmpar->volM, fmpar->volC, chan);
 }
@@ -2853,7 +2963,7 @@ void Ca2mv2Player::macro_poll_proc()
                         update_fmpar(chan);
 
                         // TODO: check if those flags are really set by the editor
-                        uint8_t macro_flags = d->fm.data[10];
+                        uint8_t macro_flags = d->macro_flags;
 
                         if (force_macro_keyon || (macro_flags & 0x80)) { // MACRO_NOTE_RETRIG_FLAG
                             if (!((is_4op_chan(chan) && is_4op_chan_hi(chan)))) {
@@ -2877,7 +2987,7 @@ void Ca2mv2Player::macro_poll_proc()
                             }
                         }
 
-                        int16_t freq_slide = INT16LE(d->freq_slide);
+                        int freq_slide = d->freq_slide;
 
                         if (!(disabled & (1 << 26))) {
                             if (freq_slide > 0) {
@@ -3236,194 +3346,179 @@ void Ca2mv2Player::a2t_depack(char *src, int srcsize, char *dst, int dstsize)
 // read the variable part of the header
 int Ca2mv2Player::a2t_read_varheader(char *blockptr, unsigned long size)
 {
-    A2T_VARHEADER *varheader = (A2T_VARHEADER *)blockptr;
+    uint8_t *varheader = (uint8_t *)blockptr;
 
     switch (ffver) {
     case 1:
     case 2:
     case 3:
     case 4:
-        if (sizeof(A2T_VARHEADER_V1234) > size)
+        if (A2T_VARHEADER_V1234_SIZE > size)
             return INT_MAX;
         for (int i = 0; i < 6; i++)
-            len[i] = UINT16LE(varheader->v1234.len[i]);
-        return sizeof(A2T_VARHEADER_V1234);
+            len[i] = A2T_VARHEADER_V1234_LEN(varheader, i);
+        return A2T_VARHEADER_V1234_SIZE;
     case 5:
     case 6:
     case 7:
     case 8:
-        if (sizeof(A2T_VARHEADER_V5678) > size)
+        if (A2T_VARHEADER_V5678_SIZE > size)
             return INT_MAX;
-        songinfo->common_flag = varheader->v5678.common_flag;
+        songinfo->common_flag = A2T_VARHEADER_V5678_COMMON_FLAG(varheader);
         for (int i = 0; i < 10; i++)
-            len[i] = UINT16LE(varheader->v5678.len[i]);
-        return sizeof(A2T_VARHEADER_V5678);
+            len[i] = A2T_VARHEADER_V5678_LEN(varheader, i);
+        return A2T_VARHEADER_V5678_SIZE;
     case 9:
-        if (sizeof(A2T_VARHEADER_V9) > size)
+        if (A2T_VARHEADER_V9_SIZE > size)
             return INT_MAX;
-        songinfo->common_flag = varheader->v9.common_flag;
-        songinfo->patt_len = UINT16LE(varheader->v9.patt_len);
-        songinfo->nm_tracks = varheader->v9.nm_tracks;
-        songinfo->macro_speedup = UINT16LE(varheader->v9.macro_speedup);
+        songinfo->common_flag = A2T_VARHEADER_V9_COMMON_FLAG(varheader);
+        songinfo->patt_len = A2T_VARHEADER_V9_PATT_LEN(varheader);
+        songinfo->nm_tracks = A2T_VARHEADER_V9_NM_TRACKS(varheader);
+        songinfo->macro_speedup = A2T_VARHEADER_V9_MACRO_SPEEDUP(varheader);
         for (int i = 0; i < 20; i++)
-            len[i] = UINT32LE(varheader->v9.len[i]);
-        return sizeof(A2T_VARHEADER_V9);
+            len[i] = A2T_VARHEADER_V9_LEN(varheader, i);
+        return A2T_VARHEADER_V9_SIZE;
     case 10:
-        if (sizeof(A2T_VARHEADER_V10) > size)
+        if (A2T_VARHEADER_V10_SIZE > size)
             return INT_MAX;
-        songinfo->common_flag = varheader->v10.common_flag;
-        songinfo->patt_len = UINT16LE(varheader->v10.patt_len);
-        songinfo->nm_tracks = varheader->v10.nm_tracks;
-        songinfo->macro_speedup = UINT16LE(varheader->v10.macro_speedup);
-        songinfo->flag_4op = varheader->v10.flag_4op;
+        songinfo->common_flag = A2T_VARHEADER_V10_COMMON_FLAG(varheader);
+        songinfo->patt_len = A2T_VARHEADER_V10_PATT_LEN(varheader);
+        songinfo->nm_tracks = A2T_VARHEADER_V10_NM_TRACKS(varheader);
+        songinfo->macro_speedup = A2T_VARHEADER_V10_MACRO_SPEEDUP(varheader);
+        songinfo->flag_4op = A2T_VARHEADER_V10_FLAG_4OP(varheader);
         for (int i = 0; i < 20; i++)
-            songinfo->lock_flags[i] = varheader->v10.lock_flags[i];
+            songinfo->lock_flags[i] = A2T_VARHEADER_V10_LOCK_FLAGS(varheader, i);
         for (int i = 0; i < 20; i++)
-            len[i] = UINT32LE(varheader->v10.len[i]);
-        return sizeof(A2T_VARHEADER_V10);
+            len[i] = A2T_VARHEADER_V10_LEN(varheader, i);
+        return A2T_VARHEADER_V10_SIZE;
     case 11:
     case 12:
     case 13:
     case 14:
-        if (sizeof(A2T_VARHEADER_V11) > size)
+        if (A2T_VARHEADER_V11_SIZE > size)
             return INT_MAX;
-        songinfo->common_flag = varheader->v11.common_flag;
-        songinfo->patt_len = UINT16LE(varheader->v11.patt_len);
-        songinfo->nm_tracks = varheader->v11.nm_tracks;
-        songinfo->macro_speedup = UINT16LE(varheader->v11.macro_speedup);
-        songinfo->flag_4op = varheader->v11.flag_4op;
+        songinfo->common_flag = A2T_VARHEADER_V11_COMMON_FLAG(varheader);
+        songinfo->patt_len = A2T_VARHEADER_V11_PATT_LEN(varheader);
+        songinfo->nm_tracks = A2T_VARHEADER_V11_NM_TRACKS(varheader);
+        songinfo->macro_speedup = A2T_VARHEADER_V11_MACRO_SPEEDUP(varheader);
+        songinfo->flag_4op = A2T_VARHEADER_V11_FLAG_4OP(varheader);
         for (int i = 0; i < 20; i++)
-            songinfo->lock_flags[i] = varheader->v10.lock_flags[i];
+            songinfo->lock_flags[i] = A2T_VARHEADER_V11_LOCK_FLAGS(varheader, i);
         for (int i = 0; i < 21; i++)
-            len[i] = UINT32LE(varheader->v11.len[i]);
-        return sizeof(A2T_VARHEADER_V11);
+            len[i] = A2T_VARHEADER_V11_LEN(varheader, i);
+        return A2T_VARHEADER_V11_SIZE;
     }
 
     return INT_MAX;
 }
 
-void Ca2mv2Player::instrument_import_v1_8(int ins, tINSTR_DATA_V1_8 *instr_s)
+void Ca2mv2Player::instrument_import(int ins, uint8_t *srci)
 {
-    tINSTR_DATA *instr_d = get_instr_data(ins);
-    assert(instr_d);
+    tINSTR_DATA *dsti = get_instr_data(ins);
+    assert(dsti);
 
-    instr_d->fm = instr_s->fm; // copy struct
-    instr_d->panning = instr_s->panning;
-    instr_d->fine_tune = instr_s->fine_tune;
-    if (instr_d->panning >= 3)
-    {
-        AdPlug_LogWrite("instrument_v1.8 %d, panning out of range\n", ins);
-        instr_d->panning = 0;
-    }
-}
+    fmdata_fill_from_raw(&dsti->fm, srci);
 
-void Ca2mv2Player::instrument_import(int ins, tINSTR_DATA *instr_s)
-{
-    tINSTR_DATA *instr_d = get_instr_data(ins);
-    assert(instr_d);
+    dsti->panning    = srci[11] & 3;
+    dsti->fine_tune  = srci[12];
 
-    *instr_d = *instr_s; // copy struct
-    if (instr_d->panning >= 3)
-    {
+    // Is 'perc_voice' even used anywhere except editor?
+    dsti->perc_voice = (ffver >= 9 ? srci[13] : 0);
+
+    if (dsti->panning >= 3) {
         AdPlug_LogWrite("instrument %d, panning out of range\n", ins);
-        instr_d->panning = 0;
+        dsti->panning = 0;
     }
 }
 
-int Ca2mv2Player::a2t_read_instruments(char *src, unsigned long size)
+int Ca2mv2Player::a2t_read_instruments(char *packed, unsigned long size)
 {
     if (len[0] > size) return INT_MAX;
 
     int instnum = (ffver < 9 ? 250 : 255);
-    int instsize = (ffver < 9 ? sizeof(tINSTR_DATA_V1_8) : sizeof(tINSTR_DATA));
-    int dstsize = (instnum * instsize) +
-                  (ffver > 11 ?  sizeof(tBPM_DATA) + sizeof(tINS_4OP_FLAGS) + sizeof(tRESERVED) : 0);
-    char *dst = (char *)calloc(1, dstsize);
+    int instsize = (ffver < 9 ? tINSTR_DATA_V1_8_SIZE : tINSTR_DATA_V9_14_SIZE);
+    int unpackedsize = (instnum * instsize) +
+                  (ffver > 11 ? tBPM_DATA_SIZE + tINS_4OP_FLAGS_SIZE + tRESERVED_SIZE : 0);
+    uint8_t *unpacked = (uint8_t *)calloc(1, unpackedsize);
+    uint8_t *p = unpacked;
 
-    a2t_depack(src, len[0], dst, dstsize);
+    a2t_depack(packed, len[0], (char *)unpacked, unpackedsize);
 
     if (ffver == 14) {
         //memcpy(&songinfo->bpm_data, dst, sizeof(songinfo->bpm_data));
-        dst += sizeof(tBPM_DATA);
+        p += tBPM_DATA_SIZE;
     }
 
     if (ffver >= 12 && ffver <= 14) {
-        //memcpy(&songinfo->ins_4op_flags, dst, sizeof(songinfo->ins_4op_flags));
-        dst += sizeof(tINS_4OP_FLAGS);
-        //memcpy(&songinfo->reserved_data, dst, sizeof(songinfo->reserved_data));
-        dst += sizeof(tRESERVED);
+        //memcpy(&songinfo->ins_4op_flags, p, sizeof(songinfo->ins_4op_flags));
+        p += tINS_4OP_FLAGS_SIZE;
+        //memcpy(&songinfo->reserved_data, p, sizeof(songinfo->reserved_data));
+        p += tRESERVED_SIZE;
     }
 
     // Calculate the real number of used instruments
     int count = instnum;
-    while (count && is_data_empty(dst + (count - 1) * instsize, instsize))
+    while (count && is_data_empty((char *)p + (count - 1) * instsize, instsize))
         count--;
 
     instruments_allocate(count);
 
-    if (ffver < 9) {
-        tINSTR_DATA_V1_8 *instr_data = (tINSTR_DATA_V1_8 *)dst;
-
-        for (int i = 0; i < count; i++) {
-            instrument_import_v1_8(i + 1, &instr_data[i]);
-        }
-    } else {
-        tINSTR_DATA *instr_data = (tINSTR_DATA *)dst;
-
-        for (int i = 0; i < count; i++) {
-            instrument_import(i + 1, &instr_data[i]);
-        }
+    for (int i = 0; i < count; i++, p += instsize) {
+        instrument_import(i + 1, p);
     }
 
-    free(dst);
+    free(unpacked);
 
     return len[0];
 }
 
-int Ca2mv2Player::a2t_read_fmregtable(char *src, unsigned long size)
+int Ca2mv2Player::a2t_read_fmregtable(char *packed, unsigned long size)
 {
     if (ffver < 9) return 0;
 
     if (len[1] > size) return INT_MAX;
 
-    tFMREG_TABLE *data = (tFMREG_TABLE *)calloc(255, sizeof(tFMREG_TABLE));
-    a2t_depack(src, len[1], (char *)data, 255 * sizeof(tFMREG_TABLE));
+    uint8_t *unpacked = (uint8_t *)calloc(255, tFMREG_TABLE_V9_14_SIZE);
+    a2t_depack(packed, len[1], (char *)unpacked, 255 * tFMREG_TABLE_V9_14_SIZE);
 
     int count = instrinfo->count;
 
     // Allocate fmreg macro tables
-    fmreg_table_allocate(count, data);
+    fmreg_table_allocate(count, unpacked);
 
     for (int i = 0; i < count; i++) {
         // Instrument arpegio/vibrato references
         tINSTR_DATA_EXT *dst = get_instr(i + 1);
         assert(dst);
-        dst->arpeggio = data[i].arpeggio_table;
-        dst->vibrato = data[i].vibrato_table;
+
+        if (!dst->fmreg) continue;
+        dst->arpeggio = dst->fmreg->arpeggio_table;
+        dst->vibrato = dst->fmreg->vibrato_table;
     }
 
-    free(data);
+    free(unpacked);
 
     return len[1];
 }
 
-int Ca2mv2Player::a2t_read_arpvibtable(char *src, unsigned long size)
+int Ca2mv2Player::a2t_read_arpvibtable(char *packed, unsigned long size)
 {
     if (ffver < 9) return 0;
 
     if (len[2] > size) return INT_MAX;
 
-    tARPVIB_TABLE *arpvib_table = (tARPVIB_TABLE *)calloc(255, sizeof(tARPVIB_TABLE));
-    a2t_depack(src, len[2], (char *)arpvib_table, 255 * sizeof(tARPVIB_TABLE));
+    uint8_t *unpacked = (uint8_t *)calloc(255, tARPVIB_TABLE_V9_14_SIZE);
+    a2t_depack(packed, len[2], (char *)unpacked, 255 * tARPVIB_TABLE_V9_14_SIZE);
 
-    arpvib_tables_allocate(255, arpvib_table);
+    // TODO: Calculate actual num of arp/vib tables
+    arpvib_tables_allocate(255, unpacked);
 
-    free(arpvib_table);
+    free(unpacked);
 
     return len[2];
 }
 
-int Ca2mv2Player::a2t_read_disabled_fmregs(char *src, unsigned long size)
+int Ca2mv2Player::a2t_read_disabled_fmregs(char *packed, unsigned long size)
 {
     if (ffver < 11) return 0;
 
@@ -3431,7 +3526,7 @@ int Ca2mv2Player::a2t_read_disabled_fmregs(char *src, unsigned long size)
 
     bool (*dis_fmregs)[255][28] = (bool (*)[255][28])calloc(255, 28);
 
-    a2t_depack(src, len[3], (char *)*dis_fmregs, 255 * 28);
+    a2t_depack(packed, len[3], (char *)*dis_fmregs, 255 * 28);
 
     disabled_fmregs_import(instrinfo->count, *dis_fmregs);
 
@@ -3440,169 +3535,205 @@ int Ca2mv2Player::a2t_read_disabled_fmregs(char *src, unsigned long size)
     return len[3];
 }
 
-int Ca2mv2Player::a2t_read_order(char *src, unsigned long size)
+int Ca2mv2Player::a2t_read_order(char *packed, unsigned long size)
 {
     int blocknum[14] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 4, 4, 4, 4};
     int i = blocknum[ffver - 1];
 
     if (len[i] > size) return INT_MAX;
 
-    a2t_depack(src, len[i], (char *)songinfo->pattern_order, sizeof (songinfo->pattern_order));
+    a2t_depack(packed, len[i], (char *)songinfo->pattern_order, 128);
 
     return len[i];
 }
 
-void Ca2mv2Player::convert_v1234_event(tADTRACK2_EVENT_V1234 *ev, int chan)
+void Ca2mv2Player::convert_v1234_effects(tADTRACK2_EVENT *ev, int chan)
 {
-    switch (ev->effect_def) {
-    case fx_Arpeggio:           ev->effect_def = ef_Arpeggio;        break;
-    case fx_FSlideUp:           ev->effect_def = ef_FSlideUp;        break;
-    case fx_FSlideDown:         ev->effect_def = ef_FSlideDown;      break;
-    case fx_FSlideUpFine:       ev->effect_def = ef_FSlideUpFine;    break;
-    case fx_FSlideDownFine:     ev->effect_def = ef_FSlideDownFine;  break;
-    case fx_TonePortamento:     ev->effect_def = ef_TonePortamento;  break;
-    case fx_TPortamVolSlide:    ev->effect_def = ef_TPortamVolSlide; break;
-    case fx_Vibrato:            ev->effect_def = ef_Vibrato;         break;
-    case fx_VibratoVolSlide:    ev->effect_def = ef_VibratoVolSlide; break;
-    case fx_SetInsVolume:       ev->effect_def = ef_SetInsVolume;    break;
-    case fx_PatternJump:        ev->effect_def = ef_PositionJump;    break;
-    case fx_PatternBreak:       ev->effect_def = ef_PatternBreak;    break;
-    case fx_SetTempo:           ev->effect_def = ef_SetSpeed;        break;
-    case fx_SetTimer:           ev->effect_def = ef_SetTempo;        break;
+    // Old v1234 effects
+    enum {
+        fx_Arpeggio          = 0x00,
+        fx_FSlideUp          = 0x01,
+        fx_FSlideDown        = 0x02,
+        fx_FSlideUpFine      = 0x03,
+        fx_FSlideDownFine    = 0x04,
+        fx_TonePortamento    = 0x05,
+        fx_TPortamVolSlide   = 0x06,
+        fx_Vibrato           = 0x07,
+        fx_VibratoVolSlide   = 0x08,
+        fx_SetOpIntensity    = 0x09,
+        fx_SetInsVolume      = 0x0a,
+        fx_PatternBreak      = 0x0b,
+        fx_PatternJump       = 0x0c,
+        fx_SetTempo          = 0x0d,
+        fx_SetTimer          = 0x0e,
+        fx_Extended          = 0x0f,
+        fx_ex_DefAMdepth     = 0x00,
+        fx_ex_DefVibDepth    = 0x01,
+        fx_ex_DefWaveform    = 0x02,
+        fx_ex_ManSlideUp     = 0x03,
+        fx_ex_ManSlideDown   = 0x04,
+        fx_ex_VSlideUp       = 0x05,
+        fx_ex_VSlideDown     = 0x06,
+        fx_ex_VSlideUpFine   = 0x07,
+        fx_ex_VSlideDownFine = 0x08,
+        fx_ex_RetrigNote     = 0x09,
+        fx_ex_SetAttckRate   = 0x0a,
+        fx_ex_SetDecayRate   = 0x0b,
+        fx_ex_SetSustnLevel  = 0x0c,
+        fx_ex_SetReleaseRate = 0x0d,
+        fx_ex_SetFeedback    = 0x0e,
+        fx_ex_ExtendedCmd    = 0x0f
+    };
+
+    switch (ev->eff[0].def) {
+    case fx_Arpeggio:           ev->eff[0].def = ef_Arpeggio;        break;
+    case fx_FSlideUp:           ev->eff[0].def = ef_FSlideUp;        break;
+    case fx_FSlideDown:         ev->eff[0].def = ef_FSlideDown;      break;
+    case fx_FSlideUpFine:       ev->eff[0].def = ef_FSlideUpFine;    break;
+    case fx_FSlideDownFine:     ev->eff[0].def = ef_FSlideDownFine;  break;
+    case fx_TonePortamento:     ev->eff[0].def = ef_TonePortamento;  break;
+    case fx_TPortamVolSlide:    ev->eff[0].def = ef_TPortamVolSlide; break;
+    case fx_Vibrato:            ev->eff[0].def = ef_Vibrato;         break;
+    case fx_VibratoVolSlide:    ev->eff[0].def = ef_VibratoVolSlide; break;
+    case fx_SetInsVolume:       ev->eff[0].def = ef_SetInsVolume;    break;
+    case fx_PatternJump:        ev->eff[0].def = ef_PositionJump;    break;
+    case fx_PatternBreak:       ev->eff[0].def = ef_PatternBreak;    break;
+    case fx_SetTempo:           ev->eff[0].def = ef_SetSpeed;        break;
+    case fx_SetTimer:           ev->eff[0].def = ef_SetTempo;        break;
     case fx_SetOpIntensity: {
-        if (ev->effect & 0xf0) {
-            ev->effect_def = ef_SetCarrierVol;
-            ev->effect = (ev->effect >> 4) * 4 + 3;
-        } else if (ev->effect & 0x0f) {
-            ev->effect_def = ef_SetModulatorVol;
-            ev->effect = (ev->effect & 0x0f) * 4 + 3;
-        } else ev->effect_def = 0;
+        if (ev->eff[0].val & 0xf0) {
+            ev->eff[0].def = ef_SetCarrierVol;
+            ev->eff[0].val = (ev->eff[0].val >> 4) * 4 + 3;
+        } else if (ev->eff[0].val & 0x0f) {
+            ev->eff[0].def = ef_SetModulatorVol;
+            ev->eff[0].val = (ev->eff[0].val & 0x0f) * 4 + 3;
+        } else ev->eff[0].def = 0;
         break;
     }
     case fx_Extended: {
-        switch (ev->effect >> 4) {
+        switch (ev->eff[0].val >> 4) {
         case fx_ex_DefAMdepth:
-            ev->effect_def = ef_Extended;
-            ev->effect = ef_ex_SetTremDepth << 4 | (ev->effect & 0x0f);
+            ev->eff[0].def = ef_Extended;
+            ev->eff[0].val = ef_ex_SetTremDepth << 4 | (ev->eff[0].val & 0x0f);
             break;
         case fx_ex_DefVibDepth:
-            ev->effect_def = ef_Extended;
-            ev->effect = ef_ex_SetVibDepth << 4 | (ev->effect & 0x0f);
+            ev->eff[0].def = ef_Extended;
+            ev->eff[0].val = ef_ex_SetVibDepth << 4 | (ev->eff[0].val & 0x0f);
             break;
         case fx_ex_DefWaveform:
-            ev->effect_def = ef_SetWaveform;
-            if ((ev->effect & 0x0f) < 4) {
-                ev->effect = ((ev->effect & 0x0f) << 4) | 0x0f; // 0..3
+            ev->eff[0].def = ef_SetWaveform;
+            if ((ev->eff[0].val & 0x0f) < 4) {
+                ev->eff[0].val = ((ev->eff[0].val & 0x0f) << 4) | 0x0f; // 0..3
             } else {
-                ev->effect = ((ev->effect & 0x0f) - 4) | 0xf0; // 4..7
+                ev->eff[0].val = ((ev->eff[0].val & 0x0f) - 4) | 0xf0; // 4..7
             }
             break;
         case fx_ex_VSlideUp:
-            ev->effect_def = ef_VolSlide;
-            ev->effect = (ev->effect & 0x0f) << 4;
+            ev->eff[0].def = ef_VolSlide;
+            ev->eff[0].val = (ev->eff[0].val & 0x0f) << 4;
             break;
         case fx_ex_VSlideDown:
-            ev->effect_def = ef_VolSlide;
-            ev->effect = ev->effect & 0x0f;
+            ev->eff[0].def = ef_VolSlide;
+            ev->eff[0].val = ev->eff[0].val & 0x0f;
             break;
         case fx_ex_VSlideUpFine:
-            ev->effect_def = ef_VolSlideFine;
-            ev->effect = (ev->effect & 0x0f) << 4;
+            ev->eff[0].def = ef_VolSlideFine;
+            ev->eff[0].val = (ev->eff[0].val & 0x0f) << 4;
             break;
         case fx_ex_VSlideDownFine:
-            ev->effect_def = ef_VolSlideFine;
-            ev->effect = ev->effect & 0x0f;
+            ev->eff[0].def = ef_VolSlideFine;
+            ev->eff[0].val = ev->eff[0].val & 0x0f;
             break;
         case fx_ex_ManSlideUp:
-            ev->effect_def = ef_Extended2;
-            ev->effect = (ef_ex2_FineTuneUp << 4) | (ev->effect & 0x0f);
+            ev->eff[0].def = ef_Extended2;
+            ev->eff[0].val = (ef_ex2_FineTuneUp << 4) | (ev->eff[0].val & 0x0f);
             break;
         case fx_ex_ManSlideDown:
-            ev->effect_def = ef_Extended2;
-            ev->effect = (ef_ex2_FineTuneDown << 4) | (ev->effect & 0x0f);
+            ev->eff[0].def = ef_Extended2;
+            ev->eff[0].val = (ef_ex2_FineTuneDown << 4) | (ev->eff[0].val & 0x0f);
             break;
         case fx_ex_RetrigNote:
-            ev->effect_def = ef_RetrigNote;
-            ev->effect = (ev->effect & 0x0f) + 1;
+            ev->eff[0].def = ef_RetrigNote;
+            ev->eff[0].val = (ev->eff[0].val & 0x0f) + 1;
             break;
         case fx_ex_SetAttckRate:
-            ev->effect_def = ef_Extended;
-            ev->effect = ev->effect & 0x0f;
+            ev->eff[0].def = ef_Extended;
+            ev->eff[0].val = ev->eff[0].val & 0x0f;
             if (!adsr_carrier[chan]) {
-                ev->effect |= ef_ex_SetAttckRateM << 4;
+                ev->eff[0].val |= ef_ex_SetAttckRateM << 4;
             } else {
-                ev->effect |= ef_ex_SetAttckRateC << 4;
+                ev->eff[0].val |= ef_ex_SetAttckRateC << 4;
             }
             break;
         case fx_ex_SetDecayRate:
-            ev->effect_def = ef_Extended;
-            ev->effect = ev->effect & 0x0f;
+            ev->eff[0].def = ef_Extended;
+            ev->eff[0].val = ev->eff[0].val & 0x0f;
             if (!adsr_carrier[chan]) {
-                ev->effect |= ef_ex_SetDecayRateM << 4;
+                ev->eff[0].val |= ef_ex_SetDecayRateM << 4;
             } else {
-                ev->effect |= ef_ex_SetDecayRateC << 4;
+                ev->eff[0].val |= ef_ex_SetDecayRateC << 4;
             }
             break;
         case fx_ex_SetSustnLevel:
-            ev->effect_def = ef_Extended;
-            ev->effect = ev->effect & 0x0f;
+            ev->eff[0].def = ef_Extended;
+            ev->eff[0].val = ev->eff[0].val & 0x0f;
             if (!adsr_carrier[chan]) {
-                ev->effect |= ef_ex_SetSustnLevelM << 4;
+                ev->eff[0].val |= ef_ex_SetSustnLevelM << 4;
             } else {
-                ev->effect |= ef_ex_SetSustnLevelC << 4;
+                ev->eff[0].val |= ef_ex_SetSustnLevelC << 4;
             }
             break;
         case fx_ex_SetReleaseRate:
-            ev->effect_def = ef_Extended;
-            ev->effect = ev->effect & 0x0f;
+            ev->eff[0].def = ef_Extended;
+            ev->eff[0].val = ev->eff[0].val & 0x0f;
             if (!adsr_carrier[chan]) {
-                ev->effect |= ef_ex_SetRelRateM << 4;
+                ev->eff[0].val |= ef_ex_SetRelRateM << 4;
             } else {
-                ev->effect |= ef_ex_SetRelRateC << 4;
+                ev->eff[0].val |= ef_ex_SetRelRateC << 4;
             }
             break;
         case fx_ex_SetFeedback:
-            ev->effect_def = ef_Extended;
-            ev->effect = (ef_ex_SetFeedback << 4) | (ev->effect & 0x0f);
+            ev->eff[0].def = ef_Extended;
+            ev->eff[0].val = (ef_ex_SetFeedback << 4) | (ev->eff[0].val & 0x0f);
             break;
         case fx_ex_ExtendedCmd:
-            ev->effect_def = ef_Extended;
-            ev->effect = ef_ex_ExtendedCmd2 << 4;
-            if ((ev->effect & 0x0f) < 10) {
+            ev->eff[0].def = ef_Extended;
+            ev->eff[0].val = ef_ex_ExtendedCmd2 << 4;
+            if ((ev->eff[0].val & 0x0f) < 10) {
                 // FIXME: Should be a parameter
                 const bool whole_song = false;
 
-                switch (ev->effect & 0x0f) {
-                case 0: ev->effect |= ef_ex_cmd2_RSS;       break;
-                case 1: ev->effect |= ef_ex_cmd2_LockVol;   break;
-                case 2: ev->effect |= ef_ex_cmd2_UnlockVol; break;
-                case 3: ev->effect |= ef_ex_cmd2_LockVP;    break;
-                case 4: ev->effect |= ef_ex_cmd2_UnlockVP;  break;
+                switch (ev->eff[0].val & 0x0f) {
+                case 0: ev->eff[0].val |= ef_ex_cmd2_RSS;       break;
+                case 1: ev->eff[0].val |= ef_ex_cmd2_LockVol;   break;
+                case 2: ev->eff[0].val |= ef_ex_cmd2_UnlockVol; break;
+                case 3: ev->eff[0].val |= ef_ex_cmd2_LockVP;    break;
+                case 4: ev->eff[0].val |= ef_ex_cmd2_UnlockVP;  break;
                 case 5:
-                    ev->effect_def = (whole_song ? 255 : 0);
-                    ev->effect = 0;
+                    ev->eff[0].def = (whole_song ? 255 : 0);
+                    ev->eff[0].val = 0;
                     adsr_carrier[chan] = true;
                     break;
                 case 6:
-                    ev->effect_def = (whole_song ? 255 : 0);
-                    ev->effect = (whole_song ? 1 : 0);
+                    ev->eff[0].def = (whole_song ? 255 : 0);
+                    ev->eff[0].val = (whole_song ? 1 : 0);
                     adsr_carrier[chan] = false;
                     break;
-                case 7: ev->effect |= ef_ex_cmd2_VSlide_car; break;
-                case 8: ev->effect |= ef_ex_cmd2_VSlide_mod; break;
-                case 9: ev->effect |= ef_ex_cmd2_VSlide_def; break;
+                case 7: ev->eff[0].val |= ef_ex_cmd2_VSlide_car; break;
+                case 8: ev->eff[0].val |= ef_ex_cmd2_VSlide_mod; break;
+                case 9: ev->eff[0].val |= ef_ex_cmd2_VSlide_def; break;
                 }
             } else {
-                ev->effect_def = 0;
-                ev->effect = 0;
+                ev->eff[0].def = 0;
+                ev->eff[0].val = 0;
             }
             break;
         }
         break;
     }
     default:
-        ev->effect_def = 0;
-        ev->effect = 0;
+        ev->eff[0].def = 0;
+        ev->eff[0].val = 0;
     }
 }
 
@@ -3610,13 +3741,14 @@ void Ca2mv2Player::convert_v1234_event(tADTRACK2_EVENT_V1234 *ev, int chan)
 int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
 {
     int retval = 0;
+
     switch (ffver) {
     case 1:
     case 2:
     case 3:
     case 4: // [4][16][64][9][4]
         {
-        tPATTERN_DATA_V1234 *old = (tPATTERN_DATA_V1234 *)calloc(16, sizeof(*old));
+        uint8_t *old = (uint8_t *)calloc(16, tPATTERN_DATA_V1234_SIZE);
 
         memset(adsr_carrier, false, sizeof(adsr_carrier));
 
@@ -3628,22 +3760,26 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
                 return INT_MAX;
             }
 
-            a2t_depack(src, len[i+s], (char *)old, 16 * sizeof (*old));
+            a2t_depack(src, len[i+s], (char *)old, 16 * tPATTERN_DATA_V1234_SIZE);
 
             for (int p = 0; p < 16; p++) { // pattern
                 if (i * 8 + p >= eventsinfo->patterns)
                         break;
                 for (int r = 0; r < 64; r++) // row
                 for (int c = 0; c < 9; c++) { // channel
-                    tADTRACK2_EVENT_V1234 *src = &old[p].row[r].ch[c].ev;
                     tADTRACK2_EVENT *dst = get_event_p(i * 16 + p, c, r);
+                    uint8_t *src = old + (
+                        p * tPATTERN_DATA_V1234_SIZE +
+                        r * 9 * tADTRACK2_EVENT_V1_8_SIZE +
+                        c * tADTRACK2_EVENT_V1_8_SIZE
+                    );
 
-                    convert_v1234_event(src, c);
+                    dst->note       = src[0];
+                    dst->instr_def  = src[1];
+                    dst->eff[0].def = src[2];
+                    dst->eff[0].val = src[3];
 
-                    dst->note = src->note;
-                    dst->instr_def = src->instr_def;
-                    dst->eff[0].def = src->effect_def;
-                    dst->eff[0].val = src->effect;
+                    convert_v1234_effects(dst, c);
                 }
             }
 
@@ -3660,7 +3796,7 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
     case 7:
     case 8: // [8][8][18][64][4]
         {
-        tPATTERN_DATA_V5678 *old = (tPATTERN_DATA_V5678 *)calloc(8, sizeof(*old));
+        uint8_t *old = (uint8_t *)calloc(8, tPATTERN_DATA_V5678_SIZE);
 
         for (int i = 0; i < 8; i++) {
             if (!len[i+s]) continue;
@@ -3670,20 +3806,24 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
                 return INT_MAX;
             }
 
-            a2t_depack(src, len[i+s], (char *)old, 8 * sizeof (*old));
+            a2t_depack(src, len[i+s], (char *)old, 8 * tPATTERN_DATA_V5678_SIZE);
 
             for (int p = 0; p < 8; p++) { // pattern
                 if (i * 8 + p >= eventsinfo->patterns)
                     break;
                 for (int c = 0; c < 18; c++) // channel
                 for (int r = 0; r < 64; r++) { // row
-                    tADTRACK2_EVENT_V1234 *src = &old[p].ch[c].row[r].ev;
                     tADTRACK2_EVENT *dst = get_event_p(i * 8 + p, c, r);
+                    uint8_t *src = old + (
+                        p * tPATTERN_DATA_V5678_SIZE +
+                        c * 64 * tADTRACK2_EVENT_V1_8_SIZE +
+                        r * tADTRACK2_EVENT_V1_8_SIZE
+                    );
 
-                    dst->note = src->note;
-                    dst->instr_def = src->instr_def;
-                    dst->eff[0].def = src->effect_def;
-                    dst->eff[0].val = src->effect;
+                    dst->note       = src[0];
+                    dst->instr_def  = src[1];
+                    dst->eff[0].def = src[2];
+                    dst->eff[0].val = src[3];
                 }
             }
 
@@ -3702,7 +3842,7 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
     case 13:
     case 14: // [16][8][20][256][6]
         {
-        tPATTERN_DATA *old = (tPATTERN_DATA *)calloc(8, sizeof(*old));
+        uint8_t *old = (uint8_t *)calloc(8, tPATTERN_DATA_V9_14_SIZE);
 
         // 16 groups of 8 patterns
         for (int i = 0; i < 16; i++) {
@@ -3711,7 +3851,8 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
                 free(old);
                 return INT_MAX;
             }
-            a2t_depack(src, len[i+s], (char *)old, 8 * sizeof (*old));
+
+            a2t_depack(src, len[i+s], (char *)old, 8 * tPATTERN_DATA_V9_14_SIZE);
             src += len[i+s];
             size -= len[i+s];
             retval += len[i+s];
@@ -3723,8 +3864,17 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
                 for (int c = 0; c < eventsinfo->channels; c++) // channel
                 for (int r = 0; r < eventsinfo->rows; r++) { // row
                     tADTRACK2_EVENT *dst = get_event_p(i * 8 + p, c, r);
-                    tADTRACK2_EVENT *src = &old[p].ch[c].row[r].ev;
-                    *dst = *src; // copy struct
+                    uint8_t *src = old + (
+                            p * tPATTERN_DATA_V9_14_SIZE +
+                            c * 256 * tADTRACK2_EVENT_V9_14_SIZE +
+                            r * tADTRACK2_EVENT_V9_14_SIZE);
+
+                    dst->note       = src[0];
+                    dst->instr_def  = src[1];
+                    dst->eff[0].def = src[2];
+                    dst->eff[0].val = src[3];
+                    dst->eff[1].def = src[4];
+                    dst->eff[1].val = src[5];
                 }
             }
         }
@@ -3747,31 +3897,28 @@ int Ca2mv2Player::a2t_read_patterns(char *src, unsigned long size)
 
 bool Ca2mv2Player::a2t_import(char *tune, unsigned long size)
 {
-    A2T_HEADER *header = (A2T_HEADER *)tune;
-    char *blockptr = tune + sizeof(A2T_HEADER);
+    uint8_t *header = (uint8_t *)tune;
+    char *blockptr = tune + A2T_HEADER_SIZE;
     int result;
 
-    if (sizeof(A2T_HEADER) > size)
+    if (A2T_HEADER_SIZE > size)
         return false;
 
-    if (strncmp(header->id, "_A2tiny_module_", 15))
+    if (strncmp((char *)header, "_A2tiny_module_", 15))
         return false;
 
     init_songdata();
 
     memset(len, 0, sizeof(len));
 
-    ffver = header->ffver;
+    ffver = A2T_HEADER_FFVER(header);
     type = 1;
 
     if (!ffver || ffver > 14)
         return false;
 
-    songinfo->tempo = header->tempo;
-    songinfo->speed = header->speed;
-    songinfo->patt_len = 64;
-    songinfo->nm_tracks = 18;
-    songinfo->macro_speedup = 1;
+    songinfo->tempo = A2T_HEADER_TEMPO(header);
+    songinfo->speed = A2T_HEADER_SPEED(header);
 
     // Read variable part after header, fill len[] with values
     result = a2t_read_varheader(blockptr, size - (blockptr - tune));
@@ -3813,7 +3960,7 @@ bool Ca2mv2Player::a2t_import(char *tune, unsigned long size)
     blockptr += result;
 
     // Allocate patterns
-    patterns_allocate(header->npatt, songinfo->nm_tracks, songinfo->patt_len);
+    patterns_allocate(A2T_HEADER_NPATT(header), songinfo->nm_tracks, songinfo->patt_len);
 
     // Read patterns
     result = a2t_read_patterns(blockptr, size - (blockptr - tune));
@@ -3822,126 +3969,129 @@ bool Ca2mv2Player::a2t_import(char *tune, unsigned long size)
     return true;
 }
 
-typedef uint8_t (tUINT16)[2];
-typedef uint8_t (tUINT32)[4];
-
 int Ca2mv2Player::a2m_read_varheader(char *blockptr, int npatt, unsigned long size)
 {
-    int lensize;
-    int maxblock = (ffver < 5 ? npatt / 16 : npatt / 8) + 1;
+    unsigned int lensize;
+    unsigned int maxblock = (ffver < 5 ? npatt / 16 : npatt / 8) + 1;
 
-    tUINT16 *src16 = (tUINT16 *)blockptr;
-    tUINT32 *src32 = (tUINT32 *)blockptr;
+    uint8_t *src16 = (uint8_t *)blockptr;
+    uint8_t *src32 = (uint8_t *)blockptr;
 
     if (ffver < 5) lensize = 5;         // 1,2,3,4 - uint16_t len[5];
     else if (ffver < 9) lensize = 9;    // 5,6,7,8 - uint16_t len[9];
     else lensize = 17;                  // 9,10,11 - uint32_t len[17];
 
     if (ffver >= 1 && ffver <= 8) { // 1 - 8
-        if (lensize * sizeof(tUINT16) > size) return INT_MAX;
+        if (lensize * 2 > size) return INT_MAX;
 
         // skip possible rubbish (MARIO.A2M)
-        for (int i = 0; (i < lensize) && (i <= maxblock); i++)
-            len[i] = UINT16LE(src16[i]);
+        for (unsigned int i = 0; (i < lensize) && (i <= maxblock); i++)
+            len[i] = UINT16LE(src16 + i * 2);
 
-        return lensize * sizeof(tUINT16);
+        return lensize * 2;
     } else if (ffver >= 9 && ffver <= 14) { // 9 - 14
-        if (lensize * sizeof(tUINT32) > size) return INT_MAX;
+        if (lensize * 4 > size) return INT_MAX;
 
-        for (int i = 0; i < lensize; i++)
-            len[i] = UINT32LE(src32[i]);
+        for (unsigned int i = 0; i < lensize; i++)
+            len[i] = UINT32LE(src32 + i * 4);
 
-        return lensize * sizeof(tUINT32);
+        return lensize * 4;
     }
 
     return INT_MAX;
 }
 
-int Ca2mv2Player::a2m_read_songdata(char *src, unsigned long size)
+int Ca2mv2Player::a2m_read_songdata(char *packed, unsigned long size)
 {
-    if (ffver < 9) {    // 1 - 8
+    if (ffver < 9) { // 1 - 8
         if (len[0] > size) return INT_MAX;
-        A2M_SONGDATA_V1_8 *data = (A2M_SONGDATA_V1_8 *)calloc(1, sizeof(*data));
-        a2t_depack(src, len[0], (char *)data, sizeof (*data));
 
-        memcpy(songinfo->songname, data->songname + 1, 42);
-        memcpy(songinfo->composer, data->composer + 1, 42);
+        uint8_t *unpacked = (uint8_t *)calloc(1, A2M_SONGDATA_V1_8_SIZE);
+        a2t_depack(packed, len[0], (char *)unpacked, A2M_SONGDATA_V1_8_SIZE);
+
+        memcpy(songinfo->songname, A2M_SONGDATA_V1_8_SONGNAME_P(unpacked) + 1, 42);
+        memcpy(songinfo->composer, A2M_SONGDATA_V1_8_COMPOSER_P(unpacked) + 1, 42);
 
         // Calculate the real number of used instruments
         int count = 250;
-        while (count && is_data_empty((char *)&data->instr_data[count - 1], sizeof(tINSTR_DATA_V1_8)))
+        while (count && is_data_empty((char *)A2M_SONGDATA_V1_8_INSTR_DATA_P(unpacked, count - 1), tINSTR_DATA_V1_8_SIZE))
             count--;
 
         instruments_allocate(count);
 
-        for (int i = 0; i < 250; i++)
-            memcpy(songinfo->instr_names[i], data->instr_names[i] + 1, 32);
-
         for (int i = 0; i < count; i++) {
-            instrument_import_v1_8(i + 1, &data->instr_data[i]);
+            instrument_import(i + 1, A2M_SONGDATA_V1_8_INSTR_DATA_P(unpacked, i));
         }
 
-        memcpy(songinfo->pattern_order, data->pattern_order, 128);
+        for (int i = 0; i < 250; i++)
+            memcpy(songinfo->instr_names[i], A2M_SONGDATA_V1_8_INSTR_NAMES_P(unpacked, i) + 1, 32);
 
-        songinfo->tempo = data->tempo;
-        songinfo->speed = data->speed;
+        memcpy(songinfo->pattern_order, A2M_SONGDATA_V1_8_PATTERN_ORDER_P(unpacked, 0), 128);
+
+        songinfo->tempo = A2M_SONGDATA_V1_8_TEMPO(unpacked);
+        songinfo->speed = A2M_SONGDATA_V1_8_SPEED(unpacked);
 
         if (ffver > 4) { // 5 - 8
-            songinfo->common_flag = data->common_flag;
+            songinfo->common_flag = A2M_SONGDATA_V1_8_COMMON_FLAG(unpacked);
         }
 
-        free(data);
-    } else {    // 9 - 14
+        free(unpacked);
+    } else { // 9 - 14
         if (len[0] > size) return INT_MAX;
-        A2M_SONGDATA_V9_14 *data = (A2M_SONGDATA_V9_14 *)calloc(1, sizeof(*data));
-        a2t_depack(src, len[0], (char *)data, sizeof (*data));
 
-        memcpy(songinfo->songname, data->songname + 1, 42);
-        memcpy(songinfo->composer, data->composer + 1, 42);
+        uint8_t *unpacked = (uint8_t *)calloc(1, A2M_SONGDATA_V9_14_SIZE);
+
+        a2t_depack(packed, len[0], (char *)unpacked, A2M_SONGDATA_V9_14_SIZE);
+
+        memcpy(songinfo->songname, A2M_SONGDATA_V9_14_SONGNAME_P(unpacked) + 1, 42);
+        memcpy(songinfo->composer, A2M_SONGDATA_V9_14_COMPOSER_P(unpacked) + 1, 42);
 
         // Calculate the real number of used instruments
         int count = 255;
-        while (count && is_data_empty((char *)&data->instr_data[count - 1], sizeof(tINSTR_DATA)))
+        while (count && is_data_empty((char *)A2M_SONGDATA_V9_14_INSTR_DATA_P(unpacked, count - 1), tINSTR_DATA_V9_14_SIZE))
             count--;
 
         instruments_allocate(count);
 
+        for (int i = 0; i < count; i++) {
+            instrument_import(i + 1, A2M_SONGDATA_V9_14_INSTR_DATA_P(unpacked, i));
+        }
+
         for (int i = 0; i < 255; i++)
-            memcpy(songinfo->instr_names[i], data->instr_names[i] + 1, 42);
+            memcpy(songinfo->instr_names[i], A2M_SONGDATA_V9_14_INSTR_NAMES_P(unpacked, i) + 1, 42);
+
+        // Allocate fmreg macro tables
+        fmreg_table_allocate(count, A2M_SONGDATA_V9_14_FMREG_TABLE_P(unpacked, 0));
 
         for (int i = 0; i < count; i++) {
-            instrument_import(i + 1, &data->instr_data[i]);
-
             // Instrument arpegio/vibrato references
             tINSTR_DATA_EXT *dst = get_instr(i + 1);
             assert(dst);
-            dst->arpeggio = data->fmreg_table[i].arpeggio_table;
-            dst->vibrato = data->fmreg_table[i].vibrato_table;
+
+            if (!dst->fmreg) continue;
+            dst->arpeggio = dst->fmreg->arpeggio_table;
+            dst->vibrato = dst->fmreg->vibrato_table;
         }
 
-        // Allocate fmreg macro tables
-        fmreg_table_allocate(count, data->fmreg_table);
-
         // Allocate arpeggio/vibrato macro tables
-        arpvib_tables_allocate(255, data->arpvib_table);
+        // TODO: Calculate actual num of arp/vib tables
+        arpvib_tables_allocate(255, A2M_SONGDATA_V9_14_ARPVIB_TABLE_P(unpacked, 0));
 
-        memcpy(songinfo->pattern_order, data->pattern_order, 128);
+        memcpy(songinfo->pattern_order, A2M_SONGDATA_V9_14_PATTERN_ORDER_P(unpacked, 0), 128);
 
-        songinfo->tempo = data->tempo;
-        songinfo->speed = data->speed;
-        songinfo->common_flag = data->common_flag;
-        songinfo->patt_len = UINT16LE(data->patt_len);
-        songinfo->nm_tracks = data->nm_tracks;
-        songinfo->macro_speedup = UINT16LE(data->macro_speedup);
+        songinfo->tempo = A2M_SONGDATA_V9_14_TEMPO(unpacked);
+        songinfo->speed = A2M_SONGDATA_V9_14_SPEED(unpacked);
+        songinfo->common_flag = A2M_SONGDATA_V9_14_COMMON_FLAG(unpacked);
+        songinfo->patt_len = A2M_SONGDATA_V9_14_PATT_LEN(unpacked);
+        songinfo->nm_tracks = A2M_SONGDATA_V9_14_NM_TRACKS(unpacked);
+        songinfo->macro_speedup = A2M_SONGDATA_V9_14_MACRO_SPEEDUP(unpacked);
 
         // v10
-        songinfo->flag_4op = data->flag_4op;
-        memcpy(songinfo->lock_flags, data->lock_flags, sizeof(data->lock_flags));
+        songinfo->flag_4op = A2M_SONGDATA_V9_14_FLAG_4OP(unpacked);
+        memcpy(songinfo->lock_flags, A2M_SONGDATA_V9_14_LOCK_FLAGS_P(unpacked, 0), 20);
 
         // v11
-        // NOTE: not used anywhere
-        //memcpy(songinfo->pattern_names, data->pattern_names, 128 * 43);
-        disabled_fmregs_import(count, (bool (*)[28])data->dis_fmreg_col);
+        disabled_fmregs_import(count, (bool (*)[28])A2M_SONGDATA_V9_14_DIS_FMREG_COL_P(unpacked, 0));
 
         // v12-13
         // NOTE: not used anywhere
@@ -3950,11 +4100,11 @@ int Ca2mv2Player::a2m_read_songdata(char *src, unsigned long size)
         //memcpy(songinfo->reserved_data, data->reserved_data, 1024);
 
         // v14
-        // NOTE: not used anywhere
-        //songinfo->bpm_data.rows_per_beat = data->bpm_data.rows_per_beat;
-        //songinfo->bpm_data.tempo_finetune = INT16LE(data->bpm_data.tempo_finetune);
+        // TODO: Implement these in player
+        songinfo->bpm_rows_per_beat = A2M_SONGDATA_V9_14_BPM_ROWS_PER_BEAT(unpacked);
+        songinfo->bpm_tempo_finetune = A2M_SONGDATA_V9_14_BPM_TEMPO_FINETUNE(unpacked);
 
-        free(data);
+        free(unpacked);
     }
 
     speed_update    = (songinfo->common_flag >> 0) & 1;
@@ -3976,32 +4126,27 @@ int Ca2mv2Player::a2m_read_patterns(char *src, unsigned long size)
 
 bool Ca2mv2Player::a2m_import(char *tune, unsigned long size)
 {
-    A2M_HEADER *header = (A2M_HEADER *)tune;
-    char *blockptr = tune + sizeof(A2M_HEADER);
+    uint8_t *header = (uint8_t *)tune;
+    char *blockptr = tune + A2M_HEADER_SIZE;
     int result;
 
-    if (sizeof(A2M_HEADER) > size)
+    if (A2M_HEADER_SIZE > size)
         return false;
 
-    if (strncmp(header->id, "_A2module_", 10))
+    if (strncmp((const char *)header, "_A2module_", 10))
         return false;
 
-    memset(songinfo, 0, sizeof(*songinfo));
+    init_songdata();
 
     memset(len, 0, sizeof(len));
 
-    ffver = header->ffver;
-    type = 0;
+    ffver = A2M_HEADER_FFVER(header);
 
     if (!ffver || ffver > 14)
         return false;
 
-    songinfo->patt_len = 64;
-    songinfo->nm_tracks = 18;
-    songinfo->macro_speedup = 1;
-
     // Read variable part after header, fill len[] with values
-    result = a2m_read_varheader(blockptr, header->npatt, size - (blockptr - tune));
+    result = a2m_read_varheader(blockptr, A2M_HEADER_NPATT(header), size - (blockptr - tune));
     if (result == INT_MAX) return false;
     blockptr += result;
 
@@ -4011,7 +4156,7 @@ bool Ca2mv2Player::a2m_import(char *tune, unsigned long size)
     blockptr += result;
 
     // Allocate patterns
-    patterns_allocate(header->npatt, songinfo->nm_tracks, songinfo->patt_len);
+    patterns_allocate(A2M_HEADER_NPATT(header), songinfo->nm_tracks, songinfo->patt_len);
 
     // Read patterns
     result = a2m_read_patterns(blockptr, size - (blockptr - tune));
