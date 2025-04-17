@@ -3903,6 +3903,7 @@ bool Ca2mv2Player::a2t_import(char *tune, unsigned long size)
     memset(len, 0, sizeof(len));
 
     ffver = A2T_HEADER_FFVER(header);
+    type = 1;
 
     if (!ffver || ffver > 14)
         return false;
