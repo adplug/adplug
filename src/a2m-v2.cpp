@@ -467,7 +467,10 @@ void Ca2mv2Player::patterns_allocate(int patterns, int channels, int rows)
 
 inline bool note_in_range(uint8_t note)
 {
-    return ((note & 0x7f) > 0) && ((note & 0x7f) < 12 * 8 + 1);
+    if (note & keyoff_flag) {
+        AdPlug_LogWrite("note_in_range with keyoff=1\n");
+    }
+    return ((note & ~keyoff_flag) > 0) && ((note & ~keyoff_flag) < 12 * 8 + 1);
 }
 
 inline uint16_t Ca2mv2Player::regoffs_n(int chan)
@@ -1084,7 +1087,7 @@ void Ca2mv2Player::set_ins_data(uint8_t ins, int chan)
             ch->reset_chan[chan] = false;
         }
 
-        uint8_t note = ch->event_table[chan].note & 0x7f;
+        uint8_t note = ch->event_table[chan].note & ~keyoff_flag;
         note = note_in_range(note) ? note : 0;
 
         init_macro_table(chan, note, ins, ch->freq_table[chan]);
@@ -1181,7 +1184,7 @@ void Ca2mv2Player::output_note(uint8_t note, uint8_t ins, int chan, bool restart
 
     if ((note == 0) && (ch->ftune_table[chan] == 0)) return;
 
-    if ((note & 0x80) || !note_in_range(note)) {
+    if ((note & keyoff_flag) || !note_in_range(note)) {
         freq = ch->freq_table[chan];
     } else {
         freq = nFreq(note - 1) + get_instr_fine_tune(ins);
@@ -1412,27 +1415,22 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
             break;
         }
 
-        if (note_in_range(event->note)) {
-            ch->arpgg_table[slot][chan].state = 0;
-            ch->arpgg_table[slot][chan].note = event->note & 0x7f;
-            if ((def == ef_Arpeggio) || (def == ef_ExtraFineArpeggio)) {
-                ch->arpgg_table[slot][chan].add1 = val >> 4;
-                ch->arpgg_table[slot][chan].add2 = val & 0x0f;
-            }
-        } else {
-            if (!event->note && note_in_range(ch->event_table[chan].note)) {
+        {
+            bool reset_state = note_in_range(event->note & ~keyoff_flag);
+            uint8_t new_note = note_in_range(event->note & ~keyoff_flag)
+                ? event->note & ~keyoff_flag
+                : (note_in_range(ch->event_table[chan].note & ~keyoff_flag)
+                    ? ch->event_table[chan].note & ~keyoff_flag
+                    : 0);
 
-                // This never occurs most probably
-                /*if ((def != ef_Arpeggio) &&
-                    (def != ef_ExtraFineArpeggio) &&
-                    (def != ef_ArpggVSlide) &&
-                    (def != ef_ArpggVSlideFine))
-                    ch->arpgg_table[slot][chan].state = 0;*/
+            if (new_note) {
+                if (reset_state)
+                    ch->arpgg_table[slot][chan].state = 0;
 
-                ch->arpgg_table[slot][chan].note = ch->event_table[chan].note & 0x7f;
+                ch->arpgg_table[slot][chan].note = new_note;
                 if ((def == ef_Arpeggio) || (def == ef_ExtraFineArpeggio)) {
-                    ch->arpgg_table[slot][chan].add1 = val / 16;
-                    ch->arpgg_table[slot][chan].add2 = val % 16;
+                    ch->arpgg_table[slot][chan].add1 = (val >> 4) & 0x0f;
+                    ch->arpgg_table[slot][chan].add2 = val & 0x0f;
                 }
             } else {
                 ch->effect_table[slot][chan].def = 0;
@@ -1464,7 +1462,7 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
     case ef_TonePortamento:
         update_effect_table(slot, chan, EFGR_TONEPORTAMENTO, def, val);
 
-        if (note_in_range(event->note)) {
+        if (!(event->note & keyoff_flag) && note_in_range(event->note)) {
             ch->porta_table[slot][chan].speed = val;
             ch->porta_table[slot][chan].freq = nFreq(event->note - 1) +
                 get_instr_fine_tune(ch->event_table[chan].instr_def);
@@ -2180,11 +2178,12 @@ void Ca2mv2Player::macro_vibrato__porta_down(int chan, uint8_t depth)
 void Ca2mv2Player::tone_portamento(int slot, int chan)
 {
     uint16_t freq = ch->freq_table[chan] & 0x1fff;
+    uint16_t portafreq = ch->porta_table[slot][chan].freq & 0x1fff;
 
-    if (freq > ch->porta_table[slot][chan].freq) {
-        portamento_down(chan, ch->porta_table[slot][chan].speed, ch->porta_table[slot][chan].freq);
-    } else if (freq < ch->porta_table[slot][chan].freq) {
-        portamento_up(chan, ch->porta_table[slot][chan].speed, ch->porta_table[slot][chan].freq);
+    if (freq > portafreq) {
+        portamento_down(chan, ch->porta_table[slot][chan].speed, portafreq);
+    } else if (freq < portafreq) {
+        portamento_up(chan, ch->porta_table[slot][chan].speed, portafreq);
     }
 }
 
