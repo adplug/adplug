@@ -841,6 +841,10 @@ void Ca2mv2Player::set_ins_volume(uint8_t modulator, uint8_t carrier, uint8_t ch
     }
 
     tINSTR_DATA *instr = get_instr_data_by_ch(chan);
+    if (!instr) {
+        AdPlug_LogWrite("set_ins_volume: instr not set for channel %d\n", chan);
+        return;
+    }
 
     // ** OPL3 emulation workaround **
     // force muted instrument volume with missing channel ADSR data
@@ -898,6 +902,10 @@ void Ca2mv2Player::set_ins_volume(uint8_t modulator, uint8_t carrier, uint8_t ch
 void Ca2mv2Player::set_volume(uint8_t modulator, uint8_t carrier, uint8_t chan)
 {
     tINSTR_DATA *instr = get_instr_data_by_ch(chan);
+    if (!instr) {
+        AdPlug_LogWrite("set_volume: instr not set for channel %d\n", chan);
+        return;
+    }
 
     // ** OPL3 emulation workaround **
     // force muted instrument volume with missing channel ADSR data
@@ -976,7 +984,10 @@ void Ca2mv2Player::set_ins_volume_4op(uint8_t volume, uint8_t chan)
 void Ca2mv2Player::reset_ins_volume(int chan)
 {
     tINSTR_DATA *instr = get_instr_data_by_ch(chan);
-    if (!instr) return;
+    if (!instr) {
+        AdPlug_LogWrite("reset_ins_volume: instr not set for channel %d\n", chan);
+        return;
+    }
 
     uint8_t vol_mod = instr->fm.volM;
     uint8_t vol_car = instr->fm.volC;
@@ -997,6 +1008,10 @@ void Ca2mv2Player::set_global_volume()
             set_ins_volume_4op(BYTE_NULL, chan);
         } else if (ch->carrier_vol[chan] || ch->modulator_vol[chan]) {
             tINSTR_DATA *instr = get_instr_data_by_ch(chan);
+            if (!instr) {
+                AdPlug_LogWrite("set_global_volume: instr not set for channel %d\n", chan);
+                return;
+            }
 
             set_ins_volume(instr->fm.connect ? ch->fmpar_table[chan].volM : BYTE_NULL, ch->fmpar_table[chan].volC, chan);
         }
@@ -1295,7 +1310,6 @@ void Ca2mv2Player::update_effect_table(int slot, int chan, int eff_group, uint8_
 
 void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
 {
-    tINSTR_DATA *instr = get_instr_data_by_ch(chan);
     uint8_t def = event->eff[slot].def;
     uint8_t val = event->eff[slot].val;
 
@@ -1521,26 +1535,42 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
         break;
 
     case ef_SetInsVolume:
-        if (_4op_vol_valid_chan(chan)) {
-            set_ins_volume_4op(63 - val, chan);
-        } else if (percussion_mode && ((chan >= 16) && (chan <= 19))) { //  in [17..20]
-            set_ins_volume(63 - val, BYTE_NULL, chan);
-        } else if (instr->fm.connect == 0) {
-            set_ins_volume(BYTE_NULL, 63 - val, chan);
-        } else {
-            set_ins_volume(63 - val, 63 - val, chan);
-        }
-        break;
+        {
+            tINSTR_DATA *instr = get_instr_data_by_ch(chan);
+            if (!instr) {
+                AdPlug_LogWrite("ef_SetInsVolume: instr not set for channel %d\n", chan);
+                break;
+            }
+
+            if (_4op_vol_valid_chan(chan)) {
+                set_ins_volume_4op(63 - val, chan);
+            } else if (percussion_mode && ((chan >= 16) && (chan <= 19))) { //  in [17..20]
+                set_ins_volume(63 - val, BYTE_NULL, chan);
+            } else if (instr->fm.connect == 0) {
+                set_ins_volume(BYTE_NULL, 63 - val, chan);
+            } else {
+                set_ins_volume(63 - val, 63 - val, chan);
+            }
+            break;
+    }
 
     case ef_ForceInsVolume:
-        if (percussion_mode && ((chan >= 16) && (chan <= 19))) { //  in [17..20]
-            set_ins_volume(63 - val, BYTE_NULL, chan);
-        } else if (instr->fm.connect == 0) {
-            set_ins_volume(scale_volume(instr->fm.volM, 63 - val), 63 - val, chan);
-        } else {
-            set_ins_volume(63 - val, 63 - val, chan);
+        {
+            tINSTR_DATA *instr = get_instr_data_by_ch(chan);
+            if (!instr) {
+                AdPlug_LogWrite("ef_ForceInsVolume: instr not set for channel %d\n", chan);
+                break;
+            }
+
+            if (percussion_mode && ((chan >= 16) && (chan <= 19))) { //  in [17..20]
+                set_ins_volume(63 - val, BYTE_NULL, chan);
+            } else if (instr->fm.connect == 0) {
+                set_ins_volume(scale_volume(instr->fm.volM, 63 - val), 63 - val, chan);
+            } else {
+                set_ins_volume(63 - val, 63 - val, chan);
+            }
+            break;
         }
-        break;
 
     case ef_PositionJump:
         if (no_loop(chan, current_line)) {
@@ -2431,8 +2461,12 @@ void Ca2mv2Player::tremolo(int slot, int chan)
 inline int Ca2mv2Player::chanvol(int chan)
 {
     tINSTR_DATA *instr = get_instr_data_by_ch(chan);
+    if (!instr) {
+        AdPlug_LogWrite("chanvol: instr not set for channel %d\n", chan);
+    }
+    char instr_fm_connect = instr ? instr->fm.connect : 0;
 
-    if (instr->fm.connect == 0)
+    if (instr_fm_connect == 0)
         return 63 - ch->fmpar_table[chan].volC;
     else
         return 63 - (ch->fmpar_table[chan].volM + ch->fmpar_table[chan].volC) / 2;
