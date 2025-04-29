@@ -67,6 +67,24 @@ dnl On some platforms glibc does not provide sys/io.h
 dnl https://bugs.gentoo.org/645296
 AC_CHECK_HEADERS([sys/io.h])
 
+dnl Check whether -fsigned-char should be passed
+AC_CACHE_CHECK([whether char is signed], ac_cv_c_signed_char, [
+  AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+    /* no special includes needed */
+  ]], [[
+    char c = -1;
+    return (c < 0) ? 0 : 1;
+  ]])],
+  [ac_cv_c_signed_char=yes],
+  [ac_cv_c_signed_char=no],
+  [ac_cv_c_signed_char=no]) dnl If cross-compiling, assume unsigned
+])
+
+if test "$ac_cv_c_signed_char" = no; then
+  CFLAGS="$CFLAGS -fsigned-char"
+  CXXFLAGS="$CXXFLAGS -fsigned-char"
+fi
+
 dnl Sanitize some compiler features, which may be broken...
 AC_C_CONST
 AC_C_INLINE
