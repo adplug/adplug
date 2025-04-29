@@ -77,6 +77,7 @@ bool CplxPlayer::load(const std::string &filename, const CFileProvider &fp)
 
   // file validation section
   f = fp.open(filename); if(!f) return false;
+  f->setFlag(binio::BigEndian, false);
   f->readString(plxid, 3);
   type = f->readInt(1);
   if(strncmp(plxid, "PLX", 3) != 0 || type != 0) {
@@ -115,6 +116,7 @@ bool CplxPlayer::load(const std::string &filename, const CFileProvider &fp)
   f->readString((char *)songdata, filesize);
   song = new binisstream(songdata, filesize);
   assert(song != 0);
+  song->setFlag(binio::BigEndian, false);
 
   fp.close(f);
   rewind(0);
