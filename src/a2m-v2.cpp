@@ -265,7 +265,7 @@ void Ca2mv2Player::fmdata_fill_from_raw(tFM_INST_DATA *fm, uint8_t *src)
 // Fill uint8_t data[11] array from tFM_INST_DATA
 void Ca2mv2Player::raw_fill_from_fmdata(uint8_t *dst, tFM_INST_DATA *fm)
 {
-dst[0] = (fm->multipM & 0xf) |
+    dst[0] = (fm->multipM & 0xf) |
             ((fm->ksrM  & 1) << 4) |
             ((fm->sustM & 1) << 5) |
             ((fm->vibrM & 1) << 6) |
@@ -1476,10 +1476,11 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
     case ef_TonePortamento:
         update_effect_table(slot, chan, EFGR_TONEPORTAMENTO, def, val);
 
-        if (!(event->note & keyoff_flag) && note_in_range(event->note)) {
+        if (note_in_range(event->note)) {
             ch->porta_table[slot][chan].speed = val;
-            ch->porta_table[slot][chan].freq = nFreq(event->note - 1) +
-                get_instr_fine_tune(ch->event_table[chan].instr_def);
+            if (!(event->note & keyoff_flag))
+                ch->porta_table[slot][chan].freq = nFreq(event->note - 1) +
+                    get_instr_fine_tune(ch->event_table[chan].instr_def);
         } else {
             ch->porta_table[slot][chan].speed = ch->effect_table[slot][chan].val;
         }
