@@ -76,7 +76,7 @@ jobs:
           # qemu does not support powerpc64
           sudo apt install -y g++-powerpc64-linux-gnu gcc-powerpc64-linux-gnu
         fi
-        if [[ ${{ matrix.compiler }} = powerpc-gcc ]]; then
+        if [[ ${{ matrix.compiler }} = powerpcle64-gcc ]]; then
           sudo apt install -y g++-powerpc64le-linux-gnu gcc-powerpc64le-linux-gnu qemu-user
         fi
 
