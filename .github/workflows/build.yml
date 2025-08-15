@@ -141,7 +141,7 @@ jobs:
         #echo -e '#!/bin/sh\nexec qemu-ppc -L /usr/local/powerpc64 -L /usr/powerpc64-linux-gnu "$@"' > qemu-wrapper.sh
         #chmod 755 qemu-wrapper.sh
 
-    - name: Set PowerPC-GCC environment
+    - name: Set PowerPC64LE-GCC environment
       if: ${{ matrix.compiler == 'powerpc64le-gcc' }}
       run: |
         echo 'compile_opts=--host=powerpc64le-linux-gnu --prefix=/usr/local/powerpc64le'>> $GITHUB_ENV
