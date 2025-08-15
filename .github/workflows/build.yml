@@ -159,8 +159,8 @@ jobs:
     - name: configure
       run: ./configure ${{ env.compile_opts }} ${{ env.compile_env }} ${{ env.adplug_env }} || cat config.log
 
-    # make distcheck ensure that it is possible build in a external build-directory, and perform `make check`.
-    # The later fail for cross-builds  due to the need for running scripts that needs to be patched.
+    # make distcheck ensure that it is possible build in an external build-directory, and perform `make check`.
+    # The later fail for cross-builds is due to the need for running scripts that needs to be patched.
     # Also distcheck fails on macOS due to missing LaTeX, so restrict to Linux only.
     - name: make distcheck
       if: ${{ matrix.compiler == 'gcc' && runner.os == 'Linux' }}
