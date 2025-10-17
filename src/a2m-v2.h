@@ -488,6 +488,24 @@ class Ca2mv2Player : public CPlayer
 public:
     static CPlayer *factory(Copl *newopl);
 
+    unsigned int getpatterns() override
+      { return eventsinfo ? eventsinfo->patterns : 0; }
+    unsigned int getpattern() override
+      { return current_pattern; }
+    unsigned int getorders() override
+      { return 0x80; /* We could probably resolve songinfo->pattern_order[] into a nice linear list */ }
+    unsigned int getorder() override
+      { return current_order; }
+    unsigned int getrow() override
+      { return current_line; }
+    unsigned int getrows() override
+      { return songinfo ? songinfo->patt_len : 0; }
+    unsigned int getnchans() override
+      { return songinfo ? songinfo->nm_tracks : 0; }
+    unsigned char getpattern(unsigned long _order) override
+      { return ((_order <= 0x80 ) && songinfo && (songinfo->pattern_order[_order] < 0x80)) ? songinfo->pattern_order[_order] : 0; }
+    void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
+
     Ca2mv2Player(Copl *newopl);
     ~Ca2mv2Player();
 

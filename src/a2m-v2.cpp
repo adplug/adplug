@@ -4211,3 +4211,104 @@ bool Ca2mv2Player::a2_import(char *tune, unsigned long size)
 
     return false;
 }
+
+static void translate_effect (uint8_t effect, CPlayer::TrackedCmds &command, uint8_t &volume, uint8_t &param)
+{
+    switch (effect) {
+	case ef_Arpeggio:          if (param) command = CPlayer::TrackedCmdArpeggio;         break;
+	case ef_FSlideUp:          command = CPlayer::TrackedCmdPitchSlideUp;                break;
+	case ef_FSlideDown:        command = CPlayer::TrackedCmdPitchSlideDown;              break;
+	case ef_TonePortamento:    command = CPlayer::TrackedCmdTonePortamento;              break;
+	case ef_Vibrato:           command = CPlayer::TrackedCmdVibrato;                     break;
+	case ef_TPortamVolSlide:   command = CPlayer::TrackedCmdTonePortamentoVolumeSlide;   break;
+	case ef_VibratoVolSlide:   command = CPlayer::TrackedCmdVibratoVolumeSlide;          break;
+	case ef_FSlideUpFine:      command = CPlayer::TrackedCmdVolumeFineSlideUp;           break;
+	case ef_FSlideDownFine:    command = CPlayer::TrackedCmdVolumeFineSlideDown;         break;
+	case ef_SetModulatorVol:   command = CPlayer::TrackedCmdOPLModulatorVolume;          break;
+	case ef_VolSlide:          command = CPlayer::TrackedCmdVolumeSlideUpDown;           break;
+	case ef_PositionJump:      command = CPlayer::TrackedCmdPatternJumpTo;               break;
+	case ef_SetInsVolume:      volume = param;                                  break;
+	case ef_PatternBreak:      command = CPlayer::TrackedCmdPatternBreak;                break;
+	case ef_SetTempo:          command = CPlayer::TrackedCmdTempo;                       break;
+	case ef_SetSpeed:          command = CPlayer::TrackedCmdSpeed;                       break;
+	case ef_TPortamVSlideFine: command = CPlayer::TrackedCmdTonePortamentoVolumeSlide;   break; /* estimation */
+	case ef_VibratoVSlideFine: command = CPlayer::TrackedCmdVibratoVolumeSlide;          break; /* estimation */
+	case ef_SetCarrierVol:     command = CPlayer::TrackedCmdOPLCarrierVolume;            break;
+	case ef_SetWaveform:       command = CPlayer::TrackedCmdOPLCarrierModulatorWaveform; break;
+	case ef_VolSlideFine:      command = CPlayer::TrackedCmdVolumeSlideUpDown;           break; /* estimation */
+	case ef_RetrigNote:        command = CPlayer::TrackedCmdRetrigger;                   break;
+	case ef_Tremolo:           command = CPlayer::TrackedCmdOPLTremolo;                  break;
+	case ef_Tremor:            command = CPlayer::TrackedCmdOPLTremoloVibrato;           break; /* guess */
+	case ef_ArpggVSlide:       command = CPlayer::TrackedCmdArpeggio;                    break; /* missing volume slide */
+	case ef_ArpggVSlideFine:   command = CPlayer::TrackedCmdArpeggio;                    break; /* missing fine volume slide */
+	case ef_MultiRetrigNote:   command = CPlayer::TrackedCmdRetrigger;                   break; /* estimation */
+	case ef_FSlideUpVSlide:    command = CPlayer::TrackedCmdPitchFineSlideUp;            break; /* missing volume slide */
+	case ef_FSlideDownVSlide:  command = CPlayer::TrackedCmdPitchFineSlideDown;          break; /* missing volume slide */
+	case ef_FSlUpFineVSlide:   command = CPlayer::TrackedCmdPitchFineSlideUp;            break; /* missing fine volume slide */
+	case ef_FSlDownFineVSlide: command = CPlayer::TrackedCmdPitchFineSlideDown;          break; /* missing fine volume slide */
+	case ef_FSlUpVSlF:         command = CPlayer::TrackedCmdPitchFineSlideUp;            break; /* missing xx volume slide */
+	case ef_FSlDownVSlF:       command = CPlayer::TrackedCmdPitchFineSlideDown;          break; /* missing xx volume slide */
+	case ef_FSlUpFineVSlF:     command = CPlayer::TrackedCmdPitchFineSlideUp;            break; /* missing xx volume slide */
+	case ef_FSlDownFineVSlF:   command = CPlayer::TrackedCmdPitchFineSlideDown;          break; /* missing xx volume slide */
+
+	case ef_Extended: /* we ignore most of these */
+		 if ((param >> 4) == ef_ex_PatternLoop)    { command = CPlayer::TrackedCmdPatternDoLoop;  param &= 0x0f; }
+	    else if ((param >> 4) == ef_ex_PatternLoopRec) { command = CPlayer::TrackedCmdPatternSetLoop; param &= 0x0f; }
+	    break;
+	case ef_Extended2: /* we ignore most of these */
+		 if ((param >> 4) == ef_ex2_PatDelayRow)   { command = CPlayer::TrackedCmdPatternDelay; param &= 0x0f; }
+	    else if ((param >> 4) == ef_ex2_NoteCut)       { command = CPlayer::TrackedCmdNoteCut; }
+	    break;
+	case ef_SetGlobalVolume:   command = CPlayer::TrackedCmdGlobalVolume;                break;
+	case ef_SwapArpeggio:                                                                break; /* ignore */
+	case ef_SwapVibrato:                                                                 break; /* ignore */
+	case ef_ForceInsVolume:    volume = param;                                           break; /* estimation */
+	case ef_Extended3: /* we ignore all of these */
+	    break;
+	case ef_ExtraFineArpeggio: command = CPlayer::TrackedCmdVibrato;                     break; /* estimation */
+	case ef_ExtraFineVibrato:  command = CPlayer::TrackedCmdVibrato;                     break; /* estimation */
+	case ef_ExtraFineTremolo:  command = CPlayer::TrackedCmdOPLTremolo;                  break; /* estimation */
+	case ef_SetCustomSpeedTab:                                                           break; /* ignore */
+	case ef_GlobalFSlideUp:                                                              break; /* ignore */
+	case ef_GlobalFSlideDown:                                                            break; /* ignore */
+	case ef_GlobalFreqSlideUpXF:                                                         break; /* ignore */
+	case ef_GlobalFreqSlideDnXF:                                                         break; /* ignore */
+    }
+}
+
+void Ca2mv2Player::gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
+{
+    if (!eventsinfo) return;
+    if (pattern >= eventsinfo->patterns) return;
+
+    for (int row = 0; row < eventsinfo->rows; row++) {
+        for (int ch = 0; ch < eventsinfo->channels; ch++) {
+            tADTRACK2_EVENT e = *get_event_p (pattern, ch, row);
+            TrackedCmds command = TrackedCmdNone;
+            unsigned char param = e.eff[0].val;
+            unsigned char volume = 0xff;
+            TrackedCmds command2 = TrackedCmdNone;
+            unsigned char param2 = e.eff[1].val;
+
+            if (e.note == 0xff) {
+                command = TrackedCmdNoteCut;
+                e.note = 0;
+            } else if (!note_in_range(e.note)) {
+                e.note = 0;
+            }
+
+            translate_effect (e.eff[0].def, command,  volume, param);
+            translate_effect (e.eff[1].def, command2, volume, param2);
+
+            if ((command == TrackedCmdNone) && (command2 != TrackedCmdNone))
+            {
+               command = command2;
+               param = param2;
+            }
+
+            if (e.note || e.instr_def || (command != TrackedCmdNone) || (volume != 0xff)) {
+                callback (arg, row, ch, e.note, command, e.instr_def, volume, param);
+            }
+        }
+    }
+}

@@ -58,6 +58,90 @@ CmodPlayer::~CmodPlayer()
   dealloc();
 }
 
+void CmodPlayer::gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
+{
+  if (pattern >= npats) return; //throw std::invalid_argument( "pattern out of range");
+  for (unsigned int channel = 0; channel < nchans; channel++) {
+    unsigned short track = trackord[pattern][channel];
+    if (!track) continue;
+    track--;
+    for (unsigned int row = 0; row < nrows; row++) {
+      unsigned char note = tracks[track][row].note;
+      TrackedCmds command=TrackedCmdNone;
+      unsigned char inst = tracks[track][row].inst;
+      unsigned char volume=255;
+      unsigned char param=0;
+
+      if (note == 127) {
+        note = 0;
+        command = TrackedCmdNoteCut;
+      }
+      if (note) note += 24;
+
+      if(flags & Decimal)
+        param = tracks[track][row].param1 * 10 + tracks[track][row].param2;
+      else
+        param = (tracks[track][row].param1 << 4) + tracks[track][row].param2;
+
+      switch (tracks[track][row].command) {
+        case 0: if (param) command = TrackedCmdArpeggio; break;
+        case 1:  command = TrackedCmdPitchSlideUp; break;
+        case 2:  command = TrackedCmdPitchSlideDown; break;
+        case 3:  command = TrackedCmdTonePortamento; break;
+        case 4:  command = TrackedCmdVibrato; break;
+        case 5:  command = TrackedCmdTonePortamentoVolumeSlide; break;
+        case 6:  command = TrackedCmdVibratoVolumeSlide; break;
+        case 7:  command = TrackedCmdTempo; break;
+        case 8:  command = TrackedCmdReleaseSustainedNotes; break;
+        case 9:  command = TrackedCmdOPLCarrierModulatorVolume; break;
+        case 10:
+        case 16:
+        case 20:
+        case 26: command = TrackedCmdVolumeSlideUpDown; break;
+        case 11: command = TrackedCmdPatternJumpTo; break;
+        case 12: volume = param; param = 0; break;
+        case 13: command = TrackedCmdPatternBreak; break;
+        case 15:
+        case 18:
+        case 19: command = TrackedCmdSpeed; break;
+        case 17: command = TrackedCmdOPL3Volume; break;
+        case 21: command = TrackedCmdOPLModulatorVolume; break;
+        case 22: command = TrackedCmdOPLCarrierVolume; break;
+        case 23: command = TrackedCmdPitchFineSlideUp; break;
+        case 24: command = TrackedCmdPitchFineSlideDown; break;
+        case 25: command = TrackedCmdOPLCarrierModulatorWaveform; break;
+        case 27: command = TrackedCmdOPLTremoloVibrato; break;
+        case 28: command = TrackedCmdPitchSlideUpDown; break;
+        case 29: command = TrackedCmdPatternDelay; break;
+        case 14:
+          switch (param & 0xf0)
+          {
+            case 0x00: command = TrackedCmdOPLTremolo; param &= 0x0f; break;
+            case 0x10: command = TrackedCmdOPLVibrato; param &= 0x0f; break;
+            case 0x30: command = TrackedCmdRetrigger; param &= 0x0f; break;
+            case 0x40: command = TrackedCmdVolumeFineSlideUp; param &= 0x0f; break;
+            case 0x50: command = TrackedCmdVolumeFineSlideDown; param &= 0x0f; break;
+            case 0x60: command = TrackedCmdPitchFineSlideUp; param &= 0x0f; break;
+            case 0x70: command = TrackedCmdPitchFineSlideDown; param &= 0x0f; break;
+            case 0x80: command = TrackedCmdPatternDelay; param &= 0x0f; break;
+            default: param = 0; break;
+          }
+          break;
+        default:
+          param = 0;
+          break;
+      }
+
+      if ((note != 0) ||
+          (command != TrackedCmdNone) ||
+          (inst != 0) ||
+          (volume != 255) ||
+          (param != 0))
+        callback (arg, row, channel, note, command, inst, volume, param);
+    }
+  }
+}
+
 bool CmodPlayer::update()
 {
   unsigned char		pattbreak=0, donote, pattnr, chan, oplchan, info1,
