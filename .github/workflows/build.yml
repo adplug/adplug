@@ -17,6 +17,12 @@ jobs:
             os: ubuntu-latest
           - compiler: djgpp-2.0.5-gcc-12.2.0 # To test compatibility for Adplay - DOS
             os: ubuntu-latest
+          - compiler: powerpc-gcc # To test compatibility with big-endian powerpc
+            os: ubuntu-latest
+          - compiler: powerpc64-gcc # To test compatibility with big-endian powerpc
+            os: ubuntu-latest
+          - compiler: powerpcle64-gcc # To test compatibility with little-endian powerpc
+            os: ubuntu-latest
 
       fail-fast: false
 
@@ -63,6 +69,17 @@ jobs:
           fi
         fi
 
+        if [[ ${{ matrix.compiler }} = powerpc-gcc ]]; then
+          sudo apt install -y g++-powerpc-linux-gnu gcc-powerpc-linux-gnu qemu-user
+        fi
+        if [[ ${{ matrix.compiler }} = powerpc64-gcc ]]; then
+          # qemu does not support powerpc64
+          sudo apt install -y g++-powerpc64-linux-gnu gcc-powerpc64-linux-gnu
+        fi
+        if [[ ${{ matrix.compiler }} = powerpcle64-gcc ]]; then
+          sudo apt install -y g++-powerpc64le-linux-gnu gcc-powerpc64le-linux-gnu qemu-user
+        fi
+
     - name: Install packages (macOS)
       if: ${{ runner.os == 'macOS' }}
       run: |
@@ -79,62 +96,106 @@ jobs:
     #   with:
     #     version: "10.0"
 
+# adplug_env    is for `adplug`                configure and make distcheck
+# compile_env   is for `libbinio` and `adplug` configure and make distcheck
+# compile_opts  is for `libbinio` and `adplug` configure
+
     - name: Set GCC environment (Linux)
       if: ${{ matrix.compiler == 'gcc' && runner.os == 'Linux'}}
-      run: echo "compile_opts=CC=gcc CXX=g++ CXXFLAGS='-fsanitize=address -fsanitize=leak' CPPFLAGS='-fsanitize=address -fsanitize=leak'" >> $GITHUB_ENV
+      run: |
+        echo 'adplug_env=CFLAGS="-O2 -pipe -fsanitize=address -fsanitize=leak" CXXFLAGS="-O2 -pipe -fsanitize=address -fsanitize=leak" CPPFLAGS="-fsanitize=address -fsanitize=leak" LDFLAGS="-Wl,-O1 -Wl,--as-needed -Wl,--gc-sections"' >> $GITHUB_ENV
 
     - name: Set GCC-4.8 environment (Linux)
       if: ${{ matrix.compiler == 'gcc-4.8' }}
-      run: echo 'compile_opts=CC=gcc-4.8 CXX=g++-4.8' >> $GITHUB_ENV
+      run: echo 'compile_env=CC=gcc-4.8 CXX=g++-4.8' >> $GITHUB_ENV
 
     - name: Set GCC environment (macOS)
       if: ${{ matrix.compiler == 'gcc' && runner.os == 'macOS' }}
-      run: echo 'compile_opts=CC=gcc CXX=g++' >> $GITHUB_ENV
+      run: echo 'compile_env=CC=gcc CXX=g++' >> $GITHUB_ENV
 
     - name: Set Clang environment
       if: ${{ matrix.compiler == 'clang' }}
-      run: echo 'compile_opts=CC=clang CXX=clang++' >> $GITHUB_ENV
+      run: echo 'compile_env=CC=clang CXX=clang++' >> $GITHUB_ENV
 
     - name: Set DJGPP environment
       if: ${{ startsWith(matrix.compiler, 'djgpp') }}
       run: |
-        echo 'compile_opts=--host=i586-pc-msdosdjgpp --prefix=/usr/local/djgpp CXXFLAGS=-Wno-deprecated CPPFLAGS=-Wno-deprecated PKG_CONFIG_PATH=/usr/local/djgpp/lib/pkgconfig' >> $GITHUB_ENV
+        echo 'compile_opts=--host=i586-pc-msdosdjgpp --prefix=/usr/local/djgpp' >> $GITHUB_ENV 
+        echo 'adplug_env=CFLAGS="-O2 -pipe" CXXFLAGS="-O2 -pipe -Wno-deprecated" CPPFLAGS="-O2 -pipe -Wno-deprecated" LDFLAGS="-Wl,-O1 -Wl,--as-needed -Wl,--no-undefined -Wl,--gc-sections" PKG_CONFIG_PATH=/usr/local/djgpp/lib/pkgconfig' >> $GITHUB_ENV
         echo '/usr/local/djgpp/bin/' >> $GITHUB_PATH
+
+    - name: Set PowerPC-GCC environment
+      if: ${{ matrix.compiler == 'powerpc-gcc' }}
+      run: |
+        echo 'compile_opts=--host=powerpc-linux-gnu --prefix=/usr/local/powerpc'>> $GITHUB_ENV
+        echo 'compile_env=PKG_CONFIG_PATH=/usr/local/powerpc/lib/pkgconfig MAKE="make stresstest_wrapper=./qemu-wrapper.sh"'>> $GITHUB_ENV
+        echo -e '#!/bin/sh\nexec qemu-ppc -L /usr/local/powerpc -L /usr/powerpc-linux-gnu "$@"' > qemu-wrapper.sh
+        chmod 755 qemu-wrapper.sh
+
+    - name: Set PowerPC64-GCC environment
+      if: ${{ matrix.compiler == 'powerpc64-gcc' }}
+      run: |
+        echo 'compile_opts=--host=powerpc64-linux-gnu --prefix=/usr/local/powerpc64'>> $GITHUB_ENV
+        echo 'compile_env=PKG_CONFIG_PATH=/usr/local/powerpc64/lib/pkgconfig' >> $GITHUB_ENV
+        #qmeu does not support powerpc64
+        #echo -e '#!/bin/sh\nexec qemu-ppc -L /usr/local/powerpc64 -L /usr/powerpc64-linux-gnu "$@"' > qemu-wrapper.sh
+        #chmod 755 qemu-wrapper.sh
+
+    - name: Set PowerPC64LE-GCC environment
+      if: ${{ matrix.compiler == 'powerpc64le-gcc' }}
+      run: |
+        echo 'compile_opts=--host=powerpc64le-linux-gnu --prefix=/usr/local/powerpc64le'>> $GITHUB_ENV
+        echo 'compile_env=PKG_CONFIG_PATH=/usr/local/powerpc64le/lib/pkgconfig MAKE="make stresstest_wrapper=./qemu-wrapper.sh"'>> $GITHUB_ENV
+        echo -e '#!/bin/sh\nexec qemu-ppc -L /usr/local/powerpc64le -L /usr/powerpc64le-linux-gnu "$@"' > qemu-wrapper.sh
+        chmod 755 qemu-wrapper.sh
 
     - name: Install libbinio
       run: |
         git clone http://github.com/adplug/libbinio.git
-        pushd libbinio && autoreconf -i && ./configure --enable-maintainer-mode ${{ env.compile_opts }} && make && sudo env PATH=$PATH make install && popd
+        pushd libbinio && autoreconf -i && ./configure --enable-maintainer-mode ${{ env.compile_opts }} ${{ env.compile_env }} && make ${{ env.compile_env }} && sudo env PATH=$PATH make install && popd
 
     - name: autoreconf
       run: autoreconf -i
     - name: configure
-      run: ./configure ${{ env.compile_opts }} || cat config.log
+      run: ./configure ${{ env.compile_opts }} ${{ env.compile_env }} ${{ env.adplug_env }} || cat config.log
+
+    # make distcheck ensure that it is possible build in an external build-directory, and perform `make check`.
+    # The later fail for cross-builds is due to the need for running scripts that needs to be patched.
+    # Also distcheck fails on macOS due to missing LaTeX, so restrict to Linux only.
+    - name: make distcheck
+      if: ${{ matrix.compiler == 'gcc' && runner.os == 'Linux' }}
+      env:
+        DISTCHECK_CONFIGURE_FLAGS: "${{ env.compile_opts }} ${{ env.compile_env }} ${{ env.adplug_env }}"
+      run: |
+        make distcheck ${{ env.compile_env }} ${{ env.adplug_env }}
 
     - name: make
       run: |
         ulimit -c unlimited -S
-        if [[ ${{ runner.os }} == "macOS" ]]; then
-          # - macOS's /usr/bin/texi2dvi is broken
-          # - Furthermore, trying to get a working
-          #   TeX installation on macOS is a futile
-          #   endeavour, hence just run tests.
-          make check ${{ env.compile_opts }}
-        elif [[ ${{ matrix.compiler }} = djgpp* ]]; then
-          # Setup dosemu as testing tool
-          export LOG_COMPILER="dosemu"
-          export AM_LOG_FLAGS="-dumb $f"
-          # Note: compile_opts is not used here, since DJGPP requires stuff like --host for ./configure
-          # which will mess with make's command-line parsing
-          # -j1 is there to fix race conditions when building checks and then running dosemu
-          make -j1 check
-        elif [[ ${{ runner.os }} == "Linux" ]]; then
-          make distcheck ${{ env.compile_opts }}
+        make all ${{ env.compile_env }} ${{ env.adplug_env }} && sudo env PATH=$PATH make install
+
+        # cross-platform needs to patch the helper scripts for `make check`, so please prepare them - and patch them
+        # Sidenote: DJGPP will generate test/crctest.exe test/emutest.exe test/playtest.exe and test/strstest.exe; and they will NOT be scripts
+        if  [[ ${{ matrix.compiler }} == "powerpc-gcc" ]]; then
+          make test/crctest test/emutest test/playtest test/strstest ${{ env.compile_env }} ${{ env.adplug_env }}
+          sed -e 's/exec "/exec qemu-ppc -L \/usr\/local\/powerpc -L \/usr\/powerpc-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
+        elif  [[ ${{ matrix.compiler }} == "powerpc64-gcc" ]]; then
+          make test/crctest test/emutest test/playtest test/strstest ${{ env.compile_env }} ${{ env.adplug_env }}
+          sed -e 's/exec "/exec qemu-ppc -L \/usr\/local\/powerpc64 -L \/usr\/powerpc64-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
+        elif  [[ ${{ matrix.compiler }} == "powerpc64le-gcc" ]]; then
+          make test/crctest test/emutest test/playtest test/strstest ${{ env.compile_env }} ${{ env.adplug_env }}
+          sed -e 's/exec "/exec qemu-ppc -L \/usr\/local\/powerpc64le -L \/usr\/powerpc64le-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
         fi
 
-    - name: Prepare test results (Linux)
-      if: ${{ runner.os == 'Linux' && !startsWith(matrix.compiler, 'djgpp')}}
-      run: make check
+    - name: Prepare test results
+      # qemu currently does not work with powerpc64-gcc, so skip that single instance
+      if: ${{ (runner.os == 'Linux' || runner.os == 'macOS') && (matrix.compiler != 'powerpc64-gcc') }}
+      run: |
+        if [[ ${{ matrix.compiler }} = djgpp* ]]; then
+          export LOG_COMPILER="dosemu"
+          export AM_LOG_FLAGS="-dumb $f"
+        fi
+        make -j1 check ${{ env.compile_env }} ${{ env.adplug_env }}
 
     - name: Show test results
       run: |-
