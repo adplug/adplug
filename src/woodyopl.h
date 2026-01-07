@@ -208,8 +208,27 @@ public:
 
 	Bitu adlib_reg_read(Bitu port);
 	void adlib_write_index(Bitu port, Bit8u val);
-};
+private:
+	// all of these are initialized by OPLChipClass::adlib_init()
+	fltype recipsamp; // inverse of sampling rate
+	Bitu initfirstime = 0;
+	Bit16s wavtable[WAVEPREC*3]; // wave form table
+	// vibrato/tremolo tables
+	Bit32s vib_table[VIBTAB_SIZE];
+	Bit32s trem_table[TREMTAB_SIZE*2];
+	Bit32s tremval_const[BLOCKBUF_SIZE];
+	// vibrato value tables (used per-operator)
+	Bit32s vibval_var1[BLOCKBUF_SIZE];
+	Bit32s vibval_var2[BLOCKBUF_SIZE];
+	// calculated frequency multiplication values (depend on sampling rate)
+	fltype frqmul[16];
+	// key scale levels
+	Bit8u kslev[8][16];
 
-static Bit32u generator_add;	// should be a chip parameter
+	Bit32u generator_add; // should be a chip parameter
+
+	void operator_advance(op_type* op_pt, Bit32s vib);
+	void operator_advance_drums(op_type* op_pt1, Bit32s vib1, op_type* op_pt2, Bit32s vib2, op_type* op_pt3, Bit32s vib3);
+};
 
 #endif
