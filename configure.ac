@@ -89,6 +89,9 @@ dnl Sanitize some compiler features, which may be broken...
 AC_C_CONST
 AC_C_INLINE
 
+dnl Check whether we are compiling for Windows (MinGW or Cygwin)
+AM_CONDITIONAL([WINDOWS], [echo "$host_os" | grep -iq 'mingw\|cygwin'])
+
 AC_CONFIG_FILES([
     Makefile
     src/version.h
