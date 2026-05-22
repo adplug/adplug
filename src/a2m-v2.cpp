@@ -406,7 +406,10 @@ void Ca2mv2Player::arpvib_tables_free()
     }
 
     delete[] vibrato_table;
+    vibrato_table = NULL;
     delete[] arpeggio_table;
+    arpeggio_table = NULL;
+    arpvib_count = 0;
 }
 
 void Ca2mv2Player::arpvib_tables_allocate(size_t n, uint8_t *src)
@@ -693,6 +696,9 @@ bool Ca2mv2Player::is_chan_adsr_data_empty(int chan)
 bool Ca2mv2Player::is_ins_adsr_data_empty(int ins)
 {
     tINSTR_DATA *i = get_instr_data(ins);
+    if (!i)
+        return true;
+
     uint8_t data[11];
     raw_fill_from_fmdata(data, &i->fm);
 
@@ -2418,8 +2424,8 @@ void Ca2mv2Player::slide_volume_up(int chan, uint8_t slide)
     if (!_4op_vol_valid_chan(chan)) {
         tINSTR_DATA *ins = get_instr_data(ch->event_table[chan].instr_def);
 
-        limit1 = ch->peak_lock[chan] ? ins->fm.volC : 0;
-        limit2 = ch->peak_lock[chan] ? ins->fm.volM : 0;
+        limit1 = ch->peak_lock[chan] && ins ? ins->fm.volC : 0;
+        limit2 = ch->peak_lock[chan] && ins ? ins->fm.volM : 0;
     }
 
     switch (ch->volslide_type[chan]) {
@@ -2434,13 +2440,11 @@ void Ca2mv2Player::slide_volume_up(int chan, uint8_t slide)
             // Can use get_instr_data_by_ch()
             tINSTR_DATA *ins1 = get_instr_data(d.ins1);
             tINSTR_DATA *ins2 = get_instr_data(d.ins2);
-            assert(ins1);
-            assert(ins2);
 
-            uint8_t limit1_volC = ch->peak_lock[d.ch1] ? ins1->fm.volC : 0;
-            uint8_t limit1_volM = ch->peak_lock[d.ch1] ? ins1->fm.volM : 0;
-            uint8_t limit2_volC = ch->peak_lock[d.ch2] ? ins2->fm.volC : 0;
-            uint8_t limit2_volM = ch->peak_lock[d.ch2] ? ins2->fm.volM : 0;
+            uint8_t limit1_volC = ch->peak_lock[d.ch1] && ins1 ? ins1->fm.volC : 0;
+            uint8_t limit1_volM = ch->peak_lock[d.ch1] && ins1 ? ins1->fm.volM : 0;
+            uint8_t limit2_volC = ch->peak_lock[d.ch2] && ins2 ? ins2->fm.volC : 0;
+            uint8_t limit2_volM = ch->peak_lock[d.ch2] && ins2 ? ins2->fm.volM : 0;
 
             switch (d.conn) {
             // FM/FM
