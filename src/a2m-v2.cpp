@@ -26,7 +26,7 @@
  * REFERENCES:
  * https://github.com/ijsf/at2
  * http://www.adlibtracker.net/
- * 
+ *
  */
 
 #include "a2m-v2.h"
