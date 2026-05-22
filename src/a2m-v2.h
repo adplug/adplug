@@ -60,7 +60,7 @@ typedef enum {
 #define MIN_IRQ_FREQ        50
 #define MAX_IRQ_FREQ        1000
 
-#define ef_Arpeggio            0
+#define ef_Arpeggio            0x80 // ef_fix1 replacement to distinguish from "no effect" (was 0)
 #define ef_FSlideUp            1
 #define ef_FSlideDown          2
 #define ef_TonePortamento      3
@@ -70,44 +70,44 @@ typedef enum {
 #define ef_FSlideUpFine        7
 #define ef_FSlideDownFine      8
 #define ef_SetModulatorVol     9
-#define ef_VolSlide            10
-#define ef_PositionJump        11
-#define ef_SetInsVolume        12
-#define ef_PatternBreak        13
-#define ef_SetTempo            14
-#define ef_SetSpeed            15
-#define ef_TPortamVSlideFine   16
-#define ef_VibratoVSlideFine   17
-#define ef_SetCarrierVol       18
-#define ef_SetWaveform         19
-#define ef_VolSlideFine        20
-#define ef_RetrigNote          21
-#define ef_Tremolo             22
-#define ef_Tremor              23
-#define ef_ArpggVSlide         24
-#define ef_ArpggVSlideFine     25
-#define ef_MultiRetrigNote     26
-#define ef_FSlideUpVSlide      27
-#define ef_FSlideDownVSlide    28
-#define ef_FSlUpFineVSlide     29
-#define ef_FSlDownFineVSlide   30
-#define ef_FSlUpVSlF           31
-#define ef_FSlDownVSlF         32
-#define ef_FSlUpFineVSlF       33
-#define ef_FSlDownFineVSlF     34
-#define ef_Extended            35
-#define ef_Extended2           36
-#define ef_SetGlobalVolume     37
-#define ef_SwapArpeggio        38
-#define ef_SwapVibrato         39
-#define ef_ForceInsVolume      40
-#define ef_Extended3           41
-#define ef_ExtraFineArpeggio   42
-#define ef_ExtraFineVibrato    43
-#define ef_ExtraFineTremolo    44
-#define ef_SetCustomSpeedTab   45
-#define ef_GlobalFSlideUp      46
-#define ef_GlobalFSlideDown    47
+#define ef_VolSlide            10 // A
+#define ef_PositionJump        11 // B
+#define ef_SetInsVolume        12 // C
+#define ef_PatternBreak        13 // D
+#define ef_SetTempo            14 // E
+#define ef_SetSpeed            15 // F
+#define ef_TPortamVSlideFine   16 // G
+#define ef_VibratoVSlideFine   17 // H
+#define ef_SetCarrierVol       18 // I
+#define ef_SetWaveform         19 // J
+#define ef_VolSlideFine        20 // K
+#define ef_RetrigNote          21 // L
+#define ef_Tremolo             22 // M
+#define ef_Tremor              23 // N
+#define ef_ArpggVSlide         24 // O
+#define ef_ArpggVSlideFine     25 // P
+#define ef_MultiRetrigNote     26 // Q
+#define ef_FSlideUpVSlide      27 // R
+#define ef_FSlideDownVSlide    28 // S
+#define ef_FSlUpFineVSlide     29 // T
+#define ef_FSlDownFineVSlide   30 // U
+#define ef_FSlUpVSlF           31 // V
+#define ef_FSlDownVSlF         32 // W
+#define ef_FSlUpFineVSlF       33 // X
+#define ef_FSlDownFineVSlF     34 // Y
+#define ef_Extended            35 // Z
+#define ef_Extended2           36 // &
+#define ef_SetGlobalVolume     37 // %
+#define ef_SwapArpeggio        38 // !
+#define ef_SwapVibrato         39 // @
+#define ef_ForceInsVolume      40 // =
+#define ef_Extended3           41 // #
+#define ef_ExtraFineArpeggio   42 // $
+#define ef_ExtraFineVibrato    43 // ~
+#define ef_ExtraFineTremolo    44 // ^
+#define ef_SetCustomSpeedTab   45 // `
+#define ef_GlobalFSlideUp      46 // >
+#define ef_GlobalFSlideDown    47 // <
 #define ef_GlobalFreqSlideUpXF 48 // ef_fix2 replacement for >xx + ZFE
 #define ef_GlobalFreqSlideDnXF 49 // ef_fix2 replacement for <xx + ZFE
 
@@ -526,6 +526,7 @@ private:
     tPLAY_STATUS play_status = isStopped;
     uint8_t overall_volume = 63;
     uint8_t global_volume = 63;
+    uint8_t fade_out_volume = 63;
 
     const uint8_t def_vibtrem_speed_factor = 1;
     const uint8_t def_vibtrem_table_size = 32;
@@ -554,7 +555,7 @@ private:
     tCHDATA *ch;
 
     // Timer
-    int ticks = 0, tickD = 0, tickXF = 0;
+    int ticks = 0, tick0 = 0, tickD = 0, tickXF = 0;
     int ticklooper = 0, macro_ticklooper = 0;
 
     // Loader
@@ -573,10 +574,12 @@ private:
     int8_t get_instr_fine_tune(uint8_t ins);
     tINSTR_DATA *get_instr_data_by_ch(int chan);
     tINSTR_DATA *get_instr_data(uint8_t ins);
+    char get_fm_connect_by_chan(int chan);
     void fmdata_fill_from_raw(tFM_INST_DATA *fm, uint8_t *src);
     void raw_fill_from_fmdata(uint8_t *dst, tFM_INST_DATA *fm);
 
     // Helpers for macro tables
+    uint8_t fmreg_infer_length_from_cells(const uint8_t *src);
     void fmreg_table_allocate(size_t n, uint8_t *src);
     void disabled_fmregs_import(size_t n, bool dis_fmregs[255][28]);
     void arpvib_tables_free();
@@ -628,6 +631,10 @@ private:
     void output_note(uint8_t note, uint8_t ins, int chan, bool restart_macro, bool restart_adsr);
     bool no_loop(uint8_t current_chan, uint8_t current_line);
     void update_effect_table(int slot, int chan, int eff_group, uint8_t def, uint8_t val);
+    void process_effects_prepare(tADTRACK2_EVENT *event, int slot, int chan);
+    void play_line_arpgg_cleanup(const tADTRACK2_EVENT *event, int chan);
+    void play_line_apply_global_fslide_row(tADTRACK2_EVENT *event, int chan);
+    void play_line_tremor_row_reset(const tADTRACK2_EVENT *event, int chan);
     void process_effects(tADTRACK2_EVENT *event, int slot, int chan);
     void new_process_note(tADTRACK2_EVENT *event, int chan);
     void play_line();
@@ -649,6 +656,7 @@ private:
     void arpeggio(int slot, int chan);
     void vibrato(int slot, int chan);
     void tremolo(int slot, int chan);
+    uint16_t calc_vibrato_shift(uint8_t depth, uint8_t position);
     int chanvol(int chan);
     void update_effects_slot(int slot, int chan);
     void update_effects();

@@ -215,6 +215,16 @@ inline tINSTR_DATA *Ca2mv2Player::get_instr_data_by_ch(int chan)
     return instrument ? &instrument->instr_data : NULL;
 }
 
+inline char Ca2mv2Player::get_fm_connect_by_chan(int chan)
+{
+    tINSTR_DATA *instr = get_instr_data_by_ch(chan);
+    if (!instr) {
+        AdPlug_LogWrite("get_fm_connect_by_chan: instr not set for channel %d\n", chan);
+    }
+
+    return instr ? instr->fm.connect : 0;
+}
+
 inline tINSTR_DATA *Ca2mv2Player::get_instr_data(uint8_t ins)
 {
     tINSTR_DATA_EXT *instrument = get_instr(ins);
@@ -288,13 +298,48 @@ void Ca2mv2Player::raw_fill_from_fmdata(uint8_t *dst, tFM_INST_DATA *fm)
 
 // Helpers for macro tables =======================================================================
 
+/* If FMREG length byte is 0, infer span from macro cells when any cell has duration, freq_slide,
+ * or macro_flags. Also allocate fmreg when header bytes [1..5] are non-zero even if length stays 0
+ * — Pascal still binds arpeggio/vibrato indices from the FMREG header (top-2act instr 19: vibrato
+ * table 1 with empty macro cells). */
+uint8_t Ca2mv2Player::fmreg_infer_length_from_cells(const uint8_t *src)
+{
+    uint8_t inferred = 0;
+
+    for (unsigned int e = 0; e < 255; e++) {
+        const uint8_t *cell = &src[6 + e * tREGISTER_TABLE_DEF_V9_14_SIZE];
+        uint8_t dur = cell[14];
+        int16_t fs = (int16_t)(cell[11] | (cell[12] << 8));
+        uint8_t mf = (uint8_t)(cell[10] & 0xf0);
+
+        if (dur != 0 || fs != 0 || mf != 0)
+            inferred = (uint8_t)(e + 1);
+    }
+
+    return inferred;
+}
+
 void Ca2mv2Player::fmreg_table_allocate(size_t n, uint8_t *src)
 {
     n = editor_mode ? 255 : n;
 
     // Note: for editor_mode allocate max entries possible
     for (unsigned int i = 0; i < n; i++, src += tFMREG_TABLE_V9_14_SIZE) {
-        if (editor_mode || src[0] /* length */) {
+        uint8_t real_length = src[0];
+
+        if (real_length == 0) {
+            uint8_t inferred = fmreg_infer_length_from_cells(src);
+
+            if (inferred)
+                real_length = inferred;
+        }
+
+        /* Loop/keyoff/arp/vib header — Pascal keeps instr_macros[] row even when length=0 and no cells */
+        bool header_links = (src[1] | src[2] | src[3] | src[4] | src[5]) != 0;
+
+        /* Pascal: when src[0]==0, macro_poll_proc immediately terminates (fmreg_pos→finished_flag),
+         * never processing cell data. Only allocate if original length is non-zero or header links exist. */
+        if (editor_mode || src[0] || header_links) {
             tINSTR_DATA_EXT *instrument = get_instr(i + 1);
             assert(instrument);
             if (!instrument)
@@ -303,8 +348,8 @@ void Ca2mv2Player::fmreg_table_allocate(size_t n, uint8_t *src)
             instrument->fmreg = (tFMREG_TABLE *)calloc(1, sizeof(tFMREG_TABLE));
             assert(instrument->fmreg);
 
-            // Copy field by field
-            instrument->fmreg->length         = src[0]; // length
+            // Copy field by field — use src[0] (original), not real_length (inferred)
+            instrument->fmreg->length         = src[0];
             instrument->fmreg->loop_begin     = src[1]; // loop_begin
             instrument->fmreg->loop_length    = src[2]; // loop_length
             instrument->fmreg->keyoff_pos     = src[3]; // keyoff_pos
@@ -321,6 +366,8 @@ void Ca2mv2Player::fmreg_table_allocate(size_t n, uint8_t *src)
                 rtd->panning = rts[13];       // panning
                 rtd->duration = rts[14];      // duration
                 rtd->macro_flags = rts[10] & 0xf0;
+                if (rtd->macro_flags)
+                    AdPlug_LogWrite("instr(%02x).macro_flags: 0x%x\n", i + 1, rtd->macro_flags);
             }
         }
     }
@@ -359,7 +406,10 @@ void Ca2mv2Player::arpvib_tables_free()
     }
 
     delete[] vibrato_table;
+    vibrato_table = NULL;
     delete[] arpeggio_table;
+    arpeggio_table = NULL;
+    arpvib_count = 0;
 }
 
 void Ca2mv2Player::arpvib_tables_allocate(size_t n, uint8_t *src)
@@ -467,10 +517,9 @@ void Ca2mv2Player::patterns_allocate(int patterns, int channels, int rows)
 
 inline bool note_in_range(uint8_t note)
 {
-    if (note & keyoff_flag) {
-        AdPlug_LogWrite("note_in_range with keyoff=1\n");
-    }
-    return ((note & ~keyoff_flag) > 0) && ((note & ~keyoff_flag) < 12 * 8 + 1);
+    uint8_t n = note & (uint8_t)~keyoff_flag;
+    /* Pascal output_note: NOT (note in [1..12*8+1]) uses the inclusive upper bound 97 (a2player.pas). */
+    return n >= 1 && n <= (uint8_t)(12 * 8 + 1);
 }
 
 inline uint16_t Ca2mv2Player::regoffs_n(int chan)
@@ -522,6 +571,9 @@ inline uint16_t Ca2mv2Player::regoffs_c(int chan)
 #define FreqEnd     0x2ae
 #define FreqRange   (FreqEnd - FreqStart)
 
+/* Round a/b to nearest integer (matching Pascal's Round(a/b) for positive ints) */
+#define ROUND_DIV(a, b) (((a) + (b) / 2) / (b))
+
 /* PLAYER */
 void Ca2mv2Player::opl2out(uint16_t reg, uint16_t data)
 {
@@ -553,8 +605,8 @@ void Ca2mv2Player::opl3exp(uint16_t data)
 
 static uint16_t nFreq(uint8_t note)
 {
-    static uint16_t Fnum[13] = {0x156,0x16b,0x181,0x198,0x1b0,0x1ca,0x1e5,
-                0x202,0x220,0x241,0x263,0x287,0x2ae};
+    static uint16_t Fnum[12] = {0x157,0x16b,0x181,0x198,0x1b0,0x1ca,0x1e5,
+                0x202,0x220,0x241,0x263,0x287};
 
     if (note >= 12 * 8)
         return (7 << 10) | FreqEnd;
@@ -565,9 +617,9 @@ static uint16_t nFreq(uint8_t note)
 static uint16_t calc_freq_shift_up(uint16_t freq, uint16_t shift)
 {
     uint16_t oc = (freq >> 10) & 7;
-    int16_t fr = (freq & 0x3ff) + shift;
+    uint16_t fr = (freq & 0x3ff) + shift;
 
-    if (fr > FreqEnd) {
+    if (fr >= FreqEnd) {
         if (oc == 7) {
             fr = FreqEnd;
         } else {
@@ -576,15 +628,15 @@ static uint16_t calc_freq_shift_up(uint16_t freq, uint16_t shift)
         }
     }
 
-    return (uint16_t)((oc << 10) | fr);
+    return (uint16_t)((oc << 10) + fr);
 }
 
 static uint16_t calc_freq_shift_down(uint16_t freq, uint16_t shift)
 {
     uint16_t oc = (freq >> 10) & 7;
-    int16_t fr = (freq & 0x3ff) - shift;
+    uint16_t fr = (freq & 0x3ff) - shift;
 
-    if (fr < FreqStart) {
+    if (fr <= FreqStart) {
         if (oc == 0) {
             fr = FreqStart;
         } else {
@@ -593,19 +645,18 @@ static uint16_t calc_freq_shift_down(uint16_t freq, uint16_t shift)
         }
     }
 
-    return (uint16_t)((oc << 10) | fr);
+    return (uint16_t)((oc << 10) + fr);
 }
 
 /* == calc_vibtrem_shift() in AT2 */
-static uint16_t calc_vibrato_shift(uint8_t depth, uint8_t position)
+uint16_t Ca2mv2Player::calc_vibrato_shift(uint8_t depth, uint8_t position)
 {
-    uint8_t vibr[32] = {
-        0,24,49,74,97,120,141,161,180,197,212,224,235,244,250,253,255,
-        253,250,244,235,224,212,197,180,161,141,120,97,74,49,24
-    };
+    /* depth: 0..F, max result: FF*F=EF1 */
+    uint16_t X = (uint16_t)depth * vibtrem_table[position & (vibtrem_table_size - 1)];
+    uint16_t rotated = (X << 1) | (X >> 15);
+    uint16_t result  = ((rotated >> 8) & 0xFF) | ((rotated & 1) << 8);
 
-    /* ATTENTION: wtf this calculation should be ? */
-    return (vibr[position & 0x1f] * depth) >> 6;
+    return result;
 }
 
 void Ca2mv2Player::change_freq(int chan, uint16_t freq)
@@ -645,6 +696,9 @@ bool Ca2mv2Player::is_chan_adsr_data_empty(int chan)
 bool Ca2mv2Player::is_ins_adsr_data_empty(int ins)
 {
     tINSTR_DATA *i = get_instr_data(ins);
+    if (!i)
+        return true;
+
     uint8_t data[11];
     raw_fill_from_fmdata(data, &i->fm);
 
@@ -669,6 +723,11 @@ static bool is_data_empty(char *data, unsigned int size)
 static inline uint16_t max(uint16_t value, uint16_t maximum)
 {
     return (value > maximum ? maximum : value);
+}
+
+static inline uint16_t min(uint16_t value, uint16_t minimum)
+{
+    return (value < minimum ? minimum : value);
 }
 
 void Ca2mv2Player::change_frequency(int chan, uint16_t freq)
@@ -770,11 +829,17 @@ void Ca2mv2Player::release_sustaining_sound(int chan)
     opl3out(0x40 + m, 63);
     opl3out(0x40 + c, 63);
 
-    // clear adsrw_mod and adsrw_car
+    // clear adsrw_mod and adsrw_car (match Pascal's FillChar zeroing all fields)
     ch->fmpar_table[chan].decM = 0;
     ch->fmpar_table[chan].attckM = 0;
+    ch->fmpar_table[chan].relM = 0;
+    ch->fmpar_table[chan].sustnM = 0;
+    ch->fmpar_table[chan].wformM = 0;
     ch->fmpar_table[chan].decC = 0;
     ch->fmpar_table[chan].attckC = 0;
+    ch->fmpar_table[chan].relC = 0;
+    ch->fmpar_table[chan].sustnC = 0;
+    ch->fmpar_table[chan].wformC = 0;
 
     key_on(chan);
     opl3out(0x60 + m, BYTE_NULL);
@@ -790,7 +855,7 @@ void Ca2mv2Player::release_sustaining_sound(int chan)
 // inverted volume here
 static uint8_t scale_volume(uint8_t volume, uint8_t scale_factor)
 {
-    return 63 - ((63 - volume) * (63 - scale_factor) / 63);
+    return 63 - (((63 - volume) * (63 - scale_factor) + 31) / 63);
 }
 
 // former _4op_data_flag()
@@ -818,7 +883,10 @@ t4OP_DATA Ca2mv2Player::get_4op_data(uint8_t chan)
     if (d.ins2 == 0) d.ins2 = ch->voice_table[d.ch2];
 
     if (d.ins1 && d.ins2) {
-        d.conn = (get_instr_data(d.ins1)->fm.connect << 1) | get_instr_data(d.ins2)->fm.connect;
+        tINSTR_DATA *id1 = get_instr_data(d.ins1);
+        tINSTR_DATA *id2 = get_instr_data(d.ins2);
+        if (id1 && id2)
+            d.conn = (id1->fm.connect << 1) | id2->fm.connect;
     }
 
     return d;
@@ -831,31 +899,14 @@ bool Ca2mv2Player::_4op_vol_valid_chan(int chan)
     return d.mode && ch->vol4op_lock[chan] && d.ins1 && d.ins2;
 }
 
-// TODO here: fade_out_volume
 // inverted volume here
 void Ca2mv2Player::set_ins_volume(uint8_t modulator, uint8_t carrier, uint8_t chan)
 {
-    if (chan >= 20) {
-        AdPlug_LogWrite("set_ins_volume: channel out of bounds\n");
-        return;
-    }
-
     tINSTR_DATA *instr = get_instr_data_by_ch(chan);
-    if (!instr) {
-        AdPlug_LogWrite("set_ins_volume: instr not set for channel %d\n", chan);
-        return;
-    }
 
-    // ** OPL3 emulation workaround **
-    // force muted instrument volume with missing channel ADSR data
-    // when there is additionally no FM-reg macro defined for this instrument
-    tFMREG_TABLE *fmreg = get_fmreg_table(ch->voice_table[chan]);
-    uint8_t fmreg_length = fmreg ? fmreg->length : 0;
-
-    if (is_chan_adsr_data_empty(chan) && !fmreg_length) {
-            modulator = 63;
-            carrier = 63;
-    }
+    uint8_t volM = instr ? instr->fm.volM : 0;
+    uint8_t volC = instr ? instr->fm.volC : 0;
+    uint8_t conn = instr ? instr->fm.connect : 0;
 
     uint16_t m = regoffs_m(chan);
     uint16_t c = regoffs_c(chan);
@@ -864,16 +915,16 @@ void Ca2mv2Player::set_ins_volume(uint8_t modulator, uint8_t carrier, uint8_t ch
     // modulator_vol/carrier_vol have scaled but without overall_volume
     if (modulator != BYTE_NULL) {
         uint8_t regm;
-        bool is_perc_chan = instr->fm.connect ||
+        bool is_perc_chan = conn ||
                             (percussion_mode && chan >= 16); // in [17..20]
 
         ch->fmpar_table[chan].volM = modulator;
 
         if (is_perc_chan) { // in [17..20]
             if (volume_scaling)
-                modulator = scale_volume(instr->fm.volM, modulator);
+                modulator = scale_volume(volM, modulator);
 
-            modulator = scale_volume(modulator, 63 - global_volume);
+            modulator = scale_volume(modulator, scale_volume(63 - global_volume, 63 - fade_out_volume));
             regm = scale_volume(modulator, 63 - overall_volume) + (ch->fmpar_table[chan].kslM << 6);
         } else {
             regm = modulator + (ch->fmpar_table[chan].kslM << 6);
@@ -889,9 +940,9 @@ void Ca2mv2Player::set_ins_volume(uint8_t modulator, uint8_t carrier, uint8_t ch
         ch->fmpar_table[chan].volC = carrier;
 
         if (volume_scaling)
-            carrier = scale_volume(instr->fm.volC, carrier);
+            carrier = scale_volume(volC, carrier);
 
-        carrier = scale_volume(carrier, 63 - global_volume);
+        carrier = scale_volume(carrier, scale_volume(63 - global_volume, 63 - fade_out_volume));
         regc = scale_volume(carrier, 63 - overall_volume) + (ch->fmpar_table[chan].kslC << 6);
 
         opl3out(0x40 + c, regc);
@@ -899,24 +950,13 @@ void Ca2mv2Player::set_ins_volume(uint8_t modulator, uint8_t carrier, uint8_t ch
     }
 }
 
+// Used by set_ins_volume_4op() only
 void Ca2mv2Player::set_volume(uint8_t modulator, uint8_t carrier, uint8_t chan)
 {
     tINSTR_DATA *instr = get_instr_data_by_ch(chan);
-    if (!instr) {
-        AdPlug_LogWrite("set_volume: instr not set for channel %d\n", chan);
-        return;
-    }
 
-    // ** OPL3 emulation workaround **
-    // force muted instrument volume with missing channel ADSR data
-    // when there is additionally no FM-reg macro defined for this instrument
-    tFMREG_TABLE *fmreg = get_fmreg_table(ch->voice_table[chan]);
-    uint8_t fmreg_length = fmreg ? fmreg->length : 0;
-
-    if (is_chan_adsr_data_empty(chan) && !fmreg_length) {
-            modulator = 63;
-            carrier = 63;
-    }
+    uint8_t volM = instr ? instr->fm.volM : 0;
+    uint8_t volC = instr ? instr->fm.volC : 0;
 
     uint16_t m = regoffs_m(chan);
     uint16_t c = regoffs_c(chan);
@@ -925,8 +965,8 @@ void Ca2mv2Player::set_volume(uint8_t modulator, uint8_t carrier, uint8_t chan)
         uint8_t regm;
         ch->fmpar_table[chan].volM = modulator;
 
-        modulator = scale_volume(instr->fm.volM, modulator);
-        modulator = scale_volume(modulator, /*scale_volume(*/63 - global_volume/*, 63 - fade_out_volume)*/);
+        modulator = scale_volume(volM, modulator);
+        modulator = scale_volume(modulator, scale_volume(63 - global_volume, 63 - fade_out_volume));
 
         regm = scale_volume(modulator, 63 - overall_volume) + (ch->fmpar_table[chan].kslM << 6);
 
@@ -938,8 +978,8 @@ void Ca2mv2Player::set_volume(uint8_t modulator, uint8_t carrier, uint8_t chan)
         uint8_t regc;
         ch->fmpar_table[chan].volC = carrier;
 
-        carrier = scale_volume(instr->fm.volC, carrier);
-        carrier = scale_volume(carrier, /*scale_volume(*/63 - global_volume/*, 63 - fade_out_volume)*/);
+        carrier = scale_volume(volC, carrier);
+        carrier = scale_volume(carrier, scale_volume(63 - global_volume, 63 - fade_out_volume));
 
         regc = scale_volume(carrier, 63 - overall_volume) + (ch->fmpar_table[chan].kslC << 6);
 
@@ -985,7 +1025,7 @@ void Ca2mv2Player::reset_ins_volume(int chan)
 {
     tINSTR_DATA *instr = get_instr_data_by_ch(chan);
     if (!instr) {
-        AdPlug_LogWrite("reset_ins_volume: instr not set for channel %d\n", chan);
+        set_ins_volume(0, 0, chan);
         return;
     }
 
@@ -1007,20 +1047,16 @@ void Ca2mv2Player::set_global_volume()
         if (_4op_vol_valid_chan(chan)) {
             set_ins_volume_4op(BYTE_NULL, chan);
         } else if (ch->carrier_vol[chan] || ch->modulator_vol[chan]) {
-            tINSTR_DATA *instr = get_instr_data_by_ch(chan);
-            if (!instr) {
-                AdPlug_LogWrite("set_global_volume: instr not set for channel %d\n", chan);
-                return;
-            }
+            char instr_fm_connect = get_fm_connect_by_chan(chan);
 
-            set_ins_volume(instr->fm.connect ? ch->fmpar_table[chan].volM : BYTE_NULL, ch->fmpar_table[chan].volC, chan);
+            set_ins_volume(instr_fm_connect ? ch->fmpar_table[chan].volM : BYTE_NULL, ch->fmpar_table[chan].volC, chan);
         }
     }
 }
 
 void Ca2mv2Player::set_overall_volume(unsigned char level)
 {
-    overall_volume = max(level, 63);
+    overall_volume = min(level, 63);
     set_global_volume();
 }
 
@@ -1216,20 +1252,16 @@ void Ca2mv2Player::output_note(uint8_t note, uint8_t ins, int chan, bool restart
     if (ch->ftune_table[chan] == -127)
         ch->ftune_table[chan] = 0;
 
-    freq = freq + ch->ftune_table[chan];
+    freq = (uint16_t)((int32_t)freq + (int32_t)ch->ftune_table[chan]);
     change_frequency(chan, freq);
 
     if (note) {
         ch->event_table[chan].note = note;
 
-        if (is_4op_chan(chan) && is_4op_chan_lo(chan)) {
+        /* Pascal (a2player.pas ~1163–1165): If is_4op_chan(chan) then
+         * event_table[PRED(chan)].note := note — applies to hi and lo tracks. */
+        if (is_4op_chan(chan) && chan >= 1)
             ch->event_table[chan - 1].note = note;
-        }
-
-        // Do we need that?
-        /*if (is_4op_chan(chan) && is_4op_chan_hi(chan)) {
-            ch->event_table[chan + 1].note = note;
-        }*/
 
         if (restart_macro) {
             // Check if no ZFF - force no restart
@@ -1301,45 +1333,42 @@ void Ca2mv2Player::update_effect_table(int slot, int chan, int eff_group, uint8_
     } else if (get_effect_group(ch->last_effect[slot][chan].def) == eff_group && lval) {
         ch->effect_table[slot][chan].val = lval;
     } else {
-        // x00 without any previous compatible command, should never happen
-        AdPlug_LogWrite("x00 without any previous compatible command\n");
-        ch->effect_table[slot][chan].def = 0;
+        // x00 without any previous compatible command — Pascal: effect_table := effect_def (val=0, def kept)
         ch->effect_table[slot][chan].val = 0;
     }
 }
 
-void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
+/* a2player.pas play_line first loop: single else-if between arpgg_table and arpgg_table2 — not two
+ * independent cleanups, and cleanup runs before Case effect_def (FineTune etc.) on either column. */
+void Ca2mv2Player::play_line_arpgg_cleanup(const tADTRACK2_EVENT *event, int chan)
 {
-    uint8_t def = event->eff[slot].def;
-    uint8_t val = event->eff[slot].val;
+    for (int slot = 0; slot < 2; slot++) {
+        uint8_t def = event->eff[slot].def;
+        uint8_t val = event->eff[slot].val;
 
-    // Note: this might be dropped because effect_table stores effects
-    // that might be continued with x00
-    ch->effect_table[slot][chan].def = def;
-    ch->effect_table[slot][chan].val = val;
+        bool arp = (((def == ef_Arpeggio) && (val != 0)) || (def == ef_ExtraFineArpeggio));
 
-    if ((def != ef_Vibrato) &&
-        (def != ef_ExtraFineVibrato) &&
-        (def != ef_VibratoVolSlide) &&
-        (def != ef_VibratoVSlideFine))
-        memset(&ch->vibr_table[slot][chan], 0, sizeof(ch->vibr_table[slot][chan]));
-
-    if ((def != ef_RetrigNote) &&
-        (def != ef_MultiRetrigNote))
-        memset(&ch->retrig_table[slot][chan], 0, sizeof(ch->retrig_table[slot][chan]));
-
-    if ((def != ef_Tremolo) &&
-        (def != ef_ExtraFineTremolo))
-        memset(&ch->trem_table[slot][chan], 0, sizeof(ch->trem_table[slot][chan]));
-
-    if (!(((def == ef_Arpeggio) && (val != 0)) || (def == ef_ExtraFineArpeggio)) &&
-        (ch->arpgg_table[slot][chan].note != 0) && (ch->arpgg_table[slot][chan].state != 1)) {
-        ch->arpgg_table[slot][chan].state = 1;
-        change_frequency(chan, nFreq(ch->arpgg_table[slot][chan].note - 1) +
-            get_instr_fine_tune(ch->event_table[chan].instr_def));
+        if (!arp &&
+            ch->arpgg_table[slot][chan].note != 0 &&
+            ch->arpgg_table[slot][chan].state != 1) {
+            ch->arpgg_table[slot][chan].state = 1;
+            change_frequency(chan, nFreq(ch->arpgg_table[slot][chan].note - 1) +
+                get_instr_fine_tune(ch->event_table[chan].instr_def));
+        }
     }
+}
 
-    if ((def == ef_GlobalFSlideUp) || (def == ef_GlobalFSlideDown)) {
+/* a2player.pas play_line first loop (~1364–1442): GlobalFSlide for column 1 then 2,
+ * per channel, before the cross-channel effect_def / effect_def2 Case passes. */
+void Ca2mv2Player::play_line_apply_global_fslide_row(tADTRACK2_EVENT *event, int chan)
+{
+    for (int slot = 0; slot < 2; slot++) {
+        uint8_t def = event->eff[slot].def;
+        uint8_t val = event->eff[slot].val;
+
+        if ((def != ef_GlobalFSlideUp) && (def != ef_GlobalFSlideDown))
+            continue;
+
         if ((event->eff[slot ^ 1].def == ef_Extended) &&
             (event->eff[slot ^ 1].val == ef_ex_ExtendedCmd * 16 + ef_ex_cmd_ForceBpmSld)) {
 
@@ -1363,7 +1392,7 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
                     eff = ef_GlobalFreqSlideUpXF;
                 }
 
-                 // >xx + ZFD
+                // >xx + ZFD
                 if ((event->eff[slot ^ 1].def == ef_Extended) &&
                     (event->eff[slot ^ 1].val == ef_ex_ExtendedCmd2 * 16 + ef_ex_cmd2_FVib_FGFS)) {
                     eff = ef_FSlideUpFine;
@@ -1375,13 +1404,13 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
             case ef_GlobalFSlideDown:
                 eff = ef_FSlideDown;
 
-                 // <xx + ZFE
+                // <xx + ZFE
                 if ((event->eff[slot ^ 1].def == ef_Extended) &&
                     (event->eff[slot ^ 1].val == ef_ex_ExtendedCmd2 * 16 + ef_ex_cmd2_FTrm_XFGFS)) {
                     eff = ef_GlobalFreqSlideDnXF;
                 }
 
-                 // <xx + ZFD
+                // <xx + ZFD
                 if ((event->eff[slot ^ 1].def == ef_Extended) &&
                     (event->eff[slot ^ 1].val == ef_ex_ExtendedCmd2 * 16 + ef_ex_cmd2_FVib_FGFS)) {
                     eff = ef_FSlideDownFine;
@@ -1392,7 +1421,6 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
                 break;
             }
 
-            // shouldn't it be int c = 0 ??
             for (int c = chan; c < songinfo->nm_tracks; c++) {
                 ch->fslide_table[slot][c] = val;
                 ch->glfsld_table[slot][c].def = ch->effect_table[slot][chan].def;
@@ -1400,20 +1428,54 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
             }
         }
     }
+}
 
-    if (ch->tremor_table[slot][chan].pos && (def != ef_Tremor)) {
-        ch->tremor_table[slot][chan].pos = 0;
-        set_ins_volume(ch->tremor_table[slot][chan].volM, ch->tremor_table[slot][chan].volC, chan);
+/* a2player.pas ~1452–1466: once per row after init loop, from pattern columns. */
+void Ca2mv2Player::play_line_tremor_row_reset(const tADTRACK2_EVENT *event, int chan)
+{
+    for (int slot = 0; slot < 2; slot++) {
+        if (ch->tremor_table[slot][chan].pos && (event->eff[slot].def != ef_Tremor)) {
+            ch->tremor_table[slot][chan].pos = 0;
+            set_ins_volume(ch->tremor_table[slot][chan].volM, ch->tremor_table[slot][chan].volC, chan);
+        }
     }
+}
+
+void Ca2mv2Player::process_effects_prepare(tADTRACK2_EVENT *event, int slot, int chan)
+{
+    uint8_t def = event->eff[slot].def;
+
+    if ((def != ef_Vibrato) &&
+        (def != ef_ExtraFineVibrato) &&
+        (def != ef_VibratoVolSlide) &&
+        (def != ef_VibratoVSlideFine))
+        memset(&ch->vibr_table[slot][chan], 0, sizeof(ch->vibr_table[slot][chan]));
+
+    if ((def != ef_RetrigNote) &&
+        (def != ef_MultiRetrigNote))
+        memset(&ch->retrig_table[slot][chan], 0, sizeof(ch->retrig_table[slot][chan]));
+
+    if ((def != ef_Tremolo) &&
+        (def != ef_ExtraFineTremolo))
+        memset(&ch->trem_table[slot][chan], 0, sizeof(ch->trem_table[slot][chan]));
+}
+
+void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
+{
+    uint8_t def = event->eff[slot].def;
+    uint8_t val = event->eff[slot].val;
 
     switch (def) {
     case ef_Arpeggio:
-        if (!val)
-            break;
-
     case ef_ExtraFineArpeggio:
     case ef_ArpggVSlide:
     case ef_ArpggVSlideFine:
+        /* Pascal (a2player.pas ~1498-1499): skip entire arpeggio block when
+         * effect_def == ef_Arpeggio AND effect == 0. This preserves the
+         * previous arpeggio state/add1/add2 instead of resetting them. */
+        if ((def == ef_Arpeggio) && (val == 0))
+            break;
+
         switch (def) {
         case ef_Arpeggio:
             ch->effect_table[slot][chan].def = ef_Arpeggio;
@@ -1430,18 +1492,33 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
         }
 
         {
-            bool reset_state = note_in_range(event->note & ~keyoff_flag);
-            uint8_t new_note = note_in_range(event->note & ~keyoff_flag)
-                ? event->note & ~keyoff_flag
+            uint8_t raw_note = event->note & ~keyoff_flag;
+            bool has_new_note = note_in_range(raw_note);
+            uint8_t resolved_note = has_new_note
+                ? raw_note
                 : (note_in_range(ch->event_table[chan].note & ~keyoff_flag)
                     ? ch->event_table[chan].note & ~keyoff_flag
                     : 0);
 
-            if (new_note) {
-                if (reset_state)
-                    ch->arpgg_table[slot][chan].state = 0;
+            /* Pascal (a2player.pas ~1527-1529): check last_effect (saved at
+             * start of play_line before effect_table was cleared) to decide
+             * whether to reset arpeggio state on carry-over rows. */
+            uint8_t prev_def = ch->last_effect[slot][chan].def;
+            bool prev_was_arp = (prev_def == ef_Arpeggio) ||
+                                (prev_def == ef_ExtraFineArpeggio) ||
+                                (prev_def == ef_ArpggVSlide) ||
+                                (prev_def == ef_ArpggVSlideFine);
 
-                ch->arpgg_table[slot][chan].note = new_note;
+            if (resolved_note) {
+                if (has_new_note) {
+                    /* Pascal: event[chan].note is in range — always reset */
+                    ch->arpgg_table[slot][chan].state = 0;
+                } else if (!prev_was_arp) {
+                    /* Pascal: carry-over from event_table — check last_effect */
+                    ch->arpgg_table[slot][chan].state = 0;
+                }
+
+                ch->arpgg_table[slot][chan].note = resolved_note;
                 if ((def == ef_Arpeggio) || (def == ef_ExtraFineArpeggio)) {
                     ch->arpgg_table[slot][chan].add1 = (val >> 4) & 0x0f;
                     ch->arpgg_table[slot][chan].add2 = val & 0x0f;
@@ -1474,15 +1551,34 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
         break;
 
     case ef_TonePortamento:
-        update_effect_table(slot, chan, EFGR_TONEPORTAMENTO, def, val);
+        /* Pascal (a2player.pas ~1577-1600, ~2155-2176): TonePortamento is activated
+         * only when the row carries a plain note (1..12*8+1, no keyoff bit) OR when
+         * last_effect's type already matches ef_TonePortamento (carry-over).
+         * A key-off note (note | 0x80) is NOT in [1..97], so Pascal falls through
+         * to the carry-over branch — effect_table/speed only set if prior porta existed. */
+        {
+            uint8_t has_note = event->note >= 1 && event->note  <= 12*8+1;
+            bool has_carry = ch->last_effect[slot][chan].def == ef_TonePortamento;
 
-        if (note_in_range(event->note)) {
-            ch->porta_table[slot][chan].speed = val;
-            if (!(event->note & keyoff_flag))
-                ch->porta_table[slot][chan].freq = nFreq(event->note - 1) +
-                    get_instr_fine_tune(ch->event_table[chan].instr_def);
-        } else {
-            ch->porta_table[slot][chan].speed = ch->effect_table[slot][chan].val;
+            if (has_note || has_carry) {
+                if (event->eff[slot].val != 0) {
+                    ch->effect_table[slot][chan].def = ef_TonePortamento;
+                    ch->effect_table[slot][chan].val = val;
+                } else if (has_carry && ch->last_effect[slot][chan].val != 0) {
+                    ch->effect_table[slot][chan].def = ef_TonePortamento;
+                    ch->effect_table[slot][chan].val = ch->last_effect[slot][chan].val;
+                } else {
+                    ch->effect_table[slot][chan].def = ef_TonePortamento;
+                    ch->effect_table[slot][chan].val = 0;
+                }
+
+                ch->porta_table[slot][chan].speed = ch->effect_table[slot][chan].val;
+                if (has_note) {
+                    ch->porta_table[slot][chan].freq =
+                        nFreq((event->note - 1)) +
+                        get_instr_fine_tune(ch->event_table[chan].instr_def);
+                }
+            }
         }
         break;
 
@@ -1501,8 +1597,12 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
             ch->vibr_table[slot][chan].fine = true;
         }
 
-        ch->vibr_table[slot][chan].speed = val / 16;
-        ch->vibr_table[slot][chan].depth = val % 16;
+        /* Pascal: vibr_table.speed := HI(effect_table) DIV 16 (after merge / x00 carry). */
+        {
+            uint8_t m = ch->effect_table[slot][chan].val;
+            ch->vibr_table[slot][chan].speed = m / 16;
+            ch->vibr_table[slot][chan].depth = m % 16;
+        }
         break;
 
     case ef_Tremolo:
@@ -1514,8 +1614,11 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
             ch->trem_table[slot][chan].fine = true;
         }
 
-        ch->trem_table[slot][chan].speed = val / 16;
-        ch->trem_table[slot][chan].depth = val % 16;
+        {
+            uint8_t m = ch->effect_table[slot][chan].val;
+            ch->trem_table[slot][chan].speed = m / 16;
+            ch->trem_table[slot][chan].depth = m % 16;
+        }
         break;
 
     case ef_VibratoVolSlide:
@@ -1529,47 +1632,53 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
 
     case ef_SetCarrierVol:
         set_ins_volume(BYTE_NULL, 63 - val, chan);
+        /* Pascal (a2player.pas ~1661): one-shot — does NOT set effect_table.
+         * Clear def so last_effect captures {def=0, val=preserved}. */
+        ch->effect_table[slot][chan].def = 0;
         break;
 
     case ef_SetModulatorVol:
         set_ins_volume(63 - val, BYTE_NULL, chan);
+        ch->effect_table[slot][chan].def = 0;
         break;
 
     case ef_SetInsVolume:
         {
             tINSTR_DATA *instr = get_instr_data_by_ch(chan);
-            if (!instr) {
-                AdPlug_LogWrite("ef_SetInsVolume: instr not set for channel %d\n", chan);
+            if (!instr || is_data_empty((char *)instr, sizeof(tINSTR_DATA))) {
+                ch->effect_table[slot][chan].def = 0;
                 break;
             }
 
             if (_4op_vol_valid_chan(chan)) {
                 set_ins_volume_4op(63 - val, chan);
-            } else if (percussion_mode && ((chan >= 16) && (chan <= 19))) { //  in [17..20]
+            } else if (percussion_mode && ((chan >= 16) && (chan <= 19))) {
                 set_ins_volume(63 - val, BYTE_NULL, chan);
             } else if (instr->fm.connect == 0) {
                 set_ins_volume(BYTE_NULL, 63 - val, chan);
             } else {
                 set_ins_volume(63 - val, 63 - val, chan);
             }
+            ch->effect_table[slot][chan].def = 0;
             break;
     }
 
     case ef_ForceInsVolume:
         {
             tINSTR_DATA *instr = get_instr_data_by_ch(chan);
-            if (!instr) {
-                AdPlug_LogWrite("ef_ForceInsVolume: instr not set for channel %d\n", chan);
+            if (!instr || is_data_empty((char *)instr, sizeof(tINSTR_DATA))) {
+                ch->effect_table[slot][chan].def = 0;
                 break;
             }
 
-            if (percussion_mode && ((chan >= 16) && (chan <= 19))) { //  in [17..20]
+            if (percussion_mode && ((chan >= 16) && (chan <= 19))) {
                 set_ins_volume(63 - val, BYTE_NULL, chan);
             } else if (instr->fm.connect == 0) {
                 set_ins_volume(scale_volume(instr->fm.volM, 63 - val), 63 - val, chan);
             } else {
                 set_ins_volume(63 - val, 63 - val, chan);
             }
+            ch->effect_table[slot][chan].def = 0;
             break;
         }
 
@@ -1578,34 +1687,38 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
             pattern_break = true;
             next_line = pattern_break_flag + chan;
         }
+        ch->effect_table[slot][chan].def = 0;
         break;
 
     case ef_PatternBreak:
         if (no_loop(chan, current_line)) {
             pattern_break = true;
-            // seek_pattern_break = true; // TODO
             next_line = max(val, songinfo->patt_len - 1);
         }
+        ch->effect_table[slot][chan].def = 0;
         break;
 
     case ef_SetSpeed:
         speed = val;
+        ch->effect_table[slot][chan].def = 0;
         break;
 
     case ef_SetTempo:
         update_timer(val);
+        ch->effect_table[slot][chan].def = 0;
         break;
 
     case ef_SetWaveform:
-        if (val / 16 <= 7) { // in [0..7]
+        if (val / 16 <= 7) {
             ch->fmpar_table[chan].wformC = val / 16;
             update_carrier_adsrw(chan);
         }
 
-        if (val % 16 <= 7) { // in [0..7]
+        if (val % 16 <= 7) {
             ch->fmpar_table[chan].wformM = val % 16;
             update_modulator_adsrw(chan);
         }
+        ch->effect_table[slot][chan].def = 0;
         break;
 
     case ef_VolSlide:
@@ -1619,8 +1732,18 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
         break;
 
     case ef_RetrigNote:
-    case ef_MultiRetrigNote:
         if (val) {
+            if (get_effect_group(ch->last_effect[slot][chan].def) != EFGR_RETRIGNOTE) {
+                ch->retrig_table[slot][chan] = 1;
+            }
+
+            ch->effect_table[slot][chan].def = def;
+            ch->effect_table[slot][chan].val = val;
+        }
+        break;
+
+    case ef_MultiRetrigNote:
+        if (val / 16) {
             if (get_effect_group(ch->last_effect[slot][chan].def) != EFGR_RETRIGNOTE) {
                 ch->retrig_table[slot][chan] = 1;
             }
@@ -1633,6 +1756,7 @@ void Ca2mv2Player::process_effects(tADTRACK2_EVENT *event, int slot, int chan)
     case ef_SetGlobalVolume:
         global_volume = val;
         set_global_volume();
+        ch->effect_table[slot][chan].def = 0;
         break;
 
     case ef_Tremor:
@@ -1976,41 +2100,65 @@ void Ca2mv2Player::new_process_note(tADTRACK2_EVENT *event, int chan)
 {
     bool tporta_flag = is_eff_porta(event);
     bool notedelay_flag = is_eff_notedelay(event);
+    bool defer_note_row = tporta_flag || notedelay_flag;
 
-    if (event->note == 0)
-        return;
-
-    // This might delay even note-off
-    // Or put this after key_off?
-    if (notedelay_flag) {
-        ch->event_table[chan].note = event->note;
+    if (event->note == 0) {
+        if (ch->ftune_table[chan])
+            output_note(0, ch->voice_table[chan], chan, true, true);
         return;
     }
 
+    /*
+     * Pascal play_line (a2player.pas): key_off runs when the row carries key-off
+     * BEFORE the branches that defer notes (tone porta / note delay). Otherwise a
+     * cell like Extended2+NoteDelay + key-off never calls key_off and OPL KEY-ON
+     * stays set (fank5 ~IRQ 47232, secondary shadow_regs[1][0xb0]).
+     */
     if (event->note & keyoff_flag) {
         key_off(chan);
         return;
     }
 
-    if (!tporta_flag) {
+    /* Same-row immediate output (a2player.pas ~2656–2667): both slots must lack porta & notedelay in LO. */
+    if (!defer_note_row) {
         output_note(event->note, ch->voice_table[chan], chan, true, no_swap_and_restart(event));
         return;
     }
 
-    // if previous note was off'ed or restart_adsr enabled for channel
-    // and we are doing portamento to a new note
-    if (ch->event_table[chan].note & keyoff_flag || ch->portaFK_table[chan]) {
-        output_note(ch->event_table[chan].note & ~keyoff_flag, ch->voice_table[chan], chan, false, true);
-    } else {
-        ch->event_table[chan].note = event->note;
+    /* a2player.pas: old note had keyoff — retrigger from stored pitch */
+    if ((event->note != 0) && tporta_flag && (ch->event_table[chan].note & keyoff_flag)) {
+        output_note(ch->event_table[chan].note & ~keyoff_flag,
+                    ch->voice_table[chan], chan, false, true);
+        return;
+    }
+
+    if (event->note != 0) {
+        if (ch->portaFK_table[chan] && tporta_flag) {
+            output_note(event->note, event->instr_def, chan, false, true);
+        } else {
+            ch->event_table[chan].note = event->note;
+        }
     }
 }
 
 void Ca2mv2Player::play_line()
 {
-    tADTRACK2_EVENT _event, *event = &_event;
+    /* Align with a2player.pas play_line:
+     * - Per channel: pattern + set_ins + prepare both slots + arpeggio cleanup + GlobalFSlide
+     *   (Pascal's first loop), then tremor row reset (second loop).
+     * - Then process column-1 (slot 0) row effects for *all* channels, then column-2
+     *   for all (Pascal's Case effect_def then Case effect_def2).
+     *   Running both columns per channel before advancing let column-2 effects (e.g.
+     *   Z21 pattern-delay-rows: tickD = speed * n) see a stale speed when a higher
+     *   channel's column-1 had Dxx SetSpeed (tunes/MLF/PINK.A2T).
+     * - Final pass: new_process_note + swap macros + update_fine_effects per channel. */
+    tADTRACK2_EVENT events[20];
+    tADTRACK2_EVENT *event;
+
+    assert((int)songinfo->nm_tracks <= 20);
 
     for (int chan = 0; chan < songinfo->nm_tracks; chan++) {
+        event = &events[chan];
         // save effect_table into last_effect
         for (int slot = 0; slot < 2; slot++) {
             if (ch->effect_table[slot][chan].def | ch->effect_table[slot][chan].val) {
@@ -2021,47 +2169,80 @@ void Ca2mv2Player::play_line()
                 ch->effect_table[slot][chan].def = ch->glfsld_table[slot][chan].def;
                 ch->effect_table[slot][chan].val = ch->glfsld_table[slot][chan].val;
             } else {
+                /* a2player.pas ~1288: effect_table := effect_table AND $0ff00 — clear LO (def), keep HI (val) */
                 ch->effect_table[slot][chan].def = 0;
-                ch->effect_table[slot][chan].val = 0;
             }
         }
 
         ch->ftune_table[chan] = 0;
 
         // Do a full copy of the event, because we modify event->note
-        *event = *get_event_p(current_pattern, chan, current_line);
+        *event = *get_event_p(current_pattern, chan, current_line); // Copy struct
 
         // Fixup event->note
         if (event->note == 0xff) { // Key off
             event->note = ch->event_table[chan].note | keyoff_flag;
-        } else if ((event->note >= fixed_note_flag + 1) /*&& (event->note <= fixed_note_flag + 12*8+1)*/) {
+        } else if ((event->note >= fixed_note_flag + 1) && (event->note <= fixed_note_flag + 12*8+1)) {
             event->note -= fixed_note_flag;
         }
 
+        /* Normalize arpeggio: raw file uses def=0 for arpeggio. Convert to
+         * ef_Arpeggio (0x80) so it's distinguishable from "no effect". */
         for (int slot = 0; slot < 2; slot++) {
-            ch->event_table[chan].eff[slot].def = event->eff[slot].def;
-            ch->event_table[chan].eff[slot].val = event->eff[slot].val;
+            if (event->eff[slot].def == 0 && event->eff[slot].val != 0)
+                event->eff[slot].def = ef_Arpeggio;
+        }
+
+        /* Pascal play_line (~1313-1322): unconditional eff copy — when note, instr,
+         * or any eff field is non-zero, write ALL eff fields (including zeros) to
+         * event_table.  This clears previous eff when a new note appears without eff. */
+        if (event->note != 0 || event->instr_def != 0 ||
+            (event->eff[0].def | event->eff[0].val) ||
+            (event->eff[1].def | event->eff[1].val))
+        {
+            ch->event_table[chan].eff[0].def = event->eff[0].def;
+            ch->event_table[chan].eff[0].val = event->eff[0].val;
+            ch->event_table[chan].eff[1].def = event->eff[1].def;
+            ch->event_table[chan].eff[1].val = event->eff[1].val;
         }
 
         // alters ch->event_table[].instr_def
         set_ins_data(event->instr_def, chan);
 
         // set effect_table here
+        process_effects_prepare(event, 0, chan);
+        process_effects_prepare(event, 1, chan);
+        play_line_arpgg_cleanup(event, chan);
+        play_line_apply_global_fslide_row(event, chan);
+        play_line_tremor_row_reset(event, chan);
+    }
+
+    for (int chan = 0; chan < songinfo->nm_tracks; chan++) {
+        event = &events[chan];
         process_effects(event, 0, chan);
+    }
+
+    for (int chan = 0; chan < songinfo->nm_tracks; chan++) {
+        event = &events[chan];
         process_effects(event, 1, chan);
+    }
 
-        // TODO: is that needed here?
-        /*for (int slot = 0; slot < 2; slot++) {
-            if (event->eff[slot].def | event->eff[slot].val) {
-                ch->event_table[chan].eff[slot].def = event->eff[slot].def;
-                ch->event_table[chan].eff[slot].val = event->eff[slot].val;
-            } else if (ch->glfsld_table[slot][chan].def == 0 && ch->glfsld_table[slot][chan].val == 0) {
-                ch->effect_table[slot][chan].def = 0;
-                ch->effect_table[slot][chan].val = 0;
+    for (int chan = 0; chan < songinfo->nm_tracks; chan++) {
+        for (int slot = 0; slot < 2; slot++) {
+            if ((events[chan].eff[slot].def == 0) && (events[chan].eff[slot].val == 0)) {
+                if ((ch->glfsld_table[slot][chan].def == 0) && (ch->glfsld_table[slot][chan].val == 0)) {
+                    ch->effect_table[slot][chan].def = 0;
+                    ch->effect_table[slot][chan].val = 0;
+                }
+            } else {
+                ch->event_table[chan].eff[slot].def = events[chan].eff[slot].def;
+                ch->event_table[chan].eff[slot].val = events[chan].eff[slot].val;
             }
-        }*/
+        }
+    }
 
-        // alters ch->event_table[].note
+    for (int chan = 0; chan < songinfo->nm_tracks; chan++) {
+        event = &events[chan];
         new_process_note(event, chan);
 
         check_swap_arp_vibr(event, 0, chan);
@@ -2209,7 +2390,8 @@ void Ca2mv2Player::macro_vibrato__porta_down(int chan, uint8_t depth)
 void Ca2mv2Player::tone_portamento(int slot, int chan)
 {
     uint16_t freq = ch->freq_table[chan] & 0x1fff;
-    uint16_t portafreq = ch->porta_table[slot][chan].freq & 0x1fff;
+    /* Pascal tone_portamento: compare to porta_table.freq without masking (cf. a2player.pas). */
+    uint16_t portafreq = ch->porta_table[slot][chan].freq;
 
     if (freq > portafreq) {
         portamento_down(chan, ch->porta_table[slot][chan].speed, portafreq);
@@ -2242,28 +2424,27 @@ void Ca2mv2Player::slide_volume_up(int chan, uint8_t slide)
     if (!_4op_vol_valid_chan(chan)) {
         tINSTR_DATA *ins = get_instr_data(ch->event_table[chan].instr_def);
 
-        limit1 = ch->peak_lock[chan] ? ins->fm.volC : 0;
-        limit2 = ch->peak_lock[chan] ? ins->fm.volM : 0;
+        limit1 = ch->peak_lock[chan] && ins ? ins->fm.volC : 0;
+        limit2 = ch->peak_lock[chan] && ins ? ins->fm.volM : 0;
     }
 
     switch (ch->volslide_type[chan]) {
     case 0:
         if (!_4op_vol_valid_chan(chan)) {
-            tINSTR_DATA *i = get_instr_data_by_ch(chan);
-
             slide_carrier_volume_up(chan, slide, limit1);
 
-            if (i->fm.connect || (percussion_mode && (chan >= 16)))  // in [17..20]
-               slide_modulator_volume_up(chan, slide, limit2);
+            tINSTR_DATA *i = get_instr_data_by_ch(chan);
+            if (i && (i->fm.connect || (percussion_mode && (chan >= 16))))  // in [17..20]
+                slide_modulator_volume_up(chan, slide, limit2);
         } else {
             // Can use get_instr_data_by_ch()
             tINSTR_DATA *ins1 = get_instr_data(d.ins1);
             tINSTR_DATA *ins2 = get_instr_data(d.ins2);
 
-            uint8_t limit1_volC = ch->peak_lock[d.ch1] ? ins1->fm.volC : 0;
-            uint8_t limit1_volM = ch->peak_lock[d.ch1] ? ins1->fm.volM : 0;
-            uint8_t limit2_volC = ch->peak_lock[d.ch2] ? ins2->fm.volC : 0;
-            uint8_t limit2_volM = ch->peak_lock[d.ch2] ? ins2->fm.volM : 0;
+            uint8_t limit1_volC = ch->peak_lock[d.ch1] && ins1 ? ins1->fm.volC : 0;
+            uint8_t limit1_volM = ch->peak_lock[d.ch1] && ins1 ? ins1->fm.volM : 0;
+            uint8_t limit2_volC = ch->peak_lock[d.ch2] && ins2 ? ins2->fm.volC : 0;
+            uint8_t limit2_volM = ch->peak_lock[d.ch2] && ins2 ? ins2->fm.volM : 0;
 
             switch (d.conn) {
             // FM/FM
@@ -2328,12 +2509,11 @@ void Ca2mv2Player::slide_volume_down(int chan, uint8_t slide)
     switch (ch->volslide_type[chan]) {
     case 0:
         if (!_4op_vol_valid_chan(chan)) {
-            tINSTR_DATA *i = get_instr_data_by_ch(chan);
-
             slide_carrier_volume_down(chan, slide);
 
-            if (i->fm.connect || (percussion_mode && (chan >= 16))) { //in [17..20]
-               slide_modulator_volume_down(chan, slide);
+            tINSTR_DATA *i = get_instr_data_by_ch(chan);
+            if (i && (i->fm.connect || (percussion_mode && (chan >= 16)))) { //in [17..20]
+                slide_modulator_volume_down(chan, slide);
             }
         } else {
             switch (d.conn) {
@@ -2425,9 +2605,10 @@ void Ca2mv2Player::vibrato(int slot, int chan)
 
     freq = ch->freq_table[chan];
 
-    ch->vibr_table[slot][chan].pos += ch->vibr_table[slot][chan].speed;
+    ch->vibr_table[slot][chan].pos += ch->vibr_table[slot][chan].speed * vibtrem_speed_factor;
     slide = calc_vibrato_shift(ch->vibr_table[slot][chan].depth, ch->vibr_table[slot][chan].pos);
-    direction = ch->vibr_table[slot][chan].pos & 0x20;
+    direction = ch->vibr_table[slot][chan].pos & vibtrem_table_size;
+    ch->vibr_table[slot][chan].dir = (direction != 0) ? 1 : 0;
 
     if (direction == 0)
         portamento_down(chan, slide, nFreq(0));
@@ -2445,14 +2626,24 @@ void Ca2mv2Player::tremolo(int slot, int chan)
     uint8_t volM = ch->fmpar_table[chan].volM;
     uint8_t volC = ch->fmpar_table[chan].volC;
 
-    ch->trem_table[slot][chan].pos += ch->trem_table[slot][chan].speed;
+    ch->trem_table[slot][chan].pos += ch->trem_table[slot][chan].speed * vibtrem_speed_factor;
     slide = calc_vibrato_shift(ch->trem_table[slot][chan].depth, ch->trem_table[slot][chan].pos);
-    direction = ch->trem_table[slot][chan].pos & 0x20;
+    direction = ch->trem_table[slot][chan].pos & vibtrem_table_size;
+    ch->trem_table[slot][chan].dir = (direction != 0) ? 1 : 0;
 
-    if (direction == 0)
-        slide_volume_down(chan, slide);
-    else
-        slide_volume_up(chan, slide);
+    /* a2player.pas: tremolo uses calc_vibtrem_shift dir; tremolo2 uses (pos = 0) after Inc. */
+    if (slot == 1) {
+        if (ch->trem_table[slot][chan].pos == 0)
+            slide_volume_down(chan, slide);
+        else
+            slide_volume_up(chan, slide);
+    } else {
+        direction = ch->trem_table[slot][chan].pos & vibtrem_table_size;
+        if (direction == 0)
+            slide_volume_down(chan, slide);
+        else
+            slide_volume_up(chan, slide);
+    }
 
     // is this needed?
     ch->fmpar_table[chan].volM = volM;
@@ -2461,16 +2652,12 @@ void Ca2mv2Player::tremolo(int slot, int chan)
 
 inline int Ca2mv2Player::chanvol(int chan)
 {
-    tINSTR_DATA *instr = get_instr_data_by_ch(chan);
-    if (!instr) {
-        AdPlug_LogWrite("chanvol: instr not set for channel %d\n", chan);
-    }
-    char instr_fm_connect = instr ? instr->fm.connect : 0;
+    char instr_fm_connect = get_fm_connect_by_chan(chan);
 
     if (instr_fm_connect == 0)
         return 63 - ch->fmpar_table[chan].volC;
     else
-        return 63 - (ch->fmpar_table[chan].volM + ch->fmpar_table[chan].volC) / 2;
+        return 63 - ROUND_DIV(ch->fmpar_table[chan].volM + ch->fmpar_table[chan].volC, 2);
 }
 
 void Ca2mv2Player::update_effects_slot(int slot, int chan)
@@ -2828,10 +3015,23 @@ void Ca2mv2Player::update_song_position()
 
                 if (current_order <= old_order)
                     songend = true;
+                /* Reset global volume when jumping back to the start order (order 0)
+                    adt2play doesn't do it, but mmori.a2m has global volume fade at the end */
+                if (val == 0 && old_order != 0) {
+                    global_volume = 63;
+                    set_global_volume();
+                }
                 pattern_break = false;
             } else {
                 int new_order = current_order < 0x7f ? current_order + 1 : 0;
+                uint8_t old_order = current_order;
                 set_current_order(new_order);
+                /* Reset global volume when jumping back to the start order (order 0)
+                    adt2play doesn't do it, but mmori.a2m has global volume fade at the end */
+                if (current_order == 0 && old_order != 0) {
+                    global_volume = 63;
+                    set_global_volume();
+                }
             }
         }
 
@@ -2863,21 +3063,35 @@ void Ca2mv2Player::update_song_position()
 
 void Ca2mv2Player::poll_proc()
 {
+    /* Pascal match: don't call a2t_stop() here. a2t_stop() is only called from
+     * timer_poll_proc, but a2t_update_dump skips that path. If we a2t_stop() here,
+     * subsequent IRQ ticks reprocess from reset state (order=0) and produce zeroed
+     * frames that Pascal doesn't produce. The main loop exits on !songend instead. */
     if (pattern_delay) {
         update_effects();
+        ticks++;
         if (tickD > 1) {
             tickD--;
         } else {
+            tick0 = ticks;
+            update_song_position();
             pattern_delay = false;
         }
     } else {
-        if (ticks == 0) {
+        if (ticks - tick0 + 1 >= speed) {
             play_line();
-            ticks = speed;
-            update_song_position();
+            update_effects();
+            /* Pascal poll_proc: update_song_position only if NOT pattern_delay
+             * (or fast_forward — not used in this port). Otherwise the row /
+             * order advances immediately and tickD-based pattern delay never runs
+             * (divergence vs adt2_dump, e.g. tunes/MLF/PINK.A2T). */
+            if (!pattern_delay)
+                update_song_position();
+            tick0 = ticks;
+        } else {
+            update_effects();
+            ticks++;
         }
-        update_effects();
-        ticks--;
     }
 
     tickXF++;
@@ -2894,7 +3108,7 @@ void Ca2mv2Player::macro_poll_proc()
     uint16_t chan;
     uint16_t finished_flag;
 
-    for (chan = 0; chan < 20; chan++) {
+    for (chan = 0; chan < songinfo->nm_tracks; chan++) {
         finished_flag = ch->keyoff_loop[chan] ? IDLE : FINISHED;
 
         tCH_MACRO_TABLE *mt = &ch->macro_table[chan];
@@ -2902,7 +3116,15 @@ void Ca2mv2Player::macro_poll_proc()
 
         bool force_macro_keyon = false;
 
-        if (rt && rt->length /* && (speed != 0)*/) { // FIXME: what speed?
+        /* Pascal: when an instrument has no fmreg allocated (src[0]==0 and no header
+         * links) or length==0, macro_poll_proc immediately terminates with
+         * fmreg_pos→finished_flag (0xffff), never processing cell data.
+         * C must match so inactive/idle channels show FINISHED instead of 0. */
+        if (mt->fmreg_ins != 0 && (!rt || rt->length == 0)) {
+            mt->fmreg_pos = finished_flag;
+        }
+
+        if (rt && rt->length && speed != 0) {
             if (mt->fmreg_duration > 1) {
                 mt->fmreg_duration--;
             } else {
@@ -3014,11 +3236,11 @@ void Ca2mv2Player::macro_poll_proc()
                                 ch->zero_fq_table[chan] = ch->freq_table[chan];
                                 ch->freq_table[chan] &= ~0x1fff;
                                 change_freq(chan, ch->freq_table[chan]);
-                            } else if (ch->zero_fq_table[chan]) {
-                                ch->freq_table[chan] = ch->zero_fq_table[chan];
-                                ch->zero_fq_table[chan] = 0;
-                                change_freq(chan, ch->freq_table[chan]);
                             }
+                        } else if (ch->zero_fq_table[chan]) {
+                            ch->freq_table[chan] = ch->zero_fq_table[chan];
+                            ch->zero_fq_table[chan] = 0;
+                            change_freq(chan, ch->freq_table[chan]);
                         }
 
                         int freq_slide = d->freq_slide;
@@ -3124,7 +3346,7 @@ void Ca2mv2Player::macro_poll_proc()
                     }
 
                     if (((ch->freq_table[chan] | 0x2000) == ch->freq_table[chan]) &&
-                         (vt->keyoff_pos != 0) &
+                         (vt->keyoff_pos != 0) &&
                          (mt->vib_pos >= vt->keyoff_pos)) {
                         mt->vib_pos = IDLE;
                     } else {
@@ -3137,9 +3359,9 @@ void Ca2mv2Player::macro_poll_proc()
                     if ((mt->vib_pos != 0) &&
                         (mt->vib_pos != IDLE) && (mt->vib_pos != finished_flag)) {
                         if (vt->data[mt->vib_pos - 1] > 0)
-                            macro_vibrato__porta_up(chan, vt->data[mt->vib_pos]);
+                            macro_vibrato__porta_up(chan, vt->data[mt->vib_pos - 1]);
                         else if (vt->data[mt->vib_pos - 1] < 0)
-                            macro_vibrato__porta_down(chan, abs(vt->data[mt->vib_pos]));
+                            macro_vibrato__porta_down(chan, abs(vt->data[mt->vib_pos - 1]));
                         else
                             change_freq(chan, mt->vib_freq);
                     }
@@ -3205,9 +3427,12 @@ void Ca2mv2Player::init_buffers()
 
     if (!panlock) {
         memset(ch->panning_table, 0, sizeof(ch->panning_table));
+        memset(ch->pan_lock, 0, sizeof(ch->pan_lock));
     } else {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 20; i++) {
               ch->panning_table[i] = songinfo->lock_flags[i] & 3;
+              ch->pan_lock[i] = true;
+        }
     }
 
     if (!lockVP) {
@@ -3258,11 +3483,11 @@ void Ca2mv2Player::init_player()
     opl3exp(0x0105);
     opl3exp(0x04 + (songinfo->flag_4op << 8));
 
+    init_buffers();
+
     key_off(16);
     key_off(17);
     opl2out(0xbd, misc_register);
-
-    init_buffers();
 
     current_tremolo_depth = tremolo_depth;
     current_vibrato_depth = vibrato_depth;
@@ -3620,7 +3845,7 @@ void Ca2mv2Player::convert_v1234_effects(tADTRACK2_EVENT *ev, int chan)
     };
 
     switch (ev->eff[0].def) {
-    case fx_Arpeggio:           ev->eff[0].def = ef_Arpeggio;        break;
+    case fx_Arpeggio:           ev->eff[0].def = 0/*ef_Arpeggio is 0x80 now*/;        break;
     case fx_FSlideUp:           ev->eff[0].def = ef_FSlideUp;        break;
     case fx_FSlideDown:         ev->eff[0].def = ef_FSlideDown;      break;
     case fx_FSlideUpFine:       ev->eff[0].def = ef_FSlideUpFine;    break;
@@ -3856,8 +4081,21 @@ int Ca2mv2Player::a2_read_patterns(char *src, int s, unsigned long size)
 
                     dst->note       = src[0];
                     dst->instr_def  = src[1];
-                    dst->eff[0].def = src[2];
-                    dst->eff[0].val = src[3];
+
+                    /* Pascal (iloaders.inc import_old_a2m_event2): convert
+                     * ef_ManualFSlide (22) to ef_Extended2 FineTuneUp/Down. */
+                    if (src[2] == 22) {
+                        if (src[3] / 16 != 0) {
+                            dst->eff[0].def = ef_Extended2;
+                            dst->eff[0].val = (ef_ex2_FineTuneUp << 4) | (src[3] / 16);
+                        } else {
+                            dst->eff[0].def = ef_Extended2;
+                            dst->eff[0].val = (ef_ex2_FineTuneDown << 4) | (src[3] % 16);
+                        }
+                    } else {
+                        dst->eff[0].def = src[2];
+                        dst->eff[0].val = src[3];
+                    }
                 }
             }
 
