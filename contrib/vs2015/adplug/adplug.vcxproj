@@ -99,6 +99,7 @@
     <ClCompile Include="..\..\..\src\unlzh.c" />
     <ClCompile Include="..\..\..\src\unlzss.c" />
     <ClCompile Include="..\..\..\src\unlzw.c" />
+    <ClCompile Include="..\..\..\src\wm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\a2m.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="..\..\..\src\unlzh.h" />
     <ClInclude Include="..\..\..\src\unlzss.h" />
     <ClInclude Include="..\..\..\src\unlzw.h" />
+    <ClInclude Include="..\..\..\src\wm.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

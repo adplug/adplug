@@ -130,6 +130,7 @@ static const char *filelist[] = {
   "AKMTEC.MTR",		// Master Tracker v2
   "logical.plx",	// Palladix Sound System
   "DEMO.XMI",       // XMI (Miles Design)
+  "VACANCE.WM",     // MusicV WM (Wolf Team OPL3)
   NULL
 };
 

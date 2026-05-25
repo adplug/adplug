@@ -88,6 +88,7 @@
 #include "pis.h"
 #include "mtr.h"
 #include "plx.h"
+#include "wm.h"
 
 /***** CAdPlug *****/
 
@@ -147,6 +148,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CvgmPlayer::factory, "Video Game Music", ".vgm\0.vgz\0"),
   CPlayerDesc(CsopPlayer::factory, "Note Sequencer by sopepos", ".sop\0"),
   CPlayerDesc(CheradPlayer::factory, "Herbulot AdLib System", ".hsq\0.sqx\0.sdb\0.agd\0.ha2\0"),
+  CPlayerDesc(CwmPlayer::factory, "MusicV WM", ".wm\0.m\0"),
   CPlayerDesc()
 };
 
