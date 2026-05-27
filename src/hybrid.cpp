@@ -129,6 +129,68 @@ void CxadhybridPlayer::xadplayer_rewind(int subsong)
 	}
 }
 
+void CxadhybridPlayer::gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
+{
+  for (int channel = 0; channel < 9; channel++) {
+    if (((unsigned long)pattern*9 + channel + 0x1d4) >= tune_size) return; /* buffer overflow */
+    for (int row = 0; row < 64; row++) {
+      unsigned long posoffset = 0xADE + (hyb.order[pattern*9 + channel] * 64 * 2) + (row * 2);
+      if (((unsigned long)posoffset + 1) >= tune_size) break; /* buffer overflow */
+
+      unsigned char *pos = &tune[posoffset];
+      // read event
+      unsigned short event = (pos[1] << 8) + pos[0];
+
+      // calculate variables
+      unsigned char  note  =   event >> 9;
+      TrackedCmds command=TrackedCmdNone;
+      unsigned char  ins   = ((event & 0x01F0) >> 4);
+      unsigned char  slide =   event & 0x000F;
+      unsigned char  param = 0;
+
+      // play event
+      switch(note) {
+        case 0x7D: // 0x7D: Set Speed
+          command = TrackedCmdSpeed;
+          param = event & 0xff;
+          note = 0; ins = 0;
+          break;
+
+        case 0x7E: // 0x7E: Jump Position
+          command = TrackedCmdPatternJumpTo;
+          param = (event & 0xFF) + 1;
+          note = 0; ins = 0;
+          break;
+
+        case 0x7f:
+          command = TrackedCmdPatternBreak;
+          note = 0; ins = 0;
+          break;
+
+        case 0x00:
+        case 0x01:
+          note = 0; ins = 0;
+          break;
+	default:
+          note = note + 12 - 2; // note[2] = C#
+
+          // is slide ?
+          if (slide) {
+            command = (slide & 0x08) ? TrackedCmdPitchSlideDown : TrackedCmdPitchSlideUp;
+            param = slide & 0x07;
+          }
+          break;
+      }
+
+      if ((note != 0) ||
+          (command != TrackedCmdNone) ||
+          (ins != 0) ||
+          (param != 0))
+        callback (arg, row, channel, note, command, ins, 255, param);
+    }
+  }
+}
+
 void CxadhybridPlayer::xadplayer_update()
 {
 	int i = 0, j = 0;

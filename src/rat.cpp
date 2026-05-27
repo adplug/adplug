@@ -138,6 +138,48 @@ static unsigned char calc_volume(unsigned char ivol, unsigned char cvol, unsigne
   return vol;
 }
 
+void CxadratPlayer::gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
+{
+  if (pattern >= rat.hdr.numpat) return;
+  for (int row=0; row < 64; row++) {
+    for (int channel=0; channel < rat.hdr.numchan; channel++) {
+
+      const rat_event &event = rat.tracks[pattern][row][channel];
+
+      unsigned char note = 0;
+      TrackedCmds command = TrackedCmdNone;
+      unsigned char inst = 0;
+      unsigned char param = 0;
+
+      if (event.instrument != 0xff) inst = event.instrument + 1;
+      unsigned char volume = event.volume; /* 0xff == none */
+
+      if (event.note != 0xff) note = (event.note & 0x0f) + ((event.note >> 4) + 2) * 12;
+
+      switch (event.fx) {
+        case 0x01:
+          command = TrackedCmdSpeed;
+          param = event.fxp;
+          break;
+        case 0x02:
+          command = TrackedCmdPatternJumpTo;
+          param = event.fxp;
+          break;
+        case 0x03:
+          command = TrackedCmdPatternBreak;
+          break;
+      }
+
+      if ((note != 0) ||
+          (command != TrackedCmdNone) ||
+          (inst != 0) ||
+          (volume != 255) ||
+          (param != 0))
+        callback (arg, row, channel, note, command, inst, volume, param);
+    }
+  }
+}
+
 void CxadratPlayer::xadplayer_update()
 {
   unsigned char pattern = rat.order[rat.order_pos];
