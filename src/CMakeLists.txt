@@ -10,6 +10,7 @@ set(SOURCES
     fmopl.c
     nukedopl.c
     sixdepack.cpp
+    ungzip.c
     unlzh.c
     unlzss.c
     unlzw.c
@@ -93,6 +94,7 @@ set(HEADERS
     diskopl.h
     depack.h
     sixdepack.h
+    ungzip.h
     unlzh.h
     unlzss.h
     unlzw.h
