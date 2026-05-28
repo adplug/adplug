@@ -17,6 +17,7 @@ src_libadplug_la_SOURCES = \
 	src/nukedopl.c \
 	src/depack.c \
 	src/sixdepack.cpp \
+	src/ungzip.c \
 	src/unlzh.c \
 	src/unlzss.c \
 	src/unlzw.c \
@@ -110,6 +111,7 @@ pkginclude_HEADERS = \
 	src/diskopl.h \
 	src/depack.h \
 	src/sixdepack.h \
+	src/ungzip.h \
 	src/unlzh.h \
 	src/unlzss.h \
 	src/unlzw.h \
@@ -451,7 +453,11 @@ EXTRA_DIST += \
 	test/testref/YsBattle.ref \
 	test/testmus/YsBattle.vgm \
 	test/testref/logical.ref \
-	test/testmus/logical.plx
+	test/testmus/logical.plx \
+	test/testref/Restart.ref \
+	test/testmus/Restart.vgz \
+	test/testref/Sonic.ref \
+	test/testmus/Sonic.vgz
 # Regression tests:
 EXTRA_DIST += \
 	test/fuzzing/i-85.bmf \
