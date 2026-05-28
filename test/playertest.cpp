@@ -112,6 +112,7 @@ static const char *filelist[] = {
   "BeyondSN.vgm",	// Video Game Music 1.51 (OPL3)
   "Restart.vgz",	// Video Game Music gzip-compressed (OPL3)
   "Sonic.vgz",		// Video Game Music gzip-compressed (OPL3)
+  "RRThiel.vgz",	// Video Game Music gzip-compressed (OPL1)
   "GALWAY.SOP",		// Note Sequencer v1.0 by sopepos
   "ending.sop",		// Note Sequencer v2.0 by sopepos
   "MORNING.HSQ",	// HERAD SDB v1 (HSQ packed)
