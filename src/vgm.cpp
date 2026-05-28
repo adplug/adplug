@@ -59,8 +59,10 @@ static int fillGD3Tag(const uint8_t *buf, long buflen, int pos, wchar_t *data)
 {
 	uint16_t chr;
 	int cnt = 0;
-	do {
-		if (pos + 2 > (int)buflen) {
+	do
+	{
+		if (pos + 2 > (int)buflen)
+		{
 			data[cnt < 256 ? cnt : 255] = 0;
 			break;
 		}
@@ -92,12 +94,12 @@ bool CvgmPlayer::load(const std::string &filename, const CFileProvider &fp)
 		return false;
 	}
 
-	/* Load the entire file into a memory buffer */
+	// Load the entire file into a memory buffer
 	uint8_t *buf = new uint8_t[filesize];
 	f->readString((char *)buf, filesize);
 	fp.close(f);
 
-	/* Decompress if this is a gzip stream (.vgz) */
+	// Decompress if this is a gzip stream (.vgz)
 	if (buf[0] == 0x1F && buf[1] == 0x8B)
 	{
 		long outsize = ungzip(buf, filesize, NULL, 0);
@@ -118,7 +120,7 @@ bool CvgmPlayer::load(const std::string &filename, const CFileProvider &fp)
 		filesize = got;
 	}
 
-	/* From here buf/filesize always hold plain (uncompressed) VGM data */
+	// From here buf/filesize always hold plain (uncompressed) VGM data
 
 	if (filesize < VGM_HEADER_MIN)
 	{
@@ -144,7 +146,7 @@ bool CvgmPlayer::load(const std::string &filename, const CFileProvider &fp)
 	version = (int)vgm_u32(buf, 0x08);
 	if (version < 0x151)
 	{
- 		// Minimum supported VGM version is 1.51
+		// Minimum supported VGM version is 1.51
 		delete[] buf;
 		return false;
 	}
@@ -194,12 +196,12 @@ bool CvgmPlayer::load(const std::string &filename, const CFileProvider &fp)
 	int gd3_ofs = (int)vgm_u32(buf, OFFSET_GD3);
 	if (gd3_ofs)
 	{
-		/* Process GD3 tag */
+		// Process GD3 tag
 		int gd3_pos = OFFSET_GD3 + gd3_ofs;
 		if (gd3_pos + 12 <= filesize &&
 			memcmp(buf + gd3_pos, GD3_HEADER_ID, 4) == 0)
 		{
-			gd3_pos += 12; /* skip: ID(4) + version(4) + length(4) */
+			gd3_pos += 12; // skip: ID(4) + version(4) + length(4)
 			gd3_pos = fillGD3Tag(buf, filesize, gd3_pos, GD3.title_en);
 			gd3_pos = fillGD3Tag(buf, filesize, gd3_pos, GD3.title_jp);
 			gd3_pos = fillGD3Tag(buf, filesize, gd3_pos, GD3.game_en);
