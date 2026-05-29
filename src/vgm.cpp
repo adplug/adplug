@@ -333,7 +333,7 @@ std::string CvgmPlayer::gettype()
 	else if (vgmDual)
 		strcpy(chip, "Dual OPL2");
 	else if (vgmOPL1)
-		strcpy(chip, "OPL1");
+		strcpy(chip, "OPL");
 	else
 		strcpy(chip, "OPL2");
 	char tmpstr[40];
