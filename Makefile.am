@@ -457,7 +457,9 @@ EXTRA_DIST += \
 	test/testref/Restart.ref \
 	test/testmus/Restart.vgz \
 	test/testref/Sonic.ref \
-	test/testmus/Sonic.vgz
+	test/testmus/Sonic.vgz \
+	test/testref/RRThiel.ref \
+	test/testmus/RRThiel.vgz
 # Regression tests:
 EXTRA_DIST += \
 	test/fuzzing/i-85.bmf \

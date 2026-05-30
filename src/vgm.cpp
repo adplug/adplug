@@ -169,14 +169,23 @@ bool CvgmPlayer::load(const std::string &filename, const CFileProvider &fp)
 		clock = (int)vgm_u32(buf, OFFSET_YMF262);
 
 	vgmOPL3 = (clock != 0);
+	vgmOPL1  = false;
 	vgmDual  = false;
 
 	if (!vgmOPL3)
 	{
 		clock   = (int)vgm_u32(buf, OFFSET_YM3812);
 		vgmDual = (clock & VGM_DUAL_BIT) > 0;
+		clock  &= (VGM_DUAL_BIT - 1);
 	}
-	clock &= (VGM_DUAL_BIT - 1);
+
+	if (!vgmOPL3 && !clock)
+	{
+		if (data_ofs >= OFFSET_YM3526 - OFFSET_DATA + 4)
+			clock = (int)(vgm_u32(buf, OFFSET_YM3526) & (VGM_DUAL_BIT - 1));
+		vgmOPL1 = (clock != 0);
+	}
+
 	if (!clock)
 	{
 		// VGM clock is not set
@@ -252,11 +261,12 @@ bool CvgmPlayer::update()
 		uint8_t cmd = vgmData[pos++];
 		switch (cmd)
 		{
+		case CMD_OPL1:
 		case CMD_OPL2:
 		case CMD_OPL3_PORT0:
 			reg = vgmData[pos++];
 			val = vgmData[pos++];
-			if ((!vgmOPL3 && cmd == CMD_OPL2) || (vgmOPL3 && cmd == CMD_OPL3_PORT0))
+			if ((vgmOPL1 && cmd == CMD_OPL1) || (!vgmOPL3 && cmd == CMD_OPL2) || (vgmOPL3 && cmd == CMD_OPL3_PORT0))
 			{
 				if (opl->getchip() != 0)
 					opl->setchip(0);
@@ -322,6 +332,8 @@ std::string CvgmPlayer::gettype()
 		strcpy(chip, "OPL3");
 	else if (vgmDual)
 		strcpy(chip, "Dual OPL2");
+	else if (vgmOPL1)
+		strcpy(chip, "OPL");
 	else
 		strcpy(chip, "OPL2");
 	char tmpstr[40];

@@ -39,6 +39,7 @@
 #define OFFSET_LOOP		0x1C	// Loop offset
 #define OFFSET_DATA		0x34	// VGM data offset
 #define OFFSET_YM3812	0x50	// YM3812 clock offset
+#define OFFSET_YM3526	0x54	// YM3526 clock offset
 #define OFFSET_YMF262	0x5C	// YMF262 clock offset
 #define OFFSET_LOOPBASE	0x7E	// Loop base offset
 #define OFFSET_LOOPMOD	0x7F	// Loop modifier offset
@@ -46,6 +47,7 @@
 #define GD3_HEADER_ID	"Gd3 "	// GD3 tag header ident
 
 #define CMD_OPL2		0x5A	// YM3812, write value <dd> to register <aa>
+#define CMD_OPL1		0x5B	// YM3526, write value <dd> to register <aa>
 #define CMD_OPL3_PORT0	0x5E	// YMF262 port 0, write value <dd> to register <aa>
 #define CMD_OPL3_PORT1	0x5F	// YMF262 port 1, write value <dd> to register <aa>
 #define CMD_WAIT		0x61	// Wait <n> samples, <n> can range from 0 to 65535 (approx 1.49 seconds)
@@ -83,7 +85,7 @@ public:
 protected:
 	int version, samples, loop_ofs, loop_smp, rate, clock;
 	uint8_t loop_base, loop_mod;
-	bool vgmOPL3, vgmDual;
+	bool vgmOPL3, vgmOPL1, vgmDual;
 	int data_sz;
 	uint8_t * vgmData;
 
