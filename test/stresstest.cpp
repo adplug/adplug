@@ -27,16 +27,22 @@
 #include <cstring>
 #include <string>
 #include <signal.h>
+#ifdef _WIN32
+#include <windows.h>
+#include <io.h>
+#include <sys/stat.h>
+#else
 #include <unistd.h>
 #ifndef WEXITSTATUS
 #include <sys/wait.h>
 #endif
 #include <sys/stat.h>
+#endif
 
 #include "../src/adplug.h"
 #include "../src/opl.h"
 
-#ifdef MSDOS
+#if defined(MSDOS) || defined(_WIN32)
 #	define DIR_DELIM	"\\"
 #else
 #	define DIR_DELIM	"/"
@@ -203,9 +209,15 @@ public:
 
 static bool dir_exists(const std::string &path)
 {
+#ifdef _WIN32
+	struct _stat info;
+
+	int rc = _stat(path.c_str(), &info);
+#else
 	struct stat info;
 
 	int rc = stat(path.c_str(), &info);
+#endif
 
 	if (rc != 0)
 		return false;
@@ -239,7 +251,7 @@ static std::string quote(std::string s)
 	pos = s.find_last_not_of('\\');
 	if (pos != std::string::npos) pos++;
 	else pos = 0;
-	if (pos != s.size()) s.append(s, pos);
+	if (pos != s.size()) s.append(s, pos, std::string::npos);
 
 	// escape special characters for cmd.exe
 	pos = 0;
@@ -320,6 +332,14 @@ static std::string quote(std::string s)
 	return s;
 }
 
+#ifdef _WIN32
+static DWORD WINAPI timer_proc(LPVOID param) {
+	Sleep(*(DWORD*)param);
+	ExitProcess(EXIT_FAILURE);
+	return 0;
+}
+#endif
+
 static bool run_test(int argc, const char *const argv[])
 {
 	const int timeout = 60;     // real time
@@ -331,7 +351,12 @@ static bool run_test(int argc, const char *const argv[])
 		std::cerr << "Warning: unsupported # of arguments (got "
 			<< argc << ", expected 1)\n";
 
+#ifdef _WIN32
+	DWORD timeout_ms = timeout * 1000;
+	HANDLE hTimer = CreateThread(NULL, 0, timer_proc, &timeout_ms, 0, NULL);
+#else
 	alarm(timeout);
+#endif
 
 	SilentTestopl opl;
 	// Load test file
@@ -379,6 +404,13 @@ static bool run_test(int argc, const char *const argv[])
 		<< t << " sec." << std::endl;
 
 	delete p;
+
+#ifdef _WIN32
+	if (hTimer) {
+		TerminateThread(hTimer, 0);
+		CloseHandle(hTimer);
+	}
+#endif
 	return true;
 }
 
@@ -392,6 +424,14 @@ static bool test_wrapper(const std::string &cmdprefix, const std::string &file)
 	int status = system(cmd.c_str());
 
 	std::cout << "Testing: " << file;
+#ifdef _WIN32
+	if (status != 0) {
+		std::cout << " - [FAIL] (exit " << status << ")\n";
+	} else {
+		std::cout << " - [OK]\n";
+		return true;
+	}
+#else
 	if (WIFSIGNALED(status)) {
 		std::cout << " - [FAIL] (killed by signal "
 			 << WTERMSIG(status) << ")\n";
@@ -405,6 +445,7 @@ static bool test_wrapper(const std::string &cmdprefix, const std::string &file)
 		std::cout << " - [OK]\n";
 		return true;
 	}
+#endif
 	return false;
 }
 
@@ -476,7 +517,12 @@ int main(int argc, char *argv[])
 		// Test the file(s) on the command line
 		for (int i = 1; i < argc; i++)
 			fail |= !test_wrapper(cmd, strstr(argv[i], DIR_DELIM) ||
-				access(argv[i], F_OK) ? argv[i] : dir + argv[i]);
+#ifdef _WIN32
+				_access(argv[i], 0)
+#else
+				access(argv[i], F_OK)
+#endif
+				? argv[i] : dir + argv[i]);
 	}
 
 	return fail ? EXIT_FAILURE : EXIT_SUCCESS;
