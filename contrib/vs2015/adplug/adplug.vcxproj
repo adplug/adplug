@@ -86,6 +86,7 @@
     <ClCompile Include="..\..\..\src\u6m.cpp" />
     <ClCompile Include="..\..\..\src\woodyopl.cpp" />
     <ClCompile Include="..\..\..\src\xad.cpp" />
+    <ClCompile Include="..\..\..\src\xmi.cpp" />
     <ClCompile Include="..\..\..\src\xsm.cpp" />
     <ClCompile Include="..\..\..\src\nemuopl.cpp" />
     <ClCompile Include="..\..\..\src\nukedopl.c" />
@@ -172,6 +173,8 @@
     <ClInclude Include="..\..\..\src\wemuopl.h" />
     <ClInclude Include="..\..\..\src\woodyopl.h" />
     <ClInclude Include="..\..\..\src\xad.h" />
+    <ClInclude Include="..\..\..\src\xmi.h" />
+    <ClInclude Include="..\..\..\src\xmi_timbres.h" />
     <ClInclude Include="..\..\..\src\xsm.h" />
     <ClInclude Include="..\..\..\src\nemuopl.h" />
     <ClInclude Include="..\..\..\src\nukedopl.h" />

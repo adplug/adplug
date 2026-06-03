@@ -129,6 +129,7 @@ static const char *filelist[] = {
   "CHIP.MTR",		// Master Tracker v1
   "AKMTEC.MTR",		// Master Tracker v2
   "logical.plx",	// Palladix Sound System
+  "DEMO.XMI",       // XMI (Miles Design)
   NULL
 };
 

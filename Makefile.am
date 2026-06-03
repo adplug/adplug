@@ -89,6 +89,7 @@ src_libadplug_la_SOURCES = \
 	src/vgm.cpp \
 	src/woodyopl.cpp \
 	src/xad.cpp \
+	src/xmi.cpp \
 	src/xsm.cpp
 
 src_libadplug_la_LDFLAGS = -release $(PACKAGE_VERSION) -version-info 0
@@ -157,6 +158,8 @@ pkginclude_HEADERS = \
 	src/fprovide.h \
 	src/database.h \
 	src/players.h \
+	src/xmi.h \
+	src/xmi_timbres.h \
 	src/xsm.h \
 	src/adlibemu.h \
 	src/kemuopl.h \
@@ -459,7 +462,9 @@ EXTRA_DIST += \
 	test/testref/Sonic.ref \
 	test/testmus/Sonic.vgz \
 	test/testref/RRThiel.ref \
-	test/testmus/RRThiel.vgz
+	test/testmus/RRThiel.vgz \
+	test/testmus/DEMO.XMI \
+	test/testref/DEMO.ref
 # Regression tests:
 EXTRA_DIST += \
 	test/fuzzing/i-85.bmf \
