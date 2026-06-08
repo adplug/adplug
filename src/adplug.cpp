@@ -69,6 +69,7 @@
 #include "lds.h"
 #include "u6m.h"
 #include "rol.h"
+#include "xmi.h"
 #include "xsm.h"
 #include "dro.h"
 #include "dro2.h"
@@ -132,6 +133,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CplxPlayer::factory, "PALLADIX Sound System", ".plx\0"),
   CPlayerDesc(Cu6mPlayer::factory, "Ultima 6 Music", ".m\0"),
   CPlayerDesc(CrolPlayer::factory, "Adlib Visual Composer", ".rol\0"),
+  CPlayerDesc(CxmiPlayer::factory, "Miles Design eXtended MIDI", ".xmi\0"),
   CPlayerDesc(CxsmPlayer::factory, "eXtra Simple Music", ".xsm\0"),
   CPlayerDesc(CdroPlayer::factory, "DOSBox Raw OPL v0.1", ".dro\0"),
   CPlayerDesc(Cdro2Player::factory, "DOSBox Raw OPL v2.0", ".dro\0"),

@@ -82,6 +82,7 @@ set(SOURCES
     vgm.cpp
     woodyopl.cpp
     xad.cpp
+    xmi.cpp
     xsm.cpp
 )
 
@@ -140,6 +141,8 @@ set(HEADERS
     fprovide.h
     database.h
     players.h
+    xmi.h
+    xmi_timbres.h
     xsm.h
     adlibemu.h
     kemuopl.h
