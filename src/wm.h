@@ -21,7 +21,6 @@
  * Ported from MUSICV_2.COM, the DOS OPL3 sound driver used used in many
  * visual novel games developed and published by a japanese company named
  * Silky's (part of Elf Co., Ltd.).
- *
  */
 
 #ifndef H_ADPLUG_WM
@@ -49,7 +48,7 @@ public:
     bool update();
     void rewind(int subsong = -1);
     float getrefresh();
-    std::string gettype() { return std::string("MusicV WM"); }
+    std::string gettype() { return std::string("Silky's MusicV WM"); }
 
     static const int WM_NCHANNELS = 6;
     static const int WM_INST_REGS = 20;

@@ -21,7 +21,6 @@
  * Ported from MUSICV_2.COM, the DOS OPL3 sound driver used used in many
  * visual novel games developed and published by a japanese company named
  * Silky's (part of Elf Co., Ltd.).
- *
  */
 
 #include <cstring>
