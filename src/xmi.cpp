@@ -255,11 +255,11 @@ CxmiPlayer::CxmiPlayer(Copl *newopl)
     , author_len(0)
     , ext_bank_data(0)
     , ext_bank_size(0)
-    , current_chip(-1)
-    , nrpn(0)
     , cache_mem(0)
     , cache_size(0)
     , cache_end(0)
+    , nrpn(0)
+    , current_chip(-1)
 {
     cache_mem = new uint8_t[XMI_CACHE_SIZE];
 }
