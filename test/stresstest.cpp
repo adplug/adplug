@@ -179,6 +179,7 @@ static const char *const filelist[] = {
 	"i-110_191.dtm", "i-110_192.a2m", "i-110_193.amd", "i-110_194.dtm",
 	"i-110_195.dtm", "i-110_196.a2m", "i-110_197.sa2", "i-110_198.dtm",
 	"i-110_199.amd", "i-110_200.a2m",
+	"xmi-1-badhdr.xmi", "xmi-2-trunc.xmi", "xmi-3-badnote.xmi",
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);
