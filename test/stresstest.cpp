@@ -27,16 +27,33 @@
 #include <cstring>
 #include <string>
 #include <signal.h>
+#ifdef _WIN32
+#include <windows.h>
+#include <io.h>
+#include <sys/stat.h>
+#else
 #include <unistd.h>
 #ifndef WEXITSTATUS
 #include <sys/wait.h>
 #endif
 #include <sys/stat.h>
+#endif
 
 #include "../src/adplug.h"
 #include "../src/opl.h"
 
-#ifdef MSDOS
+#ifdef _WIN32
+// Map the POSIX names used below to their Win32 equivalents, so the call
+// sites need no #ifdef. Must come after the system headers above, or the
+// macros would rewrite the names inside their own declarations.
+#ifndef F_OK
+#define F_OK 0
+#endif
+#define access _access
+#define stat   _stat
+#endif
+
+#if defined(MSDOS) || defined(_WIN32)
 #	define DIR_DELIM	"\\"
 #else
 #	define DIR_DELIM	"/"
@@ -239,7 +256,7 @@ static std::string quote(std::string s)
 	pos = s.find_last_not_of('\\');
 	if (pos != std::string::npos) pos++;
 	else pos = 0;
-	if (pos != s.size()) s.append(s, pos);
+	if (pos != s.size()) s.append(s, pos, std::string::npos);
 
 	// escape special characters for cmd.exe
 	pos = 0;
@@ -320,6 +337,25 @@ static std::string quote(std::string s)
 	return s;
 }
 
+#ifdef _WIN32
+static DWORD WINAPI timer_proc(LPVOID param) {
+	Sleep(*(DWORD*)param);
+	ExitProcess(EXIT_FAILURE);
+	return 0;
+}
+
+// A crash (unhandled exception) would normally be handed to Windows Error
+// Reporting / the just-in-time debugger (the AeDebug registry key). When no
+// debugger attaches automatically, the faulting process is left *suspended*
+// indefinitely instead of dying -- which freezes the timeout thread above and
+// the parent waiting in system(), hanging the whole run. This filter ends the
+// child at once so a crash surfaces as a normal (non-zero) test failure.
+static LONG WINAPI crash_filter(EXCEPTION_POINTERS *) {
+	ExitProcess(EXIT_FAILURE);
+	return EXCEPTION_EXECUTE_HANDLER; // not reached
+}
+#endif
+
 static bool run_test(int argc, const char *const argv[])
 {
 	const int timeout = 60;     // real time
@@ -331,7 +367,18 @@ static bool run_test(int argc, const char *const argv[])
 		std::cerr << "Warning: unsupported # of arguments (got "
 			<< argc << ", expected 1)\n";
 
+#ifdef _WIN32
+	// Make a crash terminate the child immediately rather than being parked
+	// by Windows Error Reporting / the JIT debugger (which would also freeze
+	// the timeout thread and the parent waiting in system()).
+	SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
+	SetUnhandledExceptionFilter(crash_filter);
+
+	DWORD timeout_ms = timeout * 1000;
+	HANDLE hTimer = CreateThread(NULL, 0, timer_proc, &timeout_ms, 0, NULL);
+#else
 	alarm(timeout);
+#endif
 
 	SilentTestopl opl;
 	// Load test file
@@ -379,6 +426,13 @@ static bool run_test(int argc, const char *const argv[])
 		<< t << " sec." << std::endl;
 
 	delete p;
+
+#ifdef _WIN32
+	if (hTimer) {
+		TerminateThread(hTimer, 0);
+		CloseHandle(hTimer);
+	}
+#endif
 	return true;
 }
 
@@ -392,6 +446,14 @@ static bool test_wrapper(const std::string &cmdprefix, const std::string &file)
 	int status = system(cmd.c_str());
 
 	std::cout << "Testing: " << file;
+#ifdef _WIN32
+	if (status != 0) {
+		std::cout << " - [FAIL] (exit " << status << ")\n";
+	} else {
+		std::cout << " - [OK]\n";
+		return true;
+	}
+#else
 	if (WIFSIGNALED(status)) {
 		std::cout << " - [FAIL] (killed by signal "
 			 << WTERMSIG(status) << ")\n";
@@ -405,6 +467,7 @@ static bool test_wrapper(const std::string &cmdprefix, const std::string &file)
 		std::cout << " - [OK]\n";
 		return true;
 	}
+#endif
 	return false;
 }
 
