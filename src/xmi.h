@@ -48,6 +48,13 @@
 
 #define XMI_QUANT_TIME_16  0x0208D5U
 
+/* Trailing zero padding appended to the loaded file buffer. The event-stream
+ * handlers (note-on, meta, sysex) may peek a few bytes ahead of the current
+ * event pointer while decoding a single variable-length event; this guard
+ * region guarantees such bounded look-ahead never reads unallocated memory
+ * for a truncated/malformed file. */
+#define XMI_READ_GUARD     8
+
 struct xmi_ctrl_log {
     uint8_t PV[XMI_NUM_CHANS];
     uint8_t MODUL[XMI_NUM_CHANS];
@@ -71,6 +78,7 @@ struct xmi_sequence {
     uint8_t *RBRN;
     uint8_t *EVNT;
     uint8_t *EVNT_ptr;
+    uint8_t *EVNT_end;
     int32_t interval_cnt;
     uint16_t note_count;
     int32_t tempo_error;
