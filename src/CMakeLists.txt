@@ -80,6 +80,7 @@ set(SOURCES
     temuopl.cpp
     u6m.cpp
     vgm.cpp
+    wm.cpp
     woodyopl.cpp
     xad.cpp
     xmi.cpp
@@ -168,6 +169,7 @@ set(HEADERS
     coktel.h
     composer.h
     vgm.h
+    wm.h
     sop.h
     herad.h
     strnlen.h

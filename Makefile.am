@@ -87,6 +87,7 @@ src_libadplug_la_SOURCES = \
 	src/temuopl.cpp \
 	src/u6m.cpp \
 	src/vgm.cpp \
+	src/wm.cpp \
 	src/woodyopl.cpp \
 	src/xad.cpp \
 	src/xmi.cpp \
@@ -186,6 +187,7 @@ pkginclude_HEADERS = \
 	src/coktel.h \
 	src/composer.h \
 	src/vgm.h \
+	src/wm.h \
 	src/sop.h \
 	src/herad.h \
 	src/strnlen.h \
@@ -445,6 +447,8 @@ EXTRA_DIST += \
 	test/testmus/TUBES.SAT \
 	test/testmus/TU_BLESS.AMD \
 	test/testref/TU_BLESS.ref \
+	test/testmus/VACANCE.WM \
+	test/testref/VACANCE.ref \
 	test/testmus/VIB_VOL3.D00 \
 	test/testref/VIB_VOL3.ref \
 	test/testmus/well.adl \
