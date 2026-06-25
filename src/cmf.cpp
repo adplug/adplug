@@ -82,6 +82,18 @@ static const uint8_t cDefaultPatches[] =
 "\x71\x22\xC5\x00\x6E\x8B\x17\x0E\x00\x00\x02"
 "\x32\x21\x16\x80\x73\x75\x24\x57\x00\x00\x0E";
 
+// The Creative driver (SBFMDRV) programs every channel with this default
+// instrument at reset, so that untouched channels start from a known register
+// state.  Byte layout matches the on-disk CMF instrument record:
+//   [0]/[1]  modulator/carrier characteristic + multiplier (reg 0x20)
+//   [2]/[3]  modulator/carrier scaling + output level      (reg 0x40)
+//   [4]/[5]  modulator/carrier attack + decay              (reg 0x60)
+//   [6]/[7]  modulator/carrier sustain + release           (reg 0x80)
+//   [8]/[9]  modulator/carrier wave select                 (reg 0xE0)
+//   [10]     feedback + connection                         (reg 0xC0)
+static const uint8_t cInitInstrument[11] =
+	{ 0x01, 0x11, 0x4F, 0x00, 0xF1, 0xF2, 0x53, 0x74, 0x00, 0x00, 0x08 };
+
 
 CPlayer *CcmfPlayer::factory(Copl *newopl)
 {
@@ -433,24 +445,34 @@ void CcmfPlayer::rewind(int subsong)
 	this->writeOPL(0x01, 0x20);
 
 	// Disable OPL3 mode (can be left enabled by a previous non-CMF song)
+	// (AdPlug-specific: fmdrv is a pure OPL2 driver and never touches 0x05.)
 	this->writeOPL(0x05, 0x00);
 
 	// Really make sure CSM+SEL are off (again, Creative's player...)
 	this->writeOPL(0x08, 0x00);
 
-	// This freq setting is required for the hihat to sound correct at the start
-	// of funky.cmf, even though it's for an unrelated channel.
-	// If it's here however, it makes the hihat in Word Rescue's theme.cmf
-	// sound really bad.
-	// TODO: How do we figure out whether we need it or not???
-	this->writeOPL(BASE_FNUM_L + 8, 514 & 0xFF);
-	this->writeOPL(BASE_KEYON_FREQ + 8, (1 << 2) | (514 >> 8));
-
-	// default freqs?
-	this->writeOPL(BASE_FNUM_L + 7, 509 & 0xFF);
-	this->writeOPL(BASE_KEYON_FREQ + 7, (2 << 2) | (509 >> 8));
-	this->writeOPL(BASE_FNUM_L + 6, 432 & 0xFF);
-	this->writeOPL(BASE_KEYON_FREQ + 6, (2 << 2) | (432 >> 8));
+	// Program every melodic channel with the driver's default instrument so
+	// that channels used before receiving a patch change start from the same
+	// register state as the real SBFMDRV driver (fmdrv's opl_reset2()).  This
+	// replaces the old per-channel "hihat" frequency kludge (writes to the
+	// fnum/keyon registers of channels 6-8), which was a guess that helped one
+	// song and hurt another.
+	// Per the fidelity policy above, the feedback/connection byte is written to
+	// the correct 0xC0 + channel register, not fmdrv's buggy "opl_reg_offs[i]+i".
+	for (int i = 0; i < 9; i++) {
+		uint8_t iOffset = OPLOFFSET(i);
+		this->writeOPL(BASE_CHAR_MULT + iOffset,     cInitInstrument[0]);
+		this->writeOPL(BASE_CHAR_MULT + iOffset + 3, cInitInstrument[1]);
+		this->writeOPL(BASE_SCAL_LEVL + iOffset,     cInitInstrument[2]);
+		this->writeOPL(BASE_SCAL_LEVL + iOffset + 3, cInitInstrument[3]);
+		this->writeOPL(BASE_ATCK_DCAY + iOffset,     cInitInstrument[4]);
+		this->writeOPL(BASE_ATCK_DCAY + iOffset + 3, cInitInstrument[5]);
+		this->writeOPL(BASE_SUST_RLSE + iOffset,     cInitInstrument[6]);
+		this->writeOPL(BASE_SUST_RLSE + iOffset + 3, cInitInstrument[7]);
+		this->writeOPL(BASE_WAVE      + iOffset,     cInitInstrument[8]);
+		this->writeOPL(BASE_WAVE      + iOffset + 3, cInitInstrument[9]);
+		this->writeOPL(BASE_FEED_CONN + i,           cInitInstrument[10]);
+	}
 
 	// Amplify AM + VIB depth.  Creative's CMF player does this, and there
 	// doesn't seem to be any way to stop it from doing so - except for the
