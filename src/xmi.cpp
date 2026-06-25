@@ -301,19 +301,24 @@ uint32_t CxmiPlayer::read_vln(const uint8_t **ptr) {
 
 uint8_t *CxmiPlayer::find_seq(uint32_t seq_num) {
     uint8_t *p = xmi_data;
+    uint8_t *end = xmi_data + xmi_size;
     uint32_t form_count = seq_num + 1;
     uint32_t i;
 
     for (i = 0; i < form_count; ) {
+        /* need an 8-byte chunk header (tag + length) to continue */
+        if (p < xmi_data || p + 8 > end) return NULL;
         uint32_t tag = read_be32(p);
 
         if (tag == 0x43415420U) {           /* "CAT " */
             uint32_t root_len = read_be32(p + 4);
             uint8_t *root_end = p + 8 + root_len;
+            if (root_end > end || root_end < p) root_end = end;
             p += 12;
             form_count = 0;
             for (;;) {
-                if (p >= root_end) return NULL;
+                /* each child needs a 12-byte prefix (CAT/FORM hdr + sub-tag) */
+                if (p + 12 > root_end || p + 12 > end) return NULL;
                 tag = read_be32(p + 8);
                 if (tag == 0x584D4944u) {   /* "XMID" */
                     form_count++;
@@ -324,20 +329,28 @@ uint8_t *CxmiPlayer::find_seq(uint32_t seq_num) {
                     }
                 }
                 uint32_t chunk_len = read_be32(p + 4);
+                if (chunk_len > (uint32_t)(end - (p + 8))) return NULL;
                 p += 8 + chunk_len;
             }
         }
 
         if (tag == 0x464F524Du) {           /* "FORM" */
-            if (read_be32(p + 8) != 0x584D4944u) { /* "XMID" */
-                uint32_t chunk_len = read_be32(p + 4);
-                p += 8 + chunk_len;
-                continue;
+            if (p + 12 > end) return NULL;
+            uint32_t chunk_len = read_be32(p + 4);
+            if (chunk_len > (uint32_t)(end - (p + 8))) return NULL;
+            if (read_be32(p + 8) == 0x584D4944u) { /* "XMID" */
+                /* a bare (non-CAT) FORM XMID is track number i; return it only
+                 * when it is the one requested, otherwise skip past it so the
+                 * track counter cannot spin forever on a single-FORM file */
+                if (i == seq_num) return p;
+                i++;
             }
-            return p;
+            p += 8 + chunk_len;
+            continue;
         }
 
         uint32_t chunk_len = read_be32(p + 4);
+        if (chunk_len > (uint32_t)(end - (p + 8))) return NULL;
         p += 8 + chunk_len;
         i++;
     }
@@ -403,10 +416,15 @@ void CxmiPlayer::rewind_seq() {
     seq.RBRN = NULL;
     seq.EVNT = NULL;
 
+    uint8_t *end = xmi_data + xmi_size;
+    uint8_t *form_end = form + 8 + read_be32(form + 4);
+    if (form_end > end || form_end < form) form_end = end;
+
     uint8_t *p = form + 12;
-    for (;;) {
+    while (p + 8 <= form_end) {
         uint32_t tag = read_be32(p);
         uint32_t chunk_len = read_be32(p + 4);
+        if (chunk_len > (uint32_t)(form_end - (p + 8))) break;
 
         if (tag == 0x54494D42u) {           /* "TIMB" */
             seq.TIMB = p;
@@ -421,6 +439,26 @@ void CxmiPlayer::rewind_seq() {
     }
 
     init_sequence_state();
+
+    /* a malformed sequence may lack an event stream entirely: leave the
+     * sequence stopped rather than dereferencing a NULL EVNT chunk */
+    if (!seq.EVNT) {
+        seq.EVNT_ptr = NULL;
+        seq.EVNT_end = NULL;
+        return;
+    }
+
+    /* hard cap for event reads: the EVNT chunk length, clamped to the file
+     * buffer so a bogus chunk length cannot drive reads out of bounds */
+    {
+        size_t avail = (size_t)(end - (seq.EVNT + 8));
+        uint32_t evnt_len = read_be32(seq.EVNT + 4);
+        if ((size_t)evnt_len < avail)
+            seq.EVNT_end = seq.EVNT + 8 + evnt_len;
+        else
+            seq.EVNT_end = end;
+    }
+
     seq.status = SEQ_PLAYING;
     seq.seq_started = 1;
     seq.EVNT_ptr = seq.EVNT + 8;
@@ -580,8 +618,17 @@ void CxmiPlayer::do_install_timbre(uint16_t gnum, const uint8_t *data) {
     if (data == NULL) return;
 
     uint16_t tsize = read_le_16(data);
+    /* reject a blob that is degenerate or larger than the whole cache: the
+     * latter would spin delete_LRU() forever and then overflow cache_mem */
+    if (tsize < 2 || (uint32_t)tsize > cache_size) return;
 
-    while ((cache_end + tsize) > cache_size) delete_LRU();
+    while ((cache_end + tsize) > cache_size) {
+        uint32_t before = cache_end;
+        delete_LRU();
+        /* delete_LRU() is a no-op when every timbre is protected; bail out
+         * rather than spin forever (and then overflow the cache) */
+        if (cache_end >= before) return;
+    }
 
     uint8_t slot = 0xFF;
     for (int i = 0; i < XMI_MAX_TIMBS; i++) {
@@ -637,6 +684,9 @@ uint32_t CxmiPlayer::timbre_request() {
     const uint8_t *timb = seq.TIMB;
     if (!timb) return 0xFFFFFFFFU;
 
+    const uint8_t *end = xmi_data + xmi_size;
+    if (timb + 8 > end) return 0xFFFFFFFFU;
+
     if (timb[0] != 'T' || timb[1] != 'I' || timb[2] != 'M' || timb[3] != 'B')
         return 0xFFFFFFFFU;
 
@@ -644,6 +694,11 @@ uint32_t CxmiPlayer::timbre_request() {
     if (chunk_len < 2) return 0xFFFFFFFFU;
 
     const uint8_t *data = timb + 8;
+    /* clamp the chunk length to what is really present in the file buffer */
+    uint32_t avail = (uint32_t)(end - data);
+    if (chunk_len > avail) chunk_len = avail;
+    if (chunk_len < 2) return 0xFFFFFFFFU;
+
     uint32_t count = read_le_16(data);
     if (count == 0) return 0xFFFFFFFFU;
 
@@ -681,8 +736,14 @@ int CxmiPlayer::install_sequence_timbres() {
                                   ((uint32_t)fat[pos+4] << 16) | ((uint32_t)fat[pos+5] << 24);
             if (b == 0xFF) break;
             if (b == bank && p == patch) {
-                if (offset > 0 && offset + 2 <= fat_len)
-                    timb = fat + offset;
+                /* require the whole timbre blob (2-byte size + body) to lie
+                 * within the bank; a bogus offset/size installs the dummy */
+                if (offset > 0 && offset + 2 <= fat_len) {
+                    unsigned int bsize = (unsigned int)fat[offset] |
+                                         ((unsigned int)fat[offset + 1] << 8);
+                    if (bsize >= 2 && (uint64_t)offset + bsize <= fat_len)
+                        timb = fat + offset;
+                }
                 break;
             }
             pos += 6;
@@ -1097,6 +1158,9 @@ void CxmiPlayer::update_priority() {
 
 void CxmiPlayer::yamaha_note_on(uint32_t chan, uint32_t note, uint32_t vel) {
     if (chan >= XMI_NUM_CHANS) return;
+    /* MIDI note numbers are 7-bit; a corrupted event byte could be >= 128 and
+     * would index RBS_timbres[128] (and the note tables) out of bounds */
+    if (note > 127) return;
 
     int timb_idx;
     if (chan == 9) {
@@ -1517,7 +1581,10 @@ bool CxmiPlayer::load(const std::string &filename, const CFileProvider &fp) {
     xmi_size = fp.filesize(f);
     if (xmi_size < 12) { fp.close(f); return false; }
 
-    xmi_data = new uint8_t[xmi_size];
+    /* over-allocate a small zero-filled guard so the event handlers' bounded
+     * look-ahead past the logical end of a truncated file stays in-bounds */
+    xmi_data = new uint8_t[xmi_size + XMI_READ_GUARD];
+    memset(xmi_data + xmi_size, 0, XMI_READ_GUARD);
     f->readString((char *)xmi_data, xmi_size);
     fp.close(f);
 
@@ -1532,6 +1599,10 @@ bool CxmiPlayer::load(const std::string &filename, const CFileProvider &fp) {
         uint8_t *form = find_seq((uint32_t)t);
         if (!form) { has_loop[t] = 0; continue; }
         uint8_t *form_end = form + 8 + read_be32(form + 4);
+        /* clamp to the file buffer: the FORM length comes straight from the
+         * file and may claim more bytes than were actually loaded */
+        if (form_end > xmi_data + xmi_size || form_end < form)
+            form_end = xmi_data + xmi_size;
         uint8_t *p = form + 12;
         uint8_t *evnt = NULL;
         while (p + 8 <= form_end) {
@@ -1655,6 +1726,13 @@ bool CxmiPlayer::update() {
     if ((int16_t)seq.interval_cnt > 0) goto check_beat;
 
     while (1) {
+        /* stop if the event stream ran off the end without an end-of-track
+         * meta event (malformed/truncated EVNT chunk) */
+        if (!seq.EVNT_ptr || seq.EVNT_ptr >= seq.EVNT_end) {
+            seq.status = SEQ_DONE;
+            return false;
+        }
+
         uint32_t status = seq.EVNT_ptr[0];
 
         if (status < 128) {
