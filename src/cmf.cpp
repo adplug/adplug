@@ -94,6 +94,92 @@ static const uint8_t cDefaultPatches[] =
 static const uint8_t cInitInstrument[11] =
 	{ 0x01, 0x11, 0x4F, 0x00, 0xF1, 0xF2, 0x53, 0x74, 0x00, 0x00, 0x08 };
 
+// Note -> block/F-number lookup tables, ported verbatim from the SBFMDRV
+// reference (viiri/fmdrv).  block_note_tbl maps a MIDI note (0-127) to a byte
+// holding the OPL block (octave) in the high nibble and the semitone within the
+// octave in the low nibble.  fnum_tbl maps a note index measured in 1/64ths of a
+// semitone (768 == 12 semitones * 64) to the 10-bit OPL F-number.  See getFreq().
+static const uint8_t block_note_tbl[128] = { 
+	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+	0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
+	0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b,
+	0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b,
+	0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b,
+	0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0x5b,
+	0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b,
+	0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x7b,
+	0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x7b,
+	0x7b, 0x7b, 0x7b, 0x7b, 0x7b, 0x7b, 0x7b, 0x7b
+};
+
+static const uint16_t fnum_tbl[768] = {
+	343, 343, 344, 344, 344, 344, 345, 345, 345, 346, 346, 346,
+	347, 347, 347, 348, 348, 348, 349, 349, 349, 349, 350, 350,
+	350, 351, 351, 351, 352, 352, 352, 353, 353, 353, 354, 354,
+	354, 355, 355, 355, 356, 356, 356, 356, 357, 357, 357, 358,
+	358, 358, 359, 359, 359, 360, 360, 360, 361, 361, 361, 362,
+	362, 362, 363, 363, 363, 364, 364, 364, 365, 365, 365, 366,
+	366, 366, 367, 367, 367, 368, 368, 368, 369, 369, 369, 370,
+	370, 370, 371, 371, 371, 372, 372, 372, 373, 373, 373, 374,
+	374, 374, 375, 375, 375, 376, 376, 376, 377, 377, 377, 378,
+	378, 378, 379, 379, 379, 380, 380, 380, 381, 381, 381, 382,
+	382, 382, 383, 383, 384, 384, 384, 385, 385, 385, 386, 386,
+	386, 387, 387, 387, 388, 388, 388, 389, 389, 389, 390, 390,
+	391, 391, 391, 392, 392, 392, 393, 393, 393, 394, 394, 394,
+	395, 395, 395, 396, 396, 397, 397, 397, 398, 398, 398, 399,
+	399, 399, 400, 400, 401, 401, 401, 402, 402, 402, 403, 403,
+	403, 404, 404, 405, 405, 405, 406, 406, 406, 407, 407, 407,
+	408, 408, 409, 409, 409, 410, 410, 410, 411, 411, 412, 412,
+	412, 413, 413, 413, 414, 414, 414, 415, 415, 416, 416, 416,
+	417, 417, 417, 418, 418, 419, 419, 419, 420, 420, 421, 421,
+	421, 422, 422, 422, 423, 423, 424, 424, 424, 425, 425, 425,
+	426, 426, 427, 427, 427, 428, 428, 429, 429, 429, 430, 430,
+	430, 431, 431, 432, 432, 432, 433, 433, 434, 434, 434, 435,
+	435, 436, 436, 436, 437, 437, 438, 438, 438, 439, 439, 440,
+	440, 440, 441, 441, 442, 442, 442, 443, 443, 444, 444, 444,
+	445, 445, 446, 446, 446, 447, 447, 448, 448, 448, 449, 449,
+	450, 450, 450, 451, 451, 452, 452, 452, 453, 453, 454, 454,
+	454, 455, 455, 456, 456, 457, 457, 457, 458, 458, 459, 459,
+	459, 460, 460, 461, 461, 461, 462, 462, 463, 463, 464, 464,
+	464, 465, 465, 466, 466, 467, 467, 467, 468, 468, 469, 469,
+	469, 470, 470, 471, 471, 472, 472, 472, 473, 473, 474, 474,
+	475, 475, 475, 476, 476, 477, 477, 478, 478, 478, 479, 479,
+	480, 480, 481, 481, 481, 482, 482, 483, 483, 484, 484, 485,
+	485, 485, 486, 486, 487, 487, 488, 488, 488, 489, 489, 490,
+	490, 491, 491, 492, 492, 492, 493, 493, 494, 494, 495, 495,
+	496, 496, 496, 497, 497, 498, 498, 499, 499, 500, 500, 501,
+	501, 501, 502, 502, 503, 503, 504, 504, 505, 505, 506, 506,
+	506, 507, 507, 508, 508, 509, 509, 510, 510, 511, 511, 511,
+	512, 512, 513, 513, 514, 514, 515, 515, 516, 516, 517, 517,
+	518, 518, 518, 519, 519, 520, 520, 521, 521, 522, 522, 523,
+	523, 524, 524, 525, 525, 526, 526, 526, 527, 527, 528, 528,
+	529, 529, 530, 530, 531, 531, 532, 532, 533, 533, 534, 534,
+	535, 535, 536, 536, 537, 537, 538, 538, 538, 539, 539, 540,
+	540, 541, 541, 542, 542, 543, 543, 544, 544, 545, 545, 546,
+	546, 547, 547, 548, 548, 549, 549, 550, 550, 551, 551, 552,
+	552, 553, 553, 554, 554, 555, 555, 556, 556, 557, 557, 558,
+	558, 559, 559, 560, 560, 561, 561, 562, 562, 563, 563, 564,
+	564, 565, 565, 566, 566, 567, 567, 568, 568, 569, 569, 570,
+	571, 571, 572, 572, 573, 573, 574, 574, 575, 575, 576, 576,
+	577, 577, 578, 578, 579, 579, 580, 580, 581, 581, 582, 582,
+	583, 584, 584, 585, 585, 586, 586, 587, 587, 588, 588, 589,
+	589, 590, 590, 591, 591, 592, 593, 593, 594, 594, 595, 595,
+	596, 596, 597, 597, 598, 598, 599, 600, 600, 601, 601, 602,
+	602, 603, 603, 604, 604, 605, 606, 606, 607, 607, 608, 608,
+	609, 609, 610, 610, 611, 612, 612, 613, 613, 614, 614, 615,
+	615, 616, 617, 617, 618, 618, 619, 619, 620, 620, 621, 622,
+	622, 623, 623, 624, 624, 625, 626, 626, 627, 627, 628, 628,
+	629, 629, 630, 631, 631, 632, 632, 633, 633, 634, 635, 635,
+	636, 636, 637, 637, 638, 639, 639, 640, 640, 641, 642, 642,
+	643, 643, 644, 644, 645, 646, 646, 647, 647, 648, 649, 649,
+	650, 650, 651, 651, 652, 653, 653, 654, 654, 655, 656, 656,
+	657, 657, 658, 659, 659, 660, 660, 661, 662, 662, 663, 663,
+	664, 665, 665, 666, 666, 667, 668, 668, 669, 669, 670, 671,
+	671, 672, 672, 673, 674, 674, 675, 675, 676, 677, 677, 678,
+	678, 679, 680, 680, 681, 682, 682, 683, 683, 684, 685, 685
+};
+
 
 CPlayer *CcmfPlayer::factory(Copl *newopl)
 {
@@ -606,18 +692,39 @@ void CcmfPlayer::writeOPL(uint8_t iRegister, uint8_t iValue)
 
 void CcmfPlayer::getFreq(uint8_t iChannel, uint8_t iNote, uint8_t * iBlock, uint16_t * iOPLFNum)
 {
-	*iBlock = iNote / 12;
-	if (*iBlock > 1) (*iBlock)--; // keep in the same range as the Creative player
-	//if (*iBlock > 7) *iBlock = 7; // don't want to go out of range
+	// Frequency generation ported from the SBFMDRV reference (viiri/fmdrv:
+	// note2fnum() + calc_block_fnum()).  This replaces AdPlug's old pow()-based
+	// approximation with the real Creative driver's lookup tables, matching its
+	// tuning exactly.
 
-	double d = pow(2, (
-		(double)iNote + (
-			(this->chMIDI[iChannel].iPitchbend - 8192) / 8192.0
-		) + (
-			this->chMIDI[iChannel].iTranspose / 256.0
-		) - 9) / 12.0 - (*iBlock - 20))
-		* 440.0 / 32.0 / 50000.0;
-	*iOPLFNum = (uint16_t)(d+0.5);
+	// note2fnum(): clamp the MIDI note and look up its block/note byte.
+	// (fmdrv's global transpose g_transp is always 0, so it is omitted here.)
+	int iClampedNote = iNote;
+	if (iClampedNote < 0) iClampedNote = 0;
+	if (iClampedNote > 127) iClampedNote = 127;
+	uint8_t iBlockNote = block_note_tbl[iClampedNote];
+
+	// calc_block_fnum(): split into octave (block) and a note index measured in
+	// 1/64ths of a semitone (12 semitones * 64 == 768 == fnum_tbl size).
+	int iBlk = (iBlockNote & 0x70) >> 4;       // octave, 0..7
+	int iNoteIdx = (iBlockNote & 0x0F) << 6;   // semitone-within-octave * 64
+
+	// Per-channel transpose.  AdPlug stores the controller value directly (1/256
+	// of a semitone per unit); fmdrv works in 1/64-semitone units (value / 4).
+	iNoteIdx += this->chMIDI[iChannel].iTranspose / 4;
+
+	// Pitch bend (AdPlug extension; the Creative driver has none).  Applied on top
+	// in the same 1/64-semitone units, preserving the previous +/-1 semitone range
+	// and staying neutral (adding 0) at the centre value of 8192.
+	iNoteIdx += (this->chMIDI[iChannel].iPitchbend - 8192) / 128;
+
+	// Wrap the note index into the table range, shifting the octave to suit
+	// (matches fmdrv's calc_block_fnum, here in whole-octave steps).
+	if (iNoteIdx < 0)    { iNoteIdx += 768; iBlk -= 1; if (iBlk < 0) { iNoteIdx = 0;   iBlk = 0; } }
+	if (iNoteIdx >= 768) { iNoteIdx -= 768; iBlk += 1; if (iBlk > 7) { iNoteIdx = 767; iBlk = 7; } }
+
+	*iBlock = (uint8_t)iBlk;
+	*iOPLFNum = fnum_tbl[iNoteIdx];
 }
 
 void CcmfPlayer::cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
