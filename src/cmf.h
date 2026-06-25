@@ -113,5 +113,6 @@ class CcmfPlayer: public CPlayer
 		uint8_t getPercChannel(uint8_t iChannel);
 		void MIDIchangeInstrument(uint8_t iOPLChannel, uint8_t iMIDIChannel, uint8_t iNewInstrument);
 		void MIDIcontroller(uint8_t iChannel, uint8_t iController, uint8_t iValue);
+		void rhythmModeReset(bool bPerc);
 
 };

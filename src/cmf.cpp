@@ -1036,12 +1036,9 @@ void CcmfPlayer::MIDIcontroller(uint8_t iChannel, uint8_t iController, uint8_t i
 			AdPlug_LogWrite("CMF: Song set marker to 0x%02X\n", iValue);
 			break;
 		case 0x67:
-			this->bPercussive = (iValue != 0);
-			if (this->bPercussive) {
-				this->writeOPL(BASE_RHYTHM, this->iCurrentRegs[BASE_RHYTHM] | 0x20); // switch rhythm-mode on
-			} else {
-				this->writeOPL(BASE_RHYTHM, this->iCurrentRegs[BASE_RHYTHM] & ~0x20); // switch rhythm-mode off
-			}
+			// Rhythm/percussive mode switch.  The Creative driver (SBFMDRV / fmdrv
+			// switch_mode) performs a full chip reset here, not just a bit flip.
+			this->rhythmModeReset(iValue != 0);
 			AdPlug_LogWrite("CMF: Percussive/rhythm mode %s\n", this->bPercussive ? "enabled" : "disabled");
 			break;
 		case 0x68:
@@ -1059,4 +1056,47 @@ void CcmfPlayer::MIDIcontroller(uint8_t iChannel, uint8_t iController, uint8_t i
 			break;
 	}
 	return;
+}
+
+// Switch in/out of OPL rhythm (percussive) mode.  This mirrors fmdrv's
+// switch_mode(), which performs a full opl_reset2(): every melodic channel is
+// reprogrammed with the driver's default instrument and all voices are freed, so
+// the new mode starts from a clean, known register state instead of inheriting
+// whatever was left over from the previous mode.
+void CcmfPlayer::rhythmModeReset(bool bPerc)
+{
+	this->bPercussive = bPerc;
+
+	// Equivalent of fmdrv's opl_reset2().
+	this->writeOPL(0x08, 0x00);
+	for (int i = 0; i < 9; i++) {
+		uint8_t iOffset = OPLOFFSET(i);
+		this->writeOPL(BASE_CHAR_MULT + iOffset,     cInitInstrument[0]);
+		this->writeOPL(BASE_CHAR_MULT + iOffset + 3, cInitInstrument[1]);
+		this->writeOPL(BASE_SCAL_LEVL + iOffset,     cInitInstrument[2]);
+		this->writeOPL(BASE_SCAL_LEVL + iOffset + 3, cInitInstrument[3]);
+		this->writeOPL(BASE_ATCK_DCAY + iOffset,     cInitInstrument[4]);
+		this->writeOPL(BASE_ATCK_DCAY + iOffset + 3, cInitInstrument[5]);
+		this->writeOPL(BASE_SUST_RLSE + iOffset,     cInitInstrument[6]);
+		this->writeOPL(BASE_SUST_RLSE + iOffset + 3, cInitInstrument[7]);
+		this->writeOPL(BASE_WAVE      + iOffset,     cInitInstrument[8]);
+		this->writeOPL(BASE_WAVE      + iOffset + 3, cInitInstrument[9]);
+		this->writeOPL(BASE_FEED_CONN + i,           cInitInstrument[10]);
+
+		// Free the voice (back to the "never used" state).
+		this->chOPL[i].iNoteStart = 0;
+		this->chOPL[i].iMIDINote = -1;
+		this->chOPL[i].iMIDIChannel = -1;
+		this->chOPL[i].iMIDIPatch = -1;
+	}
+	// fmdrv also resets every MIDI channel's selected instrument to 0 here.
+	for (int i = 0; i < 16; i++) this->chMIDI[i].iPatch = 0;
+
+	// Creative's player always runs with AM + VIB depth enabled; the rhythm-mode
+	// enable bit (0x20) is added in percussive mode.  fmdrv uses g_opl_BD == 0xC0
+	// (melodic) or 0xE0 (percussive).  We write the bit here and keep it set,
+	// rather than reproducing opl_reset2's transient write of 0x00 to 0xBD,
+	// because AdPlug's percussion note handling relies on the rhythm-enable bit
+	// persisting in the register cache.
+	this->writeOPL(BASE_RHYTHM, bPerc ? 0xE0 : 0xC0);
 }
