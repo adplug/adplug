@@ -536,6 +536,21 @@ uint32_t CcmfPlayer::readMIDINumber()
 	return iValue;
 }
 
+// Note on fidelity to the original Creative SBFMDRV driver:
+// This player is being aligned with the accurate SBFMDRV C port (viiri/fmdrv),
+// but a couple of genuine bugs in the original driver are *deliberately not*
+// reproduced here, because correct behaviour sounds better and AdPlug already
+// does the right thing:
+//   1. fmdrv's midi_panic() writes the fixed register 0x83 for every voice
+//      (a hard-coded constant) instead of the per-voice sustain/release
+//      register 0x80 + offset.  We use the correct per-voice register.
+//   2. fmdrv's opl_reset2() writes the feedback/connection value to
+//      "opl_reg_offs[i] + i" rather than the proper 0xC0 + channel register.
+//      writeInstrumentSettings() below already uses BASE_FEED_CONN (0xC0) +
+//      channel, which is correct.
+// If byte-identical OPL register streams to the real driver are ever required,
+// these two quirks would need to be re-introduced.
+
 // iChannel: OPL channel (0-8)
 // iOperator: 0 == Modulator, 1 == Carrier
 //   Source - source operator to read from instrument definition
