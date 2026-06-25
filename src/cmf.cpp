@@ -409,6 +409,26 @@ bool CcmfPlayer::update()
 				int iPatch = (this->iInstCount > 0) ? (iNewInstrument % this->iInstCount) : 0;
 				this->chMIDI[iChannel].iPatch = iPatch;
 				AdPlug_LogWrite("CMF: Remembering MIDI channel %d now uses patch %d (requested %d)\n", iChannel, iPatch, iNewInstrument);
+
+				// Maintain the OPL voices the way fmdrv's prg_change does.
+				if (!this->bPercussive || iChannel < 11) {
+					int iNumChannels = this->bPercussive ? 6 : 9;
+					// Voices this channel had merely parked (released) are returned
+					// to the "never used" state so the new patch is loaded the next
+					// time the channel plays, rather than reusing the old instrument.
+					for (int i = 0; i < iNumChannels; i++) {
+						if (this->chOPL[i].iNoteStart == 0 && this->chOPL[i].iMIDIChannel == iChannel)
+							this->chOPL[i].iMIDIChannel = -1;
+					}
+					// Voices currently sounding on this channel are reprogrammed live.
+					for (int i = 0; i < iNumChannels; i++) {
+						if (this->chOPL[i].iNoteStart > 0 && this->chOPL[i].iMIDIChannel == iChannel)
+							this->MIDIchangeInstrument(i, iChannel, iPatch);
+					}
+				} else {
+					// Percussion channel: reprogram its dedicated rhythm-mode voice.
+					this->MIDIchangeInstrument(this->getPercChannel(iChannel), iChannel, iPatch);
+				}
 				break;
 			}
 			case 0xD0: { // Channel pressure (one data byte)
@@ -792,37 +812,64 @@ void CcmfPlayer::cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
 
 	} else { // Non rhythm-mode or a normal instrument channel
 
-		// Figure out which OPL channel to play this note on
+		// Pick an OPL voice for this note using the same four-tier search the
+		// Creative driver (SBFMDRV / fmdrv find_opl_voice) uses.  The voice state
+		// is encoded in the existing fields:
+		//   never used    -> iMIDIChannel == -1
+		//   note sounding  -> iNoteStart > 0
+		//   note released  -> iNoteStart == 0 && iMIDIChannel >= 0 (owner retained)
 		int iOPLChannel = -1;
 		int iNumChannels = this->bPercussive ? 6 : 9;
-		for (int i = iNumChannels - 1; i >= 0; i--) {
-			// If there's no note playing on this OPL channel, use that
-			if (this->chOPL[i].iNoteStart == 0) {
+
+		// Tier 1: a voice this same MIDI channel last released - reuse it so the
+		// instrument doesn't have to be reprogrammed.
+		for (int i = 0; i < iNumChannels; i++) {
+			if (this->chOPL[i].iNoteStart == 0 && this->chOPL[i].iMIDIChannel == iChannel) {
 				iOPLChannel = i;
-				// See if this channel is already set to the instrument we want.
-				if (this->chOPL[i].iMIDIPatch == this->chMIDI[iChannel].iPatch) {
-					// It is, so stop searching
-					break;
-				} // else keep searching just in case there's a better match
+				break;
 			}
 		}
+		// Tier 2: a voice that has never been used.
 		if (iOPLChannel == -1) {
-			// All channels were in use, find the one with the longest note
+			for (int i = 0; i < iNumChannels; i++) {
+				if (this->chOPL[i].iMIDIChannel == -1) {
+					iOPLChannel = i;
+					break;
+				}
+			}
+		}
+		// Tier 3: any released voice (last owned by some other channel).
+		if (iOPLChannel == -1) {
+			for (int i = 0; i < iNumChannels; i++) {
+				if (this->chOPL[i].iNoteStart == 0) {
+					iOPLChannel = i;
+					break;
+				}
+			}
+		}
+		// Tier 4: every voice is busy, so steal the one that has been playing
+		// longest (smallest iNoteStart) and key it off before reusing it (fmdrv
+		// rewrites the F-number registers without the key-on bit at this point).
+		if (iOPLChannel == -1) {
 			iOPLChannel = 0;
 			int iEarliest = this->chOPL[0].iNoteStart;
 			for (int i = 1; i < iNumChannels; i++) {
 				if (this->chOPL[i].iNoteStart < iEarliest) {
-					// Found a channel with a note being played for longer
 					iOPLChannel = i;
 					iEarliest = this->chOPL[i].iNoteStart;
 				}
 			}
+			this->writeOPL(BASE_KEYON_FREQ + iOPLChannel,
+				this->iCurrentRegs[BASE_KEYON_FREQ + iOPLChannel] & ~OPLBIT_KEYON);
 			AdPlug_LogWrite("CMF: Too many polyphonic notes, cutting note on channel %d\n", iOPLChannel);
 		}
 
-		// Now the new note should be played on iOPLChannel, but see if the instrument
-		// is right first.
-		if (this->chOPL[iOPLChannel].iMIDIPatch != this->chMIDI[iChannel].iPatch) {
+		// Reprogram the instrument only if this voice was last owned by a different
+		// MIDI channel, exactly as fmdrv does (it compares the previous owner, not
+		// the patch number).  Program changes invalidate parked voices (see the
+		// 0xC0 handler), so a stale instrument can never linger here.
+		int iPrevOwner = this->chOPL[iOPLChannel].iMIDIChannel;
+		if (iPrevOwner != (int)iChannel) {
 			this->MIDIchangeInstrument(iOPLChannel, iChannel, this->chMIDI[iChannel].iPatch);
 		}
 
@@ -859,23 +906,21 @@ void CcmfPlayer::cmfNoteOff(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
 		this->writeOPL(BASE_RHYTHM, this->iCurrentRegs[BASE_RHYTHM] & ~(1 << (15 - iChannel)));
 		this->chOPL[iOPLChannel].iNoteStart = 0; // channel free
 	} else { // Non rhythm-mode or a normal instrument channel
-		int iOPLChannel = -1;
 		int iNumChannels = this->bPercussive ? 6 : 9;
+		// Turn off every voice on this MIDI channel that is sounding this note.
+		// Each voice is left marked as "released by this channel" (iNoteStart == 0
+		// but iMIDIChannel retained) so the next note from this channel can reuse
+		// it without reprogramming, matching fmdrv's note_off.
 		for (int i = 0; i < iNumChannels; i++) {
 			if (
 				(this->chOPL[i].iMIDIChannel == iChannel) &&
 				(this->chOPL[i].iMIDINote == iNote) &&
 				(this->chOPL[i].iNoteStart != 0)
 			) {
-				// Found the note, switch it off
-				this->chOPL[i].iNoteStart = 0;
-				iOPLChannel = i;
-				break;
+				this->chOPL[i].iNoteStart = 0; // released (owner retained for reuse)
+				this->writeOPL(BASE_KEYON_FREQ + i, this->iCurrentRegs[BASE_KEYON_FREQ + i] & ~OPLBIT_KEYON);
 			}
 		}
-		if (iOPLChannel == -1) return;
-
-		this->writeOPL(BASE_KEYON_FREQ + iOPLChannel, this->iCurrentRegs[BASE_KEYON_FREQ + iOPLChannel] & ~OPLBIT_KEYON);
 	}
 	return;
 }
