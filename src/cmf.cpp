@@ -318,14 +318,18 @@ bool CcmfPlayer::update()
 			case 0xF0: // System message (arbitrary data bytes)
 				switch (iCommand) {
 					case 0xF0: { // Sysex
-						uint8_t iNextByte = 0;
-						AdPlug_LogWrite("Sysex message: ");
-						 while ((iNextByte & 0x80) == 0 && this->iPlayPointer < this->iSongLen) {
-							iNextByte = this->data[this->iPlayPointer++];
-							AdPlug_LogWrite("%02X", iNextByte);
-						}
-						AdPlug_LogWrite("\n");
+						// SMF/CMF sysex events are variable-length-prefixed:
+						// F0 <vlq length> <data...>.  Match the SBFMDRV reference
+						// (viiri/fmdrv) by reading the length and skipping the
+						// payload, instead of scanning for the next byte with the
+						// MSB set (which desyncs if a data byte happens to be >= 0x80).
+						uint32_t iSysexLen = this->readMIDINumber();
+						AdPlug_LogWrite("Sysex message: %u bytes\n", iSysexLen);
 						// This will have read in the terminating EOX (0xF7) message too
+						if (iSysexLen > (uint32_t)(this->iSongLen - this->iPlayPointer))
+							this->iPlayPointer = this->iSongLen;
+						else
+							this->iPlayPointer += iSysexLen;
 						break;
 					}
 					case 0xF1: // MIDI Time Code Quarter Frame
@@ -346,8 +350,17 @@ bool CcmfPlayer::update()
 						break;
 					case 0xF6: // Tune request
 						break;
-					case 0xF7: // End of System Exclusive (EOX) - should never be read, should be absorbed by Sysex handling code
+					case 0xF7: { // End of System Exclusive (EOX) - should never be read, should be absorbed by Sysex handling code
+						// If encountered standalone as an "escape" event it is also
+						// length-prefixed (F7 <vlq length> <data...>); skip the payload
+						// to stay in sync (matches the fmdrv reference).
+						uint32_t iEoxLen = this->readMIDINumber();
+						if (iEoxLen > (uint32_t)(this->iSongLen - this->iPlayPointer))
+							this->iPlayPointer = this->iSongLen;
+						else
+							this->iPlayPointer += iEoxLen;
 						break;
+					}
 
 					// These messages are "real time", meaning they can be sent between
 					// the bytes of other messages - but we're lazy and don't handle these
@@ -366,6 +379,11 @@ bool CcmfPlayer::update()
 					case 0xFF: { // System reset, used as meta-events in a MIDI file
 						if (this->iPlayPointer >= this->iSongLen) break;
 						uint8_t iEvent = this->data[this->iPlayPointer++];
+						// Meta-events are length-prefixed: FF <type> <vlq length> <data...>.
+						// Read the length so we can skip the payload and stay in sync on
+						// any meta-event other than end-of-track (matches the fmdrv reference,
+						// which previously was not consumed here and could desync playback).
+						uint32_t iMetaLen = this->readMIDINumber();
 						switch (iEvent) {
 							case 0x2F: // end of track
 								AdPlug_LogWrite("CMF: End-of-track, stopping playback\n");
@@ -374,6 +392,10 @@ bool CcmfPlayer::update()
 								break;
 							default:
 								AdPlug_LogWrite("CMF: Unknown MIDI meta-event 0xFF 0x%02X\n", iEvent);
+								if (iMetaLen > (uint32_t)(this->iSongLen - this->iPlayPointer))
+									this->iPlayPointer = this->iSongLen;
+								else
+									this->iPlayPointer += iMetaLen;
 								break;
 						}
 						break;
