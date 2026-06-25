@@ -84,7 +84,7 @@ bool CamdLoader::load(const std::string &filename, const CFileProvider &fp)
   // order length + # of patterns
   length = f->readInt(1);
   nop = f->readInt(1) + 1;
-  if (length > 128 || nop > 64) {
+  if (length == 0 || length > 128 || nop > 64) {
     fp.close(f);
     return false;
   }
