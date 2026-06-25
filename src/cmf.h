@@ -69,6 +69,7 @@ class CcmfPlayer: public CPlayer
 		int iSongLen;       // Max value for iPlayPointer
 		CMFHEADER cmfHeader;
 		SBI *pInstruments;
+		int iInstCount;     // Effective instrument count for MIDI patch wraparound (fmdrv g_num_inst)
 		bool bPercussive; // are rhythm-mode instruments enabled?
 		uint8_t iCurrentRegs[256]; // Current values in the OPL chip
 		uint8_t iPrevCommand; // Previous command (used for repeated MIDI commands, as the seek and playback code need to share this)

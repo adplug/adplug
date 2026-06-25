@@ -59,28 +59,40 @@
 // channel 4's modulator.)  (channels go from 0 to 8 inclusive)
 #define OPLOFFSET(channel)   (((channel) / 3) * 8 + ((channel) % 3))
 
-// These 16 instruments are repeated to fill up the 128 available slots.  A CMF
-// file can override none/some/all of the 128 slots with custom instruments,
-// so any that aren't overridden are still available for use with these default
-// patches.  The Word Rescue CMFs are good examples of songs that rely on these
-// default patches.
+// Default instrument bank, ported verbatim (and in the same order) from the
+// SBFMDRV reference (viiri/fmdrv "default_inst_bank").  In the original Creative
+// driver this bank is only active before a CMF is loaded; once a song is playing
+// the file's own instrument table is used instead and program numbers are taken
+// modulo the file's instrument count (see load() and the 0xC0 handler below).
+// We therefore only use this bank as a fallback for the (unusual) case of a file
+// that declares zero instruments.
+//
+// Each row is the 11-byte instrument record in CMF on-disk order:
+//   [0]/[1]  modulator/carrier characteristic + multiplier (reg 0x20)
+//   [2]/[3]  modulator/carrier scaling + output level      (reg 0x40)
+//   [4]/[5]  modulator/carrier attack + decay              (reg 0x60)
+//   [6]/[7]  modulator/carrier sustain + release           (reg 0x80)
+//   [8]/[9]  modulator/carrier wave select                 (reg 0xE0)
+//   [10]     feedback + connection                         (reg 0xC0)
+// Note byte [3] (carrier scaling/output level) is non-zero for several patches
+// here, where the previous AdPlug bank forced it to zero.
 static const uint8_t cDefaultPatches[] =
+"\x21\x21\xD1\x07\xA3\xA4\x46\x25\x00\x00\x0A"
+"\x22\x22\x0F\x0F\xF6\xF6\x95\x36\x00\x00\x0A"
+"\xE1\xE1\x00\x00\x44\x54\x24\x34\x02\x02\x07"
+"\xA5\xB1\xD2\x80\x81\xF1\x03\x05\x00\x00\x02"
+"\x71\x22\xC5\x05\x6E\x8B\x17\x0E\x00\x00\x02"
+"\x32\x21\x16\x80\x73\x75\x24\x57\x00\x00\x0E"
 "\x01\x11\x4F\x00\xF1\xD2\x53\x74\x00\x00\x06"
 "\x07\x12\x4F\x00\xF2\xF2\x60\x72\x00\x00\x08"
 "\x31\xA1\x1C\x80\x51\x54\x03\x67\x00\x00\x0E"
 "\x31\xA1\x1C\x80\x41\x92\x0B\x3B\x00\x00\x0E"
 "\x31\x16\x87\x80\xA1\x7D\x11\x43\x00\x00\x08"
 "\x30\xB1\xC8\x80\xD5\x61\x19\x1B\x00\x00\x0C"
-"\xF1\x21\x01\x00\x97\xF1\x17\x18\x00\x00\x08"
+"\xF1\x21\x01\x0D\x97\xF1\x17\x18\x00\x00\x08"
 "\x32\x16\x87\x80\xA1\x7D\x10\x33\x00\x00\x08"
 "\x01\x12\x4F\x00\x71\x52\x53\x7C\x00\x00\x0A"
-"\x02\x03\x8D\x00\xD7\xF5\x37\x18\x00\x00\x04"
-"\x21\x21\xD1\x00\xA3\xA4\x46\x25\x00\x00\x0A"
-"\x22\x22\x0F\x00\xF6\xF6\x95\x36\x00\x00\x0A"
-"\xE1\xE1\x00\x00\x44\x54\x24\x34\x02\x02\x07"
-"\xA5\xB1\xD2\x80\x81\xF1\x03\x05\x00\x00\x02"
-"\x71\x22\xC5\x00\x6E\x8B\x17\x0E\x00\x00\x02"
-"\x32\x21\x16\x80\x73\x75\x24\x57\x00\x00\x0E";
+"\x02\x03\x8D\x03\xD7\xF5\x37\x18\x00\x00\x04";
 
 // The Creative driver (SBFMDRV) programs every channel with this default
 // instrument at reset, so that untouched channels start from a known register
@@ -190,6 +202,7 @@ CcmfPlayer::CcmfPlayer(Copl *newopl) :
 	CPlayer(newopl),
 	data(NULL),
 	pInstruments(NULL),
+	iInstCount(16),
 	bPercussive(false),
 	iPrevCommand(0)
 {
@@ -276,19 +289,31 @@ bool CcmfPlayer::load(const std::string &filename, const CFileProvider &fp)
 		f->seek(5, binio::Add);  // skip over the padding bytes
 	}
 
-	// Set the rest of the instruments to the CMF defaults
-	for (int i = this->cmfHeader.iNumInstruments; i < 128; i++) {
-		this->pInstruments[i].op[0].iCharMult =       cDefaultPatches[(i % 16) * 11 + 0];
-		this->pInstruments[i].op[1].iCharMult =       cDefaultPatches[(i % 16) * 11 + 1];
-		this->pInstruments[i].op[0].iScalingOutput =  cDefaultPatches[(i % 16) * 11 + 2];
-		this->pInstruments[i].op[1].iScalingOutput =  cDefaultPatches[(i % 16) * 11 + 3];
-		this->pInstruments[i].op[0].iAttackDecay =    cDefaultPatches[(i % 16) * 11 + 4];
-		this->pInstruments[i].op[1].iAttackDecay =    cDefaultPatches[(i % 16) * 11 + 5];
-		this->pInstruments[i].op[0].iSustainRelease = cDefaultPatches[(i % 16) * 11 + 6];
-		this->pInstruments[i].op[1].iSustainRelease = cDefaultPatches[(i % 16) * 11 + 7];
-		this->pInstruments[i].op[0].iWaveSel =        cDefaultPatches[(i % 16) * 11 + 8];
-		this->pInstruments[i].op[1].iWaveSel =        cDefaultPatches[(i % 16) * 11 + 9];
-		this->pInstruments[i].iConnection =           cDefaultPatches[(i % 16) * 11 + 10];
+	// In the original Creative driver (SBFMDRV / fmdrv) the file's own instrument
+	// table is the only one used during playback: incoming MIDI patch numbers are
+	// reduced modulo the file's instrument count (g_num_inst) rather than being
+	// looked up against a 128-slot table padded with default patches.  We follow
+	// that behaviour here.  iInstCount is the divisor used for that wraparound (see
+	// the 0xC0 program-change handler).
+	if (this->cmfHeader.iNumInstruments > 0) {
+		this->iInstCount = this->cmfHeader.iNumInstruments;
+	} else {
+		// A file with no instruments of its own falls back to the default bank
+		// (this matches fmdrv's pre-song state of g_num_inst == 16).
+		this->iInstCount = 16;
+		for (int i = 0; i < 16; i++) {
+			this->pInstruments[i].op[0].iCharMult =       cDefaultPatches[i * 11 + 0];
+			this->pInstruments[i].op[1].iCharMult =       cDefaultPatches[i * 11 + 1];
+			this->pInstruments[i].op[0].iScalingOutput =  cDefaultPatches[i * 11 + 2];
+			this->pInstruments[i].op[1].iScalingOutput =  cDefaultPatches[i * 11 + 3];
+			this->pInstruments[i].op[0].iAttackDecay =    cDefaultPatches[i * 11 + 4];
+			this->pInstruments[i].op[1].iAttackDecay =    cDefaultPatches[i * 11 + 5];
+			this->pInstruments[i].op[0].iSustainRelease = cDefaultPatches[i * 11 + 6];
+			this->pInstruments[i].op[1].iSustainRelease = cDefaultPatches[i * 11 + 7];
+			this->pInstruments[i].op[0].iWaveSel =        cDefaultPatches[i * 11 + 8];
+			this->pInstruments[i].op[1].iWaveSel =        cDefaultPatches[i * 11 + 9];
+			this->pInstruments[i].iConnection =           cDefaultPatches[i * 11 + 10];
+		}
 	}
 
 	if (this->cmfHeader.iTagOffsetTitle) {
@@ -392,8 +417,11 @@ bool CcmfPlayer::update()
 			case 0xC0: { // Instrument change (one data byte)
 				if (this->iPlayPointer >= this->iSongLen) break;
 				uint8_t iNewInstrument = this->data[this->iPlayPointer++];
-				this->chMIDI[iChannel].iPatch = iNewInstrument;
-				AdPlug_LogWrite("CMF: Remembering MIDI channel %d now uses patch %d\n", iChannel, iNewInstrument);
+				// Reduce the patch number modulo the file's instrument count, as
+				// the original SBFMDRV driver does (insnum %= g_num_inst).
+				int iPatch = (this->iInstCount > 0) ? (iNewInstrument % this->iInstCount) : 0;
+				this->chMIDI[iChannel].iPatch = iPatch;
+				AdPlug_LogWrite("CMF: Remembering MIDI channel %d now uses patch %d (requested %d)\n", iChannel, iPatch, iNewInstrument);
 				break;
 			}
 			case 0xD0: { // Channel pressure (one data byte)
@@ -585,12 +613,12 @@ void CcmfPlayer::rewind(int subsong)
 		this->chOPL[i].iMIDIChannel = -1;
 		this->chOPL[i].iMIDIPatch = -1;
 
-		this->chMIDI[i].iPatch = -2;
+		this->chMIDI[i].iPatch = 0; // fmdrv default instrument is 0 (avoids OOB if a note precedes any program change)
 		this->chMIDI[i].iPitchbend = 8192;
 		this->chMIDI[i].iTranspose = 0;
 	}
 	for (int i = 9; i < 16; i++) {
-		this->chMIDI[i].iPatch = -2;
+		this->chMIDI[i].iPatch = 0; // fmdrv default instrument is 0
 		this->chMIDI[i].iPitchbend = 8192;
 		this->chMIDI[i].iTranspose = 0;
 	}
