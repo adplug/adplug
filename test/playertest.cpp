@@ -131,6 +131,7 @@ static const char *filelist[] = {
   "logical.plx",	// Palladix Sound System
   "DEMO.XMI",       // XMI (Miles Design)
   "VACANCE.WM",     // Silky's MusicV WM
+  "CHARGEN.CMF",    // Creative Music Format with midi-like drums on channel 9
   NULL
 };
 

@@ -83,6 +83,8 @@ class CcmfPlayer: public CPlayer
 		// Additions for AdPlug's design
 		int iDelayRemaining;
 		bool bSongEnd;
+		bool bMidiDrums;    // file drives percussion as General MIDI channel-9 drum keys
+		int iDrumPatchBase; // index in pInstruments of the 5 fallback rhythm-drum patches
 		std::string strTitle, strComposer, strRemarks;
 
 	public:
@@ -111,6 +113,8 @@ class CcmfPlayer: public CPlayer
 		void cmfNoteOff(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity);
 		void cmfNoteUpdate(uint8_t iChannel);
 		uint8_t getPercChannel(uint8_t iChannel);
+		uint8_t gmKeyToRhythmChannel(uint8_t iNote);
+		bool detectMidiDrums();
 		void MIDIchangeInstrument(uint8_t iOPLChannel, uint8_t iMIDIChannel, uint8_t iNewInstrument);
 		void MIDIcontroller(uint8_t iChannel, uint8_t iController, uint8_t iValue);
 		void rhythmModeReset(bool bPerc);

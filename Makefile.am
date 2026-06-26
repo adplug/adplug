@@ -468,7 +468,9 @@ EXTRA_DIST += \
 	test/testref/RRThiel.ref \
 	test/testmus/RRThiel.vgz \
 	test/testmus/DEMO.XMI \
-	test/testref/DEMO.ref
+	test/testref/DEMO.ref \
+	test/testmus/CHARGEN.CMF \
+	test/testref/CHARGEN.ref
 # Regression tests:
 EXTRA_DIST += \
 	test/fuzzing/i-85.bmf \

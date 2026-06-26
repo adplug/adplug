@@ -93,6 +93,23 @@ static const uint8_t cDefaultPatches[] =
 static const uint8_t cInitInstrument[11] =
 	{ 0x01, 0x11, 0x4F, 0x00, 0xF1, 0xF2, 0x53, 0x74, 0x00, 0x00, 0x08 };
 
+// Fallback rhythm-drum timbres for the General-MIDI-channel-9 remap (see
+// detectMidiDrums() / gmKeyToRhythmChannel()).  These are only used for a
+// percussion channel (11-15) that the file never programs itself; well-formed
+// GM->CMF conversions set up the rhythm channels with a program change, in which
+// case those instruments take over.  Each row is a percussive-envelope operator
+// (fast attack, decaying EG-type) in the standard 11-byte CMF instrument order:
+//   [0]/[1] char+mult  [2]/[3] scal+level  [4]/[5] attack+decay
+//   [6]/[7] sustain+release  [8]/[9] wave select  [10] feedback+connection
+// Order: bass drum (ch11), snare (ch12), tom (ch13), top cymbal (ch14), hi-hat (ch15).
+static const uint8_t cDefaultDrumPatches[5][11] = {
+	{ 0x00, 0x00, 0x00, 0x00, 0xF8, 0xF8, 0x07, 0x07, 0x00, 0x00, 0x00 }, // bass drum
+	{ 0x0C, 0x0C, 0x00, 0x00, 0xF8, 0xF8, 0x07, 0x07, 0x00, 0x01, 0x00 }, // snare drum
+	{ 0x04, 0x04, 0x00, 0x00, 0xF8, 0xF8, 0x07, 0x07, 0x00, 0x00, 0x00 }, // tom tom
+	{ 0x0C, 0x0C, 0x00, 0x00, 0xF8, 0xF8, 0x05, 0x05, 0x03, 0x03, 0x00 }, // top cymbal
+	{ 0x0E, 0x0E, 0x00, 0x00, 0xF8, 0xF8, 0x07, 0x07, 0x03, 0x03, 0x00 }, // hi-hat
+};
+
 // Note -> block/F-number lookup tables, ported verbatim from the SBFMDRV
 // reference (viiri/fmdrv).  block_note_tbl maps a MIDI note (0-127) to a byte
 // holding the OPL block (octave) in the high nibble and the semitone within the
@@ -191,7 +208,9 @@ CcmfPlayer::CcmfPlayer(Copl *newopl) :
 	pInstruments(NULL),
 	iInstCount(16),
 	bPercussive(false),
-	iPrevCommand(0)
+	iPrevCommand(0),
+	bMidiDrums(false),
+	iDrumPatchBase(0)
 {
 	assert(OPLOFFSET(1-1) == 0x00);
 	assert(OPLOFFSET(5-1) == 0x09);
@@ -257,9 +276,25 @@ bool CcmfPlayer::load(const std::string &filename, const CFileProvider &fp)
 	// Load the instruments
 
 	f->seek(this->cmfHeader.iInstrumentBlockOffset);
-	this->pInstruments = new SBI[
-		(this->cmfHeader.iNumInstruments < 128) ? 128 : this->cmfHeader.iNumInstruments
-	];  // Always at least 128 available for use
+	// Always at least 128 available for use, plus 5 reserved slots at the end for
+	// the fallback rhythm-drum patches used by the General-MIDI channel-9 remap.
+	this->iDrumPatchBase =
+		(this->cmfHeader.iNumInstruments < 128) ? 128 : this->cmfHeader.iNumInstruments;
+	this->pInstruments = new SBI[this->iDrumPatchBase + 5];
+
+	for (int i = 0; i < 5; i++) {
+		this->pInstruments[this->iDrumPatchBase + i].op[0].iCharMult =       cDefaultDrumPatches[i][0];
+		this->pInstruments[this->iDrumPatchBase + i].op[1].iCharMult =       cDefaultDrumPatches[i][1];
+		this->pInstruments[this->iDrumPatchBase + i].op[0].iScalingOutput =  cDefaultDrumPatches[i][2];
+		this->pInstruments[this->iDrumPatchBase + i].op[1].iScalingOutput =  cDefaultDrumPatches[i][3];
+		this->pInstruments[this->iDrumPatchBase + i].op[0].iAttackDecay =    cDefaultDrumPatches[i][4];
+		this->pInstruments[this->iDrumPatchBase + i].op[1].iAttackDecay =    cDefaultDrumPatches[i][5];
+		this->pInstruments[this->iDrumPatchBase + i].op[0].iSustainRelease = cDefaultDrumPatches[i][6];
+		this->pInstruments[this->iDrumPatchBase + i].op[1].iSustainRelease = cDefaultDrumPatches[i][7];
+		this->pInstruments[this->iDrumPatchBase + i].op[0].iWaveSel =        cDefaultDrumPatches[i][8];
+		this->pInstruments[this->iDrumPatchBase + i].op[1].iWaveSel =        cDefaultDrumPatches[i][9];
+		this->pInstruments[this->iDrumPatchBase + i].iConnection =           cDefaultDrumPatches[i][10];
+	}
 
 	for (int i = 0; i < this->cmfHeader.iNumInstruments; i++) {
 		this->pInstruments[i].op[0].iCharMult = f->readInt(1);
@@ -327,6 +362,15 @@ bool CcmfPlayer::load(const std::string &filename, const CFileProvider &fp)
   f->readString((char *)data, this->iSongLen);
 
   fp.close(f);
+
+	// Detect files that drive percussion through the General MIDI drum channel
+	// (MIDI channel 9) instead of CMF's native rhythm channels (11-15).  When
+	// found, rewind() forces rhythm mode on and cmfNoteOn/Off remap channel-9
+	// notes onto the appropriate rhythm channel (see gmKeyToRhythmChannel()).
+	this->bMidiDrums = this->detectMidiDrums();
+	if (this->bMidiDrums)
+		AdPlug_LogWrite("CMF: General MIDI channel-9 drum track detected; remapping to rhythm channels.\n");
+
 	rewind(0);
 
   return true;
@@ -634,6 +678,13 @@ void CcmfPlayer::rewind(int subsong)
 	memset(this->iNotePlaying, 255, sizeof(iNotePlaying));
 	memset(this->bNoteFix, false, sizeof(bNoteFix));
 
+	// If this file routes drums through MIDI channel 9 (see detectMidiDrums),
+	// force OPL rhythm mode on now and load the fallback drum timbres, so the
+	// remapped percussion is audible even if the song never sends controller
+	// 0x67 itself.  Songs that do send it simply re-run this harmlessly, and
+	// their own program changes on channels 11-15 override the defaults.
+	if (this->bMidiDrums) this->rhythmModeReset(true);
+
 	return;
 }
 
@@ -764,6 +815,10 @@ void CcmfPlayer::getFreq(uint8_t iChannel, uint8_t iNote, uint8_t * iBlock, uint
 
 void CcmfPlayer::cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
 {
+	// General MIDI channel-9 drum track: route the drum key to the matching CMF
+	// rhythm channel (11-15) so it plays on the OPL rhythm generator.
+	if (this->bMidiDrums && iChannel == 9) iChannel = this->gmKeyToRhythmChannel(iNote);
+
 	uint8_t iBlock = 0;
 	uint16_t iOPLFNum = 0;
 	getFreq(iChannel, iNote, &iBlock, &iOPLFNum);
@@ -900,6 +955,9 @@ void CcmfPlayer::cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
 
 void CcmfPlayer::cmfNoteOff(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
 {
+	// Match the channel-9 drum remap performed in cmfNoteOn().
+	if (this->bMidiDrums && iChannel == 9) iChannel = this->gmKeyToRhythmChannel(iNote);
+
 	if ((iChannel > 10) && (this->bPercussive)) {
 		int iOPLChannel = this->getPercChannel(iChannel);
 		if (this->chOPL[iOPLChannel].iMIDINote != iNote) return; // there's a different note playing now
@@ -967,6 +1025,97 @@ uint8_t CcmfPlayer::getPercChannel(uint8_t iChannel)
 	}
 	AdPlug_LogWrite("CMF ERR: Tried to get the percussion channel from MIDI channel %d - this shouldn't happen!\n", iChannel);
 	return 0;
+}
+
+// Map a General MIDI percussion key number to the nearest CMF rhythm channel.
+//   11 = bass drum, 12 = snare, 13 = tom, 14 = cymbal, 15 = hi-hat
+uint8_t CcmfPlayer::gmKeyToRhythmChannel(uint8_t iNote)
+{
+	switch (iNote) {
+		case 35: case 36:                            return 11; // acoustic / bass drum
+		case 37: case 38: case 39: case 40:          return 12; // stick / snare / clap
+		case 42: case 44: case 46:                   return 15; // closed / pedal / open hi-hat
+		case 49: case 51: case 52: case 53:
+		case 55: case 57: case 59:                   return 14; // crash / ride / splash / chinese
+		case 80: case 81:                            return 14; // triangle -> cymbal
+		default:                                     return 13; // toms and all other percussion
+	}
+}
+
+// Scan the loaded music block once at load time to decide whether the file
+// drives its percussion as a General MIDI drum track on MIDI channel 9, rather
+// than via CMF's native rhythm channels (11-15).  This is the signature of a
+// file converted from a General MIDI source without remapping the drum channel.
+// We flag it when channel 9 plays notes, never receives a program change (the GM
+// drum channel ignores patch), and every channel-9 note falls within the GM
+// percussion key range (35-81).  The parser here mirrors update() so the byte
+// stream stays in sync with playback.
+bool CcmfPlayer::detectMidiDrums()
+{
+	int p = 0;
+	uint8_t prev = 0;
+	bool bCh9Note = false;    // channel 9 has at least one note-on
+	bool bCh9Prog = false;    // channel 9 received a program change
+	bool bCh9NonDrum = false; // channel 9 played a note outside the GM drum range
+
+	// Skip the leading delay before the first event.
+	while (p < this->iSongLen && (this->data[p] & 0x80)) p++;
+	if (p < this->iSongLen) p++;
+
+	while (p < this->iSongLen) {
+		uint8_t cmd = this->data[p++];
+		if ((cmd & 0x80) == 0) { p--; cmd = prev; }
+		else prev = cmd;
+		uint8_t ch = cmd & 0x0F;
+		switch (cmd & 0xF0) {
+			case 0x80: case 0xA0: case 0xB0: case 0xE0: // two data bytes
+				p += 2;
+				break;
+			case 0x90: { // note on (two data bytes)
+				if (p > this->iSongLen - 2) { p = this->iSongLen; break; }
+				uint8_t iNote = this->data[p++];
+				uint8_t iVel = this->data[p++];
+				if (ch == 9 && iVel > 0) {
+					bCh9Note = true;
+					if (iNote < 35 || iNote > 81) bCh9NonDrum = true;
+				}
+				break;
+			}
+			case 0xC0: // program change (one data byte)
+				if (ch == 9) bCh9Prog = true;
+				p += 1;
+				break;
+			case 0xD0: // channel pressure (one data byte)
+				p += 1;
+				break;
+			case 0xF0:
+				if (cmd == 0xF0 || cmd == 0xF7) {
+					// sysex / escape: <vlq length> <payload>
+					uint32_t len = 0; int c = 0;
+					while (p < this->iSongLen && c < 4) { uint8_t b = this->data[p++]; c++; len = (len << 7) | (b & 0x7F); if (!(b & 0x80)) break; }
+					p += len;
+				} else if (cmd == 0xFF) {
+					if (p >= this->iSongLen) break;
+					uint8_t evt = this->data[p++];
+					uint32_t len = 0; int c = 0;
+					while (p < this->iSongLen && c < 4) { uint8_t b = this->data[p++]; c++; len = (len << 7) | (b & 0x7F); if (!(b & 0x80)) break; }
+					if (evt == 0x2F) { p = this->iSongLen; break; } // end of track
+					p += len;
+				} else if (cmd == 0xFC) {
+					p = this->iSongLen; // stop
+					break;
+				}
+				break;
+			default:
+				break;
+		}
+		if (p >= this->iSongLen) break;
+		// Skip the inter-event delay.
+		while (p < this->iSongLen && (this->data[p] & 0x80)) p++;
+		if (p < this->iSongLen) p++;
+	}
+
+	return bCh9Note && !bCh9Prog && !bCh9NonDrum;
 }
 
 
@@ -1091,6 +1240,15 @@ void CcmfPlayer::rhythmModeReset(bool bPerc)
 	}
 	// fmdrv also resets every MIDI channel's selected instrument to 0 here.
 	for (int i = 0; i < 16; i++) this->chMIDI[i].iPatch = 0;
+
+	// For a General MIDI channel-9 drum file, point the rhythm channels at the
+	// reserved fallback drum patches so remapped percussion has a usable timbre
+	// straight away.  A program change on any of channels 11-15 later in the song
+	// overrides the corresponding default.
+	if (this->bMidiDrums && bPerc) {
+		for (int ch = 11; ch <= 15; ch++)
+			this->chMIDI[ch].iPatch = this->iDrumPatchBase + (ch - 11);
+	}
 
 	// Creative's player always runs with AM + VIB depth enabled; the rhythm-mode
 	// enable bit (0x20) is added in percussive mode.  fmdrv uses g_opl_BD == 0xC0
