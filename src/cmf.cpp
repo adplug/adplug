@@ -691,12 +691,25 @@ void CcmfPlayer::rewind(int subsong)
 // Return value: 1 == 1 second, 2 == 0.5 seconds
 float CcmfPlayer::getrefresh()
 {
+	double r;
 	if (this->iDelayRemaining) {
-		return (float)this->cmfHeader.iTicksPerSecond / (float)this->iDelayRemaining;
+		r = (double)this->cmfHeader.iTicksPerSecond / (double)this->iDelayRemaining;
 	} else {
 		// Delay-remaining is zero (e.g. start of song) so use a tiny delay
-		return this->cmfHeader.iTicksPerSecond; // wait for one tick
+		r = this->cmfHeader.iTicksPerSecond; // wait for one tick
 	}
+
+	// Round to two decimal places before returning.  The test harness prints this
+	// value with "%.2f", and the various C runtimes disagree on how to format an
+	// exact half-way value: UCRT, glibc and MinGW round half-to-even while MSVC's
+	// pre-UCRT runtime (the v120_xp toolset on CI) rounds half-away.  For example
+	// 185/8 == 23.125 would print as 23.12 on the former and 23.13 on the latter.
+	// rint() rounds to the nearest integer using the current rounding mode, which
+	// defaults to round-half-to-even (FE_TONEAREST) identically on gcc and MSVC -
+	// the same rule glibc/UCRT/MinGW use for "%.2f".  This therefore reproduces the
+	// existing reference output exactly while moving the value off the half-way
+	// boundary, so the legacy MSVC runtime can no longer format it differently.
+	return (float)(rint(r * 100.0) / 100.0);
 }
 
 std::string CcmfPlayer::gettitle()
