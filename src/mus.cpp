@@ -206,8 +206,6 @@ bool CmusPlayer::load(const std::string &filename, const CFileProvider &fp)
 
 			size_t np = filename.find_last_of(DIR_DELIM);
 			if (np == std::string::npos)
-				np = filename.find_last_of("\\");
-			if (np == std::string::npos)
 				np = -1;
 
 			if (nam.empty())
