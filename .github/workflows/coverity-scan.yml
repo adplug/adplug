@@ -26,7 +26,7 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
 
     - name: Checkout libbinio repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
       with:
         repository: '${{env.LIBBINIO_REPOSITORY}}'
         ref: master
@@ -34,7 +34,7 @@ jobs:
         fetch-depth: 0
 
     - name: Checkout adplug repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v7
       with:
         path: adplug
         fetch-depth: 0
