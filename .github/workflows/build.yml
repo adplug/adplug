@@ -17,6 +17,8 @@ jobs:
             os: ubuntu-latest
           - compiler: djgpp-2.0.5-gcc-12.2.0 # To test compatibility for Adplay - DOS
             os: ubuntu-latest
+          - compiler: mingw-w64 # To test Windows builds with Wine
+            os: ubuntu-latest
           - compiler: powerpc-gcc # To test compatibility with big-endian powerpc
             os: ubuntu-latest
           - compiler: powerpc64-gcc # To test compatibility with big-endian powerpc
@@ -67,6 +69,10 @@ jobs:
             wget https://github.com/andrewwutw/build-djgpp/releases/download/v3.4/djgpp-linux64-gcc1220.tar.bz2
             bzcat djgpp-linux64-gcc1220.tar.bz2 | sudo tar -x --directory /usr/local
           fi
+        fi
+
+        if [[ ${{ matrix.compiler }} == "mingw-w64" ]]; then
+          sudo apt install -y g++-mingw-w64-x86-64 wine64 libwine gcc-mingw-w64-x86-64-win32-runtime gcc-mingw-w64-x86-64-win32 g++-mingw-w64-x86-64-win32
         fi
 
         if [[ ${{ matrix.compiler }} = powerpc-gcc ]]; then
@@ -124,6 +130,23 @@ jobs:
         echo 'adplug_env=CFLAGS="-O2 -pipe" CXXFLAGS="-O2 -pipe -Wno-deprecated" CPPFLAGS="-O2 -pipe -Wno-deprecated" LDFLAGS="-Wl,-O1 -Wl,--as-needed -Wl,--no-undefined -Wl,--gc-sections" PKG_CONFIG_PATH=/usr/local/djgpp/lib/pkgconfig' >> $GITHUB_ENV
         echo '/usr/local/djgpp/bin/' >> $GITHUB_PATH
 
+    - name: Set MinGW environment
+      if: ${{ matrix.compiler == 'mingw-w64' }}
+      run: |
+        echo 'compile_opts=--host=x86_64-w64-mingw32 --prefix=/usr/local/x86_64-w64-mingw32 CXXFLAGS=-Wno-deprecated CPPFLAGS=-Wno-deprecated PKG_CONFIG_PATH=/usr/local/x86_64-w64-mingw32/lib/pkgconfig' >> $GITHUB_ENV
+        if command -v wine64 >/dev/null 2>&1; then
+          echo "WINE=$(command -v wine64)" >> $GITHUB_ENV
+          echo "LOG_COMPILER=$(command -v wine64)" >> $GITHUB_ENV
+        elif command -v wine >/dev/null 2>&1; then
+          echo "WINE=$(command -v wine)" >> $GITHUB_ENV
+          echo "LOG_COMPILER=$(command -v wine)" >> $GITHUB_ENV
+        else
+          echo "wine64/wine is not available" >&2
+          exit 1
+        fi
+        echo "WINEPATH=/usr/x86_64-w64-mingw32/bin:/usr/lib/gcc/x86_64-w64-mingw32/10-win32:/usr/local/x86_64-w64-mingw32/bin:${{ github.workspace }}/src/.libs:${{ github.workspace }}/test/.libs" >> $GITHUB_ENV
+        echo "testdir=${{ github.workspace }}/test" >> $GITHUB_ENV
+
     - name: Set PowerPC-GCC environment
       if: ${{ matrix.compiler == 'powerpc-gcc' }}
       run: |
@@ -180,7 +203,7 @@ jobs:
         make all ${{ env.compile_env }} ${{ env.adplug_env }} && sudo env PATH=$PATH make install
 
         # cross-platform needs to patch the helper scripts for `make check`, so please prepare them - and patch them
-        # Sidenote: DJGPP will generate test/crctest.exe test/emutest.exe test/playtest.exe and test/strstest.exe; and they will NOT be scripts
+        # Sidenote: DJGPP/MinGW will generate test/crctest.exe test/emutest.exe test/playtest.exe and test/strstest.exe; and they will NOT be scripts
         if  [[ ${{ matrix.compiler }} == "powerpc-gcc" ]]; then
           make test/crctest test/emutest test/playtest test/strstest ${{ env.compile_env }} ${{ env.adplug_env }}
           sed -e 's/exec "/exec qemu-ppc -L \/usr\/local\/powerpc -L \/usr\/powerpc-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
@@ -191,6 +214,29 @@ jobs:
           make test/crctest test/emutest test/playtest test/strstest ${{ env.compile_env }} ${{ env.adplug_env }}
           sed -e 's/exec "/exec qemu-ppc -L \/usr\/local\/powerpc64le -L \/usr\/powerpc64le-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
         fi
+
+    - name: Prepare MinGW runtime DLLs
+      if: ${{ matrix.compiler == 'mingw-w64' }}
+      run: |
+        mkdir -p test/.libs
+        LIBGCC_DLL=$(find /usr/lib/gcc/x86_64-w64-mingw32 -name libgcc_s_seh-1.dll | head -n1)
+        LIBSTDCXX_DLL=$(find /usr/lib/gcc/x86_64-w64-mingw32 -name libstdc++-6.dll | head -n1)
+        test -n "$LIBGCC_DLL" || { echo "libgcc_s_seh-1.dll not found" >&2; exit 1; }
+        test -n "$LIBSTDCXX_DLL" || { echo "libstdc++-6.dll not found" >&2; exit 1; }
+        cp "$LIBGCC_DLL" test/.libs/
+        cp "$LIBSTDCXX_DLL" test/.libs/
+        if [ -f /usr/x86_64-w64-mingw32/lib/libwinpthread-1.dll ]; then
+          cp /usr/x86_64-w64-mingw32/lib/libwinpthread-1.dll test/.libs/
+        else
+          LIBWINPTHREAD_DLL=$(find /usr -name libwinpthread-1.dll | grep x86_64-w64-mingw32 | head -n1)
+          test -n "$LIBWINPTHREAD_DLL" || { echo "libwinpthread-1.dll not found" >&2; exit 1; }
+          cp "$LIBWINPTHREAD_DLL" test/.libs/
+        fi
+        if [ -d src/.libs ]; then cp src/.libs/*.dll test/.libs/ 2>/dev/null || true; fi
+        if [ -n "$(find /usr/local /usr -name 'libbinio-1.dll' -print -quit 2>/dev/null)" ]; then
+          cp "$(find /usr/local /usr -name 'libbinio-1.dll' -print -quit 2>/dev/null)" test/.libs/
+        fi
+        ls -1 test/.libs/*.dll 2>/dev/null || true
 
     - name: Prepare test results
       # qemu currently does not work with powerpc64-gcc, so skip that single instance
