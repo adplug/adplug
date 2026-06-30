@@ -151,7 +151,12 @@ jobs:
 
     - name: Install libbinio
       run: |
-        git clone http://github.com/adplug/libbinio.git
+        owner="${GITHUB_REPOSITORY%/*}"
+        repo="adplug/libbinio"
+        if [ "$owner" != "adplug" ] && git ls-remote --exit-code "https://github.com/$owner/libbinio.git" >/dev/null 2>&1; then
+          repo="$owner/libbinio"
+        fi
+        git clone "https://github.com/$repo.git"
         pushd libbinio && autoreconf -i && ./configure --enable-maintainer-mode ${{ env.compile_opts }} ${{ env.compile_env }} && make ${{ env.compile_env }} && sudo env PATH=$PATH make install && popd
 
     - name: autoreconf

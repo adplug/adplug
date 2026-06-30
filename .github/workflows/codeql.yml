@@ -44,7 +44,13 @@ jobs:
     steps:
     - name: Find libbinio repository
       shell: bash
-      run: echo LIBBINIO_REPOSITORY="${GITHUB_REPOSITORY%/adplug}/libbinio" >> $GITHUB_ENV
+      run: |
+        owner="${GITHUB_REPOSITORY%/*}"
+        if [ "$owner" = "adplug" ] || git ls-remote --exit-code "https://github.com/$owner/libbinio.git" >/dev/null 2>&1; then
+          echo "LIBBINIO_REPOSITORY=$owner/libbinio" >> "$GITHUB_ENV"
+        else
+          echo 'LIBBINIO_REPOSITORY=adplug/libbinio' >> "$GITHUB_ENV"
+        fi
 
     - name: Get cmake and ninja
       uses: lukka/get-cmake@latest
