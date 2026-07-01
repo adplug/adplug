@@ -28,7 +28,7 @@
 #include "../src/adplug.h"
 #include "../src/opl.h"
 
-#ifdef MSDOS
+#if defined(MSDOS) || defined(_WIN32)
 #	define DIR_DELIM	"\\"
 #else
 #	define DIR_DELIM	"/"

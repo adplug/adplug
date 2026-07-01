@@ -39,6 +39,12 @@
 #include "debug.h"
 #endif
 
+#if defined(MSDOS) || defined(_WIN32)
+#	define DIR_DELIM	"\\"
+#else
+#	define DIR_DELIM	"/"
+#endif
+
 /*** public methods *************************************/
 
 CPlayer *CmusPlayer::factory(Copl *newopl)
@@ -157,9 +163,7 @@ bool CmusPlayer::load(const std::string &filename, const CFileProvider &fp)
 				std::string nam = timbreName[nm];
 				std::string ext = timbreExt[ex];
 
-				size_t np = filename.find_last_of("/");
-				if (np == std::string::npos)
-					np = filename.find_last_of("\\");
+				size_t np = filename.find_last_of(DIR_DELIM);
 				if (np == std::string::npos)
 					np = -1;
 
@@ -200,9 +204,7 @@ bool CmusPlayer::load(const std::string &filename, const CFileProvider &fp)
 			std::string nam = bankName[nm];
 			std::string ext = "bnk";
 
-			size_t np = filename.find_last_of("/");
-			if (np == std::string::npos)
-				np = filename.find_last_of("\\");
+			size_t np = filename.find_last_of(DIR_DELIM);
 			if (np == std::string::npos)
 				np = -1;
 
