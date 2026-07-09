@@ -108,6 +108,8 @@ void Ca2mv2Player::rewind(int subsong)
     pattern_delay = false;
     tickXF = 0;
     ticks = 0;
+    tick0 = 0;
+    tickD = 0;
     next_line = 0;
     irq_mode = true;
     play_status = isPlaying;
