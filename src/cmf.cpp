@@ -938,7 +938,7 @@ void CcmfPlayer::cmfNoteOn(uint8_t iChannel, uint8_t iNote, uint8_t iVelocity)
 		// 0xC0 handler), so a stale instrument can never linger here.
 		int iPrevOwner = this->chOPL[iOPLChannel].iMIDIChannel;
 		if (iPrevOwner != (int)iChannel) {
-			this->MIDIchangeInstrument(iOPLChannel, iChannel, this->chMIDI[iChannel].iPatch);
+			this->MIDIchangeInstrument((uint8_t)iOPLChannel, iChannel, this->chMIDI[iChannel].iPatch);
 		}
 
 		this->chOPL[iOPLChannel].iNoteStart = ++this->iNoteCount;
