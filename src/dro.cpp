@@ -65,13 +65,18 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		fp.close(f);
 		return false;
 	}
-	int version = f->readInt(4);
-	if (version != 0x10000) {
+	int version = f->readInt(8);
+	if (version & 0xFF00FF00) {
+		f->seek(0xC);
+	}
+	else if (!(version & 0x0000FFFF)) {
+		//no operation needed in this branch
+	}
+	else {
 		fp.close(f);
 		return false;
 	}
-
-	f->ignore(4);	// Length in milliseconds
+	// Length in milliseconds
 	this->iLength = f->readInt(4); // stored in file as number of bytes
 	if (this->iLength < 3 || this->iLength > fp.filesize(f) - f->pos()) {
 		fp.close(f);
