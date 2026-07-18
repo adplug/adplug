@@ -470,7 +470,11 @@ EXTRA_DIST += \
 	test/testmus/DEMO.XMI \
 	test/testref/DEMO.ref \
 	test/testmus/CHARGEN.CMF \
-	test/testref/CHARGEN.ref
+	test/testref/CHARGEN.ref \
+	test/testmus/dune1_v0.dro \
+	test/testref/dune1_v0.ref \
+	test/testmus/samur_v0.dro \
+	test/testref/samur_v0.ref
 # Regression tests:
 EXTRA_DIST += \
 	test/fuzzing/i-85.bmf \

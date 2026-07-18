@@ -74,8 +74,11 @@ static const char *filelist[] = {
   "rat.xad",		// xad: rat
   "REVELAT.SNG",	// Faust Music Creator
   "SAILOR.CFF",		// Boomtracker
-  "samurai.dro",	// DOSBox v0.1 (one-byte hardware type)
-  "doofus.dro",		// DOSBox v0.1 (four-byte hardware type)
+  "dune1_v0.dro", // DOSBox Raw OPL v0 (no version tag)
+  "samur_v0.dro", // DOSBox Raw OPL v0 (no version tag)
+  "samurai.dro",	// DOSBox Raw OPL v1.0 (one-byte hardware type)
+  "doofus.dro",		// DOSBox Raw OPL v1.0 (four-byte hardware type)
+  "dro_v2.dro",   // DOSBox Raw OPL v2.0
   "SCALES.SA2",		// Surprise! Adlib Tracker 2
   "SMKEREM.HSC",	// HSC-Tracker
   "TOCCATA.MAD",	// Mlat Adlib Tracker
@@ -98,7 +101,6 @@ static const char *filelist[] = {
   "DUNE19.ADL",		// Westwood ADL v3
   "LOREINTR.ADL",	// Westwood ADL v4
   "DEMO4.JBM",		// JBM Adlib Music
-  "dro_v2.dro",         // DOSBox DRO v2.0
   "menu.got",       // God of Thunder Music (at 140 Hz)
   "opensong.got",   // God of Thunder Music (at 120 Hz)
   "lines1.mus",		// AdLib MIDI Format (melodic mode)
