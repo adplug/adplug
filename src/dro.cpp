@@ -65,7 +65,7 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		fp.close(f);
 		return false;
 	}
-	int version = f->readInt(8);
+	uint64_t version = f->readInt(8);
 	if (version & 0xFF00FF00) {
 		f->seek(0xC);
 	}
