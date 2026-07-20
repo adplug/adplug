@@ -162,7 +162,9 @@ public:
   void update(CPlayer *p)
   {
     if(!f) return;
-    fprintf(f, "r%.2f\n", p->getrefresh());
+    float a = p->getrefresh();
+fprintf(stdout, "Testopl:update r%.2f    %f\n", a, a);
+    fprintf(f, "r%.2f\n", a);
   }
 
   // template methods
@@ -172,6 +174,7 @@ public:
       std::cerr << "Warning: The player is writing data out of range! (reg = "
     << std::hex << reg << ", val = " << val << ")" << std::dec << std::endl;
     if(!f) return;
+fprintf(stdout, "Testopl:write(%d,%d)\n", reg, val);
     fprintf(f, "%x <- %x\n", reg, val);
   }
 
