@@ -217,6 +217,7 @@ static bool diff(const std::string fn1, const std::string fn2)
   FILE	*f1, *f2;
   bool	retval = true;
 
+int line=0;
   // open both files
   if(!(f1 = fopen(fn1.c_str(), "r"))) return false;
   if(!(f2 = fopen(fn2.c_str(), "r"))) { fclose(f1); return false; }
@@ -224,17 +225,25 @@ static bool diff(const std::string fn1, const std::string fn2)
   // compare both files line by line
   char	*s1 = (char *)malloc(80), *s2 = (char *)malloc(80);
   while(!(feof(f1) || feof(f2))) {
-    fgets(s1, 80, f1);
-    fgets(s2, 80, f2);
+line++;
+    if (!fgets(s1, 80, f1)) s1[0] = 0;
+    if (!fgets(s2, 80, f2)) s2[0] = 0;
     if(strncmp(s1, s2, 79)) {
+std::cout << "line a" << std::endl;
+std::cout << s1;
+std::cout << "line b" << std::endl;
+std::cout << s2;
+std::cout << "missmatch " << line << std::endl;
       retval = false;
       break;
     }
   }
   free(s1), free(s2);
   if(feof(f1) != feof(f2))
+  {
+std::cout << "feof() missmatch" << std::endl;
     retval = false;
-
+  }
   // close both files
   fclose(f1), fclose(f2);
   return retval;
