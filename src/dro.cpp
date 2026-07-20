@@ -35,6 +35,8 @@
 
 #include <cstring>
 #include <stdio.h>
+#include <inttypes.h>
+#include <stdint.h>
 
 #include "dro.h"
 
@@ -66,13 +68,20 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		return false;
 	}
 
+fprintf (stderr, "Got signature\n");
+
   uint64_t version = f->readInt(4);
+
+fprintf (stderr, "version=0x%08" PRIx64 "\n", version);
+
   if (version & 0xFF00FF00) {
+fprintf (stderr, "v0 file\n");
     // DRO v0 file
     type = DRO_V0;
   }
   else if (!(version & 0x0000FFFF)) {
-    // DRO v1.0 file
+fprintf (stderr, "v1.0 file\n");
+   // DRO v1.0 file
     type = DRO_V1;
     f->ignore(4);
   }
@@ -83,7 +92,9 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
   }
 
 	this->iLength = f->readInt(4); // stored in file as number of bytes
+fprintf(stderr, "iLength=%d\n", (int)this->iLength);
 	if (this->iLength < 3 || this->iLength > fp.filesize(f) - f->pos()) {
+fprintf (stderr, "length larger than remaining filesize\n");
 		fp.close(f);
 		return false;
 	}
@@ -100,6 +111,7 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 	}
 
 	if (this->data[0] == 0 || this->data[1] == 0 || this->data[2] == 0) {
+fprintf (stderr, "skip 3 zero bytes, likely v1.0 header\n");
 		// If we're here then this is a later (more popular) file with
 		// the full four bytes for the hardware-type.
   		i = 0; // so ignore the three bytes we just read and start again
@@ -114,6 +126,8 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 	author[0] = 0;
 	desc[0] = 0;
 	int tagsize = fp.filesize(f) - f->pos();
+
+fprintf (stderr, "tagsize=%d\n", tagsize);
 
 	if (tagsize >= 3)
 	{
@@ -152,6 +166,8 @@ end_section:
 	fp.close(f);
 	rewind(0);
 
+fprintf (stderr, "good to go\n");
+
 	return true;
 }
 
@@ -159,6 +175,7 @@ bool CdroPlayer::update()
 {
 	unsigned int iIndex;
 	unsigned int iValue;
+fprintf(stderr, "update\n");
 	while (this->iPos < this->iLength) {
 		iIndex = this->data[this->iPos++];
 
@@ -167,6 +184,7 @@ bool CdroPlayer::update()
 			if (this->iPos >= this->iLength) return false;
 			iValue = this->data[this->iPos++];
 			this->iDelay = iValue + 1;
+fprintf(stderr, " short delay, %d\n", (int)this->iDelay);
 			return true;
 
 		// Long delay
@@ -175,10 +193,11 @@ bool CdroPlayer::update()
 			iValue = this->data[this->iPos] | (this->data[this->iPos + 1] << 8);
 			this->iPos += 2;
 			this->iDelay = (iValue + 1);
+fprintf(stderr, " long delay, %d\n", (int)this->iDelay);
 			return true;
-
 		// Bank switching
 		} else if (iIndex == 0x02 || iIndex == 0x03) {
+fprintf (stderr, " bank switch, %u\n", iIndex);
 			this->opl->setchip(iIndex - 0x02);
 
 		// Normal write
@@ -189,6 +208,7 @@ bool CdroPlayer::update()
 			}
 			else if (this->iPos >= this->iLength) return false;
 			iValue = this->data[this->iPos++];
+fprintf (stderr, " write %u %u\n", iIndex, iValue);
 			this->opl->write(iIndex, iValue);
 		}
 	}
