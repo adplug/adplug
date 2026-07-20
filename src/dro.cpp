@@ -35,7 +35,6 @@
 
 #include <cstring>
 #include <stdio.h>
-#include <cinttypes>
 #include <stdint.h>
 
 #include "dro.h"
@@ -72,7 +71,7 @@ fprintf (stderr, "Got signature\n");
 
   uint64_t version = f->readInt(4);
 
-fprintf (stderr, "version=0x%08" PRIx64 "\n", version);
+fprintf (stderr, "version=0x%08llx\n", (unsigned long long)version);
 
   if (version & 0xFF00FF00) {
 fprintf (stderr, "v0 file\n");
