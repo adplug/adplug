@@ -67,33 +67,22 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		return false;
 	}
 
-fprintf (stdout, "Got signature\n");
-
-  uint64_t version = f->readInt(4);
-
-fprintf (stdout, "version=0x%08llx\n", (unsigned long long)version);
-
-  if (version & 0xFF00FF00) {
-fprintf (stdout, "v0 file\n");
-    // DRO v0 file
-    type = DRO_V0;
-  }
-  else if (!(version & 0x0000FFFF)) {
-fprintf (stdout, "v1.0 file\n");
-   // DRO v1.0 file
-    type = DRO_V1;
-    f->ignore(4);
-  }
-  else {
-    // DRO v2.0(handled in dro2.cpp) or invalid file
-    fp.close(f);
-    return false;
-  }
+	uint32_t version = f->readInt(4);
+	if (version & 0xFF00FF00) {
+		// DRO v0 file
+		type = DRO_V0;
+	} else if (!(version & 0x0000FFFF)) {
+		// DRO v1.0 file
+		type = DRO_V1;
+		f->ignore(4);
+	} else {
+		// DRO v2.0(handled in dro2.cpp) or invalid file
+		fp.close(f);
+		return false;
+	}
 
 	this->iLength = f->readInt(4); // stored in file as number of bytes
-fprintf(stdout, "iLength=%d\n", (int)this->iLength);
 	if (this->iLength < 3 || this->iLength > fp.filesize(f) - f->pos()) {
-fprintf (stdout, "length larger than remaining filesize\n");
 		fp.close(f);
 		return false;
 	}
@@ -110,7 +99,6 @@ fprintf (stdout, "length larger than remaining filesize\n");
 	}
 
 	if (this->data[0] == 0 || this->data[1] == 0 || this->data[2] == 0) {
-fprintf (stdout, "skip 3 zero bytes, likely v1.0 header\n");
 		// If we're here then this is a later (more popular) file with
 		// the full four bytes for the hardware-type.
   		i = 0; // so ignore the three bytes we just read and start again
@@ -126,7 +114,6 @@ fprintf (stdout, "skip 3 zero bytes, likely v1.0 header\n");
 	desc[0] = 0;
 	int tagsize = fp.filesize(f) - f->pos();
 
-fprintf (stdout, "tagsize=%d\n", tagsize);
 
 	if (tagsize >= 3)
 	{
@@ -165,8 +152,6 @@ end_section:
 	fp.close(f);
 	rewind(0);
 
-fprintf (stdout, "good to go\n");
-
 	return true;
 }
 
@@ -174,7 +159,6 @@ bool CdroPlayer::update()
 {
 	unsigned int iIndex;
 	unsigned int iValue;
-fprintf(stdout, "update\n");
 	while (this->iPos < this->iLength) {
 		iIndex = this->data[this->iPos++];
 
@@ -183,7 +167,6 @@ fprintf(stdout, "update\n");
 			if (this->iPos >= this->iLength) return false;
 			iValue = this->data[this->iPos++];
 			this->iDelay = iValue + 1;
-fprintf(stdout, " short delay, %d\n", (int)this->iDelay);
 			return true;
 
 		// Long delay
@@ -192,11 +175,9 @@ fprintf(stdout, " short delay, %d\n", (int)this->iDelay);
 			iValue = this->data[this->iPos] | (this->data[this->iPos + 1] << 8);
 			this->iPos += 2;
 			this->iDelay = (iValue + 1);
-fprintf(stdout, " long delay, %d\n", (int)this->iDelay);
 			return true;
 		// Bank switching
 		} else if (iIndex == 0x02 || iIndex == 0x03) {
-fprintf (stdout, " bank switch, %u\n", iIndex);
 			this->opl->setchip(iIndex - 0x02);
 
 		// Normal write
@@ -207,7 +188,6 @@ fprintf (stdout, " bank switch, %u\n", iIndex);
 			}
 			else if (this->iPos >= this->iLength) return false;
 			iValue = this->data[this->iPos++];
-fprintf (stdout, " write %u %u\n", iIndex, iValue);
 			this->opl->write(iIndex, iValue);
 		}
 	}

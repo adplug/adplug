@@ -19,6 +19,7 @@
  * playertest.cpp - Test AdPlug replayers, by Simon Peter <dn.tlp@gmx.net>
  */
 
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <cstring>
@@ -162,9 +163,9 @@ public:
   void update(CPlayer *p)
   {
     if(!f) return;
-    float a = p->getrefresh();
-fprintf(stdout, "Testopl:update r%.2f    %f\n", a, a);
-    fprintf(f, "r%.2f\n", a);
+    const float fl = p->getrefresh();
+    const int in = roundf (fl * 100);
+    fprintf(f, "r%d.%02d\n", in/100, in%100);
   }
 
   // template methods
@@ -174,7 +175,6 @@ fprintf(stdout, "Testopl:update r%.2f    %f\n", a, a);
       std::cerr << "Warning: The player is writing data out of range! (reg = "
     << std::hex << reg << ", val = " << val << ")" << std::dec << std::endl;
     if(!f) return;
-fprintf(stdout, "Testopl:write(%d,%d)\n", reg, val);
     fprintf(f, "%x <- %x\n", reg, val);
   }
 
