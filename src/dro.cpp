@@ -66,15 +66,15 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		return false;
 	}
 
-  uint64_t version = f->readInt(8);
+  uint64_t version = f->readInt(4);
   if (version & 0xFF00FF00) {
     // DRO v0 file
     type = DRO_V0;
-    f->seek(0xC);
   }
   else if (!(version & 0x0000FFFF)) {
     // DRO v1.0 file
     type = DRO_V1;
+    f->ignore(4);
   }
   else {
     // DRO v2.0(handled in dro2.cpp) or invalid file
