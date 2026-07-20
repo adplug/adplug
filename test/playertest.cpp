@@ -133,7 +133,7 @@ static const char *filelist[] = {
   "VACANCE.WM",     // Silky's MusicV WM
   "CHARGEN.CMF",    // Creative Music Format with midi-like drums on channel 9
   "dune1_v0.dro",    // DOSBox Raw OPL v0 (no version tag)
-  "samurai_v0.dro",  // DOSBox Raw OPL v0 (no version tag)
+  "samur_v0.dro",  // DOSBox Raw OPL v0 (no version tag)
   NULL
 };
 
