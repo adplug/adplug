@@ -65,18 +65,23 @@ bool CdroPlayer::load(const std::string &filename, const CFileProvider &fp)
 		fp.close(f);
 		return false;
 	}
-	uint64_t version = f->readInt(8);
-	if (version & 0xFF00FF00) {
-		f->seek(0xC);
-	}
-	else if (!(version & 0x0000FFFF)) {
-		//no operation needed in this branch
-	}
-	else {
-		fp.close(f);
-		return false;
-	}
-	// Length in milliseconds
+
+  uint64_t version = f->readInt(8);
+  if (version & 0xFF00FF00) {
+    // DRO v0 file
+    type = DRO_V0;
+    f->seek(0xC);
+  }
+  else if (!(version & 0x0000FFFF)) {
+    // DRO v1.0 file
+    type = DRO_V1;
+  }
+  else {
+    // DRO v2.0(handled in dro2.cpp) or invalid file
+    fp.close(f);
+    return false;
+  }
+
 	this->iLength = f->readInt(4); // stored in file as number of bytes
 	if (this->iLength < 3 || this->iLength > fp.filesize(f) - f->pos()) {
 		fp.close(f);
@@ -220,4 +225,16 @@ float CdroPlayer::getrefresh()
 {
 	if (this->iDelay > 0) return 1000.0 / this->iDelay;
 	else return 1000.0;
+}
+
+std::string CdroPlayer::gettype()
+{
+  switch (type) {
+  case DRO_V0:
+    return std::string("DOSBox Raw OPL v0");
+  case DRO_V1:
+    return std::string("DOSBox Raw OPL v1.0");
+  default:
+    return std::string{};
+  }
 }
