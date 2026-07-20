@@ -35,7 +35,7 @@
 
 #include <cstring>
 #include <stdio.h>
-#include <inttypes.h>
+#include <cinttypes>
 #include <stdint.h>
 
 #include "dro.h"
