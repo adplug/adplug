@@ -19,6 +19,7 @@
  * playertest.cpp - Test AdPlug replayers, by Simon Peter <dn.tlp@gmx.net>
  */
 
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <cstring>
@@ -160,7 +161,9 @@ public:
   void update(CPlayer *p)
   {
     if(!f) return;
-    fprintf(f, "r%.2f\n", p->getrefresh());
+    const float fl = p->getrefresh();
+    const int in = roundf (fl * 100);
+    fprintf(f, "r%d.%02d\n", in/100, in%100);
   }
 
   // template methods
@@ -222,8 +225,8 @@ static bool diff(const std::string fn1, const std::string fn2)
   // compare both files line by line
   char	*s1 = (char *)malloc(80), *s2 = (char *)malloc(80);
   while(!(feof(f1) || feof(f2))) {
-    fgets(s1, 80, f1);
-    fgets(s2, 80, f2);
+    if (!fgets(s1, 80, f1)) s1[0] = 0;
+    if (!fgets(s2, 80, f2)) s2[0] = 0;
     if(strncmp(s1, s2, 79)) {
       retval = false;
       break;
