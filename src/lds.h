@@ -37,9 +37,14 @@ class CldsPlayer: public CPlayer
   std::string gettype() { return std::string("LOUDNESS Sound System"); }
   unsigned int getorders() { return numposi; }
   unsigned int getorder() { return posplay; }
+  unsigned char getpattern(unsigned long order) { return order; }
+
   unsigned int getrow() { return pattplay; }
+  unsigned int getrows() { return pattlen; }
+  unsigned int getnchans() { return 9; }
   unsigned int getspeed() { return speed; }
   unsigned int getinstruments() { return numpatch; }
+  void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
 
  private:
   typedef struct {

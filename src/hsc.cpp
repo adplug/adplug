@@ -74,6 +74,57 @@ bool ChscPlayer::load(const std::string &filename, const CFileProvider &fp)
   return true;
 }
 
+void ChscPlayer::gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
+{
+  if (pattern >= 128) return;
+
+  for (int row = 0; row < 64; row++) {
+    for (int channel = 0; channel < 9; channel++) {
+      unsigned char note = 0;
+      TrackedCmds command = TrackedCmdNone;
+      unsigned char inst = 0;
+      unsigned char volume = 255;
+      unsigned char param = 0;
+      unsigned char effect = patterns[pattern][row*9+channel].effect;
+
+      if (patterns[pattern][row*9+channel].note & 128) {
+        inst = effect + 1;
+        callback (arg, row, channel, note, command, inst, volume, param);
+        continue;
+      }
+
+      note = patterns[pattern][row*9+channel].note;
+      if (note)
+      {
+        note += 23;
+        if(mtkmode) // imitate MPU-401 Trakker bug
+          note--;
+      }
+
+      switch (effect & 0xf0) {
+        case 0:
+          switch (effect & 0x0f) {
+            case 1: command = TrackedCmdPatternBreak;                        break;
+            case 3: command = TrackedCmdVolumeFadeIn; param = effect & 0x0f; break;
+            case 4: command = TrackedCmdOPLVoiceMode;                        break;
+            case 5: command = TrackedCmdOPLDrumMode;                         break;
+          }
+          break;
+        case 0x10: command = TrackedCmdPitchSlideUp;       param = effect & 0x0f; break;
+        case 0x20: command = TrackedCmdPitchSlideDown;     param = effect & 0x0f; break;
+        //case 0x50: command = TrackedCmdOPLDrumMode; return;
+        case 0x60: command = TrackedCmdOPLFeedback;        param = effect & 0x0f; break;
+        case 0xa0: command = TrackedCmdOPLCarrierVolume;   param = effect & 0x0f; break;
+        case 0xb0: command = TrackedCmdOPLModulatorVolume; param = effect & 0x0f; break;
+        case 0xc0: volume = effect & 0x0f; break;
+        case 0xd0: command = TrackedCmdPatternJumpTo;      param = effect & 0x0f; break;
+        case 0xf0: command = TrackedCmdSpeed;              param = effect & 0x0f; break;
+      }
+      callback (arg, row, channel, note, command, inst, volume, param);
+    }
+  }
+}
+
 bool ChscPlayer::update()
 {
   // general vars
@@ -275,6 +326,12 @@ unsigned int ChscPlayer::getorders()
       break;
 
   return poscnt;
+}
+
+unsigned char ChscPlayer::getpattern(unsigned long ordr)
+{
+  if (ordr >= getorders()) return 0;
+  return song[ordr];
 }
 
 unsigned int ChscPlayer::getinstruments()

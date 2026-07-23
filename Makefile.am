@@ -93,7 +93,7 @@ src_libadplug_la_SOURCES = \
 	src/xmi.cpp \
 	src/xsm.cpp
 
-src_libadplug_la_LDFLAGS = -release $(PACKAGE_VERSION) -version-info 0
+src_libadplug_la_LDFLAGS = -release $(PACKAGE_VERSION) -version-info 1
 src_libadplug_la_LDFLAGS += -no-undefined # mingw requires this when making shared DLL files
 src_libadplug_la_LIBADD = $(libbinio_LIBS)
 
