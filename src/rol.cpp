@@ -86,8 +86,23 @@ bool CrolPlayer::load(const std::string & filename, const CFileProvider & fp)
             break;
         }
     }
+    // Prefer an instrument bank named after the ROL file (song.rol -> song.bnk);
+    // both .bnk spellings are tried, since file systems may be case sensitive.
+    static const char * bnk_ext[] = { ".bnk", ".BNK" };
+    char * const dot = strrchr(fn + i + 1, '.');
+    if (dot != NULL) *dot = 0;   // strip the ROL extension
+    for (size_t e = 0; e < sizeof(bnk_ext) / sizeof(bnk_ext[0]); e++)
+    {
+        std::string const bank_name = std::string(fn) + bnk_ext[e];
+        binistream * probe = fp.open(bank_name);
+        if (!probe)
+            continue;
+        fp.close(probe);
+        bnk_filename = bank_name;
+        break;
+    }
     strcpy(fn+i+1,"standard.bnk");
-    bnk_filename = fn;
+    if (bnk_filename.empty()) bnk_filename = fn;
     delete [] fn;
     AdPlug_LogWrite("bnk_filename = \"%s\"\n",bnk_filename.c_str());
 

@@ -156,7 +156,9 @@ is the name of music file without extension
 @item @file{RIX}: Softstar RIX OPL Music Format
 @item @file{ROL}: AdLib Visual Composer by AdLib Inc.
 @itemize @bullet
-@item Needs file @file{standard.bnk} in the same directory as loaded file
+@item Needs file @file{@var{filename}.bnk} or @file{standard.bnk} in the same
+directory as loaded file, where @var{filename} is the name of music file
+without extension
 @end itemize
 @item @file{S3M}: Scream Tracker 3 by Future Crew
 @itemize @bullet
