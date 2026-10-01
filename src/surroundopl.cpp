@@ -59,6 +59,8 @@ CSurroundopl::~CSurroundopl()
 
 void CSurroundopl::update(short *buf, int samples)
 {
+	if (samples <= 0) return;
+
 	if (samples * 2 > this->bufsize) {
 		// Need to realloc the buffer
 		delete[] this->rbuf;

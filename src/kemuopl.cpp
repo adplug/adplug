@@ -1,7 +1,7 @@
 #include "kemuopl.h"
 
 CKemuopl::CKemuopl(int rate, bool bit16, bool usestereo)
-  : use16bit(bit16), stereo(usestereo), sampleerate(rate), mixbufSamples(0)
+  : use16bit(bit16), stereo(usestereo), sampleerate(rate), mixbuf0(0), mixbuf1(0), mixbuf2(0), mixbufSamples(0)
 {
   memset (ctx, 0, sizeof (ctx));
   currType = TYPE_DUAL_OPL2;
@@ -20,6 +20,9 @@ CKemuopl::~CKemuopl()
 void CKemuopl::update(short *buf, int samples)
 {
   int i;
+
+  if (samples <= 0) return;
+
   //ensure that our mix buffers are adequately sized
   if(mixbufSamples < samples) {
     if(mixbufSamples) { delete[] mixbuf0; delete[] mixbuf1; delete[] mixbuf2; }

@@ -20,9 +20,10 @@
  */
 
 #include "emuopl.h"
+#include <cstring>
 
 CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
-  : use16bit(bit16), stereo(usestereo), mixbufSamples(0)
+  : use16bit(bit16), stereo(usestereo), mixbuf0(0), mixbuf1(0), mixbuf2(0), mixbufSamples(0)
 {
   opl[0] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
   opl[1] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
@@ -46,6 +47,8 @@ CEmuopl::~CEmuopl()
 void CEmuopl::update(short *buf, int samples)
 {
   int i;
+
+  if (samples <= 0) return;
 
   //ensure that our mix buffers are adequately sized
   if(mixbufSamples < samples) {
@@ -90,6 +93,7 @@ void CEmuopl::update(short *buf, int samples)
     break;
 
   case TYPE_OPL3:	// unsupported
+    memset (outbuf, 0, samples * 4);
     break;
 
   case TYPE_DUAL_OPL2:

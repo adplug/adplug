@@ -40,6 +40,8 @@ CNemuopl::~CNemuopl()
 
 void CNemuopl::update(short *buf, int samples)
 {
+  if (samples <= 0) return;
+
   OPL3_GenerateStream(opl, buf, samples);
 }
 

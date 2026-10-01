@@ -316,6 +316,16 @@ optype_fptr opfuncs[6] = {
 };
 
 void OPLChipClass::change_attackrate(Bitu regbase, op_type* op_pt) {
+#if defined(OPLTYPE_IS_OPL3)
+	if (regbase >= ARC_SECONDSET)
+	{
+		if (regbase >= (ARC_SECONDSET + 0x20)) return;
+	} else {
+		if (regbase >= 0x20) return;
+	}
+#else
+	if (regbase >= 0x20) return;
+#endif
 	Bits attackrate = adlibreg[ARC_ATTR_DECR+regbase]>>4;
 	if (attackrate) {
 		fltype f = (fltype)(pow(FL2,(fltype)attackrate+(op_pt->toff>>2)-1)*attackconst[op_pt->toff&3]*recipsamp);
@@ -355,6 +365,16 @@ void OPLChipClass::change_attackrate(Bitu regbase, op_type* op_pt) {
 }
 
 void OPLChipClass::change_decayrate(Bitu regbase, op_type* op_pt) {
+#if defined(OPLTYPE_IS_OPL3)
+	if (regbase >= ARC_SECONDSET)
+	{
+		if (regbase >= (ARC_SECONDSET + 0x20)) return;
+	} else {
+		if (regbase >= 0x20) return;
+	}
+#else
+	if (regbase >= 0x20) return;
+#endif
 	Bits decayrate = adlibreg[ARC_ATTR_DECR+regbase]&15;
 	// decaymul should be 1.0 when decayrate==0
 	if (decayrate) {
@@ -369,6 +389,16 @@ void OPLChipClass::change_decayrate(Bitu regbase, op_type* op_pt) {
 }
 
 void OPLChipClass::change_releaserate(Bitu regbase, op_type* op_pt) {
+#if defined(OPLTYPE_IS_OPL3)
+	if (regbase >= ARC_SECONDSET)
+	{
+		if (regbase >= (ARC_SECONDSET + 0x20)) return;
+	} else {
+		if (regbase >= 0x20) return;
+	}
+#else
+	if (regbase >= 0x20) return;
+#endif
 	Bits releaserate = adlibreg[ARC_SUSL_RELR+regbase]&15;
 	// releasemul should be 1.0 when releaserate==0
 	if (releaserate) {
@@ -383,6 +413,16 @@ void OPLChipClass::change_releaserate(Bitu regbase, op_type* op_pt) {
 }
 
 void OPLChipClass::change_sustainlevel(Bitu regbase, op_type* op_pt) {
+#if defined(OPLTYPE_IS_OPL3)
+	if (regbase >= ARC_SECONDSET)
+	{
+		if (regbase >= (ARC_SECONDSET + 0x20)) return;
+	} else {
+		if (regbase >= 0x20) return;
+	}
+#else
+	if (regbase >= 0x20) return;
+#endif
 	Bits sustainlevel = adlibreg[ARC_SUSL_RELR+regbase]>>4;
 	// sustainlevel should be 0.0 when sustainlevel==15 (max)
 	if (sustainlevel<15) {
@@ -394,7 +434,10 @@ void OPLChipClass::change_sustainlevel(Bitu regbase, op_type* op_pt) {
 
 void OPLChipClass::change_waveform(Bitu regbase, op_type* op_pt) {
 #if defined(OPLTYPE_IS_OPL3)
-	if (regbase>=ARC_SECONDSET) regbase -= (ARC_SECONDSET-22);	// second set starts at 22
+	if (regbase >= ARC_SECONDSET) regbase -= (ARC_SECONDSET-22);	// second set starts at 22
+	if (regbase >= 44) return;
+#else
+	if (regbase >= 22) return;
 #endif
 	// waveform selection
 	op_pt->cur_wmask = wavemask[wave_sel[regbase]];
@@ -403,6 +446,16 @@ void OPLChipClass::change_waveform(Bitu regbase, op_type* op_pt) {
 }
 
 void OPLChipClass::change_keepsustain(Bitu regbase, op_type* op_pt) {
+#if defined(OPLTYPE_IS_OPL3)
+	if (regbase >= ARC_SECONDSET)
+	{
+		if (regbase >= (ARC_SECONDSET + 0x20)) return;
+	} else {
+		if (regbase >= 0x20) return;
+	}
+#else
+	if (regbase >= 0x20) return;
+#endif
 	op_pt->sus_keep = (adlibreg[ARC_TVS_KSR_MUL+regbase]&0x20)>0;
 	if (op_pt->op_state==OF_TYPE_SUS) {
 		if (!op_pt->sus_keep) op_pt->op_state = OF_TYPE_SUS_NOKEEP;
@@ -413,18 +466,56 @@ void OPLChipClass::change_keepsustain(Bitu regbase, op_type* op_pt) {
 
 // enable/disable vibrato/tremolo LFO effects
 void OPLChipClass::change_vibrato(Bitu regbase, op_type* op_pt) {
+#if defined(OPLTYPE_IS_OPL3)
+	if (regbase >= ARC_SECONDSET)
+	{
+		if (regbase >= (ARC_SECONDSET + 0x20)) return;
+	} else {
+		if (regbase >= 0x20) return;
+	}
+#else
+	if (regbase >= 0x20) return;
+#endif
 	op_pt->vibrato = (adlibreg[ARC_TVS_KSR_MUL+regbase]&0x40)!=0;
 	op_pt->tremolo = (adlibreg[ARC_TVS_KSR_MUL+regbase]&0x80)!=0;
 }
 
 // change amount of self-feedback
 void OPLChipClass::change_feedback(Bitu chanbase, op_type* op_pt) {
+#if defined(OPLTYPE_IS_OPL3)
+	if (chanbase >= ARC_SECONDSET)
+	{
+		if (chanbase >= (ARC_SECONDSET + 0x09)) return;
+	} else {
+		if (chanbase >= 0x09) return;
+	}
+#else
+	if (chanbase >= 0x09) return;
+#endif
 	Bits feedback = adlibreg[ARC_FEEDBACK+chanbase]&14;
 	if (feedback) op_pt->mfbi = (Bit32s)(pow(FL2,(fltype)((feedback>>1)+8)));
 	else op_pt->mfbi = 0;
 }
 
 void OPLChipClass::change_frequency(Bitu chanbase, Bitu regbase, op_type* op_pt) {
+#if defined(OPLTYPE_IS_OPL3)
+	if (regbase >= ARC_SECONDSET)
+	{
+		if (regbase >= (ARC_SECONDSET + 0x20)) return;
+	} else {
+		if (regbase >= 0x20) return;
+	}
+	if (chanbase >= ARC_SECONDSET)
+	{
+		if (chanbase >= (ARC_SECONDSET + 0x09)) return;
+	} else {
+		if (chanbase >= 0x09) return;
+	}
+#else
+	if (regbase >= 0x20) return;
+	if (chanbase >= 0x09) return;
+#endif
+
 	// frequency
 	Bit32u frn = ((((Bit32u)adlibreg[ARC_KON_BNUM+chanbase])&3)<<8) + (Bit32u)adlibreg[ARC_FREQ_NUM+chanbase];
 	// block number/octave
@@ -457,6 +548,11 @@ void OPLChipClass::enable_operator(Bitu regbase, op_type* op_pt, Bit32u act_type
 	if (op_pt->act_state == OP_ACT_OFF) {
 		Bits wselbase = regbase;
 		if (wselbase>=ARC_SECONDSET) wselbase -= (ARC_SECONDSET-22);	// second set starts at 22
+#if defined(OPLTYPE_IS_OPL3)
+		if (wselbase >= 44) return;
+#else
+		if (wselbase >= 22) return;
+#endif
 
 		op_pt->tcount = wavestart[wave_sel[wselbase]]*FIXEDPT;
 
@@ -602,6 +698,7 @@ void OPLChipClass::adlib_init(Bit32u samplerate, Bit32u numchannels, Bit32u byte
 
 
 void OPLChipClass::adlib_write(Bitu idx, Bit8u val) {
+	if (idx >= 0x200) return;
 	Bit32u second_set = idx&0x100;
 	adlibreg[idx] = val;
 
@@ -750,7 +847,8 @@ void OPLChipClass::adlib_write(Bitu idx, Bit8u val) {
 			change_frequency(chanbase,modbase+3,&op[opbase+9]);
 #if defined(OPLTYPE_IS_OPL3)
 			// for 4op channels all four operators are modified to the frequency of the channel
-			if ((adlibreg[0x105]&1) && op[second_set?(base+18):base].is_4op) {
+			if ((adlibreg[0x105]&1) && op[second_set?(base+18):base].is_4op && (opbase < (MAXOPERATORS-3-9))) { // verify opbase, to make static code-analyzers happy; is_4op should never be true for opbase out of range
+
 				change_frequency(chanbase,modbase+8,&op[opbase+3]);
 				change_frequency(chanbase,modbase+3+8,&op[opbase+3+9]);
 			}
@@ -816,7 +914,7 @@ void OPLChipClass::adlib_write(Bitu idx, Bit8u val) {
 				enable_operator(modbase+3,&op[opbase+9],OP_ACT_NORMAL);	// carrier (if 2op)
 #if defined(OPLTYPE_IS_OPL3)
 				// for 4op channels all four operators are switched on
-				if ((adlibreg[0x105]&1) && op[opbase].is_4op) {
+				if ((adlibreg[0x105]&1) && op[opbase].is_4op && (opbase < (MAXOPERATORS-3-9))) { // verify opbase, to make static code-analyzers happy; is_4op should never be true for opbase out of range
 					// turn on chan+3 operators as well
 					enable_operator(modbase+8,&op[opbase+3],OP_ACT_NORMAL);
 					enable_operator(modbase+3+8,&op[opbase+3+9],OP_ACT_NORMAL);
@@ -828,7 +926,7 @@ void OPLChipClass::adlib_write(Bitu idx, Bit8u val) {
 				disable_operator(&op[opbase+9],OP_ACT_NORMAL);
 #if defined(OPLTYPE_IS_OPL3)
 				// for 4op channels all four operators are switched off
-				if ((adlibreg[0x105]&1) && op[opbase].is_4op) {
+				if ((adlibreg[0x105]&1) && op[opbase].is_4op && (opbase < (MAXOPERATORS-3-9))) { // verify opbase, to make static code-analyzers happy; is_4op should never be true for opbase out of range
 					// turn off chan+3 operators as well
 					disable_operator(&op[opbase+3],OP_ACT_NORMAL);
 					disable_operator(&op[opbase+3+9],OP_ACT_NORMAL);
@@ -844,7 +942,7 @@ void OPLChipClass::adlib_write(Bitu idx, Bit8u val) {
 			change_frequency(chanbase,modbase+3,&op[opbase+9]);
 #if defined(OPLTYPE_IS_OPL3)
 			// for 4op channels all four operators are modified to the frequency of the channel
-			if ((adlibreg[0x105]&1) && op[second_set?(base+18):base].is_4op) {
+			if ((adlibreg[0x105]&1) && op[second_set?(base+18):base].is_4op && (opbase < (MAXOPERATORS-3-9))) { // verify base, to make static code-analyzers happy; is_4op should nevber be true for opbase out of range
 				// change frequency calculations of chan+3 operators as well
 				change_frequency(chanbase,modbase+8,&op[opbase+3]);
 				change_frequency(chanbase,modbase+3+8,&op[opbase+3+9]);

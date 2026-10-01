@@ -36,6 +36,8 @@ void CTemuopl::update(short *buf, int samples)
 {
   int i;
 
+  if (samples <= 0) return;
+
   if(use16bit) {
     YM3812UpdateOne(opl,buf,samples);
 
