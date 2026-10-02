@@ -45,7 +45,7 @@ public:
 	std::string getinstrument(unsigned int n);
 
 private:
-	static const unsigned int adlibfreq[63];
+	static const unsigned int adlibfreq[64];
 
 	unsigned long count,countstop,chanage[18],*note;
 	unsigned short numnotes;

@@ -264,6 +264,7 @@ bool CvgmPlayer::update()
 		case CMD_OPL1:
 		case CMD_OPL2:
 		case CMD_OPL3_PORT0:
+			if (pos + 2 > data_sz) { pos = data_sz; continue; }
 			reg = vgmData[pos++];
 			val = vgmData[pos++];
 			if ((vgmOPL1 && cmd == CMD_OPL1) || (!vgmOPL3 && cmd == CMD_OPL2) || (vgmOPL3 && cmd == CMD_OPL3_PORT0))
@@ -275,6 +276,7 @@ bool CvgmPlayer::update()
 			break;
 		case CMD_OPL2_2ND:
 		case CMD_OPL3_PORT1:
+			if (pos + 2 > data_sz) { pos = data_sz; continue; }
 			reg = vgmData[pos++];
 			val = vgmData[pos++];
 			if ((vgmDual && cmd == CMD_OPL2_2ND) || (vgmOPL3 && cmd == CMD_OPL3_PORT1))
@@ -285,6 +287,7 @@ bool CvgmPlayer::update()
 			}
 			break;
 		case CMD_WAIT:
+			if (pos + 2 > data_sz) { pos = data_sz; continue; }
 			wait  = vgmData[pos++];
 			wait |= vgmData[pos++] << 8;
 			break;
