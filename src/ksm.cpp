@@ -24,14 +24,14 @@
 #include "ksm.h"
 #include "debug.h"
 
-const unsigned int CksmPlayer::adlibfreq[63] = {
+const unsigned int CksmPlayer::adlibfreq[64] = {
   0,
   2390,2411,2434,2456,2480,2506,2533,2562,2592,2625,2659,2695,
   3414,3435,3458,3480,3504,3530,3557,3586,3616,3649,3683,3719,
   4438,4459,4482,4504,4528,4554,4581,4610,4640,4673,4707,4743,
   5462,5483,5506,5528,5552,5578,5605,5634,5664,5697,5731,5767,
   6486,6507,6530,6552,6576,6602,6629,6658,6688,6721,6755,6791,
-  7510};
+  7510,0};
 
 /*** public methods **************************************/
 
@@ -108,6 +108,7 @@ bool CksmPlayer::update()
       bufnum = 0;
       while (count >= countstop)
 	{
+	  if (bufnum + 15 > sizeof(databuf)) break;
 	  templong = note[nownote];
 	  track = (int)((templong>>8)&15);
 	  if ((templong&192) == 0)
@@ -220,7 +221,8 @@ bool CksmPlayer::update()
 	  templong = note[nownote];
 	  if (nownote == 0)
 	    count = (templong>>12)-1;
-	  quanter = (240/trquant[(templong>>8)&15]);
+	  quanter = trquant[(templong>>8)&15];
+	  quanter = quanter ? (240/quanter) : 240;
 	  countstop = (((templong>>12)+(quanter>>1)) / quanter) * quanter;
 	}
       for(i=0;i<bufnum;i+=3)
