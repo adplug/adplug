@@ -131,7 +131,7 @@ const CPlayerDesc CAdPlug::allplayers[] = {
   CPlayerDesc(CxadhypPlayer::factory, "Hypnosis", ".xad\0"),
   CPlayerDesc(CxadpsiPlayer::factory, "PSI", ".xad\0"),
   CPlayerDesc(CxadratPlayer::factory, "rat", ".xad\0"),
-  CPlayerDesc(CldsPlayer::factory, "LOUDNESS Sound System", ".lds\0"),
+  CPlayerDesc(CldsPlayer::factory, "LOUDNESS Sound System", ".lds\0.ld0\0"),
   CPlayerDesc(CplxPlayer::factory, "PALLADIX Sound System", ".plx\0"),
   CPlayerDesc(Cu6mPlayer::factory, "Ultima 6 Music", ".m\0"),
   CPlayerDesc(CrolPlayer::factory, "Adlib Visual Composer", ".rol\0"),
