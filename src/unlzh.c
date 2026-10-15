@@ -150,7 +150,7 @@ static void make_table(int nchar, uch bitlen[], int tablebits, ush table[])
 	for (i = 1; i <= 16; i++)
 		start[i + 1] = start[i] + (count[i] << (16 - i));
 	if ((start[17] & 0xffff) != 0)
-		printf("Bad table\n");
+		return;			/* malformed code-length distribution */
 
 	jutbits = 16 - tablebits;
 	for (i = 1; i <= (unsigned)tablebits; i++) {
@@ -175,7 +175,8 @@ static void make_table(int nchar, uch bitlen[], int tablebits, ush table[])
 		nextcode = start[len] + weight[len];
 		if (len <= (unsigned)tablebits) {
 			if ((unsigned) 1 << tablebits < nextcode)
-				printf("Bad table\n");
+				return;		/* malformed Huffman table: refuse to write past
+					   the caller's table instead of only warning */
 			for (i = start[len]; i < nextcode; i++) table[i] = ch;
 		} else {
 			k = start[len];
