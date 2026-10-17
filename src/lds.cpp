@@ -164,6 +164,139 @@ bool CldsPlayer::load(const std::string &filename, const CFileProvider &fp)
   return true;
 }
 
+void CldsPlayer::gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
+{
+  if (pattern >= numposi) return;
+  for (int channel = 0; channel < 9; channel++) {
+    unsigned short   patnum = positions[pattern * 9 + channel].patnum;
+    unsigned char transpose = positions[pattern * 9 + channel].transpose;
+    int crow=0;
+    unsigned int packpos = 0;
+    while (crow < pattlen) {
+      unsigned short comword;
+      unsigned char  comhi, comlo;
+
+      unsigned char note = 0;
+      TrackedCmds command = TrackedCmdNone;
+      unsigned char inst = 0;
+      unsigned char volume = 255;
+      unsigned char param = 0;
+
+      if ((patnum + packpos) < patterns_size)
+        comword = patterns[patnum + packpos];
+      else
+        comword = 0x8001;
+      comhi = comword >> 8;
+      comlo = comword & 0xff;
+
+      if(comword) {
+        if(comhi == 0x80) {
+          crow += comlo;
+        } else {
+          if(comhi >= 0x80) {
+            switch(comhi) {
+              case 0xff:
+                command = TrackedCmdOPLCarrierModulatorVolume;
+                param = comlo;
+                break;
+              case 0xfe:
+                command = TrackedCmdTempo;
+                param = comword & 0x3f;
+                break;
+              case 0xfd:
+                volume = comlo;
+                break;
+              case 0xfc:
+                command = TrackedCmdNoteCut;
+                break;
+              case 0xfb:
+                command = TrackedCmdRetrigger;
+                param = 1;
+                break;
+              case 0xfa:
+                command = TrackedCmdPatternBreak;
+                break;
+              case 0xf9:
+                command = TrackedCmdPatternJumpTo;
+                param = comlo & maxpos;
+                break;
+              case 0xf8:
+                // lastune = 0 ???
+                break;
+              case 0xf7:
+                command = TrackedCmdVibrato;
+                param = comlo;
+                break;
+              case 0xf6:
+                command = TrackedCmdTonePortamento;
+                note = comlo + 12;
+                param = 0;
+                break;
+              case 0xf5:
+                command = TrackedCmdPitchSlideUpDown; // not a perfect match for c->finetune = comlo
+                param = comlo;
+                break;
+              case 0xf4:
+                command = TrackedCmdGlobalVolume;
+                param = comlo;
+                break;
+              case 0xf3:
+                // fadeonoff = comlo ??
+                command = TrackedCmdVolumeFadeIn;
+                param = comlo;
+                break;
+              case 0xf2:
+                command = TrackedCmdOPLTremolo;
+                param = comlo;
+                break;
+              case 0xf1:	// panorama
+              case 0xf0:	// progch
+                break;
+              default:
+                if(comhi < 0xa0) {
+                  command = TrackedCmdTonePortamento;
+                  // this note might be off..
+                  note = (comhi & 0x1f) + 12;
+                  param = 0;
+                }
+                break;
+            }
+          } else {
+            //unsigned char  sound;
+            unsigned short high;
+            signed char transp = transpose & 127;
+
+            if(transpose & 64) transp |= 128;
+
+            if(transpose & 128) {
+              //sound = (comlo + transp) & maxsound;
+              high = comhi << 4;
+            } else {
+              //sound = comlo & maxsound;
+              high = (comhi + transp) << 4;
+            }
+
+            if(chandelay[channel]) {
+              // command = TrackedCmdDelay;
+              // param = chandelay[chan];
+            }
+            // this note might be off..
+            note = high + 12;
+          }
+          if ((note != 0) ||
+              (command != TrackedCmdNone) ||
+              (inst != 0) ||
+              (volume != 255) ||
+              (param != 0))
+            callback (arg, crow, channel, note, command, inst, volume, param);
+          crow++;
+        }
+      }
+      packpos++;
+    }
+  }
+}
+
 bool CldsPlayer::update()
 {
   unsigned short	comword, freq, octave, chan, tune, wibc, tremc, arpreg;

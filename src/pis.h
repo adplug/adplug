@@ -150,4 +150,25 @@ private:
     PisModule module;
     PisReplayState replay_state;
     int is_playing;
+
+    unsigned int getpatterns()
+      { return module.number_of_patterns; }
+    unsigned int getpattern()
+      { return module.pattern_map[replay_state.position]; }
+    unsigned int getorders()
+      { return module.length; }
+    unsigned int getorder()
+      { return replay_state.position; }
+    unsigned int getrow()
+      { return replay_state.row; }
+    unsigned int getrows()
+      { return 64; }
+    unsigned int getnchans()
+      { return 9; }
+    unsigned int getspeed()
+      { return replay_state.speed; }
+
+    unsigned char getpattern(unsigned long _order)
+      { if (_order >= module.length) return 0; return module.pattern_map[_order]; }
+    void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
 };

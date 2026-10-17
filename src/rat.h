@@ -112,4 +112,19 @@ protected:
   std::string     xadplayer_gettype();
   std::string     xadplayer_gettitle();
   unsigned int    xadplayer_getinstruments();
+
+  unsigned int getpatterns() { return rat.hdr.numpat; }
+  unsigned int getpattern() { return rat.order[rat.order_pos]; }
+  unsigned char getpattern(unsigned long order)
+  {
+    if (order >= rat.hdr.order_end ) return 0;
+    return rat.order[order];
+  }
+  unsigned int getorders() { return rat.hdr.order_end; }
+  unsigned int getorder() { return rat.order_pos; }
+  unsigned int getrow() { return rat.pattern_pos; }
+  unsigned int getrows() { return 64; }
+  unsigned int getnchans() { return rat.hdr.numchan; }
+  unsigned int getspeed() { return plr.speed; }
+  void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
 };

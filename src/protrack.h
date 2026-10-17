@@ -35,7 +35,7 @@ public:
   float getrefresh();
 
   unsigned int getpatterns()
-    { return nop; }
+    { return nop ? npats : nop; }
   unsigned int getpattern()
     { return order[ord]; }
   unsigned int getorders()
@@ -44,8 +44,16 @@ public:
     { return ord; }
   unsigned int getrow()
     { return rw; }
+  unsigned int getrows()
+    { return nrows; }
+  unsigned int getnchans()
+    { return nchans; }
   unsigned int getspeed()
     { return speed; }
+
+  unsigned char getpattern(unsigned long _order)
+    { if (_order > length) return 0; return order[_order]; }
+  void gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg) override;
 
  protected:
   enum Flags {
