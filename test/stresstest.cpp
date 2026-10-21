@@ -197,6 +197,12 @@ static const char *const filelist[] = {
 	"i-110_195.dtm", "i-110_196.a2m", "i-110_197.sa2", "i-110_198.dtm",
 	"i-110_199.amd", "i-110_200.a2m",
 	"xmi-1-badhdr.xmi", "xmi-2-trunc.xmi", "xmi-3-badnote.xmi",
+	"a2m-1-badlzh.a2m",	// Malformed LZH stream in an A2M v14 pattern
+				//            block: the Huffman code length
+				//            table of the LZH decompressor is
+				//            over-subscribed, which used to write
+				//            past the end of pt_table[] in
+				//            make_table() (src/unlzh.c)
 };
 
 static const int filecount = sizeof(filelist) / sizeof(filelist[0]);
