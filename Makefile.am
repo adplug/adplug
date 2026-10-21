@@ -626,4 +626,5 @@ EXTRA_DIST += \
 	test/fuzzing/i-110_196.a2m test/fuzzing/i-110_197.sa2 test/fuzzing/i-110_198.dtm \
 	test/fuzzing/i-110_199.amd test/fuzzing/i-110_200.a2m \
 	test/fuzzing/xmi-1-badhdr.xmi test/fuzzing/xmi-2-trunc.xmi \
-	test/fuzzing/xmi-3-badnote.xmi
+	test/fuzzing/xmi-3-badnote.xmi \
+	test/fuzzing/a2m-1-badlzh.a2m

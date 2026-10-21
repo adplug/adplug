@@ -32,10 +32,13 @@
 #ifndef H_DEBUG
 #define H_DEBUG
 
-extern "C"
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
         void AdPlug_LogFile(const char *filename);
         void AdPlug_LogWrite(const char *fmt, ...);
-}
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif

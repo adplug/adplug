@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "unlzh.h"
+#include "debug.h"
 
 typedef unsigned short ush;
 typedef unsigned char uch;
@@ -149,8 +150,10 @@ static void make_table(int nchar, uch bitlen[], int tablebits, ush table[])
 	start[1] = 0;
 	for (i = 1; i <= 16; i++)
 		start[i + 1] = start[i] + (count[i] << (16 - i));
-	if ((start[17] & 0xffff) != 0)
+	if ((start[17] & 0xffff) != 0) {
+		AdPlug_LogWrite("unlzh: malformed code-length distribution, refusing to build the table\n");
 		return;			/* malformed code-length distribution */
+	}
 
 	jutbits = 16 - tablebits;
 	for (i = 1; i <= (unsigned)tablebits; i++) {
@@ -174,9 +177,11 @@ static void make_table(int nchar, uch bitlen[], int tablebits, ush table[])
 		if ((len = bitlen[ch]) == 0) continue;
 		nextcode = start[len] + weight[len];
 		if (len <= (unsigned)tablebits) {
-			if ((unsigned) 1 << tablebits < nextcode)
+			if ((unsigned) 1 << tablebits < nextcode) {
+				AdPlug_LogWrite("unlzh: malformed Huffman table, refusing to write past the table\n");
 				return;		/* malformed Huffman table: refuse to write past
 					   the caller's table instead of only warning */
+			}
 			for (i = start[len]; i < nextcode; i++) table[i] = ch;
 		} else {
 			k = start[len];
@@ -184,6 +189,10 @@ static void make_table(int nchar, uch bitlen[], int tablebits, ush table[])
 			i = len - tablebits;
 			while (i != 0) {
 				if (*p == 0) {
+					if (avail >= (unsigned)(2 * NC - 1)) {
+						AdPlug_LogWrite("unlzh: malformed Huffman table, too many nodes\n");
+						return;	/* don't write past left[]/right[] */
+					}
 					right[avail] = left[avail] = 0;
 					*p = avail++;
 				}
@@ -218,8 +227,10 @@ static void read_pt_len(int nn, int nbit, int i_special)
 			if (c == 7) {
 				mask = (unsigned) 1 << (BITBUFSIZ - 1 - 3);
 				while (mask & bitbuf) {	 mask >>= 1;  c++;	}
-				if (16 < c)
-					printf("Bad table\n");
+				if (16 < c) {
+					AdPlug_LogWrite("unlzh: invalid code length %d, refusing to build the table\n", c);
+					return;	/* invalid code length: the table can't be built */
+				}
 			}
 			fillbuf((c < 7) ? 3 : c - 3);
 			pt_len[i++] = c;
@@ -246,6 +257,10 @@ static void read_c_len(void)
 	} else {
 		i = 0;
 		while (i < n) {
+			if (i >= NC) {		/* never write past c_len[] */
+				AdPlug_LogWrite("unlzh: too many code lengths, ignoring the rest of the table\n");
+				break;
+			}
 			c = pt_table[bitbuf >> (BITBUFSIZ - 8)];
 			if (c >= NT) {
 				mask = (unsigned) 1 << (BITBUFSIZ - 1 - 8);
@@ -260,7 +275,10 @@ static void read_c_len(void)
 				if		(c == 0) c = 1;
 				else if (c == 1) c = getbits(4) + 3;
 				else			 c = getbits(CBIT) + 20;
-				while (--c >= 0) c_len[i++] = 0;
+				while (--c >= 0) {
+					if (i >= NC) break;	/* never write past c_len[] */
+					c_len[i++] = 0;
+				}
 			} else c_len[i++] = c - 2;
 		}
 		while (i < NC) c_len[i++] = 0;
