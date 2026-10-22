@@ -6,6 +6,10 @@ set(LIBRARIES
   libbinio::libbinio
 )
 
+add_executable(hsc-state-test hsc-state-test.cpp)
+target_link_libraries(hsc-state-test PRIVATE ${LIBRARIES})
+add_test(NAME hsc-state-test COMMAND hsc-state-test)
+
 ###
 ### crctest
 ###
