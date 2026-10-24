@@ -42,7 +42,7 @@
   # define INP  inportb
   # define OUTP outportb
 #elif defined(linux) && defined(HAVE_INB_OUTB)
-  # include <sys/io.h>  
+  # include <sys/io.h>
   # define INP inb
   # define OUTP(reg,val) outb(val,reg)
 #else // no support on other platforms
