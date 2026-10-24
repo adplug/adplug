@@ -67,10 +67,25 @@ endif()
 ### Configuration checks
 ###
 
+include(CheckCXXSourceCompiles)
 include(CheckCXXSymbolExists)
 
 check_cxx_symbol_exists(_stricmp "string.h" HAVE_STRICMP)
 check_cxx_symbol_exists(strcasecmp "strings.h" HAVE_STRCASECMP)
+check_cxx_source_compiles("
+  #include <sys/io.h>
+  int main() {
+    (void) inb(0);
+    outb(0, 0);
+    return 0;
+  }
+" HAVE_INB_OUTB)
+check_cxx_source_compiles("
+  #include <sys/io.h>
+  int main() {
+    return ioperm(0, 1, 0);
+  }
+" HAVE_IOPERM)
 
 ###
 ### Core

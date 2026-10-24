@@ -41,8 +41,8 @@
   # include <pc.h>
   # define INP  inportb
   # define OUTP outportb
-#elif defined(linux) && defined(HAVE_SYS_IO_H) && (defined(__i386__) || defined(__x86_64__))
-  # include <sys/io.h>
+#elif defined(linux) && defined(HAVE_INB_OUTB)
+  # include <sys/io.h>  
   # define INP inb
   # define OUTP(reg,val) outb(val,reg)
 #else // no support on other platforms
@@ -165,7 +165,7 @@ void CRealopl::hardwrite(int reg, int val) {
   if (nowrite)
     return;
 
-#if defined(linux) && defined(HAVE_SYS_IO_H) && (defined(__i386__) || defined(__x86_64__)) // see whether we can access the port
+#if defined(linux) && defined(HAVE_IOPERM) // see whether we can access the port
   if (!gotperms) {
     if ((ioperm(adlport, 2, 1) != 0) || (ioperm(adlport + 2, 2, 1) != 0)) {
       return;
