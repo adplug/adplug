@@ -196,6 +196,14 @@ elseif(HAVE_STRCASECMP)
   target_compile_definitions(adplug PRIVATE stricmp=strcasecmp)
 endif()
 
+if(HAVE_INB_OUTB)
+  target_compile_definitions(adplug PRIVATE HAVE_INB_OUTB)
+endif()
+
+if(HAVE_IOPERM)
+  target_compile_definitions(adplug PRIVATE HAVE_IOPERM)
+endif()
+
 target_include_directories(
   adplug
   INTERFACE "$<BUILD_INTERFACE:${ADPLUG_GENERATED_INCLUDE_DIR}>"

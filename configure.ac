@@ -67,6 +67,39 @@ dnl On some platforms glibc does not provide sys/io.h
 dnl https://bugs.gentoo.org/645296
 AC_CHECK_HEADERS([sys/io.h])
 
+dnl Check whether sys/io.h provides the port I/O functions.
+AC_CACHE_CHECK([whether sys/io.h provides inb and outb], [adplug_cv_sys_io_inb_outb], [
+    AS_IF([test "x${ac_cv_header_sys_io_h}" = "xyes"], [
+        AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+            #include <sys/io.h>
+        ]], [[
+            (void) inb(0);
+            outb(0, 0);
+        ]])],
+        [adplug_cv_sys_io_inb_outb=yes],
+        [adplug_cv_sys_io_inb_outb=no])
+    ], [adplug_cv_sys_io_inb_outb=no])
+])
+AS_IF([test "x${adplug_cv_sys_io_inb_outb}" = "xyes"], [
+    AC_DEFINE([HAVE_INB_OUTB], [1], [Define if sys/io.h provides inb and outb])
+])
+
+dnl Check whether sys/io.h provides ioperm.
+AC_CACHE_CHECK([whether sys/io.h provides ioperm], [adplug_cv_sys_io_ioperm], [
+    AS_IF([test "x${ac_cv_header_sys_io_h}" = "xyes"], [
+        AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+            #include <sys/io.h>
+        ]], [[
+            return ioperm(0, 1, 0);
+        ]])],
+        [adplug_cv_sys_io_ioperm=yes],
+        [adplug_cv_sys_io_ioperm=no])
+    ], [adplug_cv_sys_io_ioperm=no])
+])
+AS_IF([test "x${adplug_cv_sys_io_ioperm}" = "xyes"], [
+    AC_DEFINE([HAVE_IOPERM], [1], [Define if sys/io.h provides ioperm])
+])
+
 dnl Check whether -fsigned-char should be passed
 AC_CACHE_CHECK([whether char is signed], ac_cv_c_signed_char, [
   AC_RUN_IFELSE([AC_LANG_PROGRAM([[
