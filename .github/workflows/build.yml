@@ -169,7 +169,7 @@ jobs:
       run: |
         echo 'compile_opts=--host=powerpc64le-linux-gnu --prefix=/usr/local/powerpc64le'>> $GITHUB_ENV
         echo 'compile_env=PKG_CONFIG_PATH=/usr/local/powerpc64le/lib/pkgconfig MAKE="make stresstest_wrapper=./qemu-wrapper.sh"'>> $GITHUB_ENV
-        echo -e '#!/bin/sh\nexec qemu-ppc -L /usr/local/powerpc64le -L /usr/powerpc64le-linux-gnu "$@"' > qemu-wrapper.sh
+        echo -e '#!/bin/sh\nexec qemu-ppc64le -L /usr/local/powerpc64le -L /usr/powerpc64le-linux-gnu "$@"' > qemu-wrapper.sh
         chmod 755 qemu-wrapper.sh
 
     - name: Install libbinio
@@ -212,7 +212,7 @@ jobs:
           sed -e 's/exec "/exec qemu-ppc -L \/usr\/local\/powerpc64 -L \/usr\/powerpc64-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
         elif  [[ ${{ matrix.compiler }} == "powerpc64le-gcc" ]]; then
           make test/crctest test/emutest test/playtest test/strstest ${{ env.compile_env }} ${{ env.adplug_env }}
-          sed -e 's/exec "/exec qemu-ppc -L \/usr\/local\/powerpc64le -L \/usr\/powerpc64le-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
+          sed -e 's/exec "/exec qemu-ppc64le -L \/usr\/local\/powerpc64le -L \/usr\/powerpc64le-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
         fi
 
     - name: Prepare MinGW runtime DLLs
