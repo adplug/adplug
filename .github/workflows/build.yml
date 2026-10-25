@@ -23,7 +23,7 @@ jobs:
             os: ubuntu-latest
           - compiler: powerpc64-gcc # To test compatibility with big-endian powerpc
             os: ubuntu-latest
-          - compiler: powerpcle64-gcc # To test compatibility with little-endian powerpc
+          - compiler: powerpc64le-gcc # To test compatibility with little-endian powerpc
             os: ubuntu-latest
 
       fail-fast: false
@@ -82,7 +82,7 @@ jobs:
           # qemu does not support powerpc64
           sudo apt install -y g++-powerpc64-linux-gnu gcc-powerpc64-linux-gnu
         fi
-        if [[ ${{ matrix.compiler }} = powerpcle64-gcc ]]; then
+        if [[ ${{ matrix.compiler }} = powerpc64le-gcc ]]; then
           sudo apt install -y g++-powerpc64le-linux-gnu gcc-powerpc64le-linux-gnu qemu-user
         fi
 
