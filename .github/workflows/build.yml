@@ -207,7 +207,7 @@ jobs:
           sed -e 's/exec "/exec qemu-ppc -L \/usr\/local\/powerpc -L \/usr\/powerpc-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
         elif  [[ ${{ matrix.compiler }} == "powerpc64-gcc" ]]; then
           make test/crctest test/emutest test/playtest test/strstest ${{ env.compile_env }} ${{ env.adplug_env }}
-          sed -e 's/exec "/exec qemu-ppc -L \/usr\/local\/powerpc64 -L \/usr\/powerpc64-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
+          sed -e 's/exec "/exec qemu-ppc64 -L \/usr\/local\/powerpc64 -L \/usr\/powerpc64-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
         elif  [[ ${{ matrix.compiler }} == "powerpc64le-gcc" ]]; then
           make test/crctest test/emutest test/playtest test/strstest ${{ env.compile_env }} ${{ env.adplug_env }}
           sed -e 's/exec "/exec qemu-ppc64le -L \/usr\/local\/powerpc64le -L \/usr\/powerpc64le-linux-gnu "/' -i test/crctest test/emutest test/playtest test/strstest
