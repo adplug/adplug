@@ -695,3 +695,60 @@ void CpisPlayer::rewind(int subsong) {
 float CpisPlayer::getrefresh() {
     return 50.0f;
 }
+
+void CpisPlayer::gettrackdata (unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
+{
+    for (int ch=0; ch < 9; ch++)
+    {
+        int p = module.order[module.pattern_map[pattern]][ch];
+        for (int row = 0; row < 64; row++)
+        {
+            TrackedCmds command = TrackedCmdNone;
+            uint8_t note   = (module.pattern[p][row] >> 20) & 0x0f;
+            uint8_t octave = (module.pattern[p][row] >> 17) & 0x07;
+            uint8_t inst   = (module.pattern[p][row] >> 12) & 0x1f;
+            uint8_t effect = (module.pattern[p][row] >>  8) & 0xff;
+            uint8_t param  = (module.pattern[p][row]      ) & 0xff;
+            uint8_t volume = 0xff;
+
+            if (note < 12)
+            {
+                note = note + (octave * 12) + 36;
+            } else {
+                note = 0x00;
+            }
+            switch (effect)
+            {
+                case 0x00: if (param != 0x00) command = TrackedCmdArpeggio; break;
+                case 0x01: command = TrackedCmdPitchSlideUp; break;
+                case 0x02: command = TrackedCmdPitchSlideDown; break;
+                case 0x03: command = TrackedCmdTonePortamento; break;
+                case 0x0b: command = TrackedCmdPatternJumpTo; break;
+                case 0x0c: volume = param; param = 0; break;
+                case 0x0d: command = TrackedCmdPatternBreak; break;
+                case 0x0e:
+                    switch (param & 0xf0)
+                    {
+                        case 0x60:
+                            if ((param & 0x0f) == 0)
+                            {
+                                command = TrackedCmdPatternSetLoop; param = 0;
+                            } else {
+                                command = TrackedCmdPatternDoLoop; param &= 0x0f;
+                            }
+                            break;
+                        case 0xa0: command = TrackedCmdVolumeSlideUpDown; param = param << 4; break;
+                        case 0xb0: command = TrackedCmdVolumeSlideUpDown; param &= 0x0f; break;
+                    }
+                    break;
+                case 0x0f:
+                    switch (param & 0xf0)
+                    {
+                        case 0x00: command = TrackedCmdSpeed; param &= 0x0f; break;
+                    }
+                    break;
+            }
+            callback (arg, row, ch, note, command, inst, volume, param);
+        }
+    }
+}

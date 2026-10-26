@@ -457,6 +457,27 @@ void CcmfmacsoperaPlayer::processNoteEvent(const CcmfmacsoperaPlayer::NoteEvent 
 		keyOn(channelNr);
 }
 
+void CcmfmacsoperaPlayer::gettrackdata(unsigned char pattern, void (*callback)(void *arg, unsigned char row, unsigned char channel, unsigned char note, TrackedCmds command, unsigned char inst, unsigned char volume, unsigned char param), void *arg)
+{
+  if (pattern >= nrOfPatterns) return;
+  const Pattern& p = patterns[pattern];
+
+  for (unsigned long pi=0; pi < p.size(); ++pi) {
+    const NoteEvent& n = p[pi];
+    unsigned char note = 0;
+    TrackedCmds command = TrackedCmdNone;
+
+    if (n.note == 1) {
+      command = TrackedCmdPatternBreak;
+    } else if (n.note == 4) {
+      command = TrackedCmdNoteCut;
+    } else if ((n.note >= 23) && (n.note < 120)) {
+      note = n.note;
+    }
+    callback (arg, n.row, n.col, note, command, n.instrument + 1, n.volume, 0);
+  }
+}
+
 bool CcmfmacsoperaPlayer::update()
 {
 	AdPlug_LogWrite( "%2u: ", currentRow);
