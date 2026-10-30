@@ -360,10 +360,10 @@ bool CsopPlayer::update()
 			while (track[i].pos < track[i].size)
 			{
 				executeCommand(i);
-				if (track[i].pos >= track[i].size) {
+				if (track[i].pos + 1 >= track[i].size) {
 					break;
 				}
-				else if (track[i].pos + 1 < track[i].size && !track[i].data[track[i].pos] && !track[i].data[track[i].pos + 1]) // if next delay is zero
+				else if (!track[i].data[track[i].pos] && !track[i].data[track[i].pos + 1]) // if next delay is zero
 				{
 					track[i].pos += 2;
 				}
