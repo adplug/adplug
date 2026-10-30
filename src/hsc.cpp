@@ -249,8 +249,12 @@ void ChscPlayer::rewind(int subsong)
   opl->init();						// reset OPL chip
   opl->write(1,32); opl->write(8,128); opl->write(0xbd,0);
 
-  for(i=0;i<9;i++)
+  for(i=0;i<9;i++) {
+    channel[i].slide = 0;
+    channel[i].freq = 0;
+    adl_freq[i] = 0;
     setinstr((char) i,(char) i);	// init channels
+  }
 }
 
 unsigned int ChscPlayer::getpatterns()
