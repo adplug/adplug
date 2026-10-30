@@ -345,7 +345,7 @@ bool CsopPlayer::update()
 		if (!track[i].counter)
 		{
 			if (track[i].pos + 2 > track[i].size)
-			{ /* protect against EOF */
+			{ // protect against EOF
 				track[i].pos = track[i].size;
 				continue;
 			}

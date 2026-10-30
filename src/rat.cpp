@@ -157,7 +157,7 @@ void CxadratPlayer::xadplayer_update()
 
     // is instrument?
     if (event.instrument != 0xFF && event.instrument > 0
-        && event.instrument <= rat.hdr.numinst) /* bounds-check instrument index */
+        && event.instrument <= rat.hdr.numinst)
     {
       rat.channel[i].instrument = event.instrument - 1;
       rat.channel[i].volume = rat.inst[event.instrument - 1].volume;
