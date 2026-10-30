@@ -130,6 +130,11 @@ void CcoktelPlayer::executeCommand()
 	uint16_t pitch;
 
 	// execute MIDI command
+	if (pos >= size) /* protect against EOF */
+	{
+		pos = size;
+		return;
+	}
 	status = data[pos++];
 	if (status == COK_END_OF_SONG)
 	{
@@ -137,14 +142,25 @@ void CcoktelPlayer::executeCommand()
 	}
 	else if (status == COK_SET_MOD_TIMBRE)
 	{
+		if (pos >= size) /* protect against EOF */
+		{
+			pos = size;
+			return;
+		}
 		modifyTimbre = data[pos++];
 	}
 	else if (status > COK_MODIFY_TIMBRE)
 	{
+		if (pos + 2 > size) /* protect against EOF */
+		{
+			pos = size;
+			return;
+		}
 		note = data[pos++]; // what parameter to modify
 		val = data[pos++]; // set this value for specified parameter
 
-		if (insts && modifyTimbre != 0xFF && modifyTimbre < nrTimbre)
+		if (insts && modifyTimbre != 0xFF && modifyTimbre < nrTimbre
+		    && note < ADLIB_INST_LEN) /* bounds-check instrument index */
 		{
 			insts[modifyTimbre].modified[note] = val;
 			insts[modifyTimbre].backend_index = load_instrument_data(&insts[modifyTimbre].modified[0], ADLIB_INST_LEN);
@@ -167,6 +183,11 @@ void CcoktelPlayer::executeCommand()
 		switch (status & 0xF0)
 		{
 			case COK_NOTE_ON_VOL:
+				if (pos + 2 > size) /* protect against EOF */
+				{
+					pos = size;
+					return;
+				}
 				note = data[pos++];
 				val = data[pos++];
 				if (voice >= MAX_VOICES)
@@ -182,6 +203,11 @@ void CcoktelPlayer::executeCommand()
 				break;
 
 			case COK_NOTE_ON:
+				if (pos >= size) /* protect against EOF */
+				{
+					pos = size;
+					return;
+				}
 				note = data[pos++];
 				if (voice >= MAX_VOICES)
 					break;
@@ -189,6 +215,11 @@ void CcoktelPlayer::executeCommand()
 				break;
 
 			case COK_PITCH_BEND:
+				if (pos >= size) /* protect against EOF */
+				{
+					pos = size;
+					return;
+				}
 				pitch = data[pos++] << 7;
 				if (voice >= MAX_VOICES)
 					break;
@@ -196,6 +227,11 @@ void CcoktelPlayer::executeCommand()
 				break;
 
 			case COK_VOLUME_SLIDE:
+				if (pos >= size) /* protect against EOF */
+				{
+					pos = size;
+					return;
+				}
 				val = data[pos++];
 				if (voice >= MAX_VOICES)
 					break;
@@ -203,6 +239,11 @@ void CcoktelPlayer::executeCommand()
 				break;
 
 			case COK_TIMBRE_CHANGE:
+				if (pos >= size) /* protect against EOF */
+				{
+					pos = size;
+					return;
+				}
 				val = data[pos++];
 				if (voice >= MAX_VOICES)
 					break;
