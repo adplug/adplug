@@ -344,6 +344,11 @@ bool CsopPlayer::update()
 		songend = false; // track is not finished
 		if (!track[i].counter)
 		{
+			if (track[i].pos + 2 > track[i].size)
+			{ // protect against EOF
+				track[i].pos = track[i].size;
+				continue;
+			}
 			track[i].ticks  = track[i].data[track[i].pos++];
 			track[i].ticks |= track[i].data[track[i].pos++] << 8;
 			if (track[i].pos == 2 && track[i].ticks)
@@ -355,7 +360,7 @@ bool CsopPlayer::update()
 			while (track[i].pos < track[i].size)
 			{
 				executeCommand(i);
-				if (track[i].pos >= track[i].size) {
+				if (track[i].pos + 1 >= track[i].size) {
 					break;
 				}
 				else if (!track[i].data[track[i].pos] && !track[i].data[track[i].pos + 1]) // if next delay is zero
