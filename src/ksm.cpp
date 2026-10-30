@@ -109,7 +109,7 @@ bool CksmPlayer::update()
       while (count >= countstop)
 	{
 	  if (bufnum + 15 > sizeof(databuf))
-	    break; /* protect against buffer overflow */
+	    break; // avoid buffer overflow
 	  templong = note[nownote];
 	  track = (int)((templong>>8)&15);
 	  if ((templong&192) == 0)
@@ -223,7 +223,7 @@ bool CksmPlayer::update()
 	  if (nownote == 0)
 	    count = (templong>>12)-1;
 	  unsigned char divisor = trquant[(templong>>8)&15];
-	  quanter = 240 / (divisor ? divisor : 1); /* protect against division by zero */
+	  quanter = 240 / (divisor ? divisor : 1); // avoid division by zero
 	  countstop = (((templong>>12)+(quanter>>1)) / quanter) * quanter;
 	}
       for(i=0;i<bufnum;i+=3)
